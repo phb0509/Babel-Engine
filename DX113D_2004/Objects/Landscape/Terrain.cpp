@@ -227,7 +227,7 @@ void Terrain::CreateMesh()
 			indices.emplace_back((width + 1) * z + x + 1);//3
 		}
 	}
-
+	 
 	size = indices.size() / 3;
 
 	input = new InputDesc[size];

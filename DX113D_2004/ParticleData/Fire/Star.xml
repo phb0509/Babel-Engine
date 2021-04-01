@@ -1,0 +1,23 @@
+<Particle>
+    <BlendState>0</BlendState>
+    <Loop>true</Loop>
+    <TextureFile>Textures/Landscape/star.png</TextureFile>
+    <MaxParticles>290</MaxParticles>
+    <ReadyTime>2.3670001</ReadyTime>
+    <ReadyRandomTime>1.842</ReadyRandomTime>
+    <StartVelocity>-5.263</StartVelocity>
+    <EndVelocity>4.211</EndVelocity>
+    <MinHorizontalVelocity>5.263</MinHorizontalVelocity>
+    <MaxHorizontalVelocity>-11.053</MaxHorizontalVelocity>
+    <MinVerticalVelocity>6.842</MinVerticalVelocity>
+    <MaxVerticalVelocity>-6.316</MaxVerticalVelocity>
+    <Gravity X="0" Y="0" Z="0"/>
+    <MinColor R="1" G="0" B="0" A="1"/>
+    <MaxColor R="1" G="0.9999994" B="0" A="1"/>
+    <MinRotateSpeed>0</MinRotateSpeed>
+    <MaxRotateSpeed>0</MaxRotateSpeed>
+    <MinStartSize>100</MinStartSize>
+    <MaxStartSize>100</MaxStartSize>
+    <MinEndSize>1.316</MinEndSize>
+    <MaxEndSize>18.421</MaxEndSize>
+</Particle>

@@ -18,7 +18,7 @@ Transform::Transform(string tag)
 
 Transform::~Transform()
 {
-	delete worldBuffer;	
+	delete worldBuffer;
 	delete transformBuffer;
 	delete material;
 }
@@ -52,7 +52,7 @@ void Transform::RenderAxis()
 	transformBuffer->SetVSBuffer(0);
 
 	mesh->IASet();
-	material->Set();	
+	material->Set();
 
 	DC->DrawIndexed(indices.size(), 0, 0);
 }
@@ -75,6 +75,35 @@ Vector3 Transform::Up()
 Vector3 Transform::Right()
 {
 	return XMVector3Normalize(XMVector3TransformNormal(kRight, world));
+}
+
+void Transform::RotateToDestination(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점좌표.
+{
+	dest = dest - transform->position;
+	dest.Normalize();
+	Vector3 forward = transform->Forward() * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
+	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
+	temp = acos(temp);
+
+	Vector3 tempDirection = Vector3::Cross(forward, dest); // 어디로 회전할지.
+
+	if (tempDirection.y < 0.0f) // 목표지점디렉션이 포워드벡터보다 왼쪽에 있으면
+	{
+		transform->rotation.y -= temp;
+	}
+
+	else if (tempDirection.y >= 0.0f) // 디렉션이 포워드벡터보다 오른쪽에 있으면
+	{
+		transform->rotation.y += temp;
+	}
+}
+
+void Transform::MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed)
+{
+	Vector3 mDirection = (dest - transform->position).Normal();
+
+	transform->position.x += mDirection.x * moveSpeed * DELTA;
+	transform->position.z += mDirection.z * moveSpeed * DELTA;
 }
 
 void Transform::CreateAxis()

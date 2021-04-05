@@ -64,7 +64,7 @@ public:
 
 	Vector3 Normal() const;
 	void Normalize();
-	
+
 	static Vector3 Cross(const Vector3& vec1, const Vector3& vec2);
 	static float Dot(const Vector3& vec1, const Vector3& vec2);
 };

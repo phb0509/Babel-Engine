@@ -1,8 +1,15 @@
 #include "Framework.h"
 
-Monster::Monster() : moveSpeed(100.0f), damage(100.0f), maxHP(1000.0f), currentHP(0.0f)
+Monster::Monster() :
+	mMoveSpeed(10.0f),
+	mDamage(100.0f),
+	mMaxHP(1000.0f),
+	mCurrentHP(0.0f),
+	mAStar(nullptr),
+	mTerrain(nullptr),
+	isStalk(false)
 {
-	currentHP = maxHP;
+	mCurrentHP = mMaxHP;
 }
 
 Monster::~Monster()

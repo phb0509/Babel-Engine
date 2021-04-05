@@ -23,10 +23,12 @@
 #define LERP(s, e, t) s + (e - s) * t
 //#define LERP(s, e, t) s * (1 - t) + e * t
 
+#define EPSILON 1
+
 #ifdef NDEBUG
-	#define V(hr) hr
+#define V(hr) hr
 #else
-	#define V(hr) assert(SUCCEEDED(hr))
+#define V(hr) assert(SUCCEEDED(hr))
 #endif
 
 #define DEVICE Device::Get()->GetDevice()
@@ -147,8 +149,10 @@ using namespace Utility;
 #include "Framework/Math/Vector3.h"
 #include "Framework/Math/Transform.h"
 #include "Framework/Math/Math.h"
+#include "GameObject/Utility/E_States.h"
 
 using namespace GameMath;
+using namespace states;
 
 #include "Framework/Collider/Collider.h"
 #include "Framework/Collider/BoxCollider.h"
@@ -217,11 +221,16 @@ using namespace GameMath;
 
 
 
+
+
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"
 #include "GameObject/Monster/Mutant.h"
 #include "GameObject/Player/Player.h"
 
+#include "GameObject/Utility/IState.h"
+#include "GameObject/Monster/MonsterStates/Patrol.h"
+#include "GameObject/Monster/MonsterStates/Stalking.h"
 
 
 //Managers

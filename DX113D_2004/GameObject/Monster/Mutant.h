@@ -1,5 +1,10 @@
 #pragma once
 
+class IState;
+class Patrol;
+class Stalking;
+
+
 class Mutant : public Monster, public ModelAnimator
 {
 public:
@@ -20,49 +25,52 @@ public:
 		Vector3 scale;
 	};
 
-	enum State
-	{
-		IDLE,
-		RUN,
-		SMASHATTACK,
-		ONDAMAGE,
-		DIE
-	}state;
 
 	Mutant();
 	~Mutant();
-
 
 	virtual void Update() override;
 	virtual void Render() override;
 	void PostRender();
 
-	virtual Collider* GetHitCollider() override; 
+	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(float damage) override;
 	virtual void CheckOnHit() override;
 
-private:
-	void Move();
+	Patrol* GetPatrolState() { return mPatrolState; }
+	Stalking* GetStalkingState() { return mStalkingState; }
+
 
 	void SetIdle();
-	void SetAnimation(State value);
-	void SetOnDamageEnd();
-	void SetColliders();
-	void LoadCollider();
-	void FindCollider(string name, Collider* collider);
+	void SetAnimation(eAnimation value);
+	void ChangeState(IState* nextState);
+
+private:
+
+	void setOnDamageEnd();
+	void setColliders();
+	void loadCollider();
+	void findCollider(string name, Collider* collider);
+
 
 
 private:
 
-	Player* player;
-	Collider* bodyCollider;
-	Matrix bodyMatrix;
+	Collider* mBodyCollider;
+	Matrix mBodyMatrix;
+	Collider* mSmashAttackCollider;
+	Matrix mSmashAttackMatrix;
 
-	Collider* smashAttackCollider;
-	Matrix smashAttackMatrix;
+	vector<colliderData> mColliderDatas;
+	vector<temp_colliderData> mTempColliderDatas;
 
-	vector<colliderData> colliderDatas;
-	vector<temp_colliderData> temp_colliderDatas;
+	bool mbOnHit;
 
-	bool isOnHit;
+	eAnimation mAnimation;
+	eFSM mFSM;
+
+	IState* mCurrentState;
+	Patrol* mPatrolState;
+	Stalking* mStalkingState;
+
 };

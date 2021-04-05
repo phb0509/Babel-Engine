@@ -11,16 +11,32 @@ public:
 	virtual Collider* GetHitCollider() = 0;
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
-	void SetTerrain(Terrain* value) { terrain = value; }
-	void SetAStar(AStar* value) { aStar = value; }
+
+
+	Terrain* GetTerrain() { return mTerrain; }
+	vector<Vector3>& GetPath() { return mPath; }
+	float GetMoveSpeed() { return mMoveSpeed; }
+	bool GetIsStalk() { return isStalk; }
+
+	void SetTerrain(Terrain* value) { mTerrain = value; }
+	void SetAStar(AStar* value) { mAStar = value; }
+	void SetIsStalk(bool value) { isStalk = value; }
+
 
 protected:
-	float moveSpeed;
-	float damage;
-	float maxHP;
-	float currentHP;
+	float mMoveSpeed;
+	float mDamage;
+	float mMaxHP;
+	float mCurrentHP;
 
-	Terrain* terrain;
-	AStar* aStar;
-	
+	Terrain* mTerrain;
+	AStar* mAStar;
+	Vector3 mDestPos;
+	vector<Vector3> mPath;
+
+	bool isStalk;
+
+public:
+
+
 };

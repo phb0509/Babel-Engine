@@ -177,9 +177,13 @@
     <ClInclude Include="Environment\Shadow.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
+    <ClInclude Include="GameObject\Monster\MonsterStates\Patrol.h" />
+    <ClInclude Include="GameObject\Monster\MonsterStates\Stalking.h" />
     <ClInclude Include="GameObject\Monster\Mutant.h" />
     <ClInclude Include="GameObject\Player\Player.h" />
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
+    <ClInclude Include="GameObject\Utility\E_States.h" />
+    <ClInclude Include="GameObject\Utility\IState.h" />
     <ClInclude Include="Objects\Deferred\GBuffer.h" />
     <ClInclude Include="Objects\Landscape\Scattering.h" />
     <ClInclude Include="Objects\Landscape\Water.h" />
@@ -328,6 +332,8 @@
     <ClCompile Include="Framework\Utility\Xml.cpp" />
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />
+    <ClCompile Include="GameObject\Monster\MonsterStates\Patrol.cpp" />
+    <ClCompile Include="GameObject\Monster\MonsterStates\Stalking.cpp" />
     <ClCompile Include="GameObject\Monster\Mutant.cpp" />
     <ClCompile Include="GameObject\Player\Player.cpp" />
     <ClCompile Include="GameObject\Tool\ToolModel.cpp" />

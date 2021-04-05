@@ -11,7 +11,7 @@ public:
 
 	Vector3 position;
 	Vector3 rotation;
-	Vector3 scale;	
+	Vector3 scale;
 protected:
 	Vector3 globalPosition;
 	Vector3 globalRotation;
@@ -51,6 +51,9 @@ public:
 	Vector3 GlobalPos() { return globalPosition; }
 	Vector3 GlobalRot() { return globalRotation; }
 	Vector3 GlobalScale() { return globalScale; }
+
+	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
+	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
 
 private:
 	void CreateAxis();

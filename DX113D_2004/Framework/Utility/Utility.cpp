@@ -109,3 +109,24 @@ bool Utility::ExistFile(string path)
 
     return fileValue < 0xffffffff;
 }
+
+void Utility::ExecuteFunction(function<void(Transform*, Vector3)> func, float period)
+{
+    if (mbIsUpdateStandTime) // 시간 지나서 새로 체크.
+    {
+        mFuncExecuteTime = Timer::Get()->GetRunTime() + period;
+        mbIsUpdateStandTime = false;
+    }
+
+
+    if (Timer::Get()->GetRunTime() >= mFuncExecuteTime)
+    {
+        func();
+        char buff[100];
+        sprintf_s(buff, "실행됨\n");
+        OutputDebugStringA(buff);
+
+
+        mbIsUpdateStandTime = true;
+    }
+}

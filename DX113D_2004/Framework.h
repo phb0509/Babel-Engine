@@ -237,6 +237,9 @@ using namespace states;
 #include "GameObject/Manager/GameManager.h"
 
 
+//typedef function<void(Transform*,Vector3)> CallBackParamTransform;
+
+
 //Scene Header
 #include "Scene/Scene.h"
 #include "Scene/SceneManager.h"

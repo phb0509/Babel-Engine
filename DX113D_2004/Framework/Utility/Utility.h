@@ -1,5 +1,9 @@
 #pragma once
 
+class Transform;
+class Vector3;
+
+
 namespace Utility
 {
 	string ToString(wstring value);
@@ -14,7 +18,12 @@ namespace Utility
 	string GetFileNameWithoutExtension(string path);
 
 	void CreateFolders(string path);
+	void ExecuteFunction(function<void(Transform*, Vector3)> func, float period);
 	
 	bool ExistDirectory(string path);
 	bool ExistFile(string path);
+
+
+	static float mFuncExecuteTime = 0.0f;
+	static bool mbIsUpdateStandTime = true;
 }

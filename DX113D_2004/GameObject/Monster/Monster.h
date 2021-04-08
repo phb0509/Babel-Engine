@@ -13,14 +13,18 @@ public:
 	virtual void CheckOnHit() = 0;
 
 
-	Terrain* GetTerrain() { return mTerrain; }
+	Terrain* GetTerrain()const { return mTerrain; }
 	vector<Vector3>& GetPath() { return mPath; }
-	float GetMoveSpeed() { return mMoveSpeed; }
-	bool GetIsStalk() { return isStalk; }
+	float GetMoveSpeed() const { return mMoveSpeed; }
+	bool GetIsStalk()const { return isStalk; }
+	float GetDistanceBetweenPlayerAndMonsterForAttack() const { return mDistanceBetweenPlayerAndMonsterForAttack; }
+
 
 	void SetTerrain(Terrain* value) { mTerrain = value; }
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { isStalk = value; }
+	void SetDistanceBetweenPlayerAndMonsterForAttack(float value) { mDistanceBetweenPlayerAndMonsterForAttack = value; }
+
 
 
 protected:
@@ -36,7 +40,6 @@ protected:
 
 	bool isStalk;
 
-public:
-
-
+	float mPlayerDetectRange;
+	float mDistanceBetweenPlayerAndMonsterForAttack;
 };

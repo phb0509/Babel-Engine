@@ -8,7 +8,7 @@
 //OnDamage,
 //Die,
 
-class Patrol : public IState
+class Patrol : public State
 {
 
 public:
@@ -36,7 +36,7 @@ private:
 	Vector3 mPatrolDestPos;
 	Vector3 mDest;
 
-	float mStalkingRangeRadius; // 플레이어 인지범위. 
+
 	Vector3 mDistanceVector3ToPlayer; // 플레이어까지 거리 x,z만 반영.
 	float mDistanceToPlayer;
 

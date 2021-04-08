@@ -183,7 +183,7 @@
     <ClInclude Include="GameObject\Player\Player.h" />
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
     <ClInclude Include="GameObject\Utility\E_States.h" />
-    <ClInclude Include="GameObject\Utility\IState.h" />
+    <ClInclude Include="GameObject\Utility\State.h" />
     <ClInclude Include="Objects\Deferred\GBuffer.h" />
     <ClInclude Include="Objects\Landscape\Scattering.h" />
     <ClInclude Include="Objects\Landscape\Water.h" />
@@ -337,6 +337,7 @@
     <ClCompile Include="GameObject\Monster\Mutant.cpp" />
     <ClCompile Include="GameObject\Player\Player.cpp" />
     <ClCompile Include="GameObject\Tool\ToolModel.cpp" />
+    <ClCompile Include="GameObject\Utility\State.cpp" />
     <ClCompile Include="Objects\Basic\Cube.cpp" />
     <ClCompile Include="Objects\Basic\Sphere.cpp" />
     <ClCompile Include="Objects\Basic\UIImage.cpp" />

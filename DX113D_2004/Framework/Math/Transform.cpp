@@ -6,7 +6,9 @@ Transform::Transform(string tag)
 	: tag(tag),
 	position(0, 0, 0), rotation(0, 0, 0), scale(1, 1, 1),
 	globalPosition(0, 0, 0), globalRotation(0, 0, 0), globalScale(1, 1, 1),
-	pivot(0, 0, 0), parent(nullptr), isActive(false)
+	pivot(0, 0, 0), parent(nullptr), isActive(false),
+	mbIsUpdateStandTime(false),
+	mNextExecuteTime(0.0f)
 {
 	world = XMMatrixIdentity();
 	worldBuffer = new MatrixBuffer();
@@ -105,6 +107,24 @@ void Transform::MoveToDestination(Transform* transform, Vector3 dest, float move
 	transform->position.x += mDirection.x * moveSpeed * DELTA;
 	transform->position.z += mDirection.z * moveSpeed * DELTA;
 }
+
+void Transform::ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime)
+{
+	if (mbIsUpdateStandTime)
+	{
+		mNextExecuteTime = Timer::Get()->GetRunTime() + periodTime;
+		mbIsUpdateStandTime = false;
+	}
+
+	if (Timer::Get()->GetRunTime() >= mNextExecuteTime)
+	{
+		funcPointer(param1, param2);
+		mbIsUpdateStandTime = true;
+	}
+}
+
+
+
 
 void Transform::CreateAxis()
 {

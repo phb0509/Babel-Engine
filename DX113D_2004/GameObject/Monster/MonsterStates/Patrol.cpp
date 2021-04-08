@@ -7,7 +7,6 @@ Patrol::Patrol() :
 	mCurrentTime(0.0f),
 	mStandTime(0.0f),
 	mPatrolDestPos(0.0f, 0.0f, 0.0f),
-	mStalkingRangeRadius(30.0f),
 	mDistanceToPlayer(0.0f)
 {
 }
@@ -35,6 +34,8 @@ void Patrol::Enter(Mutant* mutant)
 
 void Patrol::Execute(Mutant* mutant)
 {
+	mPlayer = GM->Get()->GetPlayer();
+
 	if (!mbPatrolMove) // 무브 끝난 이후 체크. 
 	{
 		if (Timer::Get()->GetRunTime() >= mStandTime)
@@ -110,10 +111,10 @@ void Patrol::Execute(Mutant* mutant)
 
 
 	// 범위 안 플레이어 있는지 체크.
-	mDistanceVector3ToPlayer = GM->Get()->GetPlayer()->position - mutant->position;
+	mDistanceVector3ToPlayer = mPlayer->position - mutant->position;
 	mDistanceToPlayer = sqrt(pow(mDistanceVector3ToPlayer.x, 2) + pow(mDistanceVector3ToPlayer.z, 2));
 
-	if (mDistanceToPlayer <= mStalkingRangeRadius) // 플레이어가 거리 안에 있으면.
+	if (mDistanceToPlayer <= mutant->GetDistanceBetweenPlayerAndMonsterForAttack()) // 플레이어가 거리 안에 있으면.
 	{
 		mutant->SetIsStalk(true);
 		mutant->ChangeState(mutant->GetStalkingState()); // Stalking으로 상태전환.

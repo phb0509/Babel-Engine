@@ -7,13 +7,20 @@ Monster::Monster() :
 	mCurrentHP(0.0f),
 	mAStar(nullptr),
 	mTerrain(nullptr),
-	isStalk(false)
+	isStalk(false),
+	mPlayerDetectRange(30.0f),
+	mDistanceBetweenPlayerAndMonsterForAttack(10.0f)
 {
+	
 	mCurrentHP = mMaxHP;
 }
 
 Monster::~Monster()
 {
 }
+
+
+
+
 
 

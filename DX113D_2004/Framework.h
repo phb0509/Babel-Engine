@@ -56,6 +56,7 @@
 #include <functional>
 #include <fstream>
 #include <float.h>
+#include <typeinfo>
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -228,7 +229,7 @@ using namespace states;
 #include "GameObject/Monster/Mutant.h"
 #include "GameObject/Player/Player.h"
 
-#include "GameObject/Utility/IState.h"
+#include "GameObject/Utility/State.h"
 #include "GameObject/Monster/MonsterStates/Patrol.h"
 #include "GameObject/Monster/MonsterStates/Stalking.h"
 

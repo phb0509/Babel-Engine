@@ -8,7 +8,7 @@
 //OnDamage,
 //Die,
 
-class Stalking : public IState
+class Stalking : public State
 {
 
 public:

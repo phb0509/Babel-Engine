@@ -1,6 +1,6 @@
 #pragma once
 
-class IState;
+class State;
 class Patrol;
 class Stalking;
 
@@ -43,7 +43,7 @@ public:
 
 	void SetIdle();
 	void SetAnimation(eAnimation value);
-	void ChangeState(IState* nextState);
+	void ChangeState(State* nextState);
 
 private:
 
@@ -69,7 +69,7 @@ private:
 	eAnimation mAnimation;
 	eFSM mFSM;
 
-	IState* mCurrentState;
+	State* mCurrentState;
 	Patrol* mPatrolState;
 	Stalking* mStalkingState;
 

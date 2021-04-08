@@ -12,6 +12,7 @@ public:
 	Vector3 position;
 	Vector3 rotation;
 	Vector3 scale;
+
 protected:
 	Vector3 globalPosition;
 	Vector3 globalRotation;
@@ -24,6 +25,9 @@ protected:
 
 	MatrixBuffer* worldBuffer;
 
+	bool mbIsUpdateStandTime;
+	float mNextExecuteTime;
+
 private:
 	Material* material;
 	Mesh* mesh;
@@ -32,6 +36,7 @@ private:
 
 	vector<VertexColor> vertices;
 	vector<UINT> indices;
+
 public:
 	Transform(string tag = "Untagged");
 	virtual ~Transform();
@@ -54,6 +59,10 @@ public:
 
 	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
 	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
+	//void ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);
+	void ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);
+
+	Transform* GetTransform() { return this; }
 
 private:
 	void CreateAxis();

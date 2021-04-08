@@ -52,7 +52,6 @@ void Mutant::Update()
 
 	UpdateWorld();
 	ModelAnimator::Update();
-
 }
 
 void Mutant::Render()
@@ -86,7 +85,7 @@ void Mutant::CheckOnHit()
 	SetAnimation((eAnimation::OnDamage));
 }
 
-void Mutant::ChangeState(IState* nextState)
+void Mutant::ChangeState(State* nextState)
 {
 	//static_assert(mCurrentState && nextState);
 

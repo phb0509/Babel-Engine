@@ -230,15 +230,13 @@ using namespace states;
 #include "GameObject/Player/Player.h"
 
 #include "GameObject/Utility/State.h"
-#include "GameObject/Monster/MonsterStates/Patrol.h"
-#include "GameObject/Monster/MonsterStates/Stalking.h"
+#include "GameObject/Monster/MonsterStates/PatrolState.h"
+#include "GameObject/Monster/MonsterStates/StalkingState.h"
+#include "GameObject/Monster/MonsterStates/AttackState.h"
 
 
 //Managers
 #include "GameObject/Manager/GameManager.h"
-
-
-//typedef function<void(Transform*,Vector3)> CallBackParamTransform;
 
 
 //Scene Header

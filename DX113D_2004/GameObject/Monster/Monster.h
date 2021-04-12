@@ -1,5 +1,11 @@
 #pragma once
 
+class Player;
+class State;
+class PatrolState;
+class StalkingState;
+class AttackState;
+
 class Monster : public Transform
 {
 public:
@@ -16,14 +22,18 @@ public:
 	Terrain* GetTerrain()const { return mTerrain; }
 	vector<Vector3>& GetPath() { return mPath; }
 	float GetMoveSpeed() const { return mMoveSpeed; }
-	bool GetIsStalk()const { return isStalk; }
-	float GetDistanceBetweenPlayerAndMonsterForAttack() const { return mDistanceBetweenPlayerAndMonsterForAttack; }
-
+	bool GetIsStalk()const { return mbIsStalk; }
+	float GetDistanceToPlayer();
+	float GetDistanceToPlayerForAttack() const { return mDistanceToPlayerForAttack; }
+	float GetPlayerDetectRange() const { return mPlayerDetectRange; }
+	PatrolState* GetPatrolState() { return mPatrolState; }
+	StalkingState* GetStalkingState() { return mStalkingState; }
+	AttackState* GetAttackState() { return mAttackState; }
 
 	void SetTerrain(Terrain* value) { mTerrain = value; }
 	void SetAStar(AStar* value) { mAStar = value; }
-	void SetIsStalk(bool value) { isStalk = value; }
-	void SetDistanceBetweenPlayerAndMonsterForAttack(float value) { mDistanceBetweenPlayerAndMonsterForAttack = value; }
+	void SetIsStalk(bool value) { mbIsStalk = value; }
+	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
 
 
 
@@ -34,12 +44,22 @@ protected:
 	float mCurrentHP;
 
 	Terrain* mTerrain;
+	Player* mPlayer;
 	AStar* mAStar;
 	Vector3 mDestPos;
 	vector<Vector3> mPath;
 
-	bool isStalk;
+	bool mbIsStalk;
 
+	Vector3 mDistanceVector3ToPlayer; // 플레이어까지 거리 x,z만 반영.
+	float mDistanceToPlayer;
 	float mPlayerDetectRange;
-	float mDistanceBetweenPlayerAndMonsterForAttack;
+	float mDistanceToPlayerForAttack;
+	
+
+	State* mCurrentState;
+	PatrolState* mPatrolState;
+	StalkingState* mStalkingState;
+	AttackState* mAttackState;
+
 };

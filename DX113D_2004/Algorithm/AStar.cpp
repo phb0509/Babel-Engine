@@ -103,7 +103,7 @@ void AStar::SetObstacle(vector<class ModelObject*> value)
 	}
 }
 
-int AStar::FindCloseNode(Vector3 pos)
+int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 반환.
 {
 	float minDistance = FLT_MAX;
 	int index = -1;
@@ -142,7 +142,7 @@ vector<Vector3> AStar::FindPath(int start, int end)
 
 	while (nodes[end]->state != Node::CLOSED)
 	{
-		int curIndex = GetMinNode();
+		int curIndex = GetMinNode(); // F값 가장 적은거.
 		Extend(curIndex, end);
 		nodes[curIndex]->state = Node::CLOSED;
 	}
@@ -150,6 +150,7 @@ vector<Vector3> AStar::FindPath(int start, int end)
 	vector<Vector3> path;
 
 	int curIndex = end;
+
 	while (curIndex != start)
 	{
 		nodes[curIndex]->state = Node::USING;
@@ -168,25 +169,30 @@ vector<Vector3> AStar::FindPath(int start, int end)
 
 void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>& path)
 {
+	//캐릭터 위치값, 목적지, 경로벡터(
 	int cutNodeNum = 0;
 	Ray ray;
 	ray.position = start;
 
-	for (UINT i = 0; i < path.size(); i++)
+	for (UINT i = 0; i < path.size(); i++) // 목적지 -> 시작지.
 	{
-		ray.direction = path[i] - ray.position;
-		float distance = ray.direction.Length();
+		ray.direction = path[i] - ray.position; // 캐릭터에서 path[i]까지 벡터
+		float distance = ray.direction.Length(); // path[i]까지 거리.
 
 		ray.direction.Normalize();
 
-		if (!CollisionObstacle(ray, distance))
+
+		// ray.direction : 캐릭터->path[i]까지 방향벡터.
+		// distance : 캐릭터->path[i]까지 거리..
+
+		if (!CollisionObstacle(ray, distance)) // 캐릭터와 path[i]사이에 장애물이 없다면...!
 		{
-			cutNodeNum = path.size() - i - 1;
+			cutNodeNum = path.size() - i - 1;  // 8
 			break;
 		}
 	}
 
-	for (int i = 0; i < cutNodeNum; i++)
+	for (int i = 0; i < cutNodeNum; i++) // 캐릭터에서 다이렉트로 갈수있는 곳까지 전부 빼버리기.
 		path.pop_back();
 
 	cutNodeNum = 0;
@@ -216,7 +222,7 @@ bool AStar::CollisionObstacle(Ray ray, float destDistance)
 	{
 		Contact contact;
 
-		if (obstacle->RayCollision(ray, &contact))
+		if (obstacle->RayCollision(ray, &contact)) // ray방향에 장애물이 있다면
 		{
 			if (contact.distance < destDistance)
 				return true;
@@ -226,7 +232,7 @@ bool AStar::CollisionObstacle(Ray ray, float destDistance)
 	return false;
 }
 
-void AStar::Reset()
+void AStar::Reset() // 장애물 제외 전부 NONE
 {
 	for (Node* node : nodes)
 	{
@@ -251,7 +257,7 @@ void AStar::Extend(int center, int end)
 	{
 		int index = edges[i]->index;
 
-		if (nodes[index]->state == Node::CLOSED ||
+		if (nodes[index]->state == Node::CLOSED ||   //OPEN 이여야 건너뜀.
 			nodes[index]->state == Node::OBSTACLE)
 			continue;
 

@@ -8,12 +8,12 @@
 //OnDamage,
 //Die,
 
-class Patrol : public State
+class PatrolState : public State
 {
 
 public:
-	Patrol();
-	~Patrol();
+	PatrolState();
+	~PatrolState();
 
 	virtual void Enter(Mutant* mutant) override;
 	virtual void Execute(Mutant* mutant) override;
@@ -37,8 +37,7 @@ private:
 	Vector3 mDest;
 
 
-	Vector3 mDistanceVector3ToPlayer; // 플레이어까지 거리 x,z만 반영.
-	float mDistanceToPlayer;
+
 
 };
 

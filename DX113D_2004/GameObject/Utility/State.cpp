@@ -1,8 +1,8 @@
 #include "Framework.h"
 
 State::State():
-	mPlayer(nullptr),
-	mPeriodFuncPointer(nullptr)
+	mPeriodFuncPointer(nullptr),
+	mPlayer(nullptr)
 {
 }
 

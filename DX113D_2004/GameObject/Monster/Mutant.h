@@ -1,10 +1,5 @@
 #pragma once
 
-class State;
-class Patrol;
-class Stalking;
-
-
 class Mutant : public Monster, public ModelAnimator
 {
 public:
@@ -37,8 +32,7 @@ public:
 	virtual void OnDamage(float damage) override;
 	virtual void CheckOnHit() override;
 
-	Patrol* GetPatrolState() { return mPatrolState; }
-	Stalking* GetStalkingState() { return mStalkingState; }
+
 
 
 	void SetIdle();
@@ -49,6 +43,7 @@ private:
 
 	void setOnDamageEnd();
 	void setColliders();
+	void setAttackEnd();
 	void loadCollider();
 	void findCollider(string name, Collider* collider);
 
@@ -69,8 +64,7 @@ private:
 	eAnimation mAnimation;
 	eFSM mFSM;
 
-	State* mCurrentState;
-	Patrol* mPatrolState;
-	Stalking* mStalkingState;
+
+
 
 };

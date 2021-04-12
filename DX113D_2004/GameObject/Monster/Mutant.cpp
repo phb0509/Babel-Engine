@@ -19,6 +19,8 @@ Mutant::Mutant()
 
 	SetEndEvent(static_cast<int>(eAnimation::Run), bind(&Mutant::SetIdle, this));
 	SetEndEvent(static_cast<int>(eAnimation::OnDamage), bind(&Mutant::setOnDamageEnd, this));
+	SetEndEvent(static_cast<int>(eAnimation::SmashAttack), bind(&Mutant::setAttackEnd, this));
+	
 	PlayClip(0);
 
 	mBodyCollider = new BoxCollider();
@@ -28,9 +30,9 @@ Mutant::Mutant()
 	rotation.y = XM_PI;
 	UpdateWorld();
 
-	mPatrolState = new Patrol();
-	mStalkingState = new Stalking();
-	mCurrentState = mPatrolState;
+	mPlayerDetectRange = 40.0f;
+	mDistanceToPlayerForAttack = 7.0f;
+    mCurrentState = GetPatrolState();
 }
 
 Mutant::~Mutant()
@@ -130,6 +132,12 @@ void Mutant::setColliders()
 	int smashAttackIndex = GetNodeByName("Mutant:LeftHand");
 	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * world;
 	mSmashAttackCollider->SetParent(&mSmashAttackMatrix);
+}
+
+void Mutant::setAttackEnd()
+{
+	mPlayer = GM->Get()->GetPlayer();
+	RotateToDestination(this, mPlayer->position);
 }
 
 void Mutant::loadCollider()

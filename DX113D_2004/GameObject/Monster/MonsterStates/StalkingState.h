@@ -8,21 +8,19 @@
 //OnDamage,
 //Die,
 
-class Stalking : public State
+class StalkingState : public State
 {
 
 public:
-	Stalking();
-	~Stalking();
+	StalkingState();
+	~StalkingState();
 
 	virtual void Enter(Mutant* mutant) override;
 	virtual void Execute(Mutant* mutant) override;
 	virtual void Exit(Mutant* mutant) override;
 
 private:
-
-
-private:
+	bool mbIsAttack;
 
 };
 

@@ -84,12 +84,10 @@ void AStar::SetNode(Terrain* terrain)
 	}
 }
 
-void AStar::SetObstacle(vector<class ModelObject*> value)
+void AStar::SetObstacle(vector<Collider*> value)
 {
-	for (ModelObject* object : value)
+	for (Collider* obstacle : value)
 	{
-		Collider* obstacle = object->GetCollider();
-
 		for (Node* node : nodes)
 		{
 			node->collider->UpdateWorld();
@@ -183,11 +181,12 @@ void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>
 
 
 		// ray.direction : 캐릭터->path[i]까지 방향벡터.
+		// ray.position = start
 		// distance : 캐릭터->path[i]까지 거리..
 
 		if (!CollisionObstacle(ray, distance)) // 캐릭터와 path[i]사이에 장애물이 없다면...!
 		{
-			cutNodeNum = path.size() - i - 1;  // 8
+			cutNodeNum = path.size() - i - 1;  // 9
 			break;
 		}
 	}
@@ -198,14 +197,14 @@ void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>
 	cutNodeNum = 0;
 	ray.position = end;
 
-	for (UINT i = 0; i < path.size(); i++)
+	for (UINT i = 0; i < path.size(); i++) // size는 5
 	{
-		ray.direction = path[path.size() - i - 1] - ray.position;
+		ray.direction = path[path.size() - i - 1] - ray.position; // 4 -> 0
 		float distance = ray.direction.Length();
 
 		ray.direction.Normalize();
 
-		if (!CollisionObstacle(ray, distance))
+		if (!CollisionObstacle(ray, distance)) // 충돌 안하면
 		{
 			cutNodeNum = path.size() - i - 1;
 			break;

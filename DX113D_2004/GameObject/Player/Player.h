@@ -58,6 +58,7 @@ private:
 
 private:
 	bool isInitialize;
+	float mMoveSpeed;
 	Terrain* terrain;
 	AStar* aStar;
 

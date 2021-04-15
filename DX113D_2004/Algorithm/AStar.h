@@ -19,7 +19,7 @@ public:
 	void Render();
 
 	void SetNode(class Terrain* terrain);
-	void SetObstacle(vector<class ModelObject*> value);
+	void SetObstacle(vector<Collider*> value);
 
 	int FindCloseNode(Vector3 pos);
 	vector<Vector3> FindPath(int start, int end);

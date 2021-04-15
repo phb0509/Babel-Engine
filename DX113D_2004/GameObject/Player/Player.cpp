@@ -1,7 +1,13 @@
 #include "Framework.h"
 
 Player::Player()
-	: ModelAnimator("Player/Player"), isInitialize(false), state(IDLE), isNormalAttack(false), isNormalAttackCollide(false), normalAttackDamage(10.0f)
+	: ModelAnimator("Player/Player"), 
+	isInitialize(false), 
+	mMoveSpeed(50.0f),
+	state(IDLE), 
+	isNormalAttack(false),
+	isNormalAttackCollide(false), 
+	normalAttackDamage(10.0f)
 {
 	scale = { 0.05f, 0.05f, 0.05f };
 	
@@ -99,8 +105,8 @@ void Player::Move()
 	{
 		Rotate();
 
-		position.z += CAMERA->cameraForward.z * 20.0f * DELTA * 1.0f;
-		position.x += CAMERA->cameraForward.x * 20.0f * DELTA * 1.0f;
+		position.z += CAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
+		position.x += CAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
 		SetAnimation(RUN);
 	}
@@ -109,8 +115,8 @@ void Player::Move()
 	{
 
 		Rotate();
-		position.z += CAMERA->cameraForward.z * -20.0f * DELTA * 1.0f;
-		position.x += CAMERA->cameraForward.x * -20.0f * DELTA * 1.0f;
+		position.z += CAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
+		position.x += CAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
 		SetAnimation(RUN);
 	}
@@ -118,13 +124,13 @@ void Player::Move()
 	if (KEY_PRESS('A'))
 	{
 		Rotate();
-		position += Right() * 20.0f * DELTA;
+		position += Right() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
 		Rotate();
-		position += Right() * -20.0f * DELTA;
+		position += Right() * -mMoveSpeed * DELTA;
 	}
 }
 

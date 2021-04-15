@@ -89,9 +89,11 @@ void PatrolState::Execute(Mutant* mutant)
 		if (mutant->GetPath().empty())
 			return;
 
+		
 		if (Timer::Get()->GetFPS() > 10)
 		{
-			mutant->MoveToDestination(mutant, mDest, mutant->GetMoveSpeed());
+			//mutant->MoveToDestination(mutant, mDest, mutant->GetMoveSpeed());
+			mutant->MoveToDestUsingAStar(mDest);
 			mutant->SetAnimation(eAnimation::Run); // Run.
 		}
 

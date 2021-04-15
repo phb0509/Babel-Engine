@@ -6,9 +6,7 @@ Transform::Transform(string tag)
 	: tag(tag),
 	position(0, 0, 0), rotation(0, 0, 0), scale(1, 1, 1),
 	globalPosition(0, 0, 0), globalRotation(0, 0, 0), globalScale(1, 1, 1),
-	pivot(0, 0, 0), parent(nullptr), isActive(false),
-	mbIsUpdateStandTime(false),
-	mNextExecuteTime(0.0f)
+	pivot(0, 0, 0), parent(nullptr), isActive(false)
 {
 	world = XMMatrixIdentity();
 	worldBuffer = new MatrixBuffer();
@@ -16,6 +14,9 @@ Transform::Transform(string tag)
 	material = new Material(L"Transform");
 	CreateAxis();
 	transformBuffer = new MatrixBuffer();
+
+	mIsUpdateStandTimes.assign(2, true);
+	mNextExecuteTimes.assign(2, 0.0f);
 }
 
 Transform::~Transform()
@@ -100,7 +101,7 @@ void Transform::RotateToDestination(Transform* transform, Vector3 dest) // 회전�
 	}
 }
 
-void Transform::MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed)
+void Transform::MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed) // 단순 dest까지 position+=
 {
 	Vector3 mDirection = (dest - transform->position).Normal();
 
@@ -108,18 +109,33 @@ void Transform::MoveToDestination(Transform* transform, Vector3 dest, float move
 	transform->position.z += mDirection.z * moveSpeed * DELTA;
 }
 
-void Transform::ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime)
+void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime)
 {
-	if (mbIsUpdateStandTime)
+	if (mIsUpdateStandTimes[0])
 	{
-		mNextExecuteTime = Timer::Get()->GetRunTime() + periodTime;
-		mbIsUpdateStandTime = false;
+		mNextExecuteTimes[0] = Timer::Get()->GetRunTime() + periodTime;
+		mIsUpdateStandTimes[0] = false;
 	}
 
-	if (Timer::Get()->GetRunTime() >= mNextExecuteTime)
+	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[0])
 	{
 		funcPointer(param1, param2);
-		mbIsUpdateStandTime = true;
+		mIsUpdateStandTimes[0] = true;
+	}
+}
+
+void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime)
+{
+	if (mIsUpdateStandTimes[1])
+	{
+		mNextExecuteTimes[1] = Timer::Get()->GetRunTime() + periodTime;
+		mIsUpdateStandTimes[1] = false;
+	}
+
+	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
+	{
+		funcPointer(param1);
+		mIsUpdateStandTimes[1] = true;
 	}
 }
 

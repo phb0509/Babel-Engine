@@ -1,7 +1,42 @@
 #pragma once
 
+class Monster;
+
 class Transform
 {
+public:
+	Transform(string tag = "Untagged");
+	virtual ~Transform();
+
+	void UpdateWorld();
+	void RenderAxis();
+
+	void SetWorldBuffer(UINT slot = 0);
+
+	Matrix* GetWorld() { return &world; }
+	void SetParent(Matrix* value) { parent = value; }
+
+	Vector3 Forward();
+	Vector3 Up();
+	Vector3 Right();
+
+	Vector3 GlobalPos() { return globalPosition; }
+	Vector3 GlobalRot() { return globalRotation; }
+	Vector3 GlobalScale() { return globalScale; }
+
+	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
+	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
+
+	void ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);
+	void ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime);
+
+	Transform* GetTransform() { return this; }
+
+private:
+	void CreateAxis();
+
+
+
 public:
 	static bool isAxisDraw;
 
@@ -25,8 +60,9 @@ protected:
 
 	MatrixBuffer* worldBuffer;
 
-	bool mbIsUpdateStandTime;
-	float mNextExecuteTime;
+
+	vector<bool> mIsUpdateStandTimes;
+	vector<float> mNextExecuteTimes;
 
 private:
 	Material* material;
@@ -37,33 +73,6 @@ private:
 	vector<VertexColor> vertices;
 	vector<UINT> indices;
 
-public:
-	Transform(string tag = "Untagged");
-	virtual ~Transform();
 
-	void UpdateWorld();
-	void RenderAxis();
-
-	void SetWorldBuffer(UINT slot = 0);
-
-	Matrix* GetWorld() { return &world; }
-	void SetParent(Matrix* value) { parent = value; }
-
-	Vector3 Forward();
-	Vector3 Up();
-	Vector3 Right();
-
-	Vector3 GlobalPos() { return globalPosition; }
-	Vector3 GlobalRot() { return globalRotation; }
-	Vector3 GlobalScale() { return globalScale; }
-
-	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
-	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
-	//void ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);
-	void ExecutePeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);
-
-	Transform* GetTransform() { return this; }
-
-private:
-	void CreateAxis();
+	
 };

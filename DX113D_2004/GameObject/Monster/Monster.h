@@ -17,6 +17,11 @@ public:
 	virtual Collider* GetHitCollider() = 0;
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
+	virtual Collider* GetColliderForAStar() = 0;
+
+
+	void SetAStarPath(Vector3 destPos);
+	void MoveToDestUsingAStar(Vector3 dest);
 
 
 	Terrain* GetTerrain()const { return mTerrain; }
@@ -29,8 +34,11 @@ public:
 	PatrolState* GetPatrolState() { return mPatrolState; }
 	StalkingState* GetStalkingState() { return mStalkingState; }
 	AttackState* GetAttackState() { return mAttackState; }
+	AStar* GetAStar() { return mAStar; }
 
-	void SetTerrain(Terrain* value) { mTerrain = value; }
+
+
+	void SetTerrain(Terrain* value);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
@@ -55,11 +63,13 @@ protected:
 	float mDistanceToPlayer;
 	float mPlayerDetectRange;
 	float mDistanceToPlayerForAttack;
-	
+
 
 	State* mCurrentState;
 	PatrolState* mPatrolState;
 	StalkingState* mStalkingState;
 	AttackState* mAttackState;
+
+	function<void(Vector3)> mPeriodFuncPointer;
 
 };

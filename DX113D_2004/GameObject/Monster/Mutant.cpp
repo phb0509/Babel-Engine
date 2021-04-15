@@ -87,6 +87,11 @@ void Mutant::CheckOnHit()
 	SetAnimation((eAnimation::OnDamage));
 }
 
+Collider* Mutant::GetColliderForAStar()
+{
+	return mBodyCollider;
+}
+
 void Mutant::ChangeState(State* nextState)
 {
 	//static_assert(mCurrentState && nextState);

@@ -10,7 +10,7 @@ MainScene::MainScene()
 	monsters = GM->GetMonsters();
 
 	obstacle = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	obstacle->scale = { 0.1f, 0.1f, 0.1f };
+	obstacle->scale = { 0.4f, 0.4f, 0.4f };
 	obstacle->position = { 120, 20, 120 };
 	obstacle->UpdateWorld();
 	obstacle->GetCollider()->UpdateWorld();

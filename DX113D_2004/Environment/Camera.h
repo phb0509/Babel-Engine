@@ -47,8 +47,10 @@ private:
 	float rotDamping;
 	Vector3 originForward;
 	float rotY;	
+	float rotX;
 
-	Matrix rotMatrix;
+	Matrix mRotMatrixY;
+	Matrix mRotMatrixX;
 
 	Transform* target;
 	Transform* player;

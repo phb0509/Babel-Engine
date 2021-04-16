@@ -3,7 +3,7 @@
 Camera::Camera()
 	: moveSpeed(40.0f), rotSpeed(2.0f), distance(13), height(11),
 	offset(0, 5, 0), moveDamping(5), rotDamping(0), destRot(0), 
-	rotY(0), target(nullptr), wheelSpeed(15.0f), player(nullptr)
+	rotY(0.0f),rotX(0.0f), target(nullptr), wheelSpeed(15.0f), player(nullptr)
 {
 	viewBuffer = new ViewBuffer();
 	oldPos = MOUSEPOS;
@@ -16,16 +16,6 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-	//if (target != nullptr)
-	//{
-	//	FollowMode();
-	//}
-	//else
-	//{
-	//	FreeMode();
-	//}
-
-
 	if (player != nullptr)
 	{
 		PlayerMove();
@@ -43,22 +33,20 @@ void Camera::PlayerMove()
 {
 	FollowControl();
 
-	rotMatrix = XMMatrixRotationY(rotY); // rotY는 FollowControl에서 마우스x좌표값 이동절대값에 따라 크기조절.
+	mRotMatrixY = XMMatrixRotationY(rotY); // rotY는 FollowControl에서 마우스x좌표값 이동절대값에 따라 크기조절. 걍 rotY만큼 이동량 조절.
+	mRotMatrixX = XMMatrixRotationX(rotX);
 
-	Vector3 forward = XMVector3TransformNormal(kForward, rotMatrix); // rotMatrix의 방향만? 따오는듯.
+	Vector3 forward = XMVector3TransformNormal(kForward, mRotMatrixX * mRotMatrixY); // rotMatrix의 방향만? 따오는듯.
+	//forward = XMVector3TransformNormal(forward, mRotMatrixX);
 
 	destPos = forward * -distance;
 	destPos += player->GlobalPos();
 	destPos.y += height;
 
-
-
 	position = LERP(position, destPos, 5.0f * DELTA); // 카메라 위치.
 													  // 현위치에서 desPost까지 moveDamping값만큼.
 
-
-
-	Vector3 tempOffset = XMVector3TransformCoord(offset.data, rotMatrix);
+	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
 	Vector3 targetPosition = player->GlobalPos() + tempOffset;
 
 	//cameraForward = (player->GlobalPos() - position).Normal();
@@ -68,9 +56,6 @@ void Camera::PlayerMove()
 		Up().data); // 카메라위치 , 타겟위치 , 카메라가 타겟을 바라볼 때의 윗방향.
 	viewBuffer->Set(view);
 }
-
-
-
 
 
 void Camera::FollowMode()
@@ -115,10 +100,9 @@ void Camera::FollowControl()
 	Vector3 value = MOUSEPOS - oldPos;
 
 	rotY += value.x * rotSpeed * DELTA;
+	rotX += value.y * rotSpeed * DELTA;
 
 	oldPos = MOUSEPOS;
-
-
 }
 
 
@@ -133,16 +117,16 @@ void Camera::FollowMove()
 			destRot = LERP(destRot, target->rotation.y + XM_PI, rotDamping * DELTA);
 		}
 
-		rotMatrix = XMMatrixRotationY(destRot);
+		mRotMatrixY = XMMatrixRotationY(destRot);
 	}
 
 	else // 0고정이면.
 	{
 		FollowControl();
-		rotMatrix = XMMatrixRotationY(rotY); // rotY는 float값.
+		mRotMatrixY = XMMatrixRotationY(rotY); // rotY는 float값.
 	}
 
-	Vector3 forward = XMVector3TransformNormal(kForward, rotMatrix); // rotMatrix의 방향만? 따오는듯.
+	Vector3 forward = XMVector3TransformNormal(kForward, mRotMatrixY); // rotMatrix의 방향만? 따오는듯.
 	destPos = forward * -distance;
 
 	destPos += target->GlobalPos();
@@ -150,7 +134,7 @@ void Camera::FollowMove()
 
 	position = LERP(position, destPos, moveDamping * DELTA); // 카메라 위치.
 
-	Vector3 tempOffset = XMVector3TransformCoord(offset.data, rotMatrix);
+	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
 
 	view = XMMatrixLookAtLH(position.data, (target->GlobalPos() + tempOffset).data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라가 타겟을 바라볼 때의 윗방향.

@@ -73,26 +73,21 @@ void PatrolState::Execute(Mutant* mutant)
 		}
 
 		// 경로설정.
-		mutant->GetPath().clear();
-		mutant->GetPath().insert(mutant->GetPath().begin(), mPatrolDestPos);
+	//	mutant->GetPath().clear();
+	//	mutant->GetPath().insert(mutant->GetPath().begin(), mPatrolDestPos);
 
 		mbSetPatrolDest = false;
 		mbPatrolMove = true;
 
-		mDest = mutant->GetPath().back();
+		mDest = mPatrolDestPos;
 
 		mutant->RotateToDestination(mutant, mDest);
 	}
 
 	else if (!mbSetPatrolDest && mbPatrolMove) // 실제이동.
-	{
-		if (mutant->GetPath().empty())
-			return;
-
-		
+	{		
 		if (Timer::Get()->GetFPS() > 10)
 		{
-			//mutant->MoveToDestination(mutant, mDest, mutant->GetMoveSpeed());
 			mutant->MoveToDestUsingAStar(mDest);
 			mutant->SetAnimation(eAnimation::Run); // Run.
 		}

@@ -33,12 +33,9 @@ public:
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 
-
-
-
 	void SetIdle();
-	void SetAnimation(eAnimation value);
-	void ChangeState(State* nextState);
+	void SetAnimation(eAnimation value) override;
+	
 
 private:
 
@@ -64,8 +61,4 @@ private:
 
 	eAnimation mAnimation;
 	eFSM mFSM;
-
-
-
-
 };

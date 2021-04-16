@@ -15,9 +15,9 @@ public:
 	StalkingState();
 	~StalkingState();
 
-	virtual void Enter(Mutant* mutant) override;
-	virtual void Execute(Mutant* mutant) override;
-	virtual void Exit(Mutant* mutant) override;
+	virtual void Enter(Monster* monster) override;
+	virtual void Execute(Monster* monster) override;
+	virtual void Exit(Monster* monster) override;
 
 private:
 	bool mbIsAttack;

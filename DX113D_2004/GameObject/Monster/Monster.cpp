@@ -115,6 +115,16 @@ void Monster::SetTerrain(Terrain* value)
 	
 }
 
+void Monster::ChangeState(State* nextState)
+{
+	//static_assert(mCurrentState && nextState);
+
+	mCurrentState->Exit(this);
+
+	mCurrentState = nextState;
+
+	mCurrentState->Enter(this);
+}
 
 
 

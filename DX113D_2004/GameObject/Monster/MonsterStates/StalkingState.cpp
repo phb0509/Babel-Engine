@@ -9,31 +9,31 @@ StalkingState::~StalkingState()
 {
 }
 
-void StalkingState::Enter(Mutant* mutant)
+void StalkingState::Enter(Monster* monster)
 {
 	mPlayer = GM->Get()->GetPlayer();
-	mPeriodFuncPointer = bind(&Transform::RotateToDestination, mutant,placeholders::_1, placeholders::_2);
+	mPeriodFuncPointer = bind(&Transform::RotateToDestination, monster,placeholders::_1, placeholders::_2);
 }
 
-void StalkingState::Execute(Mutant* mutant)
+void StalkingState::Execute(Monster* monster)
 {
 	if (!mbIsAttack)
 	{
-		mutant->ExecuteRotationPeriodFunction(mPeriodFuncPointer, mutant, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수.
+		monster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, monster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수.
 		//mutant->MoveToDestination(mutant, GM->Get()->GetPlayer()->position, mutant->GetMoveSpeed()); // 이동
-		mutant->MoveToDestUsingAStar(GM->Get()->GetPlayer()->position);
-		mutant->SetAnimation(eAnimation::Run);
+		monster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->position);
+		monster->SetAnimation(eAnimation::Run);
 
-		if (mutant->GetDistanceToPlayer() <= mutant->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.
+		if (monster->GetDistanceToPlayer() <= monster->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.
 		{
 			mbIsAttack = true;
 		}
 	}
 	else // 공격 상태.
 	{
-		mutant->SetAnimation(eAnimation::SmashAttack);
+		monster->SetAnimation(eAnimation::SmashAttack);
 
-		if (mutant->GetDistanceToPlayer() > mutant->GetDistanceToPlayerForAttack())
+		if (monster->GetDistanceToPlayer() > monster->GetDistanceToPlayerForAttack())
 		{
 			mbIsAttack = false;
 		}
@@ -41,7 +41,7 @@ void StalkingState::Execute(Mutant* mutant)
 	
 }
 
-void StalkingState::Exit(Mutant* mutant)
+void StalkingState::Exit(Monster* monster)
 {
 
 }

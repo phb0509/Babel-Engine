@@ -92,16 +92,7 @@ Collider* Mutant::GetColliderForAStar()
 	return mBodyCollider;
 }
 
-void Mutant::ChangeState(State* nextState)
-{
-	//static_assert(mCurrentState && nextState);
 
-	mCurrentState->Exit(this);
-
-	mCurrentState = nextState;
-
-	mCurrentState->Enter(this);
-}
 
 
 

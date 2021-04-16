@@ -15,14 +15,14 @@ public:
 	PatrolState();
 	~PatrolState();
 
-	virtual void Enter(Mutant* mutant) override;
-	virtual void Execute(Mutant* mutant) override;
-	virtual void Exit(Mutant* mutant) override;
+	virtual void Enter(Monster* monster) override;
+	virtual void Execute(Monster* monster) override;
+	virtual void Exit(Monster* monster) override;
 
 private:
 
 	void Initialize();
-
+	void SetPatrolTargetPoint(Vector3& patrolTargetPoint);
 
 private:
 
@@ -35,10 +35,6 @@ private:
 
 	Vector3 mPatrolDestPos;
 	Vector3 mDest;
-
-
-
-
 };
 
 

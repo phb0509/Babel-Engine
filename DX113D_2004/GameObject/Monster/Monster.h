@@ -18,11 +18,11 @@ public:
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
-
+	virtual void SetAnimation(eAnimation value) = 0;
 
 	void SetAStarPath(Vector3 destPos);
 	void MoveToDestUsingAStar(Vector3 dest);
-
+	void ChangeState(State* nextState);
 
 	Terrain* GetTerrain()const { return mTerrain; }
 	vector<Vector3>& GetPath() { return mPath; }
@@ -71,5 +71,6 @@ protected:
 	AttackState* mAttackState;
 
 	function<void(Vector3)> mPeriodFuncPointer;
+	ModelAnimator* mModelAnimator;
 
 };

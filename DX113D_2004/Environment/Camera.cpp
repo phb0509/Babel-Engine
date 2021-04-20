@@ -70,7 +70,7 @@ void Camera::FollowControl()
 	// 끝에 닿을 시 커서좌표 이동시켜야함.
 	// 버그많음.고쳐야됨.
 
-	if (MOUSEPOS.x >= WIN_WIDTH-20)
+	/*if (MOUSEPOS.x >= WIN_WIDTH-20)
 	{
 		ClientToScreen(hWnd, &pt);
 
@@ -94,7 +94,7 @@ void Camera::FollowControl()
 
 		oldPos.x = pt.x;
 		oldPos.y = pt.y;
-	}
+	}*/
 
 
 	Vector3 value = MOUSEPOS - oldPos;

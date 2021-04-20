@@ -37,6 +37,11 @@ void Node::Render()
 	case Node::OBSTACLE:
 		collider->SetColor(Float4(0, 0, 0, 1));
 		break;	
+	case Node::DIRECT:
+		collider->SetColor(Float4(1, 1, 0, 1));
+		break;
+	default:
+		break;
 	}
 
 	collider->Render();

@@ -37,7 +37,7 @@ void AStar::Render()
 		node->Render();	
 }
 
-void AStar::SetNode(Terrain* terrain)
+void AStar::SetNode(Terrain* terrain) // 터레인에 노드셋팅. 개수설정할 수 있음.
 {
 	Float2 size = terrain->GetSize();
 
@@ -99,6 +99,11 @@ void AStar::SetObstacle(vector<Collider*> value)
 
 		obstacles.emplace_back(obstacle);
 	}
+}
+
+void AStar::SetDirectNode(int index)
+{
+	nodes[index]->state = Node::DIRECT;
 }
 
 int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 반환.

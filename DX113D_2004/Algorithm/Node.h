@@ -18,7 +18,8 @@ private:
 		OPEN,
 		CLOSED,
 		USING,
-		OBSTACLE
+		OBSTACLE,
+		DIRECT
 	}state;
 
 	Collider* collider;	

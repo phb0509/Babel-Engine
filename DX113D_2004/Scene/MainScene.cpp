@@ -9,11 +9,17 @@ MainScene::MainScene()
 	CAMERA->SetPlayer(player);
 	monsters = GM->GetMonsters();
 
-	obstacle = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	obstacle->scale = { 0.4f, 0.4f, 0.4f };
-	obstacle->position = { 120, 20, 120 };
-	obstacle->UpdateWorld();
-	obstacle->GetCollider()->UpdateWorld();
+	obstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	obstacle1->scale = { 0.1f, 0.1f, 0.1f };
+	obstacle1->position = { 40, 20, 40 };
+	obstacle1->UpdateWorld();
+	obstacle1->GetCollider()->UpdateWorld();
+
+	obstacle2 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	obstacle2->scale = { 0.1f, 0.1f, 0.1f };
+	obstacle2->position = { 90, 20, 90 };
+	obstacle2->UpdateWorld();
+	obstacle2->GetCollider()->UpdateWorld();
 	
 
 
@@ -25,7 +31,8 @@ MainScene::MainScene()
 	//monsters[1]->SetTerrain(terrain);
 
 	vector<Collider*> monsters0Obstacles;
-	monsters0Obstacles.push_back(obstacle->GetCollider());
+	monsters0Obstacles.push_back(obstacle1->GetCollider());
+	monsters0Obstacles.push_back(obstacle2->GetCollider());
 	//vector<Collider*> monsters1Obstacles;
 
 	//monsters0Obstacles.push_back(monsters[1]->GetColliderForAStar());
@@ -67,7 +74,10 @@ void MainScene::Render()
 		monsters[i]->Render();
 	}
 
-	obstacle->Render();
+	obstacle1->Render();
+	obstacle2->Render();
+
+	monsters[0]->GetAStar()->Render();
 	
 	
 }

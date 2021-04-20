@@ -20,6 +20,7 @@ public:
 
 	void SetNode(class Terrain* terrain);
 	void SetObstacle(vector<Collider*> value);
+	void SetDirectNode(int index);
 
 	int FindCloseNode(Vector3 pos);
 	Vector3 FindCloseNodePosition(Vector3 pos);

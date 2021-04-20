@@ -19,6 +19,8 @@ private:
 	Monster* monster;
 	Terrain* terrain;
 	vector<Monster*> monsters;
-	ModelObject* obstacle;
+
+	ModelObject* obstacle1;
+	ModelObject* obstacle2;
 
 };

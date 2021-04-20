@@ -63,6 +63,7 @@ protected:
 	float mDistanceToPlayer;
 	float mPlayerDetectRange;
 	float mDistanceToPlayerForAttack;
+	float mAStarPathUpdatePeriodTime;
 
 
 	State* mCurrentState;

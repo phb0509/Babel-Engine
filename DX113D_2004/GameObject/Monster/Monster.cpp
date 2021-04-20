@@ -11,6 +11,7 @@ Monster::Monster() :
 	mDistanceToPlayer(0.0f),
 	mPlayerDetectRange(30.0f),
 	mDistanceToPlayerForAttack(20.0f),
+	mAStarPathUpdatePeriodTime(1.0f),
 	mPlayer(nullptr)
 {
 	mCurrentHP = mMaxHP;
@@ -30,6 +31,9 @@ Monster::~Monster()
 
 void Monster::SetAStarPath(Vector3 destPos)
 {
+	mPath.clear();
+	mAStar->Reset();
+
 	Ray ray;
 	ray.position = position;
 	ray.direction = (destPos - position).Normal();
@@ -37,8 +41,8 @@ void Monster::SetAStarPath(Vector3 destPos)
 
 	if (mAStar->CollisionObstacle(ray, distance)) // 경로에 장애물이 있다면 // ray와 목적지까지 거리.
 	{
-		int startIndex = mAStar->FindCloseNode(position); // 현재위치노드 인덱스
-		int endIndex = mAStar->FindCloseNode(destPos); // 목표위치노드 인덱스.
+		int startIndex = mAStar->FindCloseNode(position); // 현재 position값에서 가장 가까운 노드 인덱스.
+		int endIndex = mAStar->FindCloseNode(destPos); // 목표 position값에서 가장 가까운 노드 인덱스.
 
 		mPath = mAStar->FindPath(startIndex, endIndex); // 경로생성.
 		mPath.insert(mPath.begin(), destPos); // 목표위치를 경로벡터 맨 앞에 넣기. 
@@ -76,18 +80,26 @@ void Monster::SetAStarPath(Vector3 destPos)
 	}
 	else
 	{
-		mPath.clear();
+		//GetAStar()->FindCloseNode(destPos)
+		mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 		mPath.insert(mPath.begin(), destPos);
 	}
 }
 
 void Monster::MoveToDestUsingAStar(Vector3 dest) 
 {
+	//ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, mAStarPathUpdatePeriodTime); // 초당 한번씩 경로업데이트.
 	ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, 1.0f); // 초당 한번씩 경로업데이트.
 
 	if (mPath.size() > 0)
 	{
 		MoveToDestination(this, mPath.back(), mMoveSpeed);
+
+		char buff[200];
+		sprintf_s(buff, "mPath.back.x : %f , y : %f , Size : %d\n", mPath.back().x, mPath.back().z, mPath.size());
+		OutputDebugStringA(buff);
+
+
 
 		float length = (mPath.back() - position).Length();
 

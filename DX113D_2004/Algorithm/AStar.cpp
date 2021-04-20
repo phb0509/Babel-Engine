@@ -123,6 +123,28 @@ int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 
 	return index;
 }
 
+Vector3 AStar::FindCloseNodePosition(Vector3 pos)
+{
+	float minDistance = FLT_MAX;
+	int index = -1;
+
+	for (UINT i = 0; i < nodes.size(); i++)
+	{
+		if (nodes[i]->state == Node::OBSTACLE)
+			continue;
+
+		float distance = Distance(pos, nodes[i]->pos);
+
+		if (distance < minDistance)
+		{
+			minDistance = distance;
+			index = i;
+		}
+	}
+
+	return nodes[index]->pos;
+}
+
 vector<Vector3> AStar::FindPath(int start, int end)
 {
 	Reset();

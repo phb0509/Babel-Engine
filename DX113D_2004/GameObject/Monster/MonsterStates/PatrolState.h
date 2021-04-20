@@ -34,7 +34,6 @@ private:
 	float mStandTime;
 
 	Vector3 mPatrolDestPos;
-	Vector3 mDest;
 };
 
 

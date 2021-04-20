@@ -22,6 +22,7 @@ public:
 	void SetObstacle(vector<Collider*> value);
 
 	int FindCloseNode(Vector3 pos);
+	Vector3 FindCloseNodePosition(Vector3 pos);
 	vector<Vector3> FindPath(int start, int end);
 	void MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>& path);
 

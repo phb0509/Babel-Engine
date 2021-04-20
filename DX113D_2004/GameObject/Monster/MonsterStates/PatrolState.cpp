@@ -97,7 +97,6 @@ void PatrolState::Execute(Monster* monster)
 		if (fabs(mPatrolDestPos.x - monster->position.x) < 1.0f && // 목표지점 도착하면
 			fabs(mPatrolDestPos.z - monster->position.z) < 1.0f)
 		{
-			monster->GetPath().pop_back();
 			mbPatrolMove = false;
 			mPatrolRandomNum = GameMath::Random(5.0f, 10.0f); // 정찰 간격.
 			mCurrentTime = Timer::Get()->GetRunTime();

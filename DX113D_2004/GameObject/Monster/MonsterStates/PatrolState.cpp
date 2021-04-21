@@ -91,6 +91,7 @@ void PatrolState::Execute(Monster* monster)
 		if (Timer::Get()->GetFPS() > 10) // 초기실행시 FPS값이 순간적으로 1이 되는것에 따른 버그로 인한 예외처리. 
 		{
 			monster->MoveToDestUsingAStar(mPatrolDestPos);
+			
 			monster->SetAnimation(eAnimation::Run); // Run.
 		}
 

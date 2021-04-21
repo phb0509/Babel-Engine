@@ -124,7 +124,7 @@ void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)
 	}
 }
 
-void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime, const bool isAStarPathUpdate)
+void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime)
 {
 	if (mIsUpdateStandTimes[1])
 	{
@@ -134,10 +134,9 @@ void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, 
 
 	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
 	{
-		if (isAStarPathUpdate)
-		{
-			funcPointer(param1);
-		}
+
+		funcPointer(param1);
+		
 		mIsUpdateStandTimes[1] = true;
 	}
 }

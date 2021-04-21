@@ -22,13 +22,22 @@ float GameMath::Distance(const Vector3& v1, const Vector3& v2)
     return (v1 - v2).Length();
 }
 
-bool GameMath::FloatComparison(float v1, float v2) // v1과 v2가 같은지.
+bool GameMath::CompareFloat(float v1, float v2) // v1과 v2가 같은지.
 {
-    if (fabsf(v1 - v2) <= 0.02f)
+    if (fabsf(v1 - v2) <= 0.04f)
     {
         return true;
     }
 
+    return false;
+}
+
+bool GameMath::CompareVector3XZ(Vector3 v1, Vector3 v2)
+{
+    if (CompareFloat(v1.x, v2.x) && CompareFloat(v1.z, v2.z))
+    {
+        return true;
+    }
     return false;
 }
 

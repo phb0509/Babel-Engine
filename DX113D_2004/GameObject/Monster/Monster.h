@@ -20,6 +20,7 @@ public:
 	virtual Collider* GetColliderForAStar() = 0;
 	virtual void SetAnimation(eAnimation value) = 0;
 
+	void SetRealtimeAStarPath(Vector3 destPos);
 	void SetAStarPath(Vector3 destPos);
 	void MoveToDestUsingAStar(Vector3 dest);
 	void ChangeState(State* nextState);
@@ -73,5 +74,11 @@ protected:
 
 	function<void(Vector3)> mPeriodFuncPointer;
 	ModelAnimator* mModelAnimator;
+
+	Vector3 mCurDirVector3;
+	Vector3 mCurNode;
+
+	Vector3 mBeforeDirVector3;
+	Vector3 mBeforeNode;
 
 };

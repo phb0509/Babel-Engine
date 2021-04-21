@@ -80,7 +80,7 @@ Vector3 Transform::Right()
 	return XMVector3Normalize(XMVector3TransformNormal(kRight, world));
 }
 
-void Transform::RotateToDestination(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점좌표.
+void Transform::RotateToDestination(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점좌표. 
 {
 	dest = dest - transform->position;
 	dest.Normalize();

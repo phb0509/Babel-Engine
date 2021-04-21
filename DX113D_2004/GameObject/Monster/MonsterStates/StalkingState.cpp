@@ -17,10 +17,11 @@ void StalkingState::Enter(Monster* monster)
 
 void StalkingState::Execute(Monster* monster)
 {
-	if (!mbIsAttack)
+	if (!mbIsAttack) // 계속 타겟 추적.
 	{
-		monster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, monster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수.
+		//monster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, monster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수... 로테이션필요없다.
 		//mutant->MoveToDestination(mutant, GM->Get()->GetPlayer()->position, mutant->GetMoveSpeed()); // 이동
+
 		monster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->position);
 		monster->SetAnimation(eAnimation::Run);
 
@@ -29,6 +30,7 @@ void StalkingState::Execute(Monster* monster)
 			mbIsAttack = true;
 		}
 	}
+
 	else // 공격 상태.
 	{
 		monster->SetAnimation(eAnimation::SmashAttack);

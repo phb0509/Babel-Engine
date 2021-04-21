@@ -83,14 +83,33 @@ void PatrolState::Execute(Monster* monster)
 
 		mPatrolDestPos = monster->GetAStar()->FindCloseNodePosition(mPatrolDestPos);
 
-		monster->RotateToDestination(monster, mPatrolDestPos);
+		monster->GetPath().clear();
+		monster->SetAStarPath(mPatrolDestPos);
+		monster->RotateToDestination(monster, monster->GetPath().back());
 	}
 
 	else if (!mbSetPatrolDest && mbPatrolMove) // 실제이동.
 	{		
 		if (Timer::Get()->GetFPS() > 10) // 초기실행시 FPS값이 순간적으로 1이 되는것에 따른 버그로 인한 예외처리. 
 		{
-			monster->MoveToDestUsingAStar(mPatrolDestPos);
+			//monster->MoveToDestUsingAStar(mPatrolDestPos);
+
+			float length = (monster->GetPath().back() - monster->position).Length();
+
+			if (length < 1.0f) // 노드에 도착하면
+			{
+				monster->GetPath().pop_back();
+
+				if (monster->GetPath().size() > 0)
+				{
+					monster->RotateToDestination(monster, monster->GetPath().back());
+				}
+			}
+
+			if (monster->GetPath().size() > 0)
+			{
+				monster->MoveToDestination(monster, monster->GetPath().back(), monster->GetMoveSpeed());
+			}
 			
 			monster->SetAnimation(eAnimation::Run); // Run.
 		}
@@ -108,11 +127,11 @@ void PatrolState::Execute(Monster* monster)
 	}
 
 	// 범위 안 플레이어 있는지 체크.
-	//if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
-	//{
-	//	monster->SetIsStalk(true);
-	//	monster->ChangeState(monster->GetStalkingState()); // Stalking으로 상태전환.
-	//}
+	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
+	{
+		monster->SetIsStalk(true);
+		monster->ChangeState(monster->GetStalkingState()); // Stalking으로 상태전환.
+	}
 }
 
 void PatrolState::Exit(Monster* monster)

@@ -6,7 +6,7 @@ Transform::Transform(string tag)
 	: tag(tag),
 	position(0, 0, 0), rotation(0, 0, 0), scale(1, 1, 1),
 	globalPosition(0, 0, 0), globalRotation(0, 0, 0), globalScale(1, 1, 1),
-	pivot(0, 0, 0), parent(nullptr), isActive(false)
+	pivot(0, 0, 0), parent(nullptr), isActive(false) , mIsAStarPathUpdate(true)
 {
 	world = XMMatrixIdentity();
 	worldBuffer = new MatrixBuffer();
@@ -15,8 +15,8 @@ Transform::Transform(string tag)
 	CreateAxis();
 	transformBuffer = new MatrixBuffer();
 
-	mIsUpdateStandTimes.assign(2, true);
-	mNextExecuteTimes.assign(2, 0.0f);
+	mIsUpdateStandTimes.assign(3, true);
+	mNextExecuteTimes.assign(3, 0.0f);
 }
 
 Transform::~Transform()
@@ -124,7 +124,7 @@ void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)
 	}
 }
 
-void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime)
+void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime, const bool isAStarPathUpdate)
 {
 	if (mIsUpdateStandTimes[1])
 	{
@@ -134,9 +134,28 @@ void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, 
 
 	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
 	{
-		funcPointer(param1);
+		if (isAStarPathUpdate)
+		{
+			funcPointer(param1);
+		}
 		mIsUpdateStandTimes[1] = true;
 	}
+}
+
+bool Transform::CheckTime(float periodTime)
+{
+	if (mIsUpdateStandTimes[2])
+	{
+		mNextExecuteTimes[2] = Timer::Get()->GetRunTime() + periodTime;
+		mIsUpdateStandTimes[2] = false;
+	}
+
+	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[2]) // 시간 지나면
+	{
+		mIsUpdateStandTimes[2] = true;
+	}
+
+	return mIsUpdateStandTimes[2];
 }
 
 

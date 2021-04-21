@@ -33,6 +33,7 @@ void Monster::SetAStarPath(Vector3 destPos)
 {
 	mPath.clear();
 	mAStar->Reset();
+	mIsAStarPathUpdate = false;
 
 	Ray ray;
 	ray.position = position;
@@ -80,7 +81,6 @@ void Monster::SetAStarPath(Vector3 destPos)
 	}
 	else
 	{
-		//GetAStar()->FindCloseNode(destPos)
 		mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 		mPath.insert(mPath.begin(), destPos);
 	}
@@ -88,24 +88,23 @@ void Monster::SetAStarPath(Vector3 destPos)
 
 void Monster::MoveToDestUsingAStar(Vector3 dest) 
 {
+	//bool t = CheckTime(1.0f);
+
 	//ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, mAStarPathUpdatePeriodTime); // 초당 한번씩 경로업데이트.
-	ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, 1.0f); // 초당 한번씩 경로업데이트.
+	ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, 1.0f, mIsAStarPathUpdate); // 초당 한번씩 경로업데이트.
 
 	if (mPath.size() > 0)
 	{
+		mIsAStarPathUpdate = false;
+
 		MoveToDestination(this, mPath.back(), mMoveSpeed);
-
-		char buff[200];
-		sprintf_s(buff, "mPath.back.x : %f , y : %f , Size : %d\n", mPath.back().x, mPath.back().z, mPath.size());
-		OutputDebugStringA(buff);
-
-
 
 		float length = (mPath.back() - position).Length();
 
-		if (length < 1.0f)
+		if (length < 1.0f) // 노드에 도착하면
 		{
 			mPath.pop_back();
+			mIsAStarPathUpdate = true;
 		}
 	}
 }

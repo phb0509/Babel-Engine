@@ -106,6 +106,11 @@ void AStar::SetDirectNode(int index)
 	nodes[index]->state = Node::DIRECT;
 }
 
+void AStar::SetTestNode(int index)
+{
+	nodes[index]->mIsCheck = true;
+}
+
 int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 반환.
 {
 	float minDistance = FLT_MAX;
@@ -264,6 +269,14 @@ void AStar::Reset() // 장애물 제외 전부 NONE
 	{
 		if (node->state != Node::OBSTACLE)
 			node->state = Node::NONE;
+	}
+}
+
+void AStar::SetCheckFalse()
+{
+	for (int i = 0; i < nodes.size(); i++)
+	{
+		nodes[i]->SetTestNode(false);
 	}
 }
 

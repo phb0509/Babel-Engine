@@ -21,6 +21,7 @@ public:
 	void SetNode(class Terrain* terrain);
 	void SetObstacle(vector<Collider*> value);
 	void SetDirectNode(int index);
+	void SetTestNode(int index);
 
 	int FindCloseNode(Vector3 pos);
 	Vector3 FindCloseNodePosition(Vector3 pos);
@@ -30,6 +31,9 @@ public:
 	bool CollisionObstacle(Ray ray, float destDistance);
 
 	void Reset();
+
+	void SetCheckFalse();
+
 private:
 	float GetDistance(int curIndex, int end);
 

@@ -111,7 +111,7 @@ void PatrolState::Execute(Monster* monster)
 				monster->MoveToDestination(monster, monster->GetPath().back(), monster->GetMoveSpeed());
 			}
 			
-			monster->SetAnimation(eAnimation::Run); // Run.
+			monster->SetAnimation(eAnimationStates::Run); // Run.
 		}
 
 		if (fabs(mPatrolDestPos.x - monster->position.x) < 1.0f && // 목표지점 도착하면
@@ -122,11 +122,11 @@ void PatrolState::Execute(Monster* monster)
 			mCurrentTime = Timer::Get()->GetRunTime();
 			mStandTime = mCurrentTime + mPatrolRandomNum;
 
-			monster->SetAnimation(eAnimation::Idle);
+			monster->SetAnimation(eAnimationStates::Idle);
 		}
 	}
 
-	// 범위 안 플레이어 있는지 체크.
+	//범위 안 플레이어 있는지 체크.
 	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
 	{
 		monster->SetIsStalk(true);

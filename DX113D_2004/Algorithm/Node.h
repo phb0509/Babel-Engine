@@ -19,7 +19,8 @@ private:
 		CLOSED,
 		USING,
 		OBSTACLE,
-		DIRECT
+		DIRECT,
+		TEST
 	}state;
 
 	Collider* collider;	
@@ -43,4 +44,10 @@ private:
 	void AddEdge(Node* node);
 
 	Collider* MakeObstacle();
+
+	bool mIsCheck = false;
+
+public:
+	Collider* GetCollider() { return collider; };
+	void SetTestNode(bool isCheck) { mIsCheck = isCheck; };
 };

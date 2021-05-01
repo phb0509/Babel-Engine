@@ -3,8 +3,8 @@
 
 Mutant::Mutant()
 	: ModelAnimator("Mutant/Mutant"),
-	mAnimation(eAnimation::Idle),
-	mFSM(eFSM::Patrol),
+	mAnimation(eAnimationStates::Idle),
+	mFSM(eStates::Patrol),
 	mbOnHit(false)
 {
 	scale = { 0.05f, 0.05f, 0.05f };
@@ -17,9 +17,9 @@ Mutant::Mutant()
 	ReadClip("Mutant/OnDamage0.clip");
 	ReadClip("Mutant/Die0.clip");
 
-	SetEndEvent(static_cast<int>(eAnimation::Run), bind(&Mutant::SetIdle, this));
-	SetEndEvent(static_cast<int>(eAnimation::OnDamage), bind(&Mutant::setOnDamageEnd, this));
-	SetEndEvent(static_cast<int>(eAnimation::SmashAttack), bind(&Mutant::setAttackEnd, this));
+	SetEndEvent(static_cast<int>(eAnimationStates::Run), bind(&Mutant::SetIdle, this));
+	SetEndEvent(static_cast<int>(eAnimationStates::OnDamage), bind(&Mutant::setOnDamageEnd, this));
+	SetEndEvent(static_cast<int>(eAnimationStates::SmashAttack), bind(&Mutant::setAttackEnd, this));
 	
 	PlayClip(0);
 
@@ -30,7 +30,7 @@ Mutant::Mutant()
 	rotation.y = XM_PI;
 	UpdateWorld();
 
-	mPlayerDetectRange = 40.0f;
+	mPlayerDetectRange = 15.0f;
 	mDistanceToPlayerForAttack = 7.0f;
     mCurrentState = GetPatrolState();
 }
@@ -51,6 +51,13 @@ void Mutant::Update()
 	mSmashAttackCollider->Update();
 
 	mCurrentState->Execute(this);
+
+	//char buff[100];
+	//sprintf_s(buff, "state : %d\n", mCurrentState);
+	//OutputDebugStringA(buff);
+
+
+
 
 	UpdateWorld();
 	ModelAnimator::Update();
@@ -74,7 +81,7 @@ void Mutant::PostRender()
 
 void Mutant::OnDamage(float damage)
 {
-	mFSM = eFSM::OnDamage;
+	mFSM = eStates::OnDamage;
 	mbOnHit = true;
 	GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;
@@ -84,7 +91,7 @@ void Mutant::CheckOnHit()
 {
 	if (!mbOnHit) return;
 
-	SetAnimation((eAnimation::OnDamage));
+	SetAnimation((eAnimationStates::OnDamage));
 }
 
 Collider* Mutant::GetColliderForAStar()
@@ -99,7 +106,7 @@ Collider* Mutant::GetColliderForAStar()
 
 void Mutant::setOnDamageEnd()
 {
-	SetAnimation((eAnimation::Idle));
+	SetAnimation((eAnimationStates::Idle));
 	GM->SetHitCheckMap(this, false);
 	mbOnHit = false;
 }
@@ -107,10 +114,10 @@ void Mutant::setOnDamageEnd()
 
 void Mutant::SetIdle()
 {
-	SetAnimation((eAnimation::Idle));
+	SetAnimation((eAnimationStates::Idle));
 }
 
-void Mutant::SetAnimation(eAnimation value)
+void Mutant::SetAnimation(eAnimationStates value)
 {
 	if (mAnimation != value)
 	{

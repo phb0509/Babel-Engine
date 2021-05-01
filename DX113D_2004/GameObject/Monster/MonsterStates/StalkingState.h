@@ -22,6 +22,7 @@ public:
 private:
 	bool mbIsAttack;
 
+
 };
 
 

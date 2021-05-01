@@ -1,7 +1,8 @@
 #include "Framework.h"
 
 Terrain::Terrain()
-	: width(10), height(10)
+	: width(10), 
+	height(10)
 {
 	material = new Material(L"Lighting");
 	material->SetDiffuseMap(L"Textures/Landscape/Stones.png");

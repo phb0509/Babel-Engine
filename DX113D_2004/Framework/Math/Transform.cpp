@@ -16,7 +16,7 @@ Transform::Transform(string tag)
 	transformBuffer = new MatrixBuffer();
 
 	mIsUpdateStandTimes.assign(3, true);
-	mNextExecuteTimes.assign(3, 0.0f);
+	mNextExecuteTimes.assign(3, -100.0f);
 }
 
 Transform::~Transform()
@@ -126,19 +126,20 @@ void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)
 
 void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime)
 {
-	if (mIsUpdateStandTimes[1])
+	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
+	{
+		funcPointer(param1);
+
+		mIsUpdateStandTimes[1] = true;
+	}
+
+	if (mIsUpdateStandTimes[1]) // 초기에는 true
 	{
 		mNextExecuteTimes[1] = Timer::Get()->GetRunTime() + periodTime;
 		mIsUpdateStandTimes[1] = false;
 	}
 
-	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
-	{
 
-		funcPointer(param1);
-		
-		mIsUpdateStandTimes[1] = true;
-	}
 }
 
 bool Transform::CheckTime(float periodTime)

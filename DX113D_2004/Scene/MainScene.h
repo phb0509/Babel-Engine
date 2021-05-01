@@ -23,4 +23,6 @@ private:
 	ModelObject* obstacle1;
 	ModelObject* obstacle2;
 
+	int a = 0;
+
 };

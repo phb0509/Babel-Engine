@@ -13,17 +13,26 @@ Monster::Monster() :
 	mDistanceToPlayerForAttack(20.0f),
 	mAStarPathUpdatePeriodTime(1.0f),
 	mPlayer(nullptr),
-	mCurDirVector3(0.0f, 0.0f, 0.0f),
-	mCurNode(0.0f, 0.0f, 0.0f),
+	mTargetNodeDirVector3(0.0f, 0.0f, 0.0f),
+	mTargetNode(0.0f, 0.0f, 0.0f),
 	mBeforeDirVector3(0.0f, 0.0f, 0.0f),
-	mBeforeNode(0.0f, 0.0f, 0.0f)
+	mBeforeNode(0.0f, 0.0f, 0.0f),
+	mPathNodesCheckSize(200),
+	mBeforeTargetPosition(0.0f,0.0f,0.0f),
+    mCurrentTargetPosition(0.0f,0.0f,0.0f),
+	mbPathSizeCheck(false)
+
 {
 	mCurrentHP = mMaxHP;
 	mPatrolState = new PatrolState();
 	mStalkingState = new StalkingState();
 	mAttackState = new AttackState();
 
-	mPeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
+	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
+	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestination, this, placeholders::_1, placeholders::_2);
+
+	
+	mPathNodesCheck.assign(true, mPathNodesCheckSize);
 }
 
 Monster::~Monster()
@@ -87,7 +96,7 @@ void Monster::SetAStarPath(Vector3 destPos)
 
 	else // 그냥 출발지에서 바로 다이렉트로 갈수있으면.
 	{
-		mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
+	//	mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 		mPath.insert(mPath.begin(), destPos);
 	}
 
@@ -100,8 +109,11 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 {
 	if (mIsAStarPathUpdate)
 	{
+		mCurrentTargetPosition = destPos;
+
 		mPath.clear();
 		mAStar->Reset();
+		mPathNodesCheck.assign(mPathNodesCheckSize, false);
 
 		Ray ray;
 		ray.position = position;
@@ -149,43 +161,81 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		}
 		else
 		{
-			mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
+			//mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 			mPath.insert(mPath.begin(), destPos);
+		}
+
+
+		// mPath 요소 삽입 완료.
+
+		for (int i = 0; i < mPath.size(); i++)
+		{
+			mPathNodesCheck[i] = true;
+		}
+
+
+		if (mPath.size() == 1 && !mbPathSizeCheck)
+		{
+			mbPathSizeCheck = true;
+		}
+		else if (mPath.size() == 1 && mbPathSizeCheck) // 경로갱신후,이전에도 사이즈가 1이였는데 이번에도 1일경우
+		{
+			if ((mBeforeTargetPosition - mCurrentTargetPosition).Length() < 1.0f) // 타겟 위치가 이전과 거의 차이가 없으면(제자리라면)
+			{
+				mPathNodesCheck[0] = false;
+			}
+		}
+
+		mBeforeTargetPosition = mCurrentTargetPosition;
+
+		// mPath 내부 노드들 인게임내에서 확인하기위한 코드(보라색으로). 없어도 상관없다.
+		mAStar->SetCheckFalse();
+		for (int i = 0; i < mPath.size(); i++)
+		{
+			int t = mAStar->FindCloseNode(mPath[i]);
+			mAStar->SetTestNode(t);
 		}
 	}
 }
 
 void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 {
-	ExecuteAStarUpdateFunction(mPeriodFuncPointer, dest, mAStarPathUpdatePeriodTime); // 초당 한번씩 경로업데이트.
-	
+	ExecuteAStarUpdateFunction(mPathUpdatePeriodFuncPointer, dest, mAStarPathUpdatePeriodTime); // 초당 한번씩 경로업데이트. 최종적으로 mPath.back()에는 타겟의 위치벡터. 바로 그 전은 타겟과 가장 가까운 노드.
+	//ExecuteRotationPeriodFunction(mRotationPeriodFuncPointer, this, mPath.back(), 1.0f);
+
 	if (mPath.size() > 0)
 	{
-		mCurNode = mPath.back();
-		mCurDirVector3 = (mCurNode - position).Normal();
+		mTargetNode = mPath.back(); // 가장 가까운노드.
+		mTargetNodeDirVector3 = (mTargetNode - position).Normal();
 
-		MoveToDestination(this, mCurNode, mMoveSpeed);
-
-		if (CompareVector3XZ(mCurDirVector3, mBeforeDirVector3)) // 반드시 다음 노드로 이동 후, 갱신.
+		if (CompareVector3XZ(mTargetNodeDirVector3, mBeforeDirVector3 * -1.0f)) // 반드시 다음 노드로 이동 후, 갱신.
 		{
 			mIsAStarPathUpdate = false; // 갱신 못하게 막아놓고
 			mPath.push_back(mBeforeNode); // 이전 노드(5) 넣어놓고 여기로 이동.
-			mCurDirVector3 = mBeforeDirVector3;
-			mCurNode = mBeforeNode;
+			mTargetNode = mBeforeNode;
+			mTargetNodeDirVector3 = mBeforeDirVector3;
+		}
+
+		MoveToDestination(this, mTargetNode, mMoveSpeed);
+		
+		if (mPathNodesCheck[mPath.size() - 1]) // true면 회전.
+		{
+			RotateToDestination(this, mTargetNode);
+			mPathNodesCheck[mPath.size() - 1] = false; // 한번만 Rotation 시켜야하기 때문에 잠근다.
 		}
 
 		// monster->SetAStarPath는 시간이 경과되더라도 mIsAStarPathUpdate = true일때만 갱신.
 
-		float length = (mCurNode - position).Length();
+		float length = (mTargetNode - position).Length();
 
-		if (length < 1.0f) // 노드에 도착하면
+		if (length < 1.0f) // 노드에 도착하면... 이지만 맨 마지막에는 타겟위치벡터 자체
 		{
 			mPath.pop_back();
-			mIsAStarPathUpdate = true;
+			mIsAStarPathUpdate = true; // 도착했으니 풀어주기.
 		}
 
-		mBeforeDirVector3 = mCurDirVector3;
-		mBeforeNode = mCurNode;
+		mBeforeDirVector3 = mTargetNodeDirVector3;
+		mBeforeNode = mTargetNode;
 	}
 }
 

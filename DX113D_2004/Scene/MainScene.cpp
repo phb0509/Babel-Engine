@@ -58,6 +58,8 @@ void MainScene::Update()
 	{
 		monsters[i]->Update();
 	}
+
+
 }
 
 void MainScene::PreRender()
@@ -85,4 +87,6 @@ void MainScene::Render()
 void MainScene::PostRender()
 {
 	player->PostRender();
+	ImGui::Text("mPathSize : %d", monsters[0]->GetPath().size());
+
 }

@@ -3,7 +3,7 @@
 
 namespace states
 {
-	enum class eAnimation
+	enum class eAnimationStates
 	{
 		Idle,
 		Run,
@@ -12,7 +12,7 @@ namespace states
 		Die,
 	};
 
-	enum class eFSM
+	enum class eStates
 	{
 		Patrol,
 		Stalk,

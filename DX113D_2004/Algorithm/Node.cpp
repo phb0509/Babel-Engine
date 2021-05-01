@@ -44,6 +44,12 @@ void Node::Render()
 		break;
 	}
 
+	if(mIsCheck)
+	{
+		collider->SetColor(Float4(0.6f, 0.0f, 1.0f, 1.0f));
+	}
+
+
 	collider->Render();
 	if(obstacle != nullptr)
 		obstacle->Render();

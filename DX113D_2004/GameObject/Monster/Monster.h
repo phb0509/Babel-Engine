@@ -18,7 +18,7 @@ public:
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
-	virtual void SetAnimation(eAnimation value) = 0;
+	virtual void SetAnimation(eAnimationStates value) = 0;
 
 	void SetRealtimeAStarPath(Vector3 destPos);
 	void SetAStarPath(Vector3 destPos);
@@ -46,6 +46,11 @@ public:
 
 
 
+	// Test¿ë Getter
+
+	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
+
+
 protected:
 	float mMoveSpeed;
 	float mDamage;
@@ -71,14 +76,25 @@ protected:
 	PatrolState* mPatrolState;
 	StalkingState* mStalkingState;
 	AttackState* mAttackState;
-
-	function<void(Vector3)> mPeriodFuncPointer;
 	ModelAnimator* mModelAnimator;
 
-	Vector3 mCurDirVector3;
-	Vector3 mCurNode;
+
+
+private:
+	function<void(Vector3)> mPathUpdatePeriodFuncPointer;
+	function<void(Transform*, Vector3)> mRotationPeriodFuncPointer;
+
+	Vector3 mTargetNodeDirVector3;
+	Vector3 mTargetNode;
 
 	Vector3 mBeforeDirVector3;
 	Vector3 mBeforeNode;
 
+	vector<bool> mPathNodesCheck;
+	int mPathNodesCheckSize;
+
+	Vector3 mBeforeTargetPosition;
+	Vector3 mCurrentTargetPosition;
+
+	bool mbPathSizeCheck;
 };

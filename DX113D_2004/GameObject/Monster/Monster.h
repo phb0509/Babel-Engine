@@ -52,7 +52,6 @@ public:
 
 
 protected:
-	float mMoveSpeed;
 	float mDamage;
 	float mMaxHP;
 	float mCurrentHP;
@@ -97,4 +96,6 @@ private:
 	Vector3 mCurrentTargetPosition;
 
 	bool mbPathSizeCheck;
+
+	int count = 0;
 };

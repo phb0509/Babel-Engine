@@ -1,7 +1,6 @@
 #include "Framework.h"
 
 Monster::Monster() :
-	mMoveSpeed(10.0f),
 	mDamage(100.0f),
 	mMaxHP(1000.0f),
 	mCurrentHP(0.0f),
@@ -163,6 +162,7 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		{
 			//mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 			mPath.insert(mPath.begin(), destPos);
+			//mPath.push_back(destPos);
 		}
 
 
@@ -174,7 +174,7 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		}
 
 
-		if (mPath.size() == 1 && !mbPathSizeCheck)
+		if (mPath.size() == 1 && !mbPathSizeCheck) // 몬스터가 캐릭터에게 다이렉트로(mPath.size() == 1) 달려올 시 일정주기마다 회전하는걸 막기위한 조건문...
 		{
 			mbPathSizeCheck = true;
 		}
@@ -214,6 +214,13 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 			mPath.push_back(mBeforeNode); // 이전 노드(5) 넣어놓고 여기로 이동.
 			mTargetNode = mBeforeNode;
 			mTargetNodeDirVector3 = mBeforeDirVector3;
+
+			
+			mPathNodesCheck[mPath.size() - 1] = true;
+
+			char buff[100];
+			sprintf_s(buff, "mIsAStarPathUpdate : %d  Count : %d\n", mIsAStarPathUpdate, count++);
+			OutputDebugStringA(buff);
 		}
 
 		MoveToDestination(this, mTargetNode, mMoveSpeed);

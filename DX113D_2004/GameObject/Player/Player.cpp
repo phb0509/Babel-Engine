@@ -3,14 +3,14 @@
 Player::Player()
 	: ModelAnimator("Player/Player"), 
 	isInitialize(false), 
-	mMoveSpeed(50.0f),
 	state(IDLE), 
-	isNormalAttack(false),
-	isNormalAttackCollide(false), 
+	mIsNormalAttack(false),
+	mIsNormalAttackCollide(false), 
 	normalAttackDamage(10.0f)
 {
 	scale = { 0.05f, 0.05f, 0.05f };
-	
+	mMoveSpeed = 50.0f;
+	mRotationSpeed = 5.0f;
 
 	SetShader(L"ModelAnimation");
 
@@ -20,8 +20,8 @@ Player::Player()
 	ReadClip("Player/Attack0.clip");
 	ReadClip("Player/Die0.clip");
 
-	SetEndEvent(RUN, bind(&Player::SetIdle, this));
-	SetEndEvent(ATTACK, bind(&Player::SetAttackEnd, this));
+	SetEndEvent(RUN, bind(&Player::setIdle, this));
+	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));
 
 
 	PlayClip(1);
@@ -31,9 +31,7 @@ Player::Player()
 	bodyCollider = new BoxCollider();
 	swordCollider = new BoxCollider();
 
-	LoadCollider();
-
-	
+	loadCollider();
 }
 
 Player::~Player()
@@ -46,11 +44,11 @@ void Player::Update()
 {
 	if (!isInitialize)
 	{
-		Initialize();
+		initialize();
 		isInitialize = true;
 	}
 
-	SetColliders();
+	setColliders();
 
 	// 피격용 컬라이더
 	bodyCollider->Update();
@@ -58,9 +56,9 @@ void Player::Update()
 	// 칼날 컬라이더
 	swordCollider->Update();
 
-	Input();
+	input();
 
-	CheckNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
+	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 
 	UpdateWorld();
 	ModelAnimator::Update();
@@ -77,64 +75,103 @@ void Player::Render()
 
 
 
-
-
-
-
-void Player::Input()
+void Player::input()
 {
-	Move();
+
+	if (CAMERA->GetIsTargetCamera())
+	{
+		move();
+	}
+	else
+	{
+		worldCameraMove();
+	}
+	
 
 	if (KEY_DOWN(VK_LBUTTON))
 	{
-		NormalAttack();
+		normalAttack();
 	}
 
 }
 
-void Player::Move()
+void Player::move()
 {
-	if (isNormalAttack) return;
+	if (mIsNormalAttack) return;
 
 	float terrainY = terrain->GetHeight(position);
-
 
 	position.y = terrainY;
 	
 	if (KEY_PRESS('W'))
 	{
-		Rotate();
+		rotate();
 
 		position.z += CAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
 		position.x += CAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
-		SetAnimation(RUN);
+		setAnimation(RUN);
 	}
 
 	if (KEY_PRESS('S'))
 	{
 
-		Rotate();
+		rotate();
 		position.z += CAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
 		position.x += CAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
-		SetAnimation(RUN);
+		setAnimation(RUN);
 	}
 
 	if (KEY_PRESS('A'))
 	{
-		Rotate();
+		rotate();
 		position += Right() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
-		Rotate();
+		rotate();
 		position += Right() * -mMoveSpeed * DELTA;
 	}
 }
 
-void Player::Rotate()
+void Player::worldCameraMove()
+{
+	if (mIsNormalAttack) return;
+
+	float terrainY = terrain->GetHeight(position);
+
+	position.y = terrainY;
+
+	if (KEY_PRESS('W'))
+	{
+		position.z += -Forward().z * mMoveSpeed * DELTA;
+		position.x += -Forward().x * mMoveSpeed * DELTA;
+
+		setAnimation(RUN);
+	}
+
+	if (KEY_PRESS('S'))
+	{
+		position.z += Forward().z * -mMoveSpeed * DELTA;
+		position.x += Forward().x * -mMoveSpeed * DELTA;
+
+		setAnimation(RUN);
+	}
+
+	if (KEY_PRESS('A'))
+	{
+		rotation.y -= mRotationSpeed * DELTA;
+	}
+
+	if (KEY_PRESS('D'))
+	{
+		rotation.y += mRotationSpeed * DELTA;
+	}
+}
+
+void Player::rotate()
 {
 	Vector3 temp = Vector3::Cross(CAMERA->cameraForward, -1 * Forward());
 
@@ -161,9 +198,9 @@ void Player::Rotate()
 	}
 }
 
-void Player::CheckNormalAttackCollision()
+void Player::checkNormalAttackCollision()
 {
-	if (isNormalAttack) // 공격도중이면.
+	if (mIsNormalAttack) // 공격도중이면.
 	{
 		monsters = GM->GetMonsters();
 		for (int i = 0; i < monsters.size(); i++)
@@ -187,7 +224,7 @@ void Player::CheckNormalAttackCollision()
 
 void Player::PostRender()
 {
-	ImGui::Text("isNormalAttack : %d\n ", isNormalAttack);
+	ImGui::Text("isNormalAttack : %d\n ", mIsNormalAttack);
 	ImGui::Text("check1 : %d\n ",check1);
 
 	for (int i = 0; i < GM->GetMonsters().size(); i++)
@@ -199,18 +236,18 @@ void Player::PostRender()
 
 
 
-void Player::SetAttackEnd()
+void Player::setAttackEnd()
 {
-	SetAnimation(IDLE);
-	isNormalAttack = false;
+	setAnimation(IDLE);
+	mIsNormalAttack = false;
 	check1 = false;
 }
 
-void Player::NormalAttack()
+void Player::normalAttack()
 {
-	if (isNormalAttack) return;
-	SetAnimation(ATTACK);
-	isNormalAttack = true;
+	if (mIsNormalAttack) return;
+	setAnimation(ATTACK);
+	mIsNormalAttack = true;
 }
 
 
@@ -229,7 +266,7 @@ void Player::NormalAttack()
 
 
 
-void Player::SetColliders()
+void Player::setColliders()
 {
 	int swordIndex = GetNodeByName("Sword_joint");
 	swordMatrix = GetTransformByNode(swordIndex) * world;
@@ -241,7 +278,7 @@ void Player::SetColliders()
 	
 }
 
-void Player::LoadCollider()
+void Player::loadCollider()
 {
 	BinaryReader colliderReader(L"TextData/Player.map");
 	UINT colliderSize = colliderReader.UInt();
@@ -268,11 +305,11 @@ void Player::LoadCollider()
 	}
 
 
-	FindCollider("SwordCollider", swordCollider);
-	FindCollider("BodyCollider", bodyCollider);
+	findCollider("SwordCollider", swordCollider);
+	findCollider("BodyCollider", bodyCollider);
 }
 
-void Player::FindCollider(string name, Collider* collider)
+void Player::findCollider(string name, Collider* collider)
 {
 	for (int i = 0; i < colliderDatas.size(); i++)
 	{
@@ -285,17 +322,17 @@ void Player::FindCollider(string name, Collider* collider)
 	}
 }
 
-void Player::Initialize()
+void Player::initialize()
 {
 	
 }
 
-void Player::SetIdle()
+void Player::setIdle()
 {
-	SetAnimation(IDLE);
+	setAnimation(IDLE);
 }
 
-void Player::SetAnimation(State value)
+void Player::setAnimation(State value)
 {
 	if (state != value)
 	{

@@ -2,11 +2,20 @@
 
 bool Transform::isAxisDraw = true;
 
-Transform::Transform(string tag)
-	: tag(tag),
-	position(0, 0, 0), rotation(0, 0, 0), scale(1, 1, 1),
-	globalPosition(0, 0, 0), globalRotation(0, 0, 0), globalScale(1, 1, 1),
-	pivot(0, 0, 0), parent(nullptr), isActive(false) , mIsAStarPathUpdate(true)
+Transform::Transform(string tag): 
+	tag(tag),
+	position(0, 0, 0), 
+	rotation(0, 0, 0), 
+	scale(1, 1, 1),
+	globalPosition(0, 0, 0),
+	globalRotation(0, 0, 0),
+	globalScale(1, 1, 1),
+	pivot(0, 0, 0), 
+	parent(nullptr),
+	isActive(false) ,
+	mIsAStarPathUpdate(true),
+	mMoveSpeed(10.0f),
+	mRotationSpeed(10.0f)
 {
 	world = XMMatrixIdentity();
 	worldBuffer = new MatrixBuffer();

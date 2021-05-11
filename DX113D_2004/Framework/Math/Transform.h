@@ -62,6 +62,9 @@ protected:
 
 	MatrixBuffer* worldBuffer;
 
+	float mMoveSpeed;
+	float mRotationSpeed;
+
 	vector<bool> mIsUpdateStandTimes;
 	vector<float> mNextExecuteTimes;
 	bool mIsAStarPathUpdate;

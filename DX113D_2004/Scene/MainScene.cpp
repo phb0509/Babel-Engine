@@ -79,7 +79,7 @@ void MainScene::Render()
 	obstacle1->Render();
 	obstacle2->Render();
 
-	monsters[0]->GetAStar()->Render();
+	//monsters[0]->GetAStar()->Render();
 	
 	
 }

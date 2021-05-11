@@ -30,7 +30,7 @@ bool Collider::Collision(Collider* collider)
     return false;
 }
 
-void Collider::Update()
+void Collider::Update() 
 {
     if (KEY_DOWN(VK_F3))
     {

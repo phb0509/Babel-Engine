@@ -2,7 +2,6 @@
 
 class Camera : public Transform
 {
-private:
 	class ViewBuffer : public ConstBuffer
 	{
 	private:
@@ -27,11 +26,50 @@ private:
 		}
 	};
 
-	
+public:
+	Camera();
+	~Camera();
+
+	void Update();
+
+	void FreeMode();
+	void FollowMode();
+
+	void FreeMove();
+	void FollowMove();
+
+	void TargetMove();
+	void FollowControl();
+
+	void Rotation();
+	void View();
+
+	void PostRender();
+
+	void SetVS(UINT slot = 1);
+	Vector3 GetOriginForward() { return originForward; }
+
+	Ray ScreenPointToRay(Vector3 pos);
+
+	void SetTarget(Transform* value) { target = value; }
+	void SetPlayer(Transform* value) { player = value; }
+
+	Matrix GetView() { return view; }
+	ViewBuffer* GetViewBuffer() { return viewBuffer; }
+
+	bool GetIsTargetCamera() { return mIsTargetCamera; }
+
+
+private:
+	void setWorldCameraPosition();
+
+
+private:
+
 	float rotSpeed;
 
 	ViewBuffer* viewBuffer;
-	Matrix view; 
+	Matrix view;
 
 	Vector3 oldPos;
 
@@ -46,7 +84,7 @@ private:
 	float moveDamping;
 	float rotDamping;
 	Vector3 originForward;
-	float rotY;	
+	float rotY;
 	float rotX;
 
 	Matrix mRotMatrixY;
@@ -55,40 +93,13 @@ private:
 	Transform* target;
 	Transform* player;
 
-	
+	bool mIsTargetCamera;
+	int mCameraTypeIndex;
+	bool mbIsSetWorldCameraPosition;
+
+
 
 public:
-	Camera();
-	~Camera();
-
-	void Update();
-
-	void FreeMode();
-	void FollowMode();
-
-	void FreeMove();
-	void FollowMove();
-
-	void PlayerMove();
-	void FollowControl();
-
-	void Rotation();
-	void View();
-
-	void PostRender();
-
-	void SetVS(UINT slot = 1);
-	Vector3 GetOriginForward() { return originForward; }
-
-
-	Ray ScreenPointToRay(Vector3 pos);
-
-	void SetTarget(Transform* value) { target = value; }
-	void SetPlayer(Transform* value) { player = value; }
-
-	Matrix GetView() { return view; }
-	ViewBuffer* GetViewBuffer() { return viewBuffer; }
-
 	float moveSpeed;
 	float wheelSpeed;
 	Vector3 cameraForward;

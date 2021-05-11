@@ -1,9 +1,23 @@
 #include "Framework.h"
 
 Camera::Camera()
-	: moveSpeed(40.0f), rotSpeed(2.0f), distance(13), height(11),
-	offset(0, 5, 0), moveDamping(5), rotDamping(0), destRot(0), 
-	rotY(0.0f),rotX(0.0f), target(nullptr), wheelSpeed(15.0f), player(nullptr)
+	:
+	moveSpeed(50.0f),
+	rotSpeed(2.0f),
+	distance(13),
+	height(11),
+	offset(0, 5, 0),
+	moveDamping(5),
+	rotDamping(0),
+	destRot(0),
+	rotY(0.0f),
+	rotX(0.0f),
+	target(nullptr),
+	wheelSpeed(15.0f),
+	player(nullptr),
+	mIsTargetCamera(true),
+	mCameraTypeIndex(0),
+	mbIsSetWorldCameraPosition(false)
 {
 	viewBuffer = new ViewBuffer();
 	oldPos = MOUSEPOS;
@@ -16,20 +30,29 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-	if (player != nullptr)
+	if (mCameraTypeIndex == 0)
 	{
-		PlayerMove();
+		mIsTargetCamera = true;
+	}
+	else
+	{
+		mIsTargetCamera = false;
 	}
 
+
+	if (player != nullptr && mIsTargetCamera)
+	{
+		TargetMove();
+	}
 	else
 	{
 		FreeMode();
-	}		
+	}
 }
 
 
 
-void Camera::PlayerMove()
+void Camera::TargetMove()
 {
 	FollowControl();
 
@@ -158,17 +181,17 @@ void Camera::FreeMove()
 {
 	if (KEY_PRESS(VK_RBUTTON))
 	{
-		if (KEY_PRESS('W'))
+		if (KEY_PRESS('I'))
 			position += Forward() * moveSpeed * DELTA;
-		if (KEY_PRESS('S'))
+		if (KEY_PRESS('K'))
 			position -= Forward() * moveSpeed * DELTA;
-		if (KEY_PRESS('A'))
+		if (KEY_PRESS('J'))
 			position -= Right() * moveSpeed * DELTA;
-		if (KEY_PRESS('D'))
+		if (KEY_PRESS('L'))
 			position += Right() * moveSpeed * DELTA;
-		if (KEY_PRESS('Q'))
+		if (KEY_PRESS('U'))
 			position -= Up() * moveSpeed * DELTA;
-		if (KEY_PRESS('E'))
+		if (KEY_PRESS('O'))
 			position += Up() * moveSpeed * DELTA;
 	}
 
@@ -204,10 +227,22 @@ void Camera::View()
 void Camera::PostRender()
 {
 	ImGui::Text("CameraInfo");
+
+	if (ImGui::Button("TargetCamera"))
+	{
+		mCameraTypeIndex = 0;
+	}
+
+	if (ImGui::Button("WorldCamera"))
+	{
+		mCameraTypeIndex = 1;
+		setWorldCameraPosition();
+	}
+
 	ImGui::Text("CamPos : %.1f, %.1f, %.1f", position.x, position.y, position.z);
 	ImGui::Text("CamRot : %.1f, %.1f, %.1f", rotation.x, rotation.y, rotation.z);
 	ImGui::Text("CameraForward : %.3f, %.3f, %.3f", cameraForward.x, cameraForward.y, cameraForward.z);
-	ImGui::Text("MousePosition : %.1f, %.1f", MOUSEPOS.x,MOUSEPOS.y);
+	ImGui::Text("MousePosition : %.1f, %.1f", MOUSEPOS.x, MOUSEPOS.y);
 
 
 
@@ -248,7 +283,7 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	point.x /= temp._11;
 	point.y /= temp._22;
 
-	Ray ray; 
+	Ray ray;
 	ray.position = position;
 
 	Matrix invView = XMMatrixInverse(nullptr, view);
@@ -259,4 +294,16 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	ray.direction.Normalize();
 
 	return ray;
+}
+
+void Camera::setWorldCameraPosition()
+{
+	if (!mbIsSetWorldCameraPosition)
+	{
+		// 월드카메라로변환시 포지션값 설정.
+		position = Vector3(89.0f, 174.0f, -69.9f);
+		rotation = Vector3(0.9f, 0.0f, 0.0f);
+
+		mbIsSetWorldCameraPosition = true;
+	}
 }

@@ -71,7 +71,6 @@ void ColliderSettingScene::Render()
 		it->second->Render();
 		//it->second->RenderAxis();
 	}
-
 }
 
 void ColliderSettingScene::PostRender()

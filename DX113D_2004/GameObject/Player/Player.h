@@ -41,24 +41,25 @@ public:
 
 
 private:
-	void Initialize();
-	void SetIdle();
-	void SetAnimation(State value);
-	void Input();
-	void Move();
-	void SetColliders();
-	void LoadCollider();
-	void FindCollider(string name, Collider* collider);
-	void Rotate();
-	void CheckNormalAttackCollision();
+	void initialize();
+	void setIdle();
+	void setAnimation(State value);
+	void input();
+	void move();
+	void worldCameraMove();
+	void setColliders();
+	void loadCollider();
+	void findCollider(string name, Collider* collider);
+	void rotate();
+	void checkNormalAttackCollision();
 
 
-	void SetAttackEnd();
-	void NormalAttack();
+
+	void setAttackEnd();
+	void normalAttack();
 
 private:
 	bool isInitialize;
-	float mMoveSpeed;
 	Terrain* terrain;
 	AStar* aStar;
 
@@ -74,8 +75,8 @@ private:
 	vector<Monster*> monsters;
 	
 
-	bool isNormalAttack;
-	bool isNormalAttackCollide;
+	bool mIsNormalAttack;
+	bool mIsNormalAttackCollide;
 	float normalAttackDamage;
 
 	bool check1;

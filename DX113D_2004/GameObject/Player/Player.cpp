@@ -77,8 +77,7 @@ void Player::Render()
 
 void Player::input()
 {
-
-	if (CAMERA->GetIsTargetCamera())
+	if (Environment::Get()->GetIsTargetCamera())
 	{
 		move();
 	}
@@ -92,7 +91,6 @@ void Player::input()
 	{
 		normalAttack();
 	}
-
 }
 
 void Player::move()

@@ -42,7 +42,7 @@
 
 #define DELTA Timer::Get()->GetElapsedTime()
 
-#define CAMERA Environment::Get()->GetMainCamera()
+#define CAMERA Environment::Get()->GetTargetCamera()
 #define LIGHT Environment::Get()->GetLight()
 
 #define GM GameManager::Get()

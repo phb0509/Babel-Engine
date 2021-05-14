@@ -13,11 +13,8 @@ Camera::Camera()
 	rotY(0.0f),
 	rotX(0.0f),
 	target(nullptr),
-	wheelSpeed(15.0f),
-	player(nullptr),
-	mIsTargetCamera(true),
-	mCameraTypeIndex(0),
-	mbIsSetWorldCameraPosition(false)
+	wheelSpeed(15.0f)
+
 {
 	viewBuffer = new ViewBuffer();
 	oldPos = MOUSEPOS;
@@ -30,17 +27,7 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-	if (mCameraTypeIndex == 0)
-	{
-		mIsTargetCamera = true;
-	}
-	else
-	{
-		mIsTargetCamera = false;
-	}
-
-
-	if (player != nullptr && mIsTargetCamera)
+	if (target != nullptr)
 	{
 		TargetMove();
 	}
@@ -48,12 +35,14 @@ void Camera::Update()
 	{
 		FreeMode();
 	}
+
 }
 
 
 
 void Camera::TargetMove()
 {
+	rotation = { 0.0f,0.0f,0.0f };
 	FollowControl();
 
 	mRotMatrixY = XMMatrixRotationY(rotY); // rotY는 FollowControl에서 마우스x좌표값 이동절대값에 따라 크기조절. 걍 rotY만큼 이동량 조절.
@@ -63,14 +52,14 @@ void Camera::TargetMove()
 	//forward = XMVector3TransformNormal(forward, mRotMatrixX);
 
 	destPos = forward * -distance;
-	destPos += player->GlobalPos();
+	destPos += target->GlobalPos();
 	destPos.y += height;
 
 	position = LERP(position, destPos, 5.0f * DELTA); // 카메라 위치.
 													  // 현위치에서 desPost까지 moveDamping값만큼.
 
 	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
-	Vector3 targetPosition = player->GlobalPos() + tempOffset;
+	Vector3 targetPosition = target->GlobalPos() + tempOffset;
 
 	//cameraForward = (player->GlobalPos() - position).Normal();
 	cameraForward = forward.Normal();
@@ -81,11 +70,6 @@ void Camera::TargetMove()
 }
 
 
-void Camera::FollowMode()
-{
-	//originForward = Forward();
-	FollowMove();
-}
 
 void Camera::FollowControl()
 {
@@ -127,44 +111,6 @@ void Camera::FollowControl()
 
 	oldPos = MOUSEPOS;
 }
-
-
-
-
-void Camera::FollowMove()
-{
-	if (rotDamping > 0.0f) // 덤핑값 0이상 셋팅하면
-	{
-		if (target->rotation.y != destRot)
-		{
-			destRot = LERP(destRot, target->rotation.y + XM_PI, rotDamping * DELTA);
-		}
-
-		mRotMatrixY = XMMatrixRotationY(destRot);
-	}
-
-	else // 0고정이면.
-	{
-		FollowControl();
-		mRotMatrixY = XMMatrixRotationY(rotY); // rotY는 float값.
-	}
-
-	Vector3 forward = XMVector3TransformNormal(kForward, mRotMatrixY); // rotMatrix의 방향만? 따오는듯.
-	destPos = forward * -distance;
-
-	destPos += target->GlobalPos();
-	destPos.y += height;
-
-	position = LERP(position, destPos, moveDamping * DELTA); // 카메라 위치.
-
-	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
-
-	view = XMMatrixLookAtLH(position.data, (target->GlobalPos() + tempOffset).data,
-		Up().data); // 카메라위치 , 타겟위치 , 카메라가 타겟을 바라볼 때의 윗방향.
-	viewBuffer->Set(view);
-}
-
-
 
 
 
@@ -228,16 +174,6 @@ void Camera::PostRender()
 {
 	ImGui::Text("CameraInfo");
 
-	if (ImGui::Button("TargetCamera"))
-	{
-		mCameraTypeIndex = 0;
-	}
-
-	if (ImGui::Button("WorldCamera"))
-	{
-		mCameraTypeIndex = 1;
-		setWorldCameraPosition();
-	}
 
 	ImGui::Text("CamPos : %.1f, %.1f, %.1f", position.x, position.y, position.z);
 	ImGui::Text("CamRot : %.1f, %.1f, %.1f", rotation.x, rotation.y, rotation.z);
@@ -246,7 +182,7 @@ void Camera::PostRender()
 
 
 
-	if (player == nullptr)
+	if (target == nullptr)
 	{
 		ImGui::SliderFloat("MoveSpeed", &moveSpeed, 0, 100);
 		ImGui::SliderFloat("RotSpeed", &rotSpeed, 0, 10);
@@ -296,14 +232,4 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	return ray;
 }
 
-void Camera::setWorldCameraPosition()
-{
-	if (!mbIsSetWorldCameraPosition)
-	{
-		// 월드카메라로변환시 포지션값 설정.
-		position = Vector3(89.0f, 174.0f, -69.9f);
-		rotation = Vector3(0.9f, 0.0f, 0.0f);
 
-		mbIsSetWorldCameraPosition = true;
-	}
-}

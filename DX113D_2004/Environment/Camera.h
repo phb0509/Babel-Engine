@@ -31,16 +31,10 @@ public:
 	~Camera();
 
 	void Update();
-
-	void FreeMode();
-	void FollowMode();
-
-	void FreeMove();
-	void FollowMove();
-
 	void TargetMove();
 	void FollowControl();
-
+	void FreeMode();
+	void FreeMove();
 	void Rotation();
 	void View();
 
@@ -52,16 +46,14 @@ public:
 	Ray ScreenPointToRay(Vector3 pos);
 
 	void SetTarget(Transform* value) { target = value; }
-	void SetPlayer(Transform* value) { player = value; }
+
 
 	Matrix GetView() { return view; }
 	ViewBuffer* GetViewBuffer() { return viewBuffer; }
 
-	bool GetIsTargetCamera() { return mIsTargetCamera; }
-
 
 private:
-	void setWorldCameraPosition();
+
 
 
 private:
@@ -91,13 +83,6 @@ private:
 	Matrix mRotMatrixX;
 
 	Transform* target;
-	Transform* player;
-
-	bool mIsTargetCamera;
-	int mCameraTypeIndex;
-	bool mbIsSetWorldCameraPosition;
-
-
 
 public:
 	float moveSpeed;

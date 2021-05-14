@@ -6,7 +6,7 @@ MainScene::MainScene()
 	terrain = new Terrain();
 	player = GM->GetPlayer();
 	player->SetTerrain(terrain);
-	CAMERA->SetPlayer(player);
+	Environment::Get()->SetTargetToCamera(player);
 	monsters = GM->GetMonsters();
 
 	obstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
@@ -42,6 +42,7 @@ MainScene::MainScene()
 	//monsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
 
 	
+
 }
 
 MainScene::~MainScene()

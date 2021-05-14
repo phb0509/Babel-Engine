@@ -13,12 +13,12 @@
 
 Program::Program()
 {
-	Create();	
+	Create();
 
 	//SceneManager::Get()->Add("export", new ModelExportScene());
 	SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
-    // SceneManager::Get()->Add("start", new ColliderSettingScene());
+	// SceneManager::Get()->Add("start", new ColliderSettingScene());
 
 
 
@@ -29,7 +29,7 @@ Program::Program()
 
 
 	//SceneManager::Get()->AddScene("export");
-	SceneManager::Get()->AddScene("start");	
+	SceneManager::Get()->AddScene("start");
 }
 
 Program::~Program()
@@ -47,15 +47,16 @@ void Program::Update()
 
 	SceneManager::Get()->Update();
 
-	CAMERA->Update();
+	if (Environment::Get()->GetIsTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+	else
+	{
+		Environment::Get()->GetWorldCamera()->Update();
+	}
 
 	Control::Get()->SetWheel(0.0f);
-
-
-
-	
-
-
 }
 
 void Program::PreRender()
@@ -80,9 +81,11 @@ void Program::PostRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	wstring fps = L"FPS : " + to_wstring((int)Timer::Get()->GetFPS());
-	RECT rect = { 0, 0, 100, 100 };
-	DirectWrite::Get()->RenderText(fps, rect);
+	{ // 좌측상단 FPS,현재 시간(초) 출력
+		wstring fps = L"FPS : " + to_wstring((int)Timer::Get()->GetFPS());
+		RECT rect = { 0, 0, 100, 100 };
+		DirectWrite::Get()->RenderText(fps, rect);
+	}
 
 	Environment::Get()->PostRender();
 

@@ -16,10 +16,13 @@ void Frustum::Update()
     //Vector3 pos = CAMERA->position - CAMERA->Forward() * 1.0f;
     //Vector3 focus = pos + CAMERA->Forward();
     //view = XMMatrixLookAtLH(pos.data, focus.data, CAMERA->Up().data);
+    // 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
+    // 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
 
     Float4x4 VP;
     XMStoreFloat4x4(&VP, view * projection);
 
+    // 평면은 abcd. abc는 노멀값 d는 거리
     //Left
     float a = VP._14 + VP._11;
     float b = VP._24 + VP._21;

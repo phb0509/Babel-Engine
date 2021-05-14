@@ -2,23 +2,9 @@
 
 class Environment : public Singleton<Environment>
 {
-private:	
 	friend class Singleton;
 
-	Matrix projection;
-	
-	MatrixBuffer* projectionBuffer;
-	LightBuffer* lightBuffer;
 
-	D3D11_VIEWPORT viewport;
-
-	Camera* mainCamera;
-
-	SamplerState* samplerState;
-
-
-	Environment();
-	~Environment();
 public:
 	void PostRender();
 
@@ -26,14 +12,36 @@ public:
 
 	void SetProjection();
 	void SetViewport(UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT);
+	void SetTargetToCamera(Transform* target);
 
-	Camera* GetMainCamera() { return mainCamera; }
+
+	Camera* GetTargetCamera() { return mTargetCamera; }
+	Camera* GetWorldCamera() { return mWorldCamera; }
 	Matrix GetProjection() { return projection; }
 	LightBuffer* GetLight() { return lightBuffer; }
 	MatrixBuffer* GetProjectionBuffer() { return projectionBuffer; }
 	Vector3 GetLightPosition();
+	bool GetIsTargetCamera() { return mbIsTargetCamera; }
 
 private:
+	Environment();
+	~Environment();
+
 	void CreatePerspective();
-	
+
+private:
+
+	Matrix projection;
+
+	MatrixBuffer* projectionBuffer;
+	LightBuffer* lightBuffer;
+
+	D3D11_VIEWPORT viewport;
+
+	Camera* mTargetCamera;
+	Camera* mWorldCamera;
+
+	SamplerState* samplerState;
+	bool mbIsTargetCamera;
+	Transform* target;
 };

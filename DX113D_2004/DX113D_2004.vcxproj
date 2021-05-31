@@ -175,6 +175,7 @@
     <ClInclude Include="Environment\Reflection.h" />
     <ClInclude Include="Environment\Refraction.h" />
     <ClInclude Include="Environment\Shadow.h" />
+    <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\AttackState.h" />
@@ -271,6 +272,7 @@
     <ClInclude Include="Scene\TerrainEditorScene.h" />
     <ClInclude Include="Scene\TerrainLODScene.h" />
     <ClInclude Include="Scene\TessellationScene.h" />
+    <ClInclude Include="Scene\TestScene.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +297,7 @@
     <ClCompile Include="Framework\Collider\CapsuleCollider.cpp" />
     <ClCompile Include="Framework\Collider\Collider.cpp" />
     <ClCompile Include="Framework\Collider\SphereCollider.cpp" />
+    <ClCompile Include="Framework\Collider\TetrahedronCollider.cpp" />
     <ClCompile Include="Framework\Device\DepthStencil.cpp" />
     <ClCompile Include="Framework\Device\RenderTarget.cpp" />
     <ClCompile Include="Framework\Math\Math.cpp" />
@@ -375,6 +378,7 @@
     <ClCompile Include="Scene\TerrainEditorScene.cpp" />
     <ClCompile Include="Scene\TerrainLODScene.cpp" />
     <ClCompile Include="Scene\TessellationScene.cpp" />
+    <ClCompile Include="Scene\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX113D_2004.rc" />

@@ -11,7 +11,7 @@ VertexBuffer::VertexBuffer(void* data, UINT stride, UINT count, bool isCPUWrite)
 	}else
 		desc.Usage = D3D11_USAGE_DEFAULT;
 
-	desc.ByteWidth = stride * count;
+	desc.ByteWidth = stride * count; // stride는 버텍스 하나의 크기
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA initData = {};
@@ -32,7 +32,7 @@ void VertexBuffer::IASet(UINT slot)
 
 void VertexBuffer::Update(void* data, UINT count)
 {
-	DC->UpdateSubresource(buffer, 0, nullptr, data, stride, count);
+	DC->UpdateSubresource(buffer, 0, nullptr, data, stride, count); 
 }
 
 void VertexBuffer::Map(void* data, UINT start, UINT size, UINT offset)

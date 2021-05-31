@@ -75,48 +75,7 @@ bool BoxCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 
     return true;
 }
-/*
-bool BoxCollider::RayCollision(IN Ray ray, OUT Contact* contact)
-{
-    Vector3 min = minBox;
-    Vector3 max = maxBox;
 
-    Matrix invWorld = XMMatrixInverse(nullptr, world);
-
-    Ray r;
-    r.position = XMVector3TransformCoord(ray.position.data, invWorld);
-    r.direction = XMVector3TransformNormal(ray.direction.data, invWorld);
-    r.direction.Normalize();
-
-    float tmin = (min.x - r.position.x) / r.direction.x;
-    float tmax = (max.x - r.position.x) / r.direction.x;
-
-    if (tmin > tmax) swap(tmin, tmax);
-
-    float tymin = (min.y - r.position.y) / r.direction.y;
-    float tymax = (max.y - r.position.y) / r.direction.y;
-
-    if (tymin > tymax) swap(tymin, tymax);
-
-    if ((tmin > tymax) || (tymin > tmax))
-        return false;
-
-    if (tymin > tmin)
-        tmin = tymin;
-
-    if (tymax < tmax)
-        tmax = tymax;
-
-    float tzmin = (min.z - r.position.z) / r.direction.z;
-    float tzmax = (max.z - r.position.z) / r.direction.z;
-
-    if (tzmin > tzmax) swap(tzmin, tzmax);
-
-    if ((tmin > tzmax) || (tzmin > tmax))
-        return false;    
-
-    return true;
-}*/
 
 bool BoxCollider::BoxCollision(BoxCollider* collider)
 {
@@ -173,27 +132,6 @@ bool BoxCollider::SphereCollision(SphereCollider* collider)
     return temp.Length() <= collider->Radius();
 }
 
-/*
-bool BoxCollider::SphereCollision(SphereCollider* collider)
-{
-    Obb box = GetObb();
-
-    Vector3 pos = box.position;
-
-    for (UINT i = 0; i < 3; i++)
-    {
-        float length = Vector3::Dot(box.axis[i], collider->GlobalPos() - box.position);
-
-        float mult = (length < 0.0f) ? -1.0f : 1.0f;
-
-        length = min(abs(length), box.halfSize[i]);
-        pos += box.axis[i] * length * mult;
-    }
-
-    float distance = (collider->GlobalPos() - pos).Length();
-
-    return distance <= collider->Radius();
-}*/
 
 bool BoxCollider::CapsuleCollision(CapsuleCollider* collider)
 {

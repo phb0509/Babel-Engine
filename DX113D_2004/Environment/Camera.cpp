@@ -13,7 +13,8 @@ Camera::Camera()
 	rotY(0.0f),
 	rotX(0.0f),
 	target(nullptr),
-	wheelSpeed(15.0f)
+	wheelSpeed(15.0f),
+	mbIsOnFrustumCollider(false)
 
 {
 	viewBuffer = new ViewBuffer();

@@ -21,7 +21,7 @@ class Camera : public Transform
 		void Set(Matrix value)
 		{
 			data.matrix = XMMatrixTranspose(value);
-			Matrix temp = XMMatrixInverse(nullptr, value);
+			Matrix temp = XMMatrixInverse(nullptr, value); // 다른 모든 오브젝트의 worldMatrix에 카메라의 viewMatrix의 역행렬을 곱해줘야한다. 뷰공간으로 전환하기위한 과정.
 			data.invMatrix = XMMatrixTranspose(temp);
 		}
 	};
@@ -52,12 +52,13 @@ public:
 	ViewBuffer* GetViewBuffer() { return viewBuffer; }
 
 
+public:
+	float moveSpeed;
+	float wheelSpeed;
+	Vector3 cameraForward;
+	POINT pt;
+
 private:
-
-
-
-private:
-
 	float rotSpeed;
 
 	ViewBuffer* viewBuffer;
@@ -83,12 +84,8 @@ private:
 	Matrix mRotMatrixX;
 
 	Transform* target;
+	bool mbIsOnFrustumCollider;
 
-public:
-	float moveSpeed;
-	float wheelSpeed;
-	Vector3 cameraForward;
-	POINT pt;
 
 
 };

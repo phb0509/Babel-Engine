@@ -16,8 +16,8 @@ PixelInput VS(VertexUVNormalTangent input)
     
     output.pos = mul(input.pos, world);
     
-    float3 camPos = invView._41_42_43;
-    output.viewDir = normalize(output.pos.xyz - camPos);
+    float3 camPos = invView._41_42_43; // 카메라의 world좌표.
+    output.viewDir = normalize(output.pos.xyz - camPos); // 카메라->버텍스 방향벡터.
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
@@ -50,7 +50,7 @@ float4 PS(PixelInput input) : SV_Target
     {
         float4 normalMapping = normalMap.Sample(samp, input.uv); // 노말맵 RGB값 가져오기.
     
-        float3x3 TBN = float3x3(T, B, N);
+        float3x3 TBN = float3x3(T, B, N); // 월드공간 -> 접선공간으로 변경. 변환행렬
         normal = normalMapping * 2.0f - 1.0f; // 노말맵의 RGB값(0~1)을 벡터단위(-1~1)로 변환함.
         normal = normalize(mul(normal, TBN)); // return 1*3 행렬
     }    

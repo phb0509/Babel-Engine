@@ -159,6 +159,7 @@ using namespace states;
 #include "Framework/Collider/BoxCollider.h"
 #include "Framework/Collider/SphereCollider.h"
 #include "Framework/Collider/CapsuleCollider.h"
+#include "Framework/Collider/TetrahedronCollider.h"
 
 #include "Framework/State/RasterizerState.h"
 #include "Framework/State/SamplerState.h"

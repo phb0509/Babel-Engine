@@ -40,7 +40,7 @@ private:
 
 	Camera* mTargetCamera;
 	Camera* mWorldCamera;
-
+	
 	SamplerState* samplerState;
 	bool mbIsTargetCamera;
 	Transform* target;

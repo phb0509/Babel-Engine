@@ -37,18 +37,21 @@ Transform::~Transform()
 
 void Transform::UpdateWorld()
 {
-	world = XMMatrixTransformation(pivot.data, XMQuaternionIdentity(),
-		scale.data, pivot.data,
-		XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y,
-			rotation.z), position.data);
+	world = XMMatrixTransformation(
+		pivot.data, 
+		XMQuaternionIdentity(),
+		scale.data, 
+		pivot.data,
+		XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y,rotation.z), position.data);
 
+	
 	if (parent != nullptr)
 		world *= *parent;
 
 	XMMatrixDecompose(&globalScale.data, &globalRotation.data,
 		&globalPosition.data, world);
 
-	worldBuffer->Set(world);
+	worldBuffer->Set(world); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
 void Transform::RenderAxis()

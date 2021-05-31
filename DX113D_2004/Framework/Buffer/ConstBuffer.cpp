@@ -19,7 +19,7 @@ ConstBuffer::~ConstBuffer()
 
 void ConstBuffer::Update()
 {
-	DC->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+	DC->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); 
 	memcpy(subResource.pData, data, dataSize);
 	DC->Unmap(buffer, 0);
 }

@@ -21,10 +21,10 @@ void Mesh::IASet(D3D11_PRIMITIVE_TOPOLOGY primitiveType)
 
 void Mesh::UpdateVertex(void* data, UINT count)
 {
-	vertexBuffer->Update(data, count);
+	vertexBuffer->Update(data, count); // UpdateSubresource (DEFAULT)
 }
 
 void Mesh::MapVertex(void* data, UINT start, UINT size, UINT offset)
 {
-	vertexBuffer->Map(data, start, size, offset);
+	vertexBuffer->Map(data, start, size, offset); // map , unmap  (DYNAMIC)
 }

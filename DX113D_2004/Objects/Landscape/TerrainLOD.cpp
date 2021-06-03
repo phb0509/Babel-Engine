@@ -47,8 +47,8 @@ void TerrainLOD::Render()
 {
     mesh->IASet(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 
-    worldBuffer->SetHSBuffer(0);
-    worldBuffer->SetDSBuffer(0);
+    mWorldBuffer->SetHSBuffer(0);
+    mWorldBuffer->SetDSBuffer(0);
 
     CAMERA->GetViewBuffer()->SetHSBuffer(1);
     CAMERA->GetViewBuffer()->SetDSBuffer(1);

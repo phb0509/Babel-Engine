@@ -10,7 +10,7 @@ Environment::Environment() :
 	samplerState->SetState();
 
 	mTargetCamera = new Camera();
-	mTargetCamera->position = { 0, 5, -5 };
+	mTargetCamera->mPosition = { 0, 5, -5 };
 
 	mWorldCamera = new Camera();
 
@@ -38,8 +38,9 @@ void Environment::PostRender()
 	{
 		mbIsTargetCamera = false;
 
-		mWorldCamera->position = Vector3(110.0f, 175.0f, -40.0f);
-		mWorldCamera->rotation = Vector3(1.0f, 0.0f, 0.0f);
+		mWorldCamera->mPosition = Vector3(110.0f, 175.0f, -40.0f);
+		mWorldCamera->mRotation = Vector3(1.0f, 0.0f, 0.0f);
+		mTargetCamera->SetIsMouseInputing(false);
 	}
 
 	if (mbIsTargetCamera)

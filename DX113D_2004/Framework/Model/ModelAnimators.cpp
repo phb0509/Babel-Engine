@@ -110,7 +110,7 @@ void ModelAnimators::PostRender()
 {
 	for (Transform* transform : transforms)
 	{
-		Vector3 screenPos = WorldToScreen(transform->GlobalPos());
+		Vector3 screenPos = WorldToScreen(transform->GetGlobalPosition());
 
 		POINT size = { 200, 100 };
 		RECT rect;

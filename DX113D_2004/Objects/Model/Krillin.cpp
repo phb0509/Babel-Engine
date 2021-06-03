@@ -19,7 +19,7 @@ Krillin::Krillin() : ModelAnimator("Krillin/Krillin"),
 
 	collider = new CapsuleCollider(1.0f, 2.5f);
 	collider->SetParent(GetWorld());
-	collider->position.y = 2.5f;
+	collider->mPosition.y = 2.5f;
 }
 
 Krillin::~Krillin()
@@ -48,23 +48,23 @@ void Krillin::KeyboardMove()
 {
 	if (KEY_PRESS(VK_UP))
 	{
-		position -= Forward() * moveSpeed * DELTA;
+		mPosition -= Forward() * moveSpeed * DELTA;
 		SetAction(RUN);
 	}
 	if (KEY_PRESS(VK_DOWN))
 	{
-		position += Forward() * moveSpeed * DELTA;
+		mPosition += Forward() * moveSpeed * DELTA;
 		SetAction(RUN);
 	}
 	if (KEY_PRESS(VK_RIGHT))
-		rotation.y += rotSpeed * DELTA;
+		mRotation.y += rotSpeed * DELTA;
 	if (KEY_PRESS(VK_LEFT))
-		rotation.y -= rotSpeed * DELTA;
+		mRotation.y -= rotSpeed * DELTA;
 
 	if (KEY_UP(VK_UP) || KEY_UP(VK_DOWN))
 		SetAction(IDLE);
 
-	position.y = terrain->GetHeight(globalPosition);
+	mPosition.y = terrain->GetHeight(mGlobalPosition);
 }
 
 void Krillin::MouseMove()
@@ -72,21 +72,21 @@ void Krillin::MouseMove()
 	if (KEY_DOWN(VK_LBUTTON))
 	{
 		terrain->ComputePicking(&destPos);
-		direction = destPos - globalPosition;
+		direction = destPos - mGlobalPosition;
 		direction.y = 0.0f;
 		direction.Normalize();
 		isMove = true;
 		SetAction(RUN);
 
-		rotation.y = atan2(direction.x, direction.z) + XM_PI;
+		mRotation.y = atan2(direction.x, direction.z) + XM_PI;
 	}
 
 	if (!isMove)
 		return;
 
-	position += direction * moveSpeed * DELTA;
+	mPosition += direction * moveSpeed * DELTA;
 
-	float distance = (position - destPos).Length();
+	float distance = (mPosition - destPos).Length();
 
 	if (distance < 5.0f)
 	{

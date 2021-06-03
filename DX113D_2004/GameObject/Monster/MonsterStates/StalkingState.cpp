@@ -23,7 +23,7 @@ void StalkingState::Execute(Monster* monster)
 		//monster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, monster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수... 로테이션필요없다.
 		//mutant->MoveToDestination(mutant, GM->Get()->GetPlayer()->position, mutant->GetMoveSpeed()); // 이동
 
-		monster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->position); // AStar 타겟
+		monster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->mPosition); // AStar 타겟
 		monster->SetAnimation(eAnimationStates::Run);
 
 		if (monster->GetDistanceToPlayer() <= monster->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.

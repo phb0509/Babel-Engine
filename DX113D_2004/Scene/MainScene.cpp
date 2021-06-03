@@ -11,21 +11,21 @@ MainScene::MainScene():
 	monsters = GM->GetMonsters();
 
 	mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	mObstacle1->scale = { 0.1f, 0.1f, 0.1f };
-	mObstacle1->position = { 40, 20, 40 };
+	mObstacle1->mScale = { 0.1f, 0.1f, 0.1f };
+	mObstacle1->mPosition = { 40, 20, 40 };
 	mObstacle1->UpdateWorld();
 	mObstacle1->GetCollider()->UpdateWorld();
 
 	mObstacle2 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	mObstacle2->scale = { 0.1f, 0.1f, 0.1f };
-	mObstacle2->position = { 90, 20, 90 };
+	mObstacle2->mScale = { 0.1f, 0.1f, 0.1f };
+	mObstacle2->mPosition = { 90, 20, 90 };
 	mObstacle2->UpdateWorld();
 	mObstacle2->GetCollider()->UpdateWorld();
 	
 
 
 
-	monsters[0]->position = { 50.0f, 0.0f, 50.0f };
+	monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
 	//monsters[1]->position = { 45.0f, 0.0f, 50.0f };
 
 	monsters[0]->SetTerrain(mTerrain);
@@ -48,8 +48,8 @@ MainScene::MainScene():
 		for (int j = 0; j < 25; j++)
 		{
 			cube = new Cube();
-			cube->position.x = i * 10.0f;
-			cube->position.z = j * 10.0f;
+			cube->mPosition.x = i * 10.0f;
+			cube->mPosition.z = j * 10.0f;
 			cubes.push_back(cube);
 		}
 	}
@@ -76,7 +76,7 @@ void MainScene::Update()
 	{
 		cubes[i]->Update();
 		//cubes[i]->position.y = mTerrain->GetHeight(cubes[i]->position);
-		cubes[i]->position.y = 20.0f;
+		cubes[i]->mPosition.y = 20.0f;
 	}
 
 }
@@ -102,7 +102,7 @@ void MainScene::Render()
 	
 	for (int i = 0; i < cubes.size(); i++)
 	{
-		if (mTargetCameraFrustum->ContainPoint(cubes[i]->position))
+		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
 		{
 			cubes[i]->Render();
 		}

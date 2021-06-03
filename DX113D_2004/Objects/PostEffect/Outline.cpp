@@ -13,8 +13,8 @@ Outline::~Outline()
 
 void Outline::Render()
 {
-	buffer->data.size.x = scale.x;
-	buffer->data.size.y = scale.y;
+	buffer->data.size.x = mScale.x;
+	buffer->data.size.y = mScale.y;
 
 	buffer->SetPSBuffer(10);
 	UIImage::Render();

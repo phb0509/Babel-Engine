@@ -11,8 +11,8 @@ Refraction::Refraction(wstring normalFile)
 
 	targetTexture = new UIImage(L"Texture");
 	targetTexture->SetSRV(renderTarget->GetSRV());
-	targetTexture->scale = { 300, 300, 1 };
-	targetTexture->position = { 150, 150, 0 };
+	targetTexture->mScale = { 300, 300, 1 };
+	targetTexture->mPosition = { 150, 150, 0 };
 }
 
 Refraction::~Refraction()

@@ -15,8 +15,8 @@ bool CapsuleCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 {
 	Vector3 direction = Up();
 
-	Vector3 pa = GlobalPos() - direction * Height() * 0.5f;
-	Vector3 pb = GlobalPos() + direction * Height() * 0.5f;
+	Vector3 pa = GetGlobalPosition() - direction * Height() * 0.5f;
+	Vector3 pb = GetGlobalPosition() + direction * Height() * 0.5f;
 
 	Vector3 ro = ray.position;
 	Vector3 rd = ray.direction;
@@ -74,9 +74,9 @@ bool CapsuleCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 bool CapsuleCollider::BoxCollision(BoxCollider* collider)
 {
 	Vector3 direction = Up();
-	Vector3 startPos = GlobalPos() - direction * Height() * 0.5f;
+	Vector3 startPos = GetGlobalPosition() - direction * Height() * 0.5f;
 
-	Vector3 A = collider->GlobalPos() - startPos;
+	Vector3 A = collider->GetGlobalPosition() - startPos;
 
 	float t = Vector3::Dot(A, direction);
 	t = max(0, t);
@@ -90,9 +90,9 @@ bool CapsuleCollider::BoxCollision(BoxCollider* collider)
 bool CapsuleCollider::SphereCollision(SphereCollider* collider)
 {
 	Vector3 direction = Up();
-	Vector3 startPos = GlobalPos() - direction * Height() * 0.5f;
+	Vector3 startPos = GetGlobalPosition() - direction * Height() * 0.5f;
 
-	Vector3 A = collider->GlobalPos() - startPos;
+	Vector3 A = collider->GetGlobalPosition() - startPos;
 
 	float t = Vector3::Dot(A, direction);
 	t = max(0, t);
@@ -100,7 +100,7 @@ bool CapsuleCollider::SphereCollision(SphereCollider* collider)
 
 	Vector3 pointOnLine = startPos + direction * t;
 
-	float distance = Distance(pointOnLine, collider->GlobalPos());
+	float distance = Distance(pointOnLine, collider->GetGlobalPosition());
 
     return distance <= (Radius() + collider->Radius());
 }
@@ -109,13 +109,13 @@ bool CapsuleCollider::CapsuleCollision(CapsuleCollider* collider)
 {
 	Vector3 aDirection = Up();
 
-	Vector3 aA = GlobalPos() - aDirection * Height() * 0.5f;
-	Vector3 aB = GlobalPos() + aDirection * Height() * 0.5f;
+	Vector3 aA = GetGlobalPosition() - aDirection * Height() * 0.5f;
+	Vector3 aB = GetGlobalPosition() + aDirection * Height() * 0.5f;
 
 	Vector3 bDirection = collider->Up();
 
-	Vector3 bA = collider->GlobalPos() - bDirection * collider->Height() * 0.5f;
-	Vector3 bB = collider->GlobalPos() + bDirection * collider->Height() * 0.5f;
+	Vector3 bA = collider->GetGlobalPosition() - bDirection * collider->Height() * 0.5f;
+	Vector3 bB = collider->GetGlobalPosition() + bDirection * collider->Height() * 0.5f;
 
 	Vector3 v0 = bA - aA;
 	Vector3 v1 = bB - aA;

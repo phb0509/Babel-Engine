@@ -6,7 +6,7 @@ Ken::Ken()
 	jumpPower(0), gravity(98.0f),
 	isJump(false), isShoot(false)
 {
-	scale = { 0.05f, 0.05f, 0.05f };
+	mScale = { 0.05f, 0.05f, 0.05f };
 	SetShader(L"ModelAnimation");
 	SetDiffuseMap(L"Textures/Character/survivorMaleB.png");
 
@@ -20,15 +20,15 @@ Ken::Ken()
 	PlayClip(0);
 
 	weapon = new ModelObject("Sword/Sword", Collider::BOX);	
-	weapon->rotation.y = 1.5f;
+	weapon->mRotation.y = 1.5f;
 
 	Vector3 minBox, maxBox;
 	SetBox(&minBox, &maxBox);
 	collider = new CapsuleCollider(50, 300);
-	collider->position.y = 200;	
-	collider->position.z = -30;
+	collider->mPosition.y = 200;	
+	collider->mPosition.z = -30;
 
-	collider->SetParent(&world);
+	collider->SetParent(&mWorldMatrix);
 }
 
 Ken::~Ken()
@@ -68,9 +68,9 @@ void Ken::Render()
 
 void Ken::PostRender()
 {
-	ImGui::SliderFloat3("Pos", (float*)&weapon->position, -30, 30);
-	ImGui::SliderFloat3("Rot", (float*)&weapon->rotation, 0, XM_2PI);
-	ImGui::SliderFloat3("Scale", (float*)&weapon->scale, -30, 30);
+	ImGui::SliderFloat3("Pos", (float*)&weapon->mPosition, -30, 30);
+	ImGui::SliderFloat3("Rot", (float*)&weapon->mRotation, 0, XM_2PI);
+	ImGui::SliderFloat3("Scale", (float*)&weapon->mScale, -30, 30);
 }
 
 void Ken::Control()
@@ -86,11 +86,11 @@ void Ken::Control()
 	
 	if (KEY_PRESS('D'))
 	{
-		rotation.y += rotSpeed * DELTA;
+		mRotation.y += rotSpeed * DELTA;
 	}
 	if (KEY_PRESS('A'))
 	{
-		rotation.y -= rotSpeed * DELTA;
+		mRotation.y -= rotSpeed * DELTA;
 	}
 
 	if (!isJump && KEY_DOWN(VK_SPACE))
@@ -113,20 +113,20 @@ void Ken::Control()
 		terrain->ComputePicking(&destPos);
 
 		Ray ray;
-		ray.position = position;
-		ray.direction = (destPos - position).Normal();
+		ray.position = mPosition;
+		ray.direction = (destPos - mPosition).Normal();
 
-		float distance = Distance(destPos, position);
+		float distance = Distance(destPos, mPosition);
 
 		if (aStar->CollisionObstacle(ray, distance))
 		{
-			int startIndex = aStar->FindCloseNode(position);
+			int startIndex = aStar->FindCloseNode(mPosition);
 			int endIndex = aStar->FindCloseNode(destPos);
 
 			path = aStar->FindPath(startIndex, endIndex);
 			path.insert(path.begin(), destPos);
 
-			aStar->MakeDirectPath(position, destPos, path);
+			aStar->MakeDirectPath(mPosition, destPos, path);
 			path.insert(path.begin(), destPos);
 
 			UINT pathSize = path.size();
@@ -173,7 +173,7 @@ void Ken::Move()
 		velocity = LERP(velocity, zero, deceleration * DELTA);
 	}
 
-	position += velocity * moveSpeed * DELTA;
+	mPosition += velocity * moveSpeed * DELTA;
 
 	if (isJump || isShoot)
 		return;
@@ -195,7 +195,7 @@ void Ken::MovePath()
 
 	Vector3 dest = path.back();
 
-	Vector3 direction = dest - position;
+	Vector3 direction = dest - mPosition;
 
 	if (direction.Length() < 0.1f)
 		path.pop_back();
@@ -220,30 +220,30 @@ void Ken::Rotate()
 	Vector3 cross = Vector3::Cross(start, end);
 
 	if (cross.y > 0.0f)
-		rotation.y += rotSpeed * DELTA;
+		mRotation.y += rotSpeed * DELTA;
 	else
-		rotation.y -= rotSpeed * DELTA;
+		mRotation.y -= rotSpeed * DELTA;
 }
 
 void Ken::Jump()
 {
-	float terrainY = terrain->GetHeight(position);
+	float terrainY = terrain->GetHeight(mPosition);
 
 	if (!isJump)
 	{
-		position.y = terrainY;
+		mPosition.y = terrainY;
 		return;
 	}
 
 	jumpPower -= gravity * DELTA;
 
-	position.y += jumpPower * DELTA;
+	mPosition.y += jumpPower * DELTA;
 
-	if (position.y <= terrainY)
+	if (mPosition.y <= terrainY)
 	{
 		SetAnimation(IDLE);
 		isJump = false;
-		position.y = terrainY;
+		mPosition.y = terrainY;
 		isShoot = false;
 	}
 }
@@ -272,7 +272,7 @@ void Ken::SetWeapon()
 {
 	int index = GetNodeByName("RightHand");
 
-	rightHand = GetTransformByNode(index) * world;
+	rightHand = GetTransformByNode(index) * mWorldMatrix;
 
 	weapon->SetParent(&rightHand);
 }

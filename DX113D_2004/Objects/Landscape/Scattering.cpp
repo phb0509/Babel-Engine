@@ -9,13 +9,13 @@ Scattering::Scattering()
 	depthStencil = new DepthStencil();
 
 	rayleighTexture = new UIImage(L"Texture");
-	rayleighTexture->position = { 100, 150, 0 };
-	rayleighTexture->scale = { 200, 100, 0 };
+	rayleighTexture->mPosition = { 100, 150, 0 };
+	rayleighTexture->mScale = { 200, 100, 0 };
 	rayleighTexture->SetSRV(targets[0]->GetSRV());
 
 	mieTexture = new UIImage(L"Texture");
-	mieTexture->position = { 100, 50, 0 };
-	mieTexture->scale = { 200, 100, 0 };
+	mieTexture->mPosition = { 100, 50, 0 };
+	mieTexture->mScale = { 200, 100, 0 };
 	mieTexture->SetSRV(targets[1]->GetSRV());
 
 	targetBuffer = new TargetBuffer();

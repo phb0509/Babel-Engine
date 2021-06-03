@@ -78,7 +78,7 @@ void QuadTreeTerrain::RenderNode(Node* node)
 
     node->mesh->IASet();
     
-    worldBuffer->SetVSBuffer(0);
+    mWorldBuffer->SetVSBuffer(0);
     material->Set();
 
     UINT indexCount = node->triangleCount * 3;

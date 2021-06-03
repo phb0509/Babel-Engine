@@ -19,7 +19,7 @@ void MapToolScene::Update()
 {
 	terrainEditor->Update();
 	cube->Update();
-	cube->position = Environment::Get()->GetLightPosition();
+	cube->mPosition = Environment::Get()->GetLightPosition();
 
 }
 

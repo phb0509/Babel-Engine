@@ -19,8 +19,8 @@ void Billboard::Update()
 	//rotation.y = CAMERA->rotation.y;
 	//rotation = CAMERA->rotation;
 
-	Vector3 dir = position - CAMERA->position;
-	rotation.y = atan2(dir.x, dir.z);
+	Vector3 dir = mPosition - CAMERA->mPosition;
+	mRotation.y = atan2(dir.x, dir.z);
 }
 
 void Billboard::Render()

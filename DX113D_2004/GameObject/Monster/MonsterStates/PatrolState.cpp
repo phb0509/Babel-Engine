@@ -53,8 +53,8 @@ void PatrolState::Execute(Monster* monster)
 	{
 		// 정찰목표좌표 설정.
 		float patrolDestPosCorrectionValue = 50.0f;
-		mPatrolDestPos.x = Random(monster->position.x - patrolDestPosCorrectionValue, monster->position.x + patrolDestPosCorrectionValue);
-		mPatrolDestPos.z = Random(monster->position.z - patrolDestPosCorrectionValue, monster->position.z + patrolDestPosCorrectionValue);
+		mPatrolDestPos.x = Random(monster->mPosition.x - patrolDestPosCorrectionValue, monster->mPosition.x + patrolDestPosCorrectionValue);
+		mPatrolDestPos.z = Random(monster->mPosition.z - patrolDestPosCorrectionValue, monster->mPosition.z + patrolDestPosCorrectionValue);
 
 
 		// 정찰목표지점이 맵크기를 벗어날 경우 예외처리.
@@ -94,7 +94,7 @@ void PatrolState::Execute(Monster* monster)
 		{
 			//monster->MoveToDestUsingAStar(mPatrolDestPos);
 
-			float length = (monster->GetPath().back() - monster->position).Length();
+			float length = (monster->GetPath().back() - monster->mPosition).Length();
 
 			if (length < 1.0f) // 노드에 도착하면
 			{
@@ -114,8 +114,8 @@ void PatrolState::Execute(Monster* monster)
 			monster->SetAnimation(eAnimationStates::Run); // Run.
 		}
 
-		if (fabs(mPatrolDestPos.x - monster->position.x) < 1.0f && // 목표지점 도착하면
-			fabs(mPatrolDestPos.z - monster->position.z) < 1.0f)
+		if (fabs(mPatrolDestPos.x - monster->mPosition.x) < 1.0f && // 목표지점 도착하면
+			fabs(mPatrolDestPos.z - monster->mPosition.z) < 1.0f)
 		{
 			mbPatrolMove = false;
 			mPatrolRandomNum = GameMath::Random(5.0f, 10.0f); // 정찰 간격.

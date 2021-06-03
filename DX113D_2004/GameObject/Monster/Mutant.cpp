@@ -7,7 +7,7 @@ Mutant::Mutant()
 	mFSM(eStates::Patrol),
 	mbOnHit(false)
 {
-	scale = { 0.05f, 0.05f, 0.05f };
+	mScale = { 0.05f, 0.05f, 0.05f };
 
 	SetShader(L"ModelAnimation");
 
@@ -27,7 +27,7 @@ Mutant::Mutant()
 	mSmashAttackCollider = new BoxCollider();
 	loadCollider(); // 툴에서 셋팅한 컬라이더 불러오기.
 
-	rotation.y = XM_PI;
+	mRotation.y = XM_PI;
 	UpdateWorld();
 
 	mPlayerDetectRange = 15.0f;
@@ -45,7 +45,7 @@ void Mutant::Update()
 {
 	setColliders();
 
-	position.y = mTerrain->GetHeight(position);
+	mPosition.y = mTerrain->GetHeight(mPosition);
 
 	mBodyCollider->Update();
 	mSmashAttackCollider->Update();
@@ -122,18 +122,18 @@ void Mutant::SetAnimation(eAnimationStates value)
 void Mutant::setColliders()
 {
 	int bodyIndex = GetNodeByName("Mutant:Spine");
-	mBodyMatrix = GetTransformByNode(bodyIndex) * world;
+	mBodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
 	mBodyCollider->SetParent(&mBodyMatrix);
 
 	int smashAttackIndex = GetNodeByName("Mutant:LeftHand");
-	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * world;
+	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * mWorldMatrix;
 	mSmashAttackCollider->SetParent(&mSmashAttackMatrix);
 }
 
 void Mutant::setAttackEnd()
 {
 	mPlayer = GM->Get()->GetPlayer();
-	RotateToDestination(this, mPlayer->position);
+	RotateToDestination(this, mPlayer->mPosition);
 }
 
 void Mutant::loadCollider()
@@ -171,9 +171,9 @@ void Mutant::findCollider(string name, Collider* collider)
 	{
 		if (mColliderDatas[i].name == name)
 		{
-			collider->position = mColliderDatas[i].position;
-			collider->rotation = mColliderDatas[i].rotation;
-			collider->scale = mColliderDatas[i].scale;
+			collider->mPosition = mColliderDatas[i].position;
+			collider->mRotation = mColliderDatas[i].rotation;
+			collider->mScale = mColliderDatas[i].scale;
 		}
 	}
 }

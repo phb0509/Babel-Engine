@@ -58,7 +58,7 @@ void Particle::Render()
 void Particle::Play(Vector3 position)
 {
 	isActive = true;
-	this->position = position;
+	this->mPosition = position;
 }
 
 void Particle::Stop()

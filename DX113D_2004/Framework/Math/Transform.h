@@ -13,16 +13,16 @@ public:
 
 	void SetWorldBuffer(UINT slot = 0);
 
-	Matrix* GetWorld() { return &world; }
-	void SetParent(Matrix* value) { parent = value; }
+	Matrix* GetWorld() { return &mWorldMatrix; }
+	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 	Vector3 Forward();
 	Vector3 Up();
 	Vector3 Right();
 
-	Vector3 GlobalPos() { return globalPosition; }
-	Vector3 GlobalRot() { return globalRotation; }
-	Vector3 GlobalScale() { return globalScale; }
+	Vector3 GetGlobalPosition() { return mGlobalPosition; }
+	Vector3 GetGlobalRotation() { return mGlobalRotation; }
+	Vector3 GetGlobalScale() { return mGlobalScale; }
 
 	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
 	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
@@ -35,32 +35,31 @@ public:
 	Transform* GetTransform() { return this; }
 
 private:
-	void CreateAxis();
-
+	void createAxis();
 
 
 public:
-	static bool isAxisDraw;
+	static bool mbIsAxisDrawing;
 
 	bool isActive;
 
 	string tag;
 
-	Vector3 position;
-	Vector3 rotation;
-	Vector3 scale;
+	Vector3 mPosition;
+	Vector3 mRotation;
+	Vector3 mScale;
 
 protected:
-	Vector3 globalPosition;
-	Vector3 globalRotation;
-	Vector3 globalScale;
+	Vector3 mGlobalPosition;
+	Vector3 mGlobalRotation;
+	Vector3 mGlobalScale;
 
-	Vector3 pivot;
+	Vector3 mPivot;
 
-	Matrix world;
-	Matrix* parent;
+	Matrix mWorldMatrix;
+	Matrix* mParentMatrix;
 
-	MatrixBuffer* worldBuffer;
+	MatrixBuffer* mWorldBuffer;
 
 	float mMoveSpeed;
 	float mRotationSpeed;
@@ -70,14 +69,12 @@ protected:
 	bool mIsAStarPathUpdate;
 
 private:
-	Material* material;
-	Mesh* mesh;
+	Material* mMaterial;
+	Mesh* mMesh;
 
-	MatrixBuffer* transformBuffer;
+	MatrixBuffer* mTransformBuffer;
 
-	vector<VertexColor> vertices;
-	vector<UINT> indices;
+	vector<VertexColor> mVertices;
+	vector<UINT> mIndices;
 
-
-	
 };

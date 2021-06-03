@@ -5,7 +5,7 @@ Node::Node(Vector3 pos, int index, Float2 interval)
 	via(-1), f(0), g(0), h(0), state(NONE), obstacle(nullptr)
 {
 	collider = new SphereCollider();
-	collider->position = pos;
+	collider->mPosition = pos;
 }
 
 Node::~Node()
@@ -72,7 +72,7 @@ Collider* Node::MakeObstacle()
 	Vector3 max = min * -1.0f;
 
 	obstacle = new BoxCollider(min, max);
-	obstacle->position = collider->position;
+	obstacle->mPosition = collider->mPosition;
 
 	return obstacle;
 }

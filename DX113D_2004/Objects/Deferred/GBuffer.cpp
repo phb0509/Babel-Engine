@@ -20,8 +20,8 @@ GBuffer::GBuffer()
 	for (UINT i = 0; i < 4; i++)
 	{
 		targetTextures[i] = new UIImage(L"Texture");
-		targetTextures[i]->position = { 100 + (float)i * 200, 100, 0 };
-		targetTextures[i]->scale = { 200, 200, 200 };
+		targetTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
+		targetTextures[i]->mScale = { 200, 200, 200 };
 		targetTextures[i]->SetSRV(srvs[i]);
 	}
 }

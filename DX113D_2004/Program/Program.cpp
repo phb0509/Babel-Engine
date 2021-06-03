@@ -38,7 +38,7 @@ Program::~Program()
 void Program::Update()
 {
 	if (KEY_DOWN(VK_F1))
-		Transform::isAxisDraw = !Transform::isAxisDraw;
+		Transform::mbIsAxisDrawing = !Transform::mbIsAxisDrawing;
 
 	Control::Get()->Update();
 	Timer::Get()->Update();

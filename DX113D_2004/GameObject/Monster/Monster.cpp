@@ -49,19 +49,19 @@ void Monster::SetAStarPath(Vector3 destPos)
 	mAStar->Reset();
 
 	Ray ray;
-	ray.position = position;
-	ray.direction = (destPos - position).Normal();
-	float distance = Distance(destPos, position);
+	ray.position = mPosition;
+	ray.direction = (destPos - mPosition).Normal();
+	float distance = Distance(destPos, mPosition);
 
 	if (mAStar->CollisionObstacle(ray, distance)) // 현 위치와 목표지점사이에 장애물이 있다면
 	{
-		int startIndex = mAStar->FindCloseNode(position); // 현재 position값에서 가장 가까운 노드 인덱스.
+		int startIndex = mAStar->FindCloseNode(mPosition); // 현재 position값에서 가장 가까운 노드 인덱스.
 		int endIndex = mAStar->FindCloseNode(destPos); // 목표 position값에서 가장 가까운 노드 인덱스.
 
 		mPath = mAStar->FindPath(startIndex, endIndex); // 경로생성.
 		mPath.insert(mPath.begin(), destPos); // 목표위치를 경로벡터 맨 앞에 넣기. 
 
-		mAStar->MakeDirectPath(position, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
+		mAStar->MakeDirectPath(mPosition, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
 		mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣어주는구나
 
 		UINT pathSize = mPath.size();
@@ -115,19 +115,19 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		mPathNodesCheck.assign(mPathNodesCheckSize, false);
 
 		Ray ray;
-		ray.position = position;
-		ray.direction = (destPos - position).Normal();
-		float distance = Distance(destPos, position);
+		ray.position = mPosition;
+		ray.direction = (destPos - mPosition).Normal();
+		float distance = Distance(destPos, mPosition);
 
 		if (mAStar->CollisionObstacle(ray, distance)) // 경로에 장애물이 있다면 // ray와 목적지까지 거리.
 		{
-			int startIndex = mAStar->FindCloseNode(position); // 현재 position값에서 가장 가까운 노드 인덱스.
+			int startIndex = mAStar->FindCloseNode(mPosition); // 현재 position값에서 가장 가까운 노드 인덱스.
 			int endIndex = mAStar->FindCloseNode(destPos); // 목표 position값에서 가장 가까운 노드 인덱스.
 
 			mPath = mAStar->FindPath(startIndex, endIndex); // 경로생성.
 			mPath.insert(mPath.begin(), destPos); // 목표위치를 경로벡터 맨 앞에 넣기. 
 
-			mAStar->MakeDirectPath(position, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
+			mAStar->MakeDirectPath(mPosition, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
 			mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣어주는구나
 
 			UINT pathSize = mPath.size();
@@ -206,7 +206,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 	if (mPath.size() > 0)
 	{
 		mTargetNode = mPath.back(); // 가장 가까운노드.
-		mTargetNodeDirVector3 = (mTargetNode - position).Normal();
+		mTargetNodeDirVector3 = (mTargetNode - mPosition).Normal();
 
 		if (CompareVector3XZ(mTargetNodeDirVector3, mBeforeDirVector3 * -1.0f)) // 반드시 다음 노드로 이동 후, 갱신.
 		{
@@ -233,7 +233,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 
 		// monster->SetAStarPath는 시간이 경과되더라도 mIsAStarPathUpdate = true일때만 갱신.
 
-		float length = (mTargetNode - position).Length();
+		float length = (mTargetNode - mPosition).Length();
 
 		if (length < 1.0f) // 노드에 도착하면... 이지만 맨 마지막에는 타겟위치벡터 자체
 		{
@@ -250,7 +250,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 float Monster::GetDistanceToPlayer()
 {
 	mPlayer = GM->Get()->GetPlayer();
-	mDistanceVector3ToPlayer = mPlayer->position - position;
+	mDistanceVector3ToPlayer = mPlayer->mPosition - mPosition;
 	mDistanceToPlayer = sqrt(pow(mDistanceVector3ToPlayer.x, 2) + pow(mDistanceVector3ToPlayer.z, 2));
 
 	return mDistanceToPlayer;

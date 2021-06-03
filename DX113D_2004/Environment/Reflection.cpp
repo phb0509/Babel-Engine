@@ -10,8 +10,8 @@ Reflection::Reflection(Transform* transform)
 
 	targetTexture = new UIImage(L"Texture");
 	targetTexture->SetSRV(renderTarget->GetSRV());
-	targetTexture->scale = { 300, 300, 1 };
-	targetTexture->position = { 150, 150, 0 };
+	targetTexture->mScale = { 300, 300, 1 };
+	targetTexture->mPosition = { 150, 150, 0 };
 
 	camera = new Camera();
 }
@@ -27,13 +27,13 @@ Reflection::~Reflection()
 
 void Reflection::Update()
 {	
-	camera->rotation = CAMERA->rotation;
-	camera->position = CAMERA->position;
+	camera->mRotation = CAMERA->mRotation;
+	camera->mPosition = CAMERA->mPosition;
 
-	camera->rotation.x *= -1.0f;
-	camera->position.y = transform->position.y * 2.0f - camera->position.y;
+	camera->mRotation.x *= -1.0f;
+	camera->mPosition.y = transform->mPosition.y * 2.0f - camera->mPosition.y;
 
-	camera->View();
+	camera->SetViewMatrixToBuffer();
 
 	reflectionBuffer->Set(camera->GetView());
 }

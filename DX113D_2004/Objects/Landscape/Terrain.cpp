@@ -56,7 +56,7 @@ void Terrain::Render()
 {
 	mesh->IASet();
 
-	worldBuffer->SetVSBuffer(0);	
+	mWorldBuffer->SetVSBuffer(0);	
 	typeBuffer->SetVSBuffer(5);
 
 	material->Set();

@@ -23,7 +23,7 @@ ModelObject::ModelObject(string file, Collider::Type type)
 		break;
 	}
 	if (collider != nullptr)
-		collider->SetParent(&world);
+		collider->SetParent(&mWorldMatrix);
 }
 
 ModelObject::~ModelObject()

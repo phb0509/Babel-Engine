@@ -18,8 +18,8 @@ ColliderSettingScene::ColliderSettingScene() : currentClipIndex(0), currentModel
 	}
 
 	// 카메라 위치설정.
-	CAMERA->position = { -9.4f, 15.5f, -14.8f };
-	CAMERA->rotation = { 0.3f, 0.7f, 0.0f };
+	CAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
+	CAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
 
 
 	// 모델들에 기본적으로 TPose 셋팅.
@@ -280,7 +280,7 @@ void ColliderSettingScene::TreeNodeRecurs(int nodesIndex)
 						break;
 					}
 					
-					nodeCollider->scale = { 10.0f,10.0f,10.0f };
+					nodeCollider->mScale = { 10.0f,10.0f,10.0f };
 					nodeCollidersMap[nodes[nodesIndex]->index] = nodeCollider;
 					nodeColliders.push_back(nodeCollider);
 				}
@@ -336,9 +336,9 @@ void ColliderSettingScene::ShowColliderEditor()
 
 			ImGui::Text("");
 
-			ImGui::InputFloat3(Position.c_str(), (float*)&nodeCollidersMap[it->first]->position);
-			ImGui::InputFloat3(Rotation.c_str(), (float*)&nodeCollidersMap[it->first]->rotation);
-			ImGui::InputFloat3(Scale.c_str(), (float*)&nodeCollidersMap[it->first]->scale);
+			ImGui::InputFloat3(Position.c_str(), (float*)&nodeCollidersMap[it->first]->mPosition);
+			ImGui::InputFloat3(Rotation.c_str(), (float*)&nodeCollidersMap[it->first]->mRotation);
+			ImGui::InputFloat3(Scale.c_str(), (float*)&nodeCollidersMap[it->first]->mScale);
 		}
 	}
 
@@ -381,9 +381,9 @@ void ColliderSettingScene::Save()
 			colliderWriter.String(colliderTagMap[it->first]);
 
 			colliderData data;
-			data.position = nodeCollidersMap[it->first]->position;
-			data.rotation = nodeCollidersMap[it->first]->rotation;
-			data.scale = nodeCollidersMap[it->first]->scale;
+			data.position = nodeCollidersMap[it->first]->mPosition;
+			data.rotation = nodeCollidersMap[it->first]->mRotation;
+			data.scale = nodeCollidersMap[it->first]->mScale;
 
 			colliderDatas.push_back(data);
 		}

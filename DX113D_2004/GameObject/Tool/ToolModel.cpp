@@ -2,7 +2,7 @@
 
 ToolModel::ToolModel(string file) : ModelAnimator(file + "/" + file) ,clipIndex(0), currentClipIndex(0)
 {
-	scale = { 0.05f,0.05f,0.05f };
+	mScale = { 0.05f,0.05f,0.05f };
 	SetShader(L"ModelAnimation");
 }
 

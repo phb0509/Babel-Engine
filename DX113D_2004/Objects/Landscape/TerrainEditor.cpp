@@ -57,7 +57,7 @@ void TerrainEditor::Render()
 {
 	mesh->IASet();
 
-	worldBuffer->SetVSBuffer(0);
+	mWorldBuffer->SetVSBuffer(0);
 	brushBuffer->SetPSBuffer(10);
 
 	alphaMap->PSSet(10);

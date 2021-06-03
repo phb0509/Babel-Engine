@@ -32,29 +32,32 @@ public:
 
 	void Update();
 	void Render();
-	void TargetMove();
-	void FollowControl();
-	void FreeMode();
-	void FreeMove();
-	void Rotation();
-	void View();
 
+	
 	void PostRender();
-
-	void SetVS(UINT slot = 1);
-	Vector3 GetOriginForward() { return originForward; }
 
 	Ray ScreenPointToRay(Vector3 pos);
 
+	void SetVS(UINT slot = 1);
 	void SetTarget(Transform* value) { target = value; }
+	void SetIsMouseInputing(bool cameraInput) { mbIsMouseInputing = cameraInput; }
+	void SetViewMatrixToBuffer();
 
-	Matrix GetView() { return view; }
-	ViewBuffer* GetViewBuffer() { return viewBuffer; }
+	Vector3 GetOriginForward() { return originForward; }
+	Matrix GetView() { return mViewMatrix; }
+	ViewBuffer* GetViewBuffer() { return mViewBuffer; }
 	Frustum* GetFrustum() { return mFrustum; }
 
 private:
-	void setViewToFrustum(Matrix view);
+	void targetMove();
+	void targetMoveInWorldCamera();
+	void followControl();
+	void freeMode();
+	void freeMove();
+	void rotation();
 
+	void setViewToFrustum(Matrix view);
+	
 
 
 
@@ -65,10 +68,10 @@ public:
 	POINT pt;
 
 private:
-	float rotSpeed;
+	float mRotationSpeed;
 
-	ViewBuffer* viewBuffer;
-	Matrix view;
+	ViewBuffer* mViewBuffer;
+	Matrix mViewMatrix;
 
 	Vector3 oldPos;
 
@@ -92,6 +95,7 @@ private:
 	Transform* target;
 	bool mbIsOnFrustumCollider;
 	Frustum* mFrustum;
+	bool mbIsMouseInputing;
 
 
 

@@ -37,10 +37,10 @@ bool BoxCollider::RayCollision(IN Ray ray, OUT Contact* contact)
         p[2] = vertices[face[i * 4 + 2]].position;
         p[3] = vertices[face[i * 4 + 3]].position;
 
-        p[0] = XMVector3TransformCoord(p[0].data, world);
-        p[1] = XMVector3TransformCoord(p[1].data, world);
-        p[2] = XMVector3TransformCoord(p[2].data, world);
-        p[3] = XMVector3TransformCoord(p[3].data, world);
+        p[0] = XMVector3TransformCoord(p[0].data, mWorldMatrix);
+        p[1] = XMVector3TransformCoord(p[1].data, mWorldMatrix);
+        p[2] = XMVector3TransformCoord(p[2].data, mWorldMatrix);
+        p[3] = XMVector3TransformCoord(p[3].data, mWorldMatrix);
 
         float dist;
         if (Intersects(ray.position.data, ray.direction.data,
@@ -112,15 +112,15 @@ bool BoxCollider::BoxCollision(BoxCollider* collider)
 
 bool BoxCollider::SphereCollision(SphereCollider* collider)
 {
-    Matrix T = XMMatrixTranslation(GlobalPos().x, GlobalPos().y, GlobalPos().z);
-    Matrix R = XMMatrixRotationQuaternion(GlobalRot().data);
+    Matrix T = XMMatrixTranslation(GetGlobalPosition().x, GetGlobalPosition().y, GetGlobalPosition().z);
+    Matrix R = XMMatrixRotationQuaternion(GetGlobalRotation().data);
 
     Matrix invWorld = XMMatrixInverse(nullptr, R * T);
 
-    Vector3 spherePos = XMVector3TransformCoord(collider->GlobalPos().data, invWorld);
+    Vector3 spherePos = XMVector3TransformCoord(collider->GetGlobalPosition().data, invWorld);
 
-    Vector3 tempMin = minBox * GlobalScale();
-    Vector3 tempMax = maxBox * GlobalScale();
+    Vector3 tempMin = minBox * GetGlobalScale();
+    Vector3 tempMax = maxBox * GetGlobalScale();
 
     Vector3 temp;
     temp.x = max(tempMin.x, min(spherePos.x, tempMax.x));
@@ -140,15 +140,15 @@ bool BoxCollider::CapsuleCollision(CapsuleCollider* collider)
 
 bool BoxCollider::SphereCollision(Vector3 center, float radius)
 {
-    Matrix T = XMMatrixTranslation(GlobalPos().x, GlobalPos().y, GlobalPos().z);
-    Matrix R = XMMatrixRotationQuaternion(GlobalRot().data);
+    Matrix T = XMMatrixTranslation(GetGlobalPosition().x, GetGlobalPosition().y, GetGlobalPosition().z);
+    Matrix R = XMMatrixRotationQuaternion(GetGlobalRotation().data);
 
     Matrix invWorld = XMMatrixInverse(nullptr, R * T);
 
     Vector3 spherePos = XMVector3TransformCoord(center.data, invWorld);
 
-    Vector3 tempMin = minBox * GlobalScale();
-    Vector3 tempMax = maxBox * GlobalScale();
+    Vector3 tempMin = minBox * GetGlobalScale();
+    Vector3 tempMax = maxBox * GetGlobalScale();
 
     Vector3 temp;
     temp.x = max(tempMin.x, min(spherePos.x, tempMax.x));
@@ -162,23 +162,23 @@ bool BoxCollider::SphereCollision(Vector3 center, float radius)
 
 Vector3 BoxCollider::MinBox()
 {
-    return XMVector3TransformCoord(minBox.data, world);
+    return XMVector3TransformCoord(minBox.data, mWorldMatrix);
 }
 
 Vector3 BoxCollider::MaxBox()
 {
-    return XMVector3TransformCoord(maxBox.data, world);
+    return XMVector3TransformCoord(maxBox.data, mWorldMatrix);
 }
 
 Obb BoxCollider::GetObb()
 {
-    obb.position = GlobalPos();
+    obb.position = GetGlobalPosition();
 
     obb.axis[0] = Right();
     obb.axis[1] = Up();
     obb.axis[2] = Forward();
 
-    obb.halfSize = (minBox - maxBox) * 0.5f * GlobalScale();
+    obb.halfSize = (minBox - maxBox) * 0.5f * GetGlobalScale();
 
     return obb;
 }

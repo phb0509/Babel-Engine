@@ -16,7 +16,7 @@ bool SphereCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 	Vector3 P = ray.position;
 	Vector3 D = ray.direction;
 
-	Vector3 C = GlobalPos();
+	Vector3 C = GetGlobalPosition();
 	Vector3 A = P - C;
 
 	float a = Vector3::Dot(D, D);
@@ -46,7 +46,7 @@ bool SphereCollider::BoxCollision(BoxCollider* collider)
 
 bool SphereCollider::SphereCollision(SphereCollider* collider)
 {
-	float distance = Distance(GlobalPos(), collider->GlobalPos());
+	float distance = Distance(GetGlobalPosition(), collider->GetGlobalPosition());
 
 	float r1 = Radius();
 	float r2 = collider->Radius();

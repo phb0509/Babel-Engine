@@ -8,7 +8,7 @@ Player::Player()
 	mIsNormalAttackCollide(false), 
 	normalAttackDamage(10.0f)
 {
-	scale = { 0.05f, 0.05f, 0.05f };
+	mScale = { 0.05f, 0.05f, 0.05f };
 	mMoveSpeed = 50.0f;
 	mRotationSpeed = 5.0f;
 
@@ -26,7 +26,7 @@ Player::Player()
 
 	PlayClip(1);
 
-	rotation.y = XM_PI;
+	mRotation.y = XM_PI;
 
 	bodyCollider = new BoxCollider();
 	swordCollider = new BoxCollider();
@@ -97,16 +97,16 @@ void Player::move()
 {
 	if (mIsNormalAttack) return;
 
-	float terrainY = terrain->GetHeight(position);
+	float terrainY = terrain->GetHeight(mPosition);
 
-	position.y = terrainY;
+	mPosition.y = terrainY;
 	
 	if (KEY_PRESS('W'))
 	{
 		rotate();
 
-		position.z += CAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
-		position.x += CAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += CAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += CAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -115,8 +115,8 @@ void Player::move()
 	{
 
 		rotate();
-		position.z += CAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
-		position.x += CAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += CAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += CAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -124,13 +124,13 @@ void Player::move()
 	if (KEY_PRESS('A'))
 	{
 		rotate();
-		position += Right() * mMoveSpeed * DELTA;
+		mPosition += Right() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
 		rotate();
-		position += Right() * -mMoveSpeed * DELTA;
+		mPosition += Right() * -mMoveSpeed * DELTA;
 	}
 }
 
@@ -138,34 +138,34 @@ void Player::worldCameraMove()
 {
 	if (mIsNormalAttack) return;
 
-	float terrainY = terrain->GetHeight(position);
+	float terrainY = terrain->GetHeight(mPosition);
 
-	position.y = terrainY;
+	mPosition.y = terrainY;
 
 	if (KEY_PRESS('W'))
 	{
-		position.z += -Forward().z * mMoveSpeed * DELTA;
-		position.x += -Forward().x * mMoveSpeed * DELTA;
+		mPosition.z += -Forward().z * mMoveSpeed * DELTA;
+		mPosition.x += -Forward().x * mMoveSpeed * DELTA;
 
 		setAnimation(RUN);
 	}
 
 	if (KEY_PRESS('S'))
 	{
-		position.z += Forward().z * -mMoveSpeed * DELTA;
-		position.x += Forward().x * -mMoveSpeed * DELTA;
+		mPosition.z += Forward().z * -mMoveSpeed * DELTA;
+		mPosition.x += Forward().x * -mMoveSpeed * DELTA;
 
 		setAnimation(RUN);
 	}
 
 	if (KEY_PRESS('A'))
 	{
-		rotation.y -= mRotationSpeed * DELTA;
+		mRotation.y -= mRotationSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
-		rotation.y += mRotationSpeed * DELTA;
+		mRotation.y += mRotationSpeed * DELTA;
 	}
 }
 
@@ -180,7 +180,7 @@ void Player::rotate()
 		{	}
 		else
 		{
-			rotation.y += 0.02f;
+			mRotation.y += 0.02f;
 		}
 	}
 
@@ -191,7 +191,7 @@ void Player::rotate()
 		{	}
 		else
 		{
-			rotation.y -= 0.02f;
+			mRotation.y -= 0.02f;
 		}
 	}
 }
@@ -267,11 +267,11 @@ void Player::normalAttack()
 void Player::setColliders()
 {
 	int swordIndex = GetNodeByName("Sword_joint");
-	swordMatrix = GetTransformByNode(swordIndex) * world;
+	swordMatrix = GetTransformByNode(swordIndex) * mWorldMatrix;
 	swordCollider->SetParent(&swordMatrix);
 
 	int bodyIndex = GetNodeByName("Spine");
-	bodyMatrix = GetTransformByNode(bodyIndex) * world;
+	bodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
 	bodyCollider->SetParent(&bodyMatrix);
 	
 }
@@ -313,9 +313,9 @@ void Player::findCollider(string name, Collider* collider)
 	{
 		if (colliderDatas[i].name == name)
 		{
-			collider->position = colliderDatas[i].position;
-			collider->rotation = colliderDatas[i].rotation;
-			collider->scale = colliderDatas[i].scale;
+			collider->mPosition = colliderDatas[i].position;
+			collider->mRotation = colliderDatas[i].rotation;
+			collider->mScale = colliderDatas[i].scale;
 		}
 	}
 }

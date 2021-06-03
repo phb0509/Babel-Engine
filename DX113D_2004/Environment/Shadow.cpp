@@ -7,8 +7,8 @@ Shadow::Shadow(UINT width, UINT height)
 	depthStencil = new DepthStencil(width, height);
 
 	depthMap = new UIImage(L"Texture");
-	depthMap->scale = { 300, 300, 1 };
-	depthMap->position = { 150, 150, 0 };
+	depthMap->mScale = { 300, 300, 1 };
+	depthMap->mPosition = { 150, 150, 0 };
 	depthMap->SetSRV(renderTarget->GetSRV());
 
 	viewBuffer = new MatrixBuffer();

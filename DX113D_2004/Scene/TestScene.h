@@ -15,4 +15,6 @@ public:
 
 private:
 	Collider* collider;
+	Cube* cube;
+	vector<Cube*> cubes;
 };

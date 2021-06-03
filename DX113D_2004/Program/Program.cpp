@@ -45,15 +45,19 @@ void Program::Update()
 
 	SceneManager::Get()->Update();
 
-	if (Environment::Get()->GetIsTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
-	else
-	{
-		Environment::Get()->GetWorldCamera()->Update();
-	}
+	//if (Environment::Get()->GetIsTargetCamera())
+	//{
+	//	Environment::Get()->GetTargetCamera()->Update();
+	//}
+	//else
+	//{
+	//	Environment::Get()->GetWorldCamera()->Update();
+	//}
 
+
+	Environment::Get()->GetTargetCamera()->Update();
+	Environment::Get()->GetWorldCamera()->Update();
+	
 	Control::Get()->SetWheel(0.0f);
 }
 
@@ -66,7 +70,10 @@ void Program::PreRender()
 void Program::Render()
 {
 	Device::Get()->SetRenderTarget();
+	Environment::Get()->GetTargetCamera()->Render();
+	Environment::Get()->GetWorldCamera()->Render();
 	Environment::Get()->Set();
+
 
 	SceneManager::Get()->Render();
 }

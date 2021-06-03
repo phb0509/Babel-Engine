@@ -21,7 +21,7 @@ class Camera : public Transform
 		void Set(Matrix value)
 		{
 			data.matrix = XMMatrixTranspose(value);
-			Matrix temp = XMMatrixInverse(nullptr, value); // 다른 모든 오브젝트의 worldMatrix에 카메라의 viewMatrix의 역행렬을 곱해줘야한다. 뷰공간으로 전환하기위한 과정.
+			Matrix temp = XMMatrixInverse(nullptr, value); 
 			data.invMatrix = XMMatrixTranspose(temp);
 		}
 	};
@@ -31,6 +31,7 @@ public:
 	~Camera();
 
 	void Update();
+	void Render();
 	void TargetMove();
 	void FollowControl();
 	void FreeMode();
@@ -47,9 +48,14 @@ public:
 
 	void SetTarget(Transform* value) { target = value; }
 
-
 	Matrix GetView() { return view; }
 	ViewBuffer* GetViewBuffer() { return viewBuffer; }
+	Frustum* GetFrustum() { return mFrustum; }
+
+private:
+	void setViewToFrustum(Matrix view);
+
+
 
 
 public:
@@ -85,6 +91,7 @@ private:
 
 	Transform* target;
 	bool mbIsOnFrustumCollider;
+	Frustum* mFrustum;
 
 
 

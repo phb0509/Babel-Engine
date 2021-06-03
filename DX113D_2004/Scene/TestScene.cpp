@@ -3,7 +3,9 @@
 
 TestScene::TestScene()
 {
-	collider = new TetrahedronCollider(20.0f,30.0f);
+
+
+	
 }
 
 TestScene::~TestScene()
@@ -12,7 +14,10 @@ TestScene::~TestScene()
 
 void TestScene::Update()
 {
-	collider->Update();
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		cubes[i]->Update();
+	}
 }
 
 void TestScene::PreRender()
@@ -21,7 +26,10 @@ void TestScene::PreRender()
 
 void TestScene::Render()
 {
-	collider->Render();
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		cubes[i]->Render();
+	}
 }
 
 void TestScene::PostRender()

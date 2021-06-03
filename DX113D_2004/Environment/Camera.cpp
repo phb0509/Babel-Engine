@@ -18,6 +18,9 @@ Camera::Camera()
 
 {
 	viewBuffer = new ViewBuffer();
+	mFrustum = new Frustum();
+	
+	
 	oldPos = MOUSEPOS;
 }
 
@@ -31,12 +34,20 @@ void Camera::Update()
 	if (target != nullptr)
 	{
 		TargetMove();
+		mFrustum->Update();
 	}
 	else
 	{
 		FreeMode();
 	}
+}
 
+void Camera::Render()
+{
+	if (target != nullptr)
+	{
+		mFrustum->Render();
+	}
 }
 
 
@@ -68,6 +79,8 @@ void Camera::TargetMove()
 	view = XMMatrixLookAtLH(position.data, targetPosition.data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라가 타겟을 바라볼 때의 윗방향.
 	viewBuffer->Set(view);
+	setViewToFrustum(view);
+	
 }
 
 
@@ -174,8 +187,6 @@ void Camera::View()
 void Camera::PostRender()
 {
 	ImGui::Text("CameraInfo");
-
-
 	ImGui::Text("CamPos : %.1f, %.1f, %.1f", position.x, position.y, position.z);
 	ImGui::Text("CamRot : %.1f, %.1f, %.1f", rotation.x, rotation.y, rotation.z);
 	ImGui::Text("CameraForward : %.3f, %.3f, %.3f", cameraForward.x, cameraForward.y, cameraForward.z);
@@ -231,6 +242,11 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	ray.direction.Normalize();
 
 	return ray;
+}
+
+void Camera::setViewToFrustum(Matrix view)
+{
+	mFrustum->SetView(view);
 }
 
 

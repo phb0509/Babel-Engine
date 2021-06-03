@@ -1,25 +1,26 @@
 #include "Framework.h"
 #include "MainScene.h"
 
-MainScene::MainScene()
+MainScene::MainScene():
+	mTargetCameraFrustum(nullptr)
 {
-	terrain = new Terrain();
-	player = GM->GetPlayer();
-	player->SetTerrain(terrain);
-	Environment::Get()->SetTargetToCamera(player);
+	mTerrain = new Terrain();
+	mPlayer = GM->GetPlayer();
+	mPlayer->SetTerrain(mTerrain);
+	Environment::Get()->SetTargetToCamera(mPlayer);
 	monsters = GM->GetMonsters();
 
-	obstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	obstacle1->scale = { 0.1f, 0.1f, 0.1f };
-	obstacle1->position = { 40, 20, 40 };
-	obstacle1->UpdateWorld();
-	obstacle1->GetCollider()->UpdateWorld();
+	mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	mObstacle1->scale = { 0.1f, 0.1f, 0.1f };
+	mObstacle1->position = { 40, 20, 40 };
+	mObstacle1->UpdateWorld();
+	mObstacle1->GetCollider()->UpdateWorld();
 
-	obstacle2 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	obstacle2->scale = { 0.1f, 0.1f, 0.1f };
-	obstacle2->position = { 90, 20, 90 };
-	obstacle2->UpdateWorld();
-	obstacle2->GetCollider()->UpdateWorld();
+	mObstacle2 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	mObstacle2->scale = { 0.1f, 0.1f, 0.1f };
+	mObstacle2->position = { 90, 20, 90 };
+	mObstacle2->UpdateWorld();
+	mObstacle2->GetCollider()->UpdateWorld();
 	
 
 
@@ -27,12 +28,12 @@ MainScene::MainScene()
 	monsters[0]->position = { 50.0f, 0.0f, 50.0f };
 	//monsters[1]->position = { 45.0f, 0.0f, 50.0f };
 
-	monsters[0]->SetTerrain(terrain);
+	monsters[0]->SetTerrain(mTerrain);
 	//monsters[1]->SetTerrain(terrain);
 
 	vector<Collider*> monsters0Obstacles;
-	monsters0Obstacles.push_back(obstacle1->GetCollider());
-	monsters0Obstacles.push_back(obstacle2->GetCollider());
+	monsters0Obstacles.push_back(mObstacle1->GetCollider());
+	monsters0Obstacles.push_back(mObstacle2->GetCollider());
 	//vector<Collider*> monsters1Obstacles;
 
 	//monsters0Obstacles.push_back(monsters[1]->GetColliderForAStar());
@@ -41,25 +42,42 @@ MainScene::MainScene()
 	monsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
 	//monsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
 
-	
 
+	for (int i = 0; i < 25; i++)
+	{
+		for (int j = 0; j < 25; j++)
+		{
+			cube = new Cube();
+			cube->position.x = i * 10.0f;
+			cube->position.z = j * 10.0f;
+			cubes.push_back(cube);
+		}
+	}
+
+	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
 }
 
 MainScene::~MainScene()
 {
-	delete terrain;
+	delete mTerrain;
 }
 
 void MainScene::Update()
 {
-	terrain->Update();
-	player->Update();
+	mTerrain->Update();
+	mPlayer->Update();
 	
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monsters[i]->Update();
 	}
 
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		cubes[i]->Update();
+		//cubes[i]->position.y = mTerrain->GetHeight(cubes[i]->position);
+		cubes[i]->position.y = 20.0f;
+	}
 
 }
 
@@ -69,25 +87,32 @@ void MainScene::PreRender()
 
 void MainScene::Render()
 {
-	terrain->Render();
-	player->Render();
+	mTerrain->Render();
+	mPlayer->Render();
 
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monsters[i]->Render();
 	}
 
-	obstacle1->Render();
-	obstacle2->Render();
+	mObstacle1->Render();
+	mObstacle2->Render();
 
 	//monsters[0]->GetAStar()->Render();
 	
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		if (mTargetCameraFrustum->ContainPoint(cubes[i]->position))
+		{
+			cubes[i]->Render();
+		}
+	}
 	
 }
 
 void MainScene::PostRender()
 {
-	player->PostRender();
+	mPlayer->PostRender();
 	ImGui::Text("mPathSize : %d", monsters[0]->GetPath().size());
 
 }

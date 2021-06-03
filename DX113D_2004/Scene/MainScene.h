@@ -15,14 +15,16 @@ public:
 
 
 private:
-	Player* player;
-	Monster* monster;
-	Terrain* terrain;
+	Player* mPlayer;
+	Monster* mMonster;
+	Terrain* mTerrain;
 	vector<Monster*> monsters;
 
-	ModelObject* obstacle1;
-	ModelObject* obstacle2;
+	ModelObject* mObstacle1;
+	ModelObject* mObstacle2;
 
-	int a = 0;
+	Cube* cube;
+	vector<Cube*> cubes;
+	Frustum* mTargetCameraFrustum;
 
 };

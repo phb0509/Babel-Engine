@@ -78,7 +78,6 @@ protected:
 	ModelAnimator* mModelAnimator;
 
 
-
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;
 	function<void(Transform*, Vector3)> mRotationPeriodFuncPointer;

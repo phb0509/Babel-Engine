@@ -52,13 +52,6 @@ void Mutant::Update()
 
 	mCurrentState->Execute(this);
 
-	//char buff[100];
-	//sprintf_s(buff, "state : %d\n", mCurrentState);
-	//OutputDebugStringA(buff);
-
-
-
-
 	UpdateWorld();
 	ModelAnimator::Update();
 }

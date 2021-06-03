@@ -55,6 +55,7 @@ private:
 	void freeMode();
 	void freeMove();
 	void rotation();
+	void initialize();
 
 	void setViewToFrustum(Matrix view);
 	
@@ -96,6 +97,7 @@ private:
 	bool mbIsOnFrustumCollider;
 	Frustum* mFrustum;
 	bool mbIsMouseInputing;
+	bool mbHasInitalized;
 
 
 

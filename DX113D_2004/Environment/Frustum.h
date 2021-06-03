@@ -16,9 +16,11 @@ public:
 	void GetPlanes(Float4* cullings);
 
 	void SetView(Matrix view) { mView = view; }
+	void SetCamera(Camera* camera) { mCamera = camera; }
 
 private:
 	void setCollider(float colliderRectSize, float distanceToColliderRect);
+	void initialize();
 
 private:
 	Vector4 planes[6];
@@ -31,4 +33,6 @@ private:
 	float mDistanceToColliderRect;
 
 	bool mbIsCheck;
+	Camera* mCamera;
+	bool mbHasInitialized;
 };

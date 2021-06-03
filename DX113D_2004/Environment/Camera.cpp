@@ -15,7 +15,8 @@ Camera::Camera()
 	target(nullptr),
 	wheelSpeed(15.0f),
 	mbIsOnFrustumCollider(false),
-	mbIsMouseInputing(true)
+	mbIsMouseInputing(true),
+	mbHasInitalized(false)
 
 {
 	mViewBuffer = new ViewBuffer();
@@ -31,6 +32,13 @@ Camera::~Camera()
 
 void Camera::Update()
 {
+	if (mbHasInitalized)
+	{
+		initialize();
+		mbHasInitalized = true;
+	}
+
+
 	if (target != nullptr)
 	{
 		if (mbIsMouseInputing)
@@ -93,8 +101,10 @@ void Camera::targetMove()
 
 void Camera::targetMoveInWorldCamera()
 {
-	Vector3 targetPosition = target->GetGlobalPosition();
-	mPosition = target->Forward() * 40.0f;
+	Vector3 targetPosition = target->mPosition;
+	mPosition = target->mPosition + target->Forward() * 1.1f;
+	
+
 
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
@@ -188,6 +198,11 @@ void Camera::rotation()
 	}
 
 	oldPos = MOUSEPOS;
+}
+
+void Camera::initialize()
+{
+	mFrustum->SetCamera(this);
 }
 
 void Camera::SetViewMatrixToBuffer()

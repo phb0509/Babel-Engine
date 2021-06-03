@@ -3,13 +3,14 @@
 Frustum::Frustum() :
 	mColliderRectSize(0.0f),
 	mDistanceToColliderRect(1.0f),
-	mbIsCheck(false)
+	mbIsCheck(false),
+	mCamera(nullptr),
+	mbHasInitialized(false)
 {
-	//projection = Environment::Get()->GetProjection();
-
 	float farz = 200.0f;
 	mProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1.0f, 0.1f, farz);
 	mCollider = new TetrahedronCollider(50.0f,farz);
+
 }
 
 Frustum::~Frustum()
@@ -25,6 +26,14 @@ void Frustum::Update()
 	//view = XMMatrixLookAtLH(pos.data, focus.data, CAMERA->Up().data);
 	// 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
 	// 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
+
+	if (mbHasInitialized)
+	{
+		initialize();
+		mbHasInitialized = false;
+	}
+
+
 
 	Float4x4 VP;
 	XMStoreFloat4x4(&VP, mView * mProjection);
@@ -265,4 +274,10 @@ void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)
 		mDistanceToColliderRect = distanceToColliderRect;
 		mbIsCheck = true;
 	}
+}
+
+
+void Frustum::initialize()
+{
+	mCollider->SetParent(mCamera->GetWorld());
 }

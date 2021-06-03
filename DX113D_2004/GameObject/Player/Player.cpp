@@ -152,8 +152,8 @@ void Player::worldCameraMove()
 
 	if (KEY_PRESS('S'))
 	{
-		mPosition.z += Forward().z * -mMoveSpeed * DELTA;
-		mPosition.x += Forward().x * -mMoveSpeed * DELTA;
+		mPosition.z -= Forward().z * -mMoveSpeed * DELTA;
+		mPosition.x -= Forward().x * -mMoveSpeed * DELTA;
 
 		setAnimation(RUN);
 	}

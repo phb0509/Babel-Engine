@@ -20,6 +20,7 @@ public:
 
 private:
 	void setCollider(float colliderRectSize, float distanceToColliderRect);
+	void moveFrustumCollider();
 	void initialize();
 
 private:

@@ -7,7 +7,7 @@ Frustum::Frustum() :
 	mCamera(nullptr),
 	mbHasInitialized(false)
 {
-	float farz = 200.0f;
+	float farz = 100.0f;
 	mProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1.0f, 0.1f, farz);
 	mCollider = new TetrahedronCollider(50.0f,farz);
 
@@ -27,10 +27,10 @@ void Frustum::Update()
 	// 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
 	// 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
 
-	if (mbHasInitialized)
+	if (!mbHasInitialized)
 	{
 		initialize();
-		mbHasInitialized = false;
+		mbHasInitialized = true;
 	}
 
 
@@ -86,11 +86,37 @@ void Frustum::Update()
 		planes[i] = XMPlaneNormalize(planes[i]);
 
 	mCollider->Update();
+	moveFrustumCollider();
+
 }
 
 void Frustum::Render()
 {
 	mCollider->Render();
+}
+
+
+
+void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)
+{
+	if (!mbIsCheck)
+	{
+		mColliderRectSize = colliderRectSize;
+		mDistanceToColliderRect = distanceToColliderRect;
+		mbIsCheck = true;
+	}
+}
+
+void Frustum::moveFrustumCollider()
+{
+	mCollider->mPosition = mCamera->mPosition;
+
+}
+
+
+void Frustum::initialize()
+{
+	
 }
 
 bool Frustum::ContainPoint(Vector3 position)
@@ -264,20 +290,4 @@ void Frustum::GetPlanes(Float4* cullings)
 {
 	for (UINT i = 0; i < 6; i++)
 		XMStoreFloat4(&cullings[i], planes[i]);
-}
-
-void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)
-{
-	if (!mbIsCheck)
-	{
-		mColliderRectSize = colliderRectSize;
-		mDistanceToColliderRect = distanceToColliderRect;
-		mbIsCheck = true;
-	}
-}
-
-
-void Frustum::initialize()
-{
-	mCollider->SetParent(mCamera->GetWorld());
 }

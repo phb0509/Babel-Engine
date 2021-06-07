@@ -23,8 +23,6 @@ MainScene::MainScene():
 	mObstacle2->GetCollider()->UpdateWorld();
 	
 
-
-
 	monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
 	//monsters[1]->position = { 45.0f, 0.0f, 50.0f };
 
@@ -55,6 +53,10 @@ MainScene::MainScene():
 	}
 
 	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
+	testCube = new Cube();
+	testCube->SetParent(mPlayer->GetWorld());
+	testCube->mPosition.x += 20.0f;
+	testCube->mScale = { 50.0f, 50.0f, 50.0f };
 }
 
 MainScene::~MainScene()
@@ -79,6 +81,8 @@ void MainScene::Update()
 		cubes[i]->mPosition.y = 20.0f;
 	}
 
+	testCube->Update();
+	
 }
 
 void MainScene::PreRender()
@@ -108,11 +112,18 @@ void MainScene::Render()
 		}
 	}
 	
+	testCube->Render();
 }
 
 void MainScene::PostRender()
 {
 	mPlayer->PostRender();
 	ImGui::Text("mPathSize : %d", monsters[0]->GetPath().size());
+
+	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
+	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+
+	string tc = "TestCube";
+	ImGui::InputFloat3(tc.c_str(), (float*)&testCube->mPosition);
 
 }

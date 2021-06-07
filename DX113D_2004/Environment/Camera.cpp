@@ -32,7 +32,7 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-	if (mbHasInitalized)
+	if (!mbHasInitalized)
 	{
 		initialize();
 		mbHasInitalized = true;

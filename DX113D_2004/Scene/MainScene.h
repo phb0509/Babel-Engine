@@ -27,4 +27,6 @@ private:
 	vector<Cube*> cubes;
 	Frustum* mTargetCameraFrustum;
 
+	Cube* testCube;
+
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 class Camera : public Transform
 {
 	class ViewBuffer : public ConstBuffer
@@ -21,7 +23,7 @@ class Camera : public Transform
 		void Set(Matrix value)
 		{
 			data.matrix = XMMatrixTranspose(value);
-			Matrix temp = XMMatrixInverse(nullptr, value); 
+			Matrix temp = XMMatrixInverse(nullptr, value);
 			data.invMatrix = XMMatrixTranspose(temp);
 		}
 	};
@@ -32,11 +34,11 @@ public:
 
 	void Update();
 	void Render();
-
-	
 	void PostRender();
 
 	Ray ScreenPointToRay(Vector3 pos);
+	void CreateFrustum();
+
 
 	void SetVS(UINT slot = 1);
 	void SetTarget(Transform* value) { target = value; }
@@ -47,6 +49,8 @@ public:
 	Matrix GetView() { return mViewMatrix; }
 	ViewBuffer* GetViewBuffer() { return mViewBuffer; }
 	Frustum* GetFrustum() { return mFrustum; }
+	Transform* GetCameraTarget() { return target; }
+	float GetDistanceToTarget() { return mDistanceToTarget; }
 
 private:
 	void targetMove();
@@ -58,7 +62,7 @@ private:
 	void initialize();
 
 	void setViewToFrustum(Matrix view);
-	
+
 
 
 
@@ -98,7 +102,6 @@ private:
 	Frustum* mFrustum;
 	bool mbIsMouseInputing;
 	bool mbHasInitalized;
-
-
+	float mDistanceToTarget;
 
 };

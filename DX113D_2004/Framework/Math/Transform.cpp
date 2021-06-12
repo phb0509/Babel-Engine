@@ -92,11 +92,32 @@ Vector3 Transform::Right()
 	return XMVector3Normalize(XMVector3TransformNormal(kRight, mWorldMatrix));
 }
 
-void Transform::RotateToDestination(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점좌표. 
+void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점벡터. 
 {
 	dest = dest - transform->mPosition;
 	dest.Normalize();
 	Vector3 forward = transform->Forward() * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
+	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
+	temp = acos(temp);
+
+	Vector3 tempDirection = Vector3::Cross(forward, dest); // 어디로 회전할지.
+
+	if (tempDirection.y < 0.0f) // 목표지점디렉션이 포워드벡터보다 왼쪽에 있으면
+	{
+		transform->mRotation.y -= temp;
+	}
+
+	else if (tempDirection.y >= 0.0f) // 디렉션이 포워드벡터보다 오른쪽에 있으면
+	{
+		transform->mRotation.y += temp;
+	}
+}
+
+void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 dest)
+{
+	dest = dest - transform->mPosition;
+	dest.Normalize();
+	Vector3 forward = transform->Forward(); 
 	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
 	temp = acos(temp);
 

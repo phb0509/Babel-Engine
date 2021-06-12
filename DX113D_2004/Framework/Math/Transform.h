@@ -24,7 +24,8 @@ public:
 	Vector3 GetGlobalRotation() { return mGlobalRotation; }
 	Vector3 GetGlobalScale() { return mGlobalScale; }
 
-	void RotateToDestination(Transform* transform, Vector3 dest); // 회전시키고자 하는 transform과 목표지점좌표.
+	void RotateToDestinationForModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
+	void RotateToDestinationForNotModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
 	void MoveToDestination(Transform* transform, Vector3 dest, float moveSpeed); // 이동시키고자 하는 transform과 목표지점, 이동속도.
 
 	void ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)> funcPointer, Transform* param1, Vector3 param2, float periodTime);

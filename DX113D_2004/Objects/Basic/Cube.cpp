@@ -17,8 +17,6 @@ Cube::~Cube()
 
 void Cube::Update()
 {	
-	mRotation.y += 0.001f;	
-
 	UpdateWorld();
 }
 

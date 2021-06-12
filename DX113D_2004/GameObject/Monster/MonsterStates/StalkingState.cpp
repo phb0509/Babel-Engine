@@ -13,7 +13,7 @@ void StalkingState::Enter(Monster* monster)
 {
 	mPlayer = GM->Get()->GetPlayer();
 	monster->GetPath().clear();
-	mPeriodFuncPointer = bind(&Transform::RotateToDestination, monster,placeholders::_1, placeholders::_2);
+	mPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, monster,placeholders::_1, placeholders::_2);
 }
 
 void StalkingState::Execute(Monster* monster)

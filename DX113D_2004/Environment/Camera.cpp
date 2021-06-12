@@ -16,12 +16,12 @@ Camera::Camera()
 	wheelSpeed(15.0f),
 	mbIsOnFrustumCollider(false),
 	mbIsMouseInputing(true),
-	mbHasInitalized(false)
+	mbHasInitalized(false),
+	mFrustum(nullptr)
 
 {
 	mViewBuffer = new ViewBuffer();
-	mFrustum = new Frustum();
-	
+
 	oldPos = MOUSEPOS;
 }
 
@@ -41,17 +41,18 @@ void Camera::Update()
 
 	if (target != nullptr)
 	{
-		if (mbIsMouseInputing)
+		if (mbIsMouseInputing) // 타겟카메라시점일 때
 		{
-			targetMove();
+			targetMove(); // 타겟카메라시점의 타겟카메라이동
 		}
 		else
 		{
-			targetMoveInWorldCamera();
+			targetMoveInWorldCamera(); // 월드카메라 시점일때 타겟카메라의 이동
 		}
 	
 		mFrustum->Update();
 	}
+
 	else
 	{
 		freeMode();
@@ -66,7 +67,13 @@ void Camera::Render()
 	}
 }
 
-
+void Camera::PostRender()
+{
+	if (mFrustum != nullptr)
+	{
+		mFrustum->PostRender();
+	}
+}
 
 void Camera::targetMove()
 {
@@ -84,7 +91,7 @@ void Camera::targetMove()
 	destPos.y += height;
 
 	mPosition = LERP(mPosition, destPos, 5.0f * DELTA); // 카메라 위치.
-													  // 현위치에서 desPost까지 moveDamping값만큼.
+													    // 현위치에서 desPost까지 moveDamping값만큼.
 
 	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
 	Vector3 targetPosition = target->GetGlobalPosition() + tempOffset;
@@ -102,14 +109,33 @@ void Camera::targetMove()
 void Camera::targetMoveInWorldCamera()
 {
 	Vector3 targetPosition = target->mPosition;
-	mPosition = target->mPosition + target->Forward() * 1.1f;
-	
+	Vector3 beforePosition = mPosition;
 
+	mPosition = target->mPosition + target->Forward() * 1.1f;
+	mDistanceToTarget = (mPosition - beforePosition).Length();
 
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
+
 	mViewBuffer->Set(mViewMatrix);
 	setViewToFrustum(mViewMatrix);
+
+	//Vector3 targetPosition = target->mPosition;
+	//mPosition = target->mPosition + target->Forward() * 1.1f; // 타겟의 뒤.(모델은 포워드벡터가 반대다)
+
+	//RotateToDestinationForNotModel(this, targetPosition);
+
+	//Vector3 focus = mPosition + Forward();
+
+	//char buff[100];
+	//sprintf_s(buff, "Forwrd.x : %f  Forward.y : %f  Forward.z : %f\n", Forward().x,Forward().y,Forward().z);
+	//OutputDebugStringA(buff);
+
+	//mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data,
+	//	Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
+
+	//mViewBuffer->Set(mViewMatrix);
+	//setViewToFrustum(mViewMatrix);
 }
 
 
@@ -202,7 +228,10 @@ void Camera::rotation()
 
 void Camera::initialize()
 {
-	mFrustum->SetCamera(this);
+	if(mFrustum != nullptr)
+	{
+		mFrustum->SetCamera(this);
+	}
 }
 
 void Camera::SetViewMatrixToBuffer()
@@ -217,31 +246,6 @@ void Camera::SetViewMatrixToBuffer()
 
 
 
-
-void Camera::PostRender()
-{
-	ImGui::Text("CameraInfo");
-	ImGui::Text("CamPos : %.1f, %.1f, %.1f", mPosition.x, mPosition.y, mPosition.z);
-	ImGui::Text("CamRot : %.1f, %.1f, %.1f", mRotation.x, mRotation.y, mRotation.z);
-	ImGui::Text("CameraForward : %.3f, %.3f, %.3f", cameraForward.x, cameraForward.y, cameraForward.z);
-	ImGui::Text("MousePosition : %.1f, %.1f", MOUSEPOS.x, MOUSEPOS.y);
-
-
-	if (target == nullptr)
-	{
-		ImGui::SliderFloat("MoveSpeed", &moveSpeed, 0, 100);
-		ImGui::SliderFloat("RotSpeed", &mRotationSpeed, 0, 10);
-	}
-	else
-	{
-		ImGui::SliderFloat("CamDistance", &distance, -10.0f, 100.0f);
-		ImGui::SliderFloat("CamHeight", &height, -10.0f, 100.0f);
-		ImGui::SliderFloat("CamMoveDamping", &moveDamping, 0.0f, 30.0f);
-		ImGui::SliderFloat("CamRotDamping", &rotDamping, 0.0f, 30.0f);
-		ImGui::SliderFloat3("CamOffset", (float*)&offset, -20.0f, 20.0f);
-	}
-	ImGui::Spacing();
-}
 
 void Camera::SetVS(UINT slot)
 {
@@ -275,6 +279,11 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	ray.direction.Normalize();
 
 	return ray;
+}
+
+void Camera::CreateFrustum()
+{
+	mFrustum = new Frustum();
 }
 
 void Camera::setViewToFrustum(Matrix view)

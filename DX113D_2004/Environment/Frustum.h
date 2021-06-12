@@ -1,5 +1,9 @@
 #pragma once
 
+
+class Cube;
+class EmptyObject;
+
 class Frustum
 {
 public:
@@ -8,6 +12,7 @@ public:
 
 	void Update();
 	void Render();
+	void PostRender();
 
 	bool ContainPoint(Vector3 position);
 	bool ContainSphere(Vector3 center, float radius);
@@ -36,4 +41,7 @@ private:
 	bool mbIsCheck;
 	Camera* mCamera;
 	bool mbHasInitialized;
+
+	EmptyObject* mEmptyObject;
+	Cube* mTestCube;
 };

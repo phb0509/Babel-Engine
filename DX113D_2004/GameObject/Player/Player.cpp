@@ -23,7 +23,6 @@ Player::Player()
 	SetEndEvent(RUN, bind(&Player::setIdle, this));
 	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));
 
-
 	PlayClip(1);
 
 	mRotation.y = XM_PI;

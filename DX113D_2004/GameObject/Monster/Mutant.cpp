@@ -133,7 +133,7 @@ void Mutant::setColliders()
 void Mutant::setAttackEnd()
 {
 	mPlayer = GM->Get()->GetPlayer();
-	RotateToDestination(this, mPlayer->mPosition);
+	RotateToDestinationForModel(this, mPlayer->mPosition);
 }
 
 void Mutant::loadCollider()

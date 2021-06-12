@@ -28,7 +28,7 @@ Monster::Monster() :
 	mAttackState = new AttackState();
 
 	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
-	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestination, this, placeholders::_1, placeholders::_2);
+	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, this, placeholders::_1, placeholders::_2);
 
 	
 	mPathNodesCheck.assign(true, mPathNodesCheckSize);
@@ -227,7 +227,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 		
 		if (mPathNodesCheck[mPath.size() - 1]) // true면 회전.
 		{
-			RotateToDestination(this, mTargetNode);
+			RotateToDestinationForModel(this, mTargetNode);
 			mPathNodesCheck[mPath.size() - 1] = false; // 한번만 Rotation 시켜야하기 때문에 잠근다.
 		}
 

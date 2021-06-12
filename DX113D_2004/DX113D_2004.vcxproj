@@ -186,6 +186,7 @@
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
     <ClInclude Include="GameObject\Utility\E_States.h" />
     <ClInclude Include="GameObject\Utility\State.h" />
+    <ClInclude Include="Objects\Basic\EmptyObject.h" />
     <ClInclude Include="Objects\Deferred\GBuffer.h" />
     <ClInclude Include="Objects\Landscape\Scattering.h" />
     <ClInclude Include="Objects\Landscape\Water.h" />
@@ -344,6 +345,7 @@
     <ClCompile Include="GameObject\Tool\ToolModel.cpp" />
     <ClCompile Include="GameObject\Utility\State.cpp" />
     <ClCompile Include="Objects\Basic\Cube.cpp" />
+    <ClCompile Include="Objects\Basic\EmptyObject.cpp" />
     <ClCompile Include="Objects\Basic\Sphere.cpp" />
     <ClCompile Include="Objects\Basic\UIImage.cpp" />
     <ClCompile Include="Objects\Deferred\GBuffer.cpp" />

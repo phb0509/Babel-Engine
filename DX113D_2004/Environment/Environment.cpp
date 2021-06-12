@@ -10,7 +10,8 @@ Environment::Environment() :
 	samplerState->SetState();
 
 	mTargetCamera = new Camera();
-	mTargetCamera->mPosition = { 0, 5, -5 };
+	mTargetCamera->CreateFrustum();
+	//mTargetCamera->mPosition = { 0, 5, -5 };
 
 	mWorldCamera = new Camera();
 
@@ -32,25 +33,26 @@ void Environment::PostRender()
 	if (ImGui::Button("TargetCamera"))
 	{
 		mbIsTargetCamera = true;
+		mTargetCamera->SetIsMouseInputing(true); // 월드카메라시점일 때 타겟카메라의 마우스이동량에 따른 회전을 막기위함.
 	}
 
 	if (ImGui::Button("WorldCamera"))
 	{
 		mbIsTargetCamera = false;
-
 		mWorldCamera->mPosition = Vector3(110.0f, 175.0f, -40.0f);
 		mWorldCamera->mRotation = Vector3(1.0f, 0.0f, 0.0f);
 		mTargetCamera->SetIsMouseInputing(false);
 	}
 
-	if (mbIsTargetCamera)
-	{
-		mTargetCamera->PostRender();
-	}
-	else
-	{
-		mWorldCamera->PostRender();
-	}
+	ImGui::Text("MousePosition : %.1f, %.1f", MOUSEPOS.x, MOUSEPOS.y);
+	ImGui::Spacing();
+	ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
+	ImGui::Spacing();
+	ImGui::Text("TargetCameraPosition : %.1f,  %.1f,  %.1f", mTargetCamera->mPosition.x, mTargetCamera->mPosition.y, mTargetCamera->mPosition.z);
+	ImGui::Spacing();
+	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
+
+	ImGui::Spacing();
 
 	ImGui::Text("LightInfo");
 	ImGui::ColorEdit4("AmbientColor", (float*)&lightBuffer->data.ambient);
@@ -79,6 +81,23 @@ void Environment::PostRender()
 			ImGui::EndMenu();
 		}
 	}
+
+	mTargetCamera->PostRender();
+	mWorldCamera->PostRender();
+
+
+	//string wc1 = "WorldCameraPosition";
+	//string wc2 = "WorldCameraRotation";
+	//string wc3 = "WorldCameraScale";
+	//ImGui::InputFloat3(wc1.c_str(), (float*)&mWorldCamera->mPosition);
+	//ImGui::InputFloat3(wc2.c_str(), (float*)&mWorldCamera->mRotation);
+	//ImGui::InputFloat3(wc3.c_str(), (float*)&mWorldCamera->mScale);
+
+	/*ImGui::SliderFloat("CamDistance", &distance, -10.0f, 100.0f);
+	ImGui::SliderFloat("CamHeight", &height, -10.0f, 100.0f);
+	ImGui::SliderFloat("CamMoveDamping", &moveDamping, 0.0f, 30.0f);
+	ImGui::SliderFloat("CamRotDamping", &rotDamping, 0.0f, 30.0f);
+	ImGui::SliderFloat3("CamOffset", (float*)&offset, -20.0f, 20.0f);*/
 }
 
 void Environment::Set()

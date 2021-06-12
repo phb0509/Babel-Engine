@@ -3,11 +3,11 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN
 
-//#define WIN_WIDTH 1280
-//#define WIN_HEIGHT 720
+#define WIN_WIDTH 1280
+#define WIN_HEIGHT 720
 
-#define WIN_WIDTH 1920
-#define WIN_HEIGHT 1080
+//#define WIN_WIDTH 1920
+//#define WIN_HEIGHT 1080
 
 
 #define CENTER_X WIN_WIDTH * 0.5f
@@ -187,10 +187,13 @@ using namespace states;
 #include "Algorithm/Node.h"
 #include "Algorithm/Heap.h"
 #include "Algorithm/AStar.h"
+
+
 //Object Header
 #include "Objects/Basic/Cube.h"
 #include "Objects/Basic/Sphere.h"
 #include "Objects/Basic/UIImage.h"
+#include "Objects/Basic/EmptyObject.h"
 
 #include "Objects/Landscape/Terrain.h"
 #include "Objects/Landscape/TerrainEditor.h"

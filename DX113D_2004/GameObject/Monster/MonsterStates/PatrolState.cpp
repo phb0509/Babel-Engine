@@ -85,7 +85,7 @@ void PatrolState::Execute(Monster* monster)
 
 		monster->GetPath().clear();
 		monster->SetAStarPath(mPatrolDestPos);
-		monster->RotateToDestination(monster, monster->GetPath().back());
+		monster->RotateToDestinationForModel(monster, monster->GetPath().back());
 	}
 
 	else if (!mbSetPatrolDest && mbPatrolMove) // 실제이동.
@@ -102,7 +102,7 @@ void PatrolState::Execute(Monster* monster)
 
 				if (monster->GetPath().size() > 0)
 				{
-					monster->RotateToDestination(monster, monster->GetPath().back());
+					monster->RotateToDestinationForModel(monster, monster->GetPath().back());
 				}
 			}
 

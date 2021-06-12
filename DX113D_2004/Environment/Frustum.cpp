@@ -9,8 +9,10 @@ Frustum::Frustum() :
 {
 	float farz = 100.0f;
 	mProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1.0f, 0.1f, farz);
-	mCollider = new TetrahedronCollider(50.0f,farz);
+	mCollider = new TetrahedronCollider(100.0f, farz);
 
+	mEmptyObject = new EmptyObject();
+	mTestCube = new Cube();
 }
 
 Frustum::~Frustum()
@@ -19,13 +21,13 @@ Frustum::~Frustum()
 
 void Frustum::Update()
 {
-	//mView = CAMERA->GetView(); // 타겟카메라뷰
-
-	//Vector3 pos = CAMERA->position - CAMERA->Forward() * 1.0f;
-	//Vector3 focus = pos + CAMERA->Forward();
-	//view = XMMatrixLookAtLH(pos.data, focus.data, CAMERA->Up().data);
+	// Vector3 pos = CAMERA->position - CAMERA->Forward() * 1.0f;
+	// Vector3 focus = pos + CAMERA->Forward();
+	// view = XMMatrixLookAtLH(pos.data, focus.data, CAMERA->Up().data);
 	// 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
 	// 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
+
+	mView = CAMERA->GetView(); // 타겟카메라뷰
 
 	if (!mbHasInitialized)
 	{
@@ -33,12 +35,11 @@ void Frustum::Update()
 		mbHasInitialized = true;
 	}
 
-
-
 	Float4x4 VP;
 	XMStoreFloat4x4(&VP, mView * mProjection);
 
 	// a,b,c는 평면의 방향을 나타내는 법선벡터. d는 평면과 원점간의 거리
+
 	//Left
 	float a = VP._14 + VP._11;
 	float b = VP._24 + VP._21;
@@ -48,7 +49,7 @@ void Frustum::Update()
 
 	//Right
 	a = VP._14 - VP._11;
-	b = VP._24 - VP._21;	
+	b = VP._24 - VP._21;
 	c = VP._34 - VP._31;
 	d = VP._44 - VP._41;
 	planes[1] = XMVectorSet(a, b, c, d);
@@ -85,14 +86,39 @@ void Frustum::Update()
 	for (UINT i = 0; i < 6; i++)
 		planes[i] = XMPlaneNormalize(planes[i]);
 
+
+	mTestCube->Update();
 	mCollider->Update();
 	moveFrustumCollider();
-
+	//mEmptyObject->Update();
 }
 
 void Frustum::Render()
 {
+	mTestCube->Render();
 	mCollider->Render();
+	//mEmptyObject->Render();
+}
+
+void Frustum::PostRender()
+{
+	ImGui::Begin("Test");
+
+	string c1 = "CubePosition";
+	string c2 = "CubeRotation";
+	string c3 = "CubeScale";
+	ImGui::InputFloat3(c1.c_str(), (float*)&mTestCube->mPosition);
+	ImGui::InputFloat3(c2.c_str(), (float*)&mTestCube->mRotation);
+	ImGui::InputFloat3(c3.c_str(), (float*)&mTestCube->mScale);
+
+	string fc1 = "ColliderPosition";
+	string fc2 = "ColliderRotation";
+	string fc3 = "ColliderScale";
+	ImGui::InputFloat3(fc1.c_str(), (float*)&mCollider->mPosition);
+	ImGui::InputFloat3(fc2.c_str(), (float*)&mCollider->mRotation);
+	ImGui::InputFloat3(fc3.c_str(), (float*)&mCollider->mScale);
+
+	ImGui::End();
 }
 
 
@@ -109,14 +135,26 @@ void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)
 
 void Frustum::moveFrustumCollider()
 {
-	mCollider->mPosition = mCamera->mPosition;
+
 
 }
 
 
 void Frustum::initialize()
 {
-	
+	//mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
+	float tempScale = mCamera->GetCameraTarget()->mScale.x;
+	tempScale = 1.0f / tempScale;
+
+	mTestCube->SetParent(GM->GetPlayer()->GetWorld());
+	mTestCube->mScale = { tempScale,tempScale,tempScale }; // 플레이어
+
+	mCollider->SetParent(mTestCube->GetWorld());
+	mCollider->mRotation.y += 3.0f;
+
+	mTestCube->mPosition.z += mCamera->GetDistanceToTarget();
+	//mTestCube->mScale = { 10.0f,10.0f,10.0f };
+	//mTestCube->mPosition.z -= 20.0f;
 }
 
 bool Frustum::ContainPoint(Vector3 position)

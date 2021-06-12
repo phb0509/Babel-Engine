@@ -143,7 +143,7 @@ void Environment::SetProjection()
 
 void Environment::CreatePerspective()
 {
-	projection = XMMatrixPerspectiveFovLH(XM_PIDIV4,
+	projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
 		WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f); // 시야각( pie/4니까 90도?,
 
 	projectionBuffer = new MatrixBuffer();

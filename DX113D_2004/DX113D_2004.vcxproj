@@ -175,6 +175,7 @@
     <ClInclude Include="Environment\Reflection.h" />
     <ClInclude Include="Environment\Refraction.h" />
     <ClInclude Include="Environment\Shadow.h" />
+    <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="Framework\Collider\BoxCollider.cpp" />
     <ClCompile Include="Framework\Collider\CapsuleCollider.cpp" />
     <ClCompile Include="Framework\Collider\Collider.cpp" />
+    <ClCompile Include="Framework\Collider\FrustumCollider.cpp" />
     <ClCompile Include="Framework\Collider\SphereCollider.cpp" />
     <ClCompile Include="Framework\Collider\TetrahedronCollider.cpp" />
     <ClCompile Include="Framework\Device\DepthStencil.cpp" />

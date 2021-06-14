@@ -31,7 +31,7 @@ private:
 
 private:
 	Vector4 planes[6];
-	TetrahedronCollider* mCollider;
+	FrustumCollider* mCollider;
 
 	Matrix mProjection;
 	Matrix mView;
@@ -46,6 +46,7 @@ private:
 	EmptyObject* mEmptyObject;
 
 	float mDistanceToFarZ;
+	float mDistanceToNearZ;
 	float mAspectRatio;
 	float mFoV;
 };

@@ -6,11 +6,12 @@ Frustum::Frustum() :
 	mbIsCheck(false),
 	mCamera(nullptr),
 	mbHasInitialized(false),
+	mDistanceToNearZ(10.0f),
 	mDistanceToFarZ(100.0f),
 	mAspectRatio(WIN_WIDTH / (float)WIN_HEIGHT),
 	mFoV(XM_PIDIV4)
 {
-	mProjection = XMMatrixPerspectiveFovLH(mFoV, mAspectRatio, 0.1f, mDistanceToFarZ);
+	mProjection = XMMatrixPerspectiveFovLH(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 
 	createFrustumCollider();
 
@@ -143,13 +144,13 @@ void Frustum::moveFrustumCollider()
 void Frustum::initialize()
 {
 	//mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
-	float tempScale = mCamera->GetCameraTarget()->mScale.x;
+	float tempScale = mCamera->GetCameraTarget()->mScale.x; // 플레이어 스케일값.
 	tempScale = 1.0f / tempScale;
 
 	mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
-	mEmptyObject->mScale = { tempScale,tempScale,tempScale }; // 플레이어스케일 줄인만큼 자식에서 늘려줘야함.
 
 	mCollider->SetParent(mEmptyObject->GetWorld());
+	mCollider->mScale = { tempScale,tempScale,tempScale };// 플레이어스케일 줄인만큼 자식에서 늘려줘야함.
 	mCollider->mRotation.y += 3.141592f; // 반대로되어있어서 180도 돌려줘야함.
 
 	mEmptyObject->mPosition.z += mCamera->GetDistanceToTarget();
@@ -157,10 +158,13 @@ void Frustum::initialize()
 
 void Frustum::createFrustumCollider()
 {
+	float nearHeight = 2 * tan(mFoV / 2.0f) * mDistanceToNearZ;
+	float nearWidth = nearHeight * mAspectRatio;
+
 	float farHeight = 2 * tan(mFoV / 2.0f) * mDistanceToFarZ;
 	float farWidth = farHeight * mAspectRatio;
 
-	mCollider = new TetrahedronCollider(farWidth,farHeight,mDistanceToFarZ);
+	mCollider = new FrustumCollider(nearWidth,nearHeight,farWidth,farHeight,mDistanceToNearZ,mDistanceToFarZ);
 }
 
 bool Frustum::ContainPoint(Vector3 position)

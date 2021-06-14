@@ -5,14 +5,16 @@ Frustum::Frustum() :
 	mDistanceToColliderRect(1.0f),
 	mbIsCheck(false),
 	mCamera(nullptr),
-	mbHasInitialized(false)
+	mbHasInitialized(false),
+	mDistanceToFarZ(100.0f),
+	mAspectRatio(WIN_WIDTH / (float)WIN_HEIGHT),
+	mFoV(XM_PIDIV4)
 {
-	float farz = 100.0f;
-	mProjection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1.0f, 0.1f, farz);
-	mCollider = new TetrahedronCollider(100.0f, farz);
+	mProjection = XMMatrixPerspectiveFovLH(mFoV, mAspectRatio, 0.1f, mDistanceToFarZ);
+
+	createFrustumCollider();
 
 	mEmptyObject = new EmptyObject();
-	mTestCube = new Cube();
 }
 
 Frustum::~Frustum()
@@ -87,17 +89,15 @@ void Frustum::Update()
 		planes[i] = XMPlaneNormalize(planes[i]);
 
 
-	mTestCube->Update();
+	mEmptyObject->Update();
 	mCollider->Update();
 	moveFrustumCollider();
-	//mEmptyObject->Update();
 }
 
 void Frustum::Render()
 {
-	mTestCube->Render();
+	mEmptyObject->Render();
 	mCollider->Render();
-	//mEmptyObject->Render();
 }
 
 void Frustum::PostRender()
@@ -107,9 +107,9 @@ void Frustum::PostRender()
 	string c1 = "CubePosition";
 	string c2 = "CubeRotation";
 	string c3 = "CubeScale";
-	ImGui::InputFloat3(c1.c_str(), (float*)&mTestCube->mPosition);
-	ImGui::InputFloat3(c2.c_str(), (float*)&mTestCube->mRotation);
-	ImGui::InputFloat3(c3.c_str(), (float*)&mTestCube->mScale);
+	ImGui::InputFloat3(c1.c_str(), (float*)&mEmptyObject->mPosition);
+	ImGui::InputFloat3(c2.c_str(), (float*)&mEmptyObject->mRotation);
+	ImGui::InputFloat3(c3.c_str(), (float*)&mEmptyObject->mScale);
 
 	string fc1 = "ColliderPosition";
 	string fc2 = "ColliderRotation";
@@ -146,15 +146,21 @@ void Frustum::initialize()
 	float tempScale = mCamera->GetCameraTarget()->mScale.x;
 	tempScale = 1.0f / tempScale;
 
-	mTestCube->SetParent(GM->GetPlayer()->GetWorld());
-	mTestCube->mScale = { tempScale,tempScale,tempScale }; // 플레이어
+	mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
+	mEmptyObject->mScale = { tempScale,tempScale,tempScale }; // 플레이어스케일 줄인만큼 자식에서 늘려줘야함.
 
-	mCollider->SetParent(mTestCube->GetWorld());
-	mCollider->mRotation.y += 3.0f;
+	mCollider->SetParent(mEmptyObject->GetWorld());
+	mCollider->mRotation.y += 3.141592f; // 반대로되어있어서 180도 돌려줘야함.
 
-	mTestCube->mPosition.z += mCamera->GetDistanceToTarget();
-	//mTestCube->mScale = { 10.0f,10.0f,10.0f };
-	//mTestCube->mPosition.z -= 20.0f;
+	mEmptyObject->mPosition.z += mCamera->GetDistanceToTarget();
+}
+
+void Frustum::createFrustumCollider()
+{
+	float farHeight = 2 * tan(mFoV / 2.0f) * mDistanceToFarZ;
+	float farWidth = farHeight * mAspectRatio;
+
+	mCollider = new TetrahedronCollider(farWidth,farHeight,mDistanceToFarZ);
 }
 
 bool Frustum::ContainPoint(Vector3 position)

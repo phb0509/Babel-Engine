@@ -1,7 +1,8 @@
 #include "Framework.h"
 
-TetrahedronCollider::TetrahedronCollider(float rectSize, float distanceToRect) :
-	mRectSize(rectSize),
+TetrahedronCollider::TetrahedronCollider(float rectWidth, float rectHeight, float distanceToRect) :
+	mRectWidth(rectWidth),
+	mRectHeight(rectHeight),
 	mDistanceToRect(distanceToRect)
 {
 	CreateMesh();
@@ -14,10 +15,10 @@ TetrahedronCollider::~TetrahedronCollider()
 void TetrahedronCollider::CreateMesh()
 {
 	vertices.emplace_back(0.0f, 0.0f, 0.0f);
-	vertices.emplace_back(-mRectSize / 2.0f, -mRectSize / 2.0f, mDistanceToRect);
-	vertices.emplace_back(-mRectSize / 2.0f, mRectSize / 2.0f, mDistanceToRect);
-	vertices.emplace_back(mRectSize / 2.0f, mRectSize / 2.0f, mDistanceToRect);
-	vertices.emplace_back(mRectSize / 2.0f, -mRectSize / 2.0f, mDistanceToRect);
+	vertices.emplace_back(-mRectWidth / 2.0f, -mRectHeight / 2.0f, mDistanceToRect);
+	vertices.emplace_back(-mRectWidth / 2.0f, mRectHeight / 2.0f, mDistanceToRect);
+	vertices.emplace_back(mRectWidth / 2.0f, mRectHeight / 2.0f, mDistanceToRect);
+	vertices.emplace_back(mRectWidth / 2.0f, -mRectHeight / 2.0f, mDistanceToRect);
 
 	indices = {
 		1,2,2,3,3,4,4,1, // 면 이어주기

@@ -3,7 +3,7 @@
 class TetrahedronCollider : public Collider
 {
 public:
-	TetrahedronCollider(float rectSize = 5.0f, float distanceToRect = 5.0f);
+	TetrahedronCollider(float rectWidth = 10.0f, float rectHeight = 10.0f, float distanceToRect = 5.0f);
 	~TetrahedronCollider();
 
 private:
@@ -18,6 +18,7 @@ private:
 
 
 private:
-	float mRectSize;
+	float mRectWidth;
+	float mRectHeight;
 	float mDistanceToRect;
 };

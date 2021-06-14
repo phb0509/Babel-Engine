@@ -41,16 +41,21 @@ MainScene::MainScene():
 	//monsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
 
 
-	for (int i = 0; i < 25; i++)
+	for (int y = -3; y < 4; y++)
 	{
-		for (int j = 0; j < 25; j++)
+		for (int i = 0; i < 25; i++)
 		{
-			cube = new Cube();
-			cube->mPosition.x = i * 10.0f;
-			cube->mPosition.z = j * 10.0f;
-			cubes.push_back(cube);
+			for (int j = 0; j < 25; j++)
+			{
+				cube = new Cube();
+				cube->mPosition.x = i * 10.0f;
+				cube->mPosition.y = y * 10.0f;
+				cube->mPosition.z = j * 10.0f;
+				cubes.push_back(cube);
+			}
 		}
 	}
+	
 	
 	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
 }
@@ -72,11 +77,11 @@ void MainScene::Update()
 
 	for (int i = 0; i < cubes.size(); i++)
 	{
-		cubes[i]->Update();
-		//cubes[i]->position.y = mTerrain->GetHeight(cubes[i]->position);
-		cubes[i]->mPosition.y = 20.0f;
+		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
+		{
+			cubes[i]->Update();
+		}
 	}
-
 }
 
 void MainScene::PreRender()

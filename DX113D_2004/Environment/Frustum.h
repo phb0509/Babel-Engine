@@ -27,6 +27,7 @@ private:
 	void setCollider(float colliderRectSize, float distanceToColliderRect);
 	void moveFrustumCollider();
 	void initialize();
+	void createFrustumCollider();
 
 private:
 	Vector4 planes[6];
@@ -43,5 +44,8 @@ private:
 	bool mbHasInitialized;
 
 	EmptyObject* mEmptyObject;
-	Cube* mTestCube;
+
+	float mDistanceToFarZ;
+	float mAspectRatio;
+	float mFoV;
 };

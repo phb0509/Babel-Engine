@@ -26,25 +26,25 @@ struct CHullOutput
 cbuffer TerrainBuffer : register(b10)
 {
     float2 dist;
-    float2 tessFactor;
+    float2 tessFactor; // 이 2개의 값을 이용해서 얼마나 쪼갤지.
     
-    float cellSpacing;
-    float cellSpacingU;
+    float cellSpacing; // 셀사이의 공간
+    float cellSpacingU; // 셀 각각의 uv값
     float cellSpacingV;
-    float heightScale;
+    float heightScale; // 높이보간(간인지 관인지..)할때, 높이정보값으로 사용.
     
     float4 culling[6];
 }
 
-float CalcTessFactor(float3 position)
+float CalcTessFactor(float3 position) // 카메라의 거리에 따라 얼마나 쪼갤지 계산.
 {
-    float d = distance(position, invView._41_42_43);
-    float f = saturate((d - dist.y) / (dist.x - dist.y));
+    float d = distance(position, invView._41_42_43); // 매개변수position과 카메라의 거리.
+    float f = saturate((d - dist.y) / (dist.x - dist.y)); // factor. LOD 구현 범위. 카메라와의 거리의 비율.
     
-    return lerp(tessFactor.x, tessFactor.y, f);
+    return lerp(tessFactor.x, tessFactor.y, f); // X랑 Y사이에서 F값으로 보간해서 반환.
 }
 
-bool OutFrustumPlane(float3 center, float3 extent, float4 plane)
+bool OutFrustumPlane(float3 center, float3 extent, float4 plane) // center와 extent를 합쳐서 하나의 큐브로 생각. 그 큐브가 plane에 들어오는지 검사.
 {
     float3 n = abs(plane.xyz);
     float r = dot(extent, n);
@@ -73,7 +73,7 @@ CHullOutput
     InputPatch<VertexOutput, NUM_CONTROL_POINTS> input)
 {
     float4 position[4];
-    position[0] = mul(input[0].pos, world);
+    position[0] = mul(input[0].pos, world); // 월드값들로 변환.
     position[1] = mul(input[1].pos, world);
     position[2] = mul(input[2].pos, world);
     position[3] = mul(input[3].pos, world);
@@ -90,9 +90,9 @@ CHullOutput
     CHullOutput output;
     
     [flatten]
-    if (OutFrustum(boxCenter, boxExtent))
+    if (OutFrustum(boxCenter, boxExtent)) // 프러스텀밖이라면
     {
-        output.edge[0] = -1;
+        output.edge[0] = -1; // 분할을 하지않겠다.
         output.edge[1] = -1;
         output.edge[2] = -1;
         output.edge[3] = -1;
@@ -103,12 +103,12 @@ CHullOutput
         return output;
     }
     
-    float3 e0 = (position[0] + position[2]).xyz * 0.5f;
+    float3 e0 = (position[0] + position[2]).xyz * 0.5f; // 각 꼭지점 두개의 사이 점.
     float3 e1 = (position[0] + position[1]).xyz * 0.5f;
     float3 e2 = (position[1] + position[3]).xyz * 0.5f;
     float3 e3 = (position[2] + position[3]).xyz * 0.5f;
     
-    float3 center = (e0 + e2) * 0.5f;
+    float3 center = (e0 + e2) * 0.5f; // 사각형의 중앙점
     
     output.edge[0] = CalcTessFactor(e0);
     output.edge[1] = CalcTessFactor(e1);
@@ -129,8 +129,8 @@ struct HullOutput
 
 [domain("quad")]
 //[partitioning("integer")]
-[partitioning("fractional_even")]
-[outputtopology("triangle_cw")]
+[partitioning("fractional_even")] // 조금 더 부드러워진다...
+[outputtopology("triangle_cw")] // cw = clock wise // 시계방향, 다른옵션으로는 ccw // count clock wise // 반시계방향.
 [outputcontrolpoints(4)]
 [patchconstantfunc("CHS")]
 HullOutput HS(InputPatch<VertexOutput, NUM_CONTROL_POINTS> input,
@@ -153,7 +153,7 @@ Texture2D heightMap : register(t0);
 
 [domain("quad")]
 DomainOutput DS(CHullOutput input, float2 uv : SV_DomainLocation,
-const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch)
+const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch) // 쪼개진 버텍스들에 대해 각각 수행.
 {
     DomainOutput output;
     

@@ -16,6 +16,7 @@ Terrain::Terrain()
 
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	heightMap = Texture::Add(L"Textures/HeightMaps/HeightMap256.png");
+	//heightMap = Texture::Add(L"Textures/HeightMaps/Test1.png");
 
 	CreateMesh();
 
@@ -196,7 +197,7 @@ void Terrain::CreateMesh()
 	width = heightMap->Width() - 1;
 	height = heightMap->Height() - 1;
 
-	vector<Float4> pixels = heightMap->ReadPixels();
+	vector<Float4> pixels = heightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
 
 	//Vertices
 	for (UINT z = 0; z <= height; z++)
@@ -208,7 +209,7 @@ void Terrain::CreateMesh()
 			vertex.uv = Float2(x / (float)width, 1.0f - z / (float)height);
 
 			UINT index = (width + 1) * z + x;
-			vertex.position.y += pixels[index].x * 20.0f;
+			vertex.position.y += pixels[index].x * 20.0f; // 걍 값이 정규화되서 너무 작으니까 임의의 값 20.0f를 곱해준것.
 
 			vertices.emplace_back(vertex);
 		}
@@ -277,6 +278,9 @@ void Terrain::CreateNormal()
 
 	for (VertexType& vertex : vertices)
 		vertex.normal = Vector3(vertex.normal).Normal();
+
+	int a = 0;
+	vertices;
 }
 
 void Terrain::CreateTangent()

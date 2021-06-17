@@ -197,11 +197,11 @@ class TerrainBuffer : public ConstBuffer
 public:
 	struct Data
 	{
-		Float2 distance = Float2(1, 1000);
-		Float2 factor = Float2(1, 64);
+		Float2 distance = Float2(1, 1000); // 최대값 = 원평면
+		Float2 factor = Float2(1, 64); // 쪼개기 했을때 중심점값(in어쩌고) 64이상이후로 안쪼개짐.
 
-		float cellSpacing = 5.0f;
-		float cellSpacingU;
+		float cellSpacing = 5.0f; // 셀 간격
+		float cellSpacingU; // 맵만들면서 정해짐.
 		float cellSpacingV;
 		float heightScale = 20.0f;
 

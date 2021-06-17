@@ -5,7 +5,7 @@ class TerrainLOD : public Transform
 private:
 	typedef VertexUV VertexType;
 
-	TerrainBuffer* buffer;
+	TerrainBuffer* mTerrainBuffer;
 
 	Material* material;
 	Mesh* mesh;

@@ -83,7 +83,7 @@ void Texture::DSSet(UINT slot)
 vector<Float4> Texture::ReadPixels()
 {
     uint8_t* colors = image.GetPixels();
-    UINT size = image.GetPixelsSize();
+    UINT size = image.GetPixelsSize(); // 각 픽셀은 rgba값을 가지고있으니 픽셀수 * 4한 결과값 나옴.
 
     float scale = 1.0f / 255.0f;
 

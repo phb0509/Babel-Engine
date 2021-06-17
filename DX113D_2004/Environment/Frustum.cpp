@@ -337,5 +337,5 @@ bool Frustum::ContainBox(Vector3 minBox, Vector3 maxBox)
 void Frustum::GetPlanes(Float4* cullings)
 {
 	for (UINT i = 0; i < 6; i++)
-		XMStoreFloat4(&cullings[i], planes[i]);
+		XMStoreFloat4(&cullings[i], planes[i]); // 절두체 면을 cullings에 저장.
 }

@@ -15,7 +15,8 @@ public:
 	void IASet(UINT slot = 0);
 
 	void Update(void* data, UINT count);
-	void Map(void* data, UINT start, UINT size, UINT offset);
+	void Map(void* data,  UINT dataSize);
+	
 
 	ID3D11Buffer* GetBuffer() { return buffer; }
 };

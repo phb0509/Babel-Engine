@@ -1,137 +1,172 @@
 #include "Framework.h"
 
-TerrainEditor::TerrainEditor(UINT width, UINT height)
-	: width(width), height(height), isRaise(true), adjustValue(50),
-	heightMap(nullptr), inputFileName{},
-	structuredBuffer(nullptr), output(nullptr), rayBuffer(nullptr),
-	isPainting(true), paintValue(5), selectMap(0)
+TerrainEditor::TerrainEditor(UINT width, UINT height) :
+	mWidth(width),
+	mHeight(height),
+	mbIsRaise(true),
+	mAdjustValue(50),
+	mHeightMap(nullptr),
+	mInputFileName{},
+	mStructuredBuffer(nullptr),
+	mOutput(nullptr),
+	mRayBuffer(nullptr),
+	mbIsPainting(true),
+	mPaintValue(5),
+	mSelectedMap(0),
+	mBeforeMousePosition(0.0f, 0.0f, 0.0f),
+	mCurrentMousePosition(0.0f, 0.0f, 0.0f),
+	mbIsMouseMove(false),
+	mLastPickingMousePosition(0.0f, 0.0f, 0.0f)
+
 {
-	material = new Material(L"TerrainSplatting");
-	material->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");	
+	mMaterial = new Material(L"TerrainSplatting");
+	mMaterial->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");
 
-	alphaMap = Texture::Add(L"Textures/HeightMaps/AlphaMap.png");
-	secondMap = Texture::Add(L"Textures/Landscape/Floor.png");
-	thirdMap = Texture::Add(L"Textures/Landscape/Stones.png");
+	mAlphaMap = Texture::Add(L"Textures/HeightMaps/AlphaMap.png");
+	mSecondMap = Texture::Add(L"Textures/Landscape/Floor.png");
+	mThirdMap = Texture::Add(L"Textures/Landscape/Stones.png");
 
-	CreateMesh();
-	CreateCompute();	
+	createMesh();
+	createCompute();
 
-	brushBuffer = new BrushBuffer();
+	mBrushBuffer = new BrushBuffer();
+
+
 }
 
 TerrainEditor::~TerrainEditor()
 {
-	delete material;
-	delete mesh;
+	delete mMaterial;
+	delete mMesh;
 
-	delete rayBuffer;
-	delete structuredBuffer;
+	delete mRayBuffer;
+	delete mStructuredBuffer;
 
-	delete[] input;
-	delete[] output;
+	delete[] mInput;
+	delete[] mOutput;
 
-	delete brushBuffer;
+	delete mBrushBuffer;
 }
 
 void TerrainEditor::Update()
-{		
+{
+	mCurrentMousePosition = MOUSEPOS;
+
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
-		if (isPainting)
-			PaintBrush(brushBuffer->data.location);
+		if (checkMouseMove()) // 커서가 움직였다면
+		{
+			computePicking(&mPickedPosition);
+			mBrushBuffer->data.location = mPickedPosition;
+			mLastPickingMousePosition = mCurrentMousePosition;
+		}
+		
+		if (mbIsPainting)
+		{
+			paintBrush(mPickedPosition);
+		}
 		else
-			AdjustY(brushBuffer->data.location);
+		{
+			adjustY(mPickedPosition);
+		}
 	}
 
 	if (KEY_UP(VK_LBUTTON))
 	{
-		CreateNormal(); // 법선벡터 구하는함수.
-		CreateTangent();
-		mesh->UpdateVertex(vertices.data(), vertices.size());
+		//CreateNormal(); // 이거 두개가 프레임 은근 먹는다.
+		//CreateTangent();
+		//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
+		mLastPickingMousePosition = MOUSEPOS;
 	}
+
+	mBeforeMousePosition = mCurrentMousePosition;
 
 	UpdateWorld();
 }
 
 void TerrainEditor::Render()
 {
-	mesh->IASet();
+	mMesh->IASet();
 
 	mWorldBuffer->SetVSBuffer(0);
-	brushBuffer->SetPSBuffer(10);
+	mBrushBuffer->SetPSBuffer(10);
 
-	alphaMap->PSSet(10);
-	secondMap->PSSet(11);
-	thirdMap->PSSet(12);
+	mAlphaMap->PSSet(10);
+	mSecondMap->PSSet(11);
+	mThirdMap->PSSet(12);
 
-	material->Set();
-		
-	DC->DrawIndexed((UINT)indices.size(), 0, 0);	
+	mMaterial->Set();
+
+	DC->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
 void TerrainEditor::PostRender()
 {
-	Vector3 temp;
-	ComputePicking(&temp);
-	brushBuffer->data.location = temp;
+	ImGui::Begin("TerrainEditor");
+
+	/*ComputePicking(&mTemp);
+	mBrushBuffer->data.location = mTemp;*/
 
 	ImGui::Text("TerainEditor");
-	ImGui::SliderInt("Type", &brushBuffer->data.type, 0, 1);
-	ImGui::SliderFloat("Range", &brushBuffer->data.range, 1, 50);
-	ImGui::ColorEdit3("Color", (float*)&brushBuffer->data.color);
-	ImGui::Checkbox("Raise", &isRaise);
-	ImGui::Checkbox("Painting", &isPainting);
-	ImGui::InputInt("SelectMap", &selectMap);
-	
-	ImGui::InputText("FileName", inputFileName, 100);
-	wstring heightFile = L"Textures/HeightMaps/" + ToWString(inputFileName) + L".png";
+	ImGui::SliderInt("Type", &mBrushBuffer->data.type, 0, 1);
+	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
+	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
+	ImGui::Checkbox("Raise", &mbIsRaise);
+	ImGui::Checkbox("Painting", &mbIsPainting);
+	ImGui::InputInt("SelectMap", &mSelectedMap);
+
+	ImGui::InputText("FileName", mInputFileName, 100);
+	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
 	if (ImGui::Button("Save"))
-	{		
-		Save(heightFile);
+	{
+		save(heightFile);
 	}
 
 	if (ImGui::Button("Open File Dialog"))
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", ".");
-		
+
 	// display
 	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey"))
 	{
 		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{			
+		{
 			string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-			Load(L"Textures/HeightMaps/" + ToWString(fileName));
+			load(L"Textures/HeightMaps/" + ToWString(fileName));
 		}
 		// close
 		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 	}
+
+	ImGui::End();
 }
 
-bool TerrainEditor::ComputePicking(OUT Vector3* position)
+bool TerrainEditor::computePicking(OUT Vector3* position)
 {
 	Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
 
-	rayBuffer->data.position = ray.position;
-	rayBuffer->data.direction = ray.direction;
-	rayBuffer->data.size = size;
-	computeShader->Set();
+	mRayBuffer->data.position = ray.position;
+	mRayBuffer->data.direction = ray.direction;
+	mRayBuffer->data.size = mPolygonCount;
+	mComputeShader->Set();
 
-	rayBuffer->SetCSBuffer(0);
+	mRayBuffer->SetCSBuffer(0);
 
-	DC->CSSetShaderResources(0, 1, &structuredBuffer->GetSRV());
-	DC->CSSetUnorderedAccessViews(0, 1, &structuredBuffer->GetUAV(), nullptr);
+	DC->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV());
+	DC->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr);
 
-	UINT x = ceil((float)size / 1024.0f);
+	UINT x = ceil((float)mPolygonCount / 1024.0f);
 
 	DC->Dispatch(x, 1, 1);
 
-	structuredBuffer->Copy(output, sizeof(OutputDesc) * size);
+	mStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
 
 	float minDistance = FLT_MAX;
 	int minIndex = -1;
 
-	for (UINT i = 0; i < size; i++)
+	for (UINT i = 0; i < mPolygonCount; i++)
 	{
-		OutputDesc temp = output[i];
+		OutputDesc temp = mOutput[i];
 		if (temp.picked)
 		{
 			if (minDistance > temp.distance)
@@ -151,66 +186,93 @@ bool TerrainEditor::ComputePicking(OUT Vector3* position)
 	return false;
 }
 
-void TerrainEditor::AdjustY(Vector3 position)
+void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 {
-	switch (brushBuffer->data.type)
+	D3D11_RECT rect;
+	float range = mBrushBuffer->data.range;
+	rect.left = (LONG)position.x - range;
+	rect.top = (LONG)position.z + range;
+	rect.right = (LONG)position.x + range;
+	rect.bottom = (LONG)position.z - range;
+
+
+	if (rect.left < 0) rect.left = 0;
+	if (rect.top >= (LONG)mHeight) rect.top = (LONG)mHeight;
+	if (rect.right >= (LONG)mWidth) rect.right = (LONG)mWidth;
+	if (rect.bottom < 0) rect.bottom = 0;
+
+	switch (mBrushBuffer->data.type)
 	{
-	case 0:
+	case 0: // 원.
 	{
-		for (VertexType& vertex : vertices)
+		
+
+		float dist;
+		for (LONG z = rect.bottom; z <= rect.top; z++)
 		{
-			Vector3 p1 = Vector3(vertex.position.x, 0, vertex.position.z);
-			Vector3 p2 = Vector3(position.x, 0, position.z);
-
-			float distance = (p2 - p1).Length();
-
-			float temp = adjustValue * max(0, cos(XM_PIDIV2 * distance / brushBuffer->data.range));
-
-			if (distance <= brushBuffer->data.range)
+			for (LONG x = rect.left; x < rect.right; x++)
 			{
-				if(isRaise)
-					vertex.position.y += temp * DELTA;
-				else
-					vertex.position.y -= temp * DELTA;
+				UINT index = mWidth * z + x;
 
-				if (vertex.position.y < 0)
-					vertex.position.y = 0;
-				else if (vertex.position.y > MAX_HEIGHT)
-					vertex.position.y = MAX_HEIGHT;
+				float dx = x - position.x;
+				float dz = z - position.z;
+
+				// 원의 중심과 버텍스 사이의 거리 구하기(피타고라스 정리)
+				dist = sqrt(dx * dx + dz * dz);
+
+				// 원의 중심과 정점의 거리가 반지름의 길이를 넘어갈 경우 계산 안함.
+				if (fabsf(dist) > range) continue;
+
+				// 원의 중심에서 반지름의 길이를 넘어가는 dist(거리)는 위에서 걸러지고
+				// dist의 값은 정점이 원의 중심과 멀수록 range의 값과 동일해지고 가까워질수록 0으로 간다.
+				// 위를 생각하면서 아래 공식에 값을 넣어보면 어떤 결과가 나오는지 알 수 있다.
+				// float h = range - dist; // 원뿔형태가 나옴
+				float h = pow(range, 2) - (dist * dist); // 반원 형태가 나옴
+
+				if (dist <= range)
+				{
+					mVertices[index].position.y += h * DELTA;
+				}
+				else if (dist <= range)
+				{
+					mVertices[index].position.y -= h * DELTA;
+				}
 			}
 		}
 	}
+	break;
+	case 1: // 사각형.
 		break;
 	default:
 		break;
-	}	
+	}
 
-	mesh->UpdateVertex(vertices.data(), vertices.size());
+	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
 }
 
-void TerrainEditor::PaintBrush(Vector3 position)
+void TerrainEditor::paintBrush(Vector3 position)
 {
-	switch (brushBuffer->data.type)
+	switch (mBrushBuffer->data.type)
 	{
 	case 0:
 	{
-		for (VertexType& vertex : vertices)
+		for (VertexType& vertex : mVertices)
 		{
 			Vector3 p1 = Vector3(vertex.position.x, 0, vertex.position.z);
 			Vector3 p2 = Vector3(position.x, 0, position.z);
 
 			float distance = (p2 - p1).Length();
 
-			float temp = paintValue * max(0, cos(XM_PIDIV2 * distance / brushBuffer->data.range));
+			float temp = mPaintValue * max(0, cos(XM_PIDIV2 * distance / mBrushBuffer->data.range));
 
-			if (distance <= brushBuffer->data.range)
+			if (distance <= mBrushBuffer->data.range)
 			{
-				if (isRaise)
-					vertex.alpha[selectMap] += temp * DELTA;
+				if (mbIsRaise)
+					vertex.alpha[mSelectedMap] += temp * DELTA;
 				else
-					vertex.alpha[selectMap] -= temp * DELTA;
+					vertex.alpha[mSelectedMap] -= temp * DELTA;
 
-				vertex.alpha[selectMap] = Saturate(vertex.alpha[selectMap]);
+				vertex.alpha[mSelectedMap] = Saturate(vertex.alpha[mSelectedMap]);
 			}
 		}
 	}
@@ -219,17 +281,58 @@ void TerrainEditor::PaintBrush(Vector3 position)
 		break;
 	}
 
-	mesh->UpdateVertex(vertices.data(), vertices.size());
+	mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 }
 
-void TerrainEditor::Save(wstring heightFile)
+bool TerrainEditor::checkMouseMove()
 {
-	UINT size = width * height * 4;
+	//int x = static_cast<int>(mCurrentMousePosition.x - mBeforeMousePosition.x);
+	//int y = static_cast<int>(mCurrentMousePosition.y - mBeforeMousePosition.y);
+
+	//if (x == 0 && // 마우스커서가 안움직였으면
+	//	y == 0)
+	//{
+	//	char buff[100];
+	//	sprintf_s(buff, "안움직임 : %d \n x : %d   y : %d\n", t1++, x, y);
+	//	OutputDebugStringA(buff);
+
+	//	return false;
+	//}
+
+	//char buff[100];
+	//sprintf_s(buff, "움직임 : %d \n", t2++);
+	//OutputDebugStringA(buff);
+
+	//return true;
+
+	int x = static_cast<int>(mCurrentMousePosition.x - mLastPickingMousePosition.x);
+	int y = static_cast<int>(mCurrentMousePosition.y - mLastPickingMousePosition.y);
+
+	if (x == 0 && // 마우스커서가 안움직였으면
+		y == 0)
+	{
+	/*	char buff[100];
+		sprintf_s(buff, "안움직임 : %d \n x : %d   y : %d\n", t1++, x, y);
+		OutputDebugStringA(buff);*/
+
+		return false;
+	}
+
+	/*char buff[100];
+	sprintf_s(buff, "움직임 : %d \n", t2++);
+	OutputDebugStringA(buff);*/
+
+	return true;
+}
+
+void TerrainEditor::save(wstring heightFile)
+{
+	UINT size = mWidth * mHeight * 4;
 	uint8_t* pixels = new uint8_t[size];
 
 	for (UINT i = 0; i < size / 4; i++)
 	{
-		float y = vertices[i].position.y;
+		float y = mVertices[i].position.y;
 
 		uint8_t height = y * 255 / MAX_HEIGHT;
 
@@ -240,8 +343,8 @@ void TerrainEditor::Save(wstring heightFile)
 	}
 
 	Image image;
-	image.width = width;
-	image.height = height;
+	image.width = mWidth;
+	image.height = mHeight;
 	image.pixels = pixels;
 	image.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	image.rowPitch = image.width * 4;
@@ -252,122 +355,122 @@ void TerrainEditor::Save(wstring heightFile)
 		heightFile.c_str());
 }
 
-void TerrainEditor::Load(wstring heightFile)
+void TerrainEditor::load(wstring heightFile)
 {
-	heightMap = Texture::Load(heightFile);
+	mHeightMap = Texture::Load(heightFile);
 
-	delete mesh;
+	delete mMesh;
 
-	CreateMesh();
-	CreateCompute();
+	createMesh();
+	createCompute();
 }
 
-void TerrainEditor::CreateMesh()
+void TerrainEditor::createMesh()
 {
 	vector<Float4> pixels;
 
-	if (heightMap != nullptr)
+	if (mHeightMap != nullptr)
 	{
-		width = heightMap->Width();
-		height = heightMap->Height();
-		pixels = heightMap->ReadPixels();
+		mWidth = mHeightMap->Width();
+		mHeight = mHeightMap->Height();
+		pixels = mHeightMap->ReadPixels();
 	}
 
-	vertices.clear();
-	indices.clear();
+	mVertices.clear();
+	mIndices.clear();
 
 	//Vertices
-	for (UINT z = 0; z < height; z++)
+	for (UINT z = 0; z < mHeight; z++)
 	{
-		for (UINT x = 0; x < width; x++)
+		for (UINT x = 0; x < mWidth; x++)
 		{
 			VertexType vertex;
 			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)width, 1.0f - z / (float)height);
+			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
 
-			UINT index = width * z + x;
-			if(pixels.size() > index)
+			UINT index = mWidth * z + x;
+			if (pixels.size() > index)
 				vertex.position.y += pixels[index].x * MAX_HEIGHT;
 
-			vertices.emplace_back(vertex);
+			mVertices.emplace_back(vertex);
 		}
 	}
 
 	//Indices
-	for (UINT z = 0; z < height - 1; z++)
+	for (UINT z = 0; z < mHeight - 1; z++)
 	{
-		for (UINT x = 0; x < width - 1; x++)
+		for (UINT x = 0; x < mWidth - 1; x++)
 		{
-			indices.emplace_back(width * z + x);//0
-			indices.emplace_back(width * (z + 1) + x);//1
-			indices.emplace_back(width * (z + 1) + x + 1);//2
+			mIndices.emplace_back(mWidth * z + x);//0
+			mIndices.emplace_back(mWidth * (z + 1) + x);//1
+			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
 
-			indices.emplace_back(width * z + x);//0
-			indices.emplace_back(width * (z + 1) + x + 1);//2
-			indices.emplace_back(width * z + x + 1);//3
+			mIndices.emplace_back(mWidth * z + x);//0
+			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
+			mIndices.emplace_back(mWidth * z + x + 1);//3
 		}
 	}
 
-	size = indices.size() / 3;
+	mPolygonCount = mIndices.size() / 3;
 
-	input = new InputDesc[size];
-	for (UINT i = 0; i < size; i++)
+	mInput = new InputDesc[mPolygonCount];
+	for (UINT i = 0; i < mPolygonCount; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		input[i].v0 = vertices[index0].position;
-		input[i].v1 = vertices[index1].position;
-		input[i].v2 = vertices[index2].position;
+		mInput[i].v0 = mVertices[index0].position;
+		mInput[i].v1 = mVertices[index1].position;
+		mInput[i].v2 = mVertices[index2].position;
 
-		input[i].index = i;
+		mInput[i].index = i;
 	}
 
-	CreateNormal();
-	CreateTangent();
+	createNormal();
+	createTangent();
 
-	mesh = new Mesh(vertices.data(), sizeof(VertexType), (UINT)vertices.size(),
-		indices.data(), (UINT)indices.size());
+	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
+		mIndices.data(), (UINT)mIndices.size(), true);
 }
 
-void TerrainEditor::CreateNormal() // 법선벡터구하는 함수.
+void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 {
-	for (UINT i = 0; i < indices.size() / 3; i++) // 폴리곤갯수만큼 반복. (한폴리곤에 인덱스3개니까)
+	for (UINT i = 0; i < mIndices.size() / 3; i++) // 폴리곤갯수만큼 반복. (한폴리곤에 인덱스3개니까)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		Vector3 v0 = vertices[index0].position;
-		Vector3 v1 = vertices[index1].position;
-		Vector3 v2 = vertices[index2].position;
+		Vector3 v0 = mVertices[index0].position;
+		Vector3 v1 = mVertices[index1].position;
+		Vector3 v2 = mVertices[index2].position;
 
 		Vector3 A = v1 - v0;
 		Vector3 B = v2 - v0;
 
 		Vector3 normal = Vector3::Cross(A, B).Normal();
 
-		vertices[index0].normal = normal + vertices[index0].normal;
-		vertices[index1].normal = normal + vertices[index1].normal;
-		vertices[index2].normal = normal + vertices[index2].normal;
+		mVertices[index0].normal = normal + mVertices[index0].normal;
+		mVertices[index1].normal = normal + mVertices[index1].normal;
+		mVertices[index2].normal = normal + mVertices[index2].normal;
 	}
 
-	for (VertexType& vertex : vertices)
+	for (VertexType& vertex : mVertices)
 		vertex.normal = Vector3(vertex.normal).Normal();
 }
 
-void TerrainEditor::CreateTangent()
+void TerrainEditor::createTangent()
 {
-	for (UINT i = 0; i < indices.size() / 3; i++)
+	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		VertexType vertex0 = vertices[index0];
-		VertexType vertex1 = vertices[index1];
-		VertexType vertex2 = vertices[index2];
+		VertexType vertex0 = mVertices[index0];
+		VertexType vertex1 = mVertices[index1];
+		VertexType vertex2 = mVertices[index2];
 
 		Vector3 p0 = vertex0.position;
 		Vector3 p1 = vertex1.position;
@@ -387,12 +490,12 @@ void TerrainEditor::CreateTangent()
 
 		Vector3 tangent = (v1 * e0 - v0 * e1);
 
-		vertices[index0].tangent = tangent + vertices[index0].tangent;
-		vertices[index1].tangent = tangent + vertices[index1].tangent;
-		vertices[index2].tangent = tangent + vertices[index2].tangent;
+		mVertices[index0].tangent = tangent + mVertices[index0].tangent;
+		mVertices[index1].tangent = tangent + mVertices[index1].tangent;
+		mVertices[index2].tangent = tangent + mVertices[index2].tangent;
 	}
 
-	for (VertexType& vertex : vertices)
+	for (VertexType& vertex : mVertices)
 	{
 		Vector3 t = vertex.tangent;
 		Vector3 n = vertex.normal;
@@ -403,21 +506,21 @@ void TerrainEditor::CreateTangent()
 	}
 }
 
-void TerrainEditor::CreateCompute()
+void TerrainEditor::createCompute()
 {
-	computeShader = Shader::AddCS(L"ComputePicking");
+	mComputeShader = Shader::AddCS(L"ComputePicking");
 
-	if (structuredBuffer != nullptr)
-		delete structuredBuffer;
+	if (mStructuredBuffer != nullptr)
+		delete mStructuredBuffer;
 
-	structuredBuffer = new StructuredBuffer(input, sizeof(InputDesc), size,
-		sizeof(OutputDesc), size);
+	mStructuredBuffer = new StructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
+		sizeof(OutputDesc), mPolygonCount);
 
-	if(rayBuffer == nullptr)
-		rayBuffer = new RayBuffer();
+	if (mRayBuffer == nullptr)
+		mRayBuffer = new RayBuffer();
 
-	if (output != nullptr)
-		delete[] output;
+	if (mOutput != nullptr)
+		delete[] mOutput;
 
-	output = new OutputDesc[size];
+	mOutput = new OutputDesc[mPolygonCount];
 }

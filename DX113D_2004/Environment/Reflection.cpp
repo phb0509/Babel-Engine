@@ -40,13 +40,13 @@ void Reflection::Update()
 
 void Reflection::PreRender()
 {
-	renderTarget->Set(depthStencil);
+	renderTarget->Set(depthStencil);  // 셰이더에 넘길 렌더타겟 잡는부분.
 	reflectionBuffer->SetVSBuffer(1);
 }
 
 void Reflection::Render()
 {
-	DC->PSSetShaderResources(10, 1, &renderTarget->GetSRV());
+	DC->PSSetShaderResources(10, 1, &renderTarget->GetSRV()); // 셰이더에 셋팅할 부분.
 	reflectionBuffer->SetVSBuffer(10);
 }
 

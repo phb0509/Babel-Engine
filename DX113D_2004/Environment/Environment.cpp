@@ -4,19 +4,20 @@ Environment::Environment() :
 	mbIsTargetCamera(true),
 	target(nullptr)
 {
-	CreatePerspective();
+	createPerspective();
 
 	samplerState = new SamplerState();
 	samplerState->SetState();
 
 	mTargetCamera = new Camera();
 	mTargetCamera->CreateFrustum();
-	//mTargetCamera->mPosition = { 0, 5, -5 };
-
 	mWorldCamera = new Camera();
 
 	lightBuffer = new LightBuffer();
 	lightBuffer->Add();
+
+	mSun = new Cube();
+	mSun->mScale = { 5.0f,5.0f,5.0f };
 }
 
 Environment::~Environment()
@@ -24,10 +25,19 @@ Environment::~Environment()
 	delete projectionBuffer;
 	delete lightBuffer;
 	delete samplerState;
+	delete mSun;
 }
 
 void Environment::PostRender()
 {
+	mSun->Update();
+	mSun->Render();
+
+	if (lightBuffer->data.lightCount >= 1)
+	{
+		mSun->mPosition = lightBuffer->data.lights[0].position;
+	}
+	
 	ImGui::Text("SelectCamera");
 
 	if (ImGui::Button("TargetCamera"))
@@ -44,7 +54,7 @@ void Environment::PostRender()
 		mTargetCamera->SetIsMouseInputing(false);
 	}
 
-	ImGui::Text("MousePosition : %.1f, %.1f", MOUSEPOS.x, MOUSEPOS.y);
+	ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
 	ImGui::Spacing();
 	ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
 	ImGui::Spacing();
@@ -53,6 +63,17 @@ void Environment::PostRender()
 	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
 
 	ImGui::Spacing();
+
+
+	showLightInformation();
+
+	mTargetCamera->PostRender();
+	mWorldCamera->PostRender();
+}
+
+void Environment::showLightInformation()
+{
+	ImGui::Begin("LightInformation");
 
 	ImGui::Text("LightInfo");
 	ImGui::ColorEdit4("AmbientColor", (float*)&lightBuffer->data.ambient);
@@ -82,24 +103,11 @@ void Environment::PostRender()
 		}
 	}
 
-	mTargetCamera->PostRender();
-	mWorldCamera->PostRender();
 
 
-	//string wc1 = "WorldCameraPosition";
-	//string wc2 = "WorldCameraRotation";
-	//string wc3 = "WorldCameraScale";
-	//ImGui::InputFloat3(wc1.c_str(), (float*)&mWorldCamera->mPosition);
-	//ImGui::InputFloat3(wc2.c_str(), (float*)&mWorldCamera->mRotation);
-	//ImGui::InputFloat3(wc3.c_str(), (float*)&mWorldCamera->mScale);
 
-	/*ImGui::SliderFloat("CamDistance", &distance, -10.0f, 100.0f);
-	ImGui::SliderFloat("CamHeight", &height, -10.0f, 100.0f);
-	ImGui::SliderFloat("CamMoveDamping", &moveDamping, 0.0f, 30.0f);
-	ImGui::SliderFloat("CamRotDamping", &rotDamping, 0.0f, 30.0f);
-	ImGui::SliderFloat3("CamOffset", (float*)&offset, -20.0f, 20.0f);*/
+	ImGui::End();
 }
-
 void Environment::Set()
 {
 	SetViewport();
@@ -141,7 +149,7 @@ void Environment::SetProjection()
 	projectionBuffer->SetVSBuffer(2);
 }
 
-void Environment::CreatePerspective()
+void Environment::createPerspective()
 {
 	projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
 		WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f); // 시야각( pie/4니까 90도?,
@@ -150,6 +158,8 @@ void Environment::CreatePerspective()
 
 	projectionBuffer->Set(projection);
 }
+
+
 
 
 Vector3 Environment::GetLightPosition()

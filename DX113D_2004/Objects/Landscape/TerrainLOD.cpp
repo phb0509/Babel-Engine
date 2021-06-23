@@ -19,7 +19,7 @@ TerrainLOD::TerrainLOD(wstring heightFile)
     patchWidth = ((width - 1) / cellsPerPatch) + 1; // 듬성듬성 몇개 찍을것인가. 원랜 256개 찍어야하는데 테셀레이션에서 쪼갤꺼니까 여기선 조금만 찍는다. UINT형이라 8나옴.
     patchHeight = ((height - 1) / cellsPerPatch) + 1;
 
-    vertices.resize(patchWidth * patchHeight); // 버텍스 개수
+    vertices.resize(patchWidth * patchHeight); // 버텍스 개수 64개
     indices.resize((patchWidth - 1) * (patchHeight - 1) * 4); 
     // (patchWidth - 1) * (patchHeight - 1) = 네모개수. 49개
     // 그냥 터레인이면 *6 이다. 2개의 폴리곤을 네모처럼 이으려면 6개를 사용했으니까 (0,1,2, 2,1,3)
@@ -103,6 +103,8 @@ void TerrainLOD::CreatePatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주
 {
     float halfWidth = GetWidth() * 0.5f; // 256 * 5 = 1280 * 0.5 = 640   // 반지름.  GetWidth에서  실제 width * cellSpaceing(default 5.0f) 곱해주는데 임의의값. 클수록 그냥 터레인 커지고 뭐 더 많이쪼개고 할듯
     float halfHeight = GetHeight() * 0.5f;
+    // half값 이용하는건 센터를 0,0으로 잡으려고 하는것같다. 어쨌든 cellSpacing값에 의해 터레인크기가 결정된다.
+
 
     float tempWidth = GetWidth() / patchWidth; // patchWidth는 듬성듬성 몇개찍을것인가의 값. 8 나옴. 최종적으로 1280 / 8 = 160
     float tempHeight = GetHeight() / patchHeight;
@@ -110,7 +112,7 @@ void TerrainLOD::CreatePatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주
     float du = 1.0f / patchWidth; // 듬성듬성버텍스 uv값 단위.  1/8
     float dv = 1.0f / patchHeight;
 
-    for (UINT z = 0; z < patchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 터레인이 기존에 비해 매우 커짐.
+    for (UINT z = 0; z < patchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 버텍스 사이의 간격이 넓어져서 터레인이 기존에 비해 매우 커짐.
     {
         float tempZ = halfHeight - z * tempHeight; // 640 - z * 160
 

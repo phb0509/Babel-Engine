@@ -3,19 +3,10 @@
 
 TestScene::TestScene()
 {
-	float mAspectRatio = WIN_WIDTH / (float)WIN_HEIGHT;
-	float mFoV = XM_PIDIV4;
-	float mDistanceToNearZ = 10.0f;
-	float mDistanceToFarZ = 100.0f;
-
-	float nearHeight = 2 * tan(mFoV / 2.0f) * mDistanceToNearZ;
-	float nearWidth = nearHeight * mAspectRatio;
-
-	float farHeight = 2 * tan(mFoV / 2.0f) * mDistanceToFarZ;
-	float farWidth = farHeight * mAspectRatio;
-
-
-	mFrustumCollider = new FrustumCollider(nearWidth, nearHeight, farWidth, farHeight, mDistanceToNearZ, mDistanceToFarZ);
+	mTerrain = new Terrain();
+	//mTerrainLOD = new TerrainLOD(L"Textures/HeightMaps/HeightMap.png");
+//	rsState = new RasterizerState();
+	//rsState->FillMode(D3D11_FILL_WIREFRAME);
 	
 }
 
@@ -25,7 +16,9 @@ TestScene::~TestScene()
 
 void TestScene::Update()
 {
-	mFrustumCollider->Update();
+	mTerrain->Update();
+	//mTerrainLOD->Update();
+	
 }
 
 void TestScene::PreRender()
@@ -34,7 +27,9 @@ void TestScene::PreRender()
 
 void TestScene::Render()
 {
-	mFrustumCollider->Render();
+	mTerrain->Render();
+	//rsState->SetState();
+//	mTerrainLOD->Render();
 }
 
 void TestScene::PostRender()

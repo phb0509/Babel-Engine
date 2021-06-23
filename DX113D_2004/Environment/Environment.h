@@ -1,5 +1,7 @@
 #pragma once
 
+class Cube;
+
 class Environment : public Singleton<Environment>
 {
 	friend class Singleton;
@@ -27,7 +29,8 @@ private:
 	Environment();
 	~Environment();
 
-	void CreatePerspective();
+	void createPerspective();
+	void showLightInformation();
 
 private:
 
@@ -41,8 +44,9 @@ private:
 	Camera* mTargetCamera;
 	Camera* mWorldCamera;
 
-	
 	SamplerState* samplerState;
 	bool mbIsTargetCamera;
 	Transform* target;
+
+	Cube* mSun;
 };

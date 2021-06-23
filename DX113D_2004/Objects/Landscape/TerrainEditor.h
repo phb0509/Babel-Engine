@@ -39,58 +39,75 @@ private:
 		float u, v, distance;
 	};
 
-	const float MAX_HEIGHT = 30.0f;
-
-	Material* material;
-	Mesh* mesh;
-
-	vector<VertexType> vertices;
-	vector<UINT> indices;
-
-	UINT width, height;
-
-	Texture* heightMap;
-	Texture* alphaMap;
-	Texture* secondMap;
-	Texture* thirdMap;
-
-	ComputeShader* computeShader;
-	RayBuffer* rayBuffer;
-	StructuredBuffer* structuredBuffer;
-	InputDesc* input;
-	OutputDesc* output;
-
-	UINT size;
-
-	BrushBuffer* brushBuffer;
-
-	bool isRaise;
-	float adjustValue;
-
-	bool isPainting;
-	float paintValue;
-
-	int selectMap;
-
-	char inputFileName[100];
+	
 public:
-	TerrainEditor(UINT width = 100, UINT height = 100);
+	TerrainEditor(UINT width = 500, UINT height = 500);
 	~TerrainEditor();
 
 	void Update();
 	void Render();
 	void PostRender();
 		
-	bool ComputePicking(OUT Vector3* position);
 
-	void AdjustY(Vector3 position);
-	void PaintBrush(Vector3 position);
 
-	void Save(wstring heightFile);
-	void Load(wstring heightFile);
 private:
-	void CreateMesh();
-	void CreateNormal();
-	void CreateTangent();
-	void CreateCompute();
+	void createMesh();
+	void createNormal();
+	void createTangent();
+	void createCompute();
+
+	bool computePicking(OUT Vector3* position);
+
+	void adjustY(Vector3 position);
+	void paintBrush(Vector3 position);
+	bool checkMouseMove();
+
+	void save(wstring heightFile);
+	void load(wstring heightFile);
+
+
+private:
+	const float MAX_HEIGHT = 30.0f;
+
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	vector<VertexType> mVertices;
+	vector<UINT> mIndices;
+
+	UINT mWidth, mHeight;
+
+	Texture* mHeightMap;
+	Texture* mAlphaMap;
+	Texture* mSecondMap;
+	Texture* mThirdMap;
+
+	ComputeShader* mComputeShader;
+	RayBuffer* mRayBuffer;
+	StructuredBuffer* mStructuredBuffer;
+	InputDesc* mInput;
+	OutputDesc* mOutput; // GPU에서 읽어온 값
+
+	UINT mPolygonCount;
+
+	BrushBuffer* mBrushBuffer;
+
+	bool mbIsRaise;
+	float mAdjustValue;
+
+	bool mbIsPainting;
+	float mPaintValue;
+
+	int mSelectedMap;
+
+	char mInputFileName[100];
+
+	Vector3 mPickedPosition;
+	Vector3 mBeforeMousePosition;
+	Vector3 mCurrentMousePosition;
+	Vector3 mLastPickingMousePosition;
+	bool mbIsMouseMove;
+
+	int t1 = 0;
+	int t2 = 0;
 };

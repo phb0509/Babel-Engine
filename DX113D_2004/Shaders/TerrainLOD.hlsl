@@ -31,7 +31,7 @@ cbuffer TerrainBuffer : register(b10)
     float cellSpacing; // 셀사이의 공간
     float cellSpacingU; // 셀 각각의 uv값
     float cellSpacingV;
-    float heightScale; // 높이보간(간인지 관인지..)할때, 높이정보값으로 사용.
+    float heightScale; // 높이보간할때, 높이정보값으로 사용.
     
     float4 culling[6];
 }
@@ -70,10 +70,10 @@ bool OutFrustum(float3 center, float3 extent)
 
 CHullOutput
     CHS(
-    InputPatch<VertexOutput, NUM_CONTROL_POINTS> input)
+    InputPatch<VertexOutput, NUM_CONTROL_POINTS> input)   // Constant HullShader 제일 먼저 진입하는곳.
 {
     float4 position[4];
-    position[0] = mul(input[0].pos, world); // 월드값들로 변환.
+    position[0] = mul(input[0].pos, world); // 각 컨트롤 포인트들 월드값으로 변환.
     position[1] = mul(input[1].pos, world);
     position[2] = mul(input[2].pos, world);
     position[3] = mul(input[3].pos, world);
@@ -134,7 +134,7 @@ struct HullOutput
 [outputcontrolpoints(4)]
 [patchconstantfunc("CHS")]
 HullOutput HS(InputPatch<VertexOutput, NUM_CONTROL_POINTS> input,
-uint i : SV_OutputControlPointID)
+uint i : SV_OutputControlPointID) // 그냥 HullShader. 값 그대로 DomainShader로 넘긴다.
 {
     HullOutput output;
     output.pos = input[i].pos;
@@ -153,13 +153,13 @@ Texture2D heightMap : register(t0);
 
 [domain("quad")]
 DomainOutput DS(CHullOutput input, float2 uv : SV_DomainLocation,
-const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch) // 쪼개진 버텍스들에 대해 각각 수행.
+const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch) // DomainShader.쪼개진 버텍스들에 대해 각각 수행.
 {
     DomainOutput output;
     
-    float4 v1 = lerp(patch[0].pos, patch[1].pos, uv.x);
+    float4 v1 = lerp(patch[0].pos, patch[1].pos, uv.x); 
     float4 v2 = lerp(patch[2].pos, patch[3].pos, uv.x);
-    float4 position = lerp(v1, v2, uv.y);
+    float4 position = lerp(v1, v2, uv.y); // 새 정점의 위치.
     
     float2 uv1 = lerp(patch[0].uv, patch[1].uv, uv.x);
     float2 uv2 = lerp(patch[2].uv, patch[3].uv, uv.x);

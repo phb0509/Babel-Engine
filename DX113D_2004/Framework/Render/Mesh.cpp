@@ -24,7 +24,7 @@ void Mesh::UpdateVertex(void* data, UINT count)
 	vertexBuffer->Update(data, count); // UpdateSubresource (DEFAULT)
 }
 
-void Mesh::MapVertex(void* data, UINT start, UINT size, UINT offset)
+void Mesh::UpdateVertexUsingMap(void* data, UINT dataSize)
 {
-	vertexBuffer->Map(data, start, size, offset); // map , unmap  (DYNAMIC)
+	vertexBuffer->Map(data, dataSize); // map , unmap  (DYNAMIC)
 }

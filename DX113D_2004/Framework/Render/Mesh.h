@@ -14,7 +14,7 @@ public:
 	void IASet(D3D11_PRIMITIVE_TOPOLOGY primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	void UpdateVertex(void* data, UINT count);
-	void MapVertex(void* data, UINT start, UINT size, UINT offset);
+	void UpdateVertexUsingMap(void* data, UINT dataSize);
 
 	ID3D11Buffer* GetVertexBuffer() { return vertexBuffer->GetBuffer(); }
 };

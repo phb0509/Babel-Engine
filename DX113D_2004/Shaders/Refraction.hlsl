@@ -1,5 +1,7 @@
 #include "Header.hlsli"
 
+// ±¼Àý. ¹Ý»ç¾Æ´Ô!
+
 struct PixelInput
 {
     float4 pos : SV_Position;

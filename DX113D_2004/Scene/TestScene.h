@@ -14,9 +14,7 @@ public:
 
 
 private:
-	Collider* collider;
-	Cube* cube;
-	vector<Cube*> cubes; 
-
-	FrustumCollider* mFrustumCollider;
+	Terrain* mTerrain;
+	TerrainLOD* mTerrainLOD;
+	RasterizerState* rsState;
 };

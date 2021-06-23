@@ -1,5 +1,7 @@
 #include "Header.hlsli"
 
+// ¹Ý»ç. ±¼Àý¾Æ´Ô!
+
 cbuffer ReflectionBuffer : register(b10)
 {
     matrix reflectionView;

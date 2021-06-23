@@ -6,8 +6,8 @@ Frustum::Frustum() :
 	mbIsCheck(false),
 	mCamera(nullptr),
 	mbHasInitialized(false),
-	mDistanceToNearZ(10.0f),
-	mDistanceToFarZ(100.0f),
+	mDistanceToNearZ(0.1f),
+	mDistanceToFarZ(1000.0f),
 	mAspectRatio(WIN_WIDTH / (float)WIN_HEIGHT),
 	mFoV(XM_PIDIV4)
 {
@@ -32,11 +32,11 @@ void Frustum::Update()
 
 	mView = CAMERA->GetView(); // Å¸°ÙÄ«¸Þ¶óºä
 
-	if (!mbHasInitialized)
-	{
-		initialize();
-		mbHasInitialized = true;
-	}
+	//if (!mbHasInitialized)
+	//{
+	//	initialize();
+	//	mbHasInitialized = true;
+	//}
 
 	Float4x4 VP;
 	XMStoreFloat4x4(&VP, mView * mProjection);
@@ -103,7 +103,7 @@ void Frustum::Render()
 
 void Frustum::PostRender()
 {
-	ImGui::Begin("Test");
+	/*ImGui::Begin("Test");
 
 	string c1 = "CubePosition";
 	string c2 = "CubeRotation";
@@ -119,7 +119,7 @@ void Frustum::PostRender()
 	ImGui::InputFloat3(fc2.c_str(), (float*)&mCollider->mRotation);
 	ImGui::InputFloat3(fc3.c_str(), (float*)&mCollider->mScale);
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 

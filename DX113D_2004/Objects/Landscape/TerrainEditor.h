@@ -103,11 +103,6 @@ private:
 	char mInputFileName[100];
 
 	Vector3 mPickedPosition;
-	Vector3 mBeforeMousePosition;
 	Vector3 mCurrentMousePosition;
 	Vector3 mLastPickingMousePosition;
-	bool mbIsMouseMove;
-
-	int t1 = 0;
-	int t2 = 0;
 };

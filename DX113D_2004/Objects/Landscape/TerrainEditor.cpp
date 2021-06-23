@@ -13,9 +13,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mbIsPainting(true),
 	mPaintValue(5),
 	mSelectedMap(0),
-	mBeforeMousePosition(0.0f, 0.0f, 0.0f),
 	mCurrentMousePosition(0.0f, 0.0f, 0.0f),
-	mbIsMouseMove(false),
 	mLastPickingMousePosition(0.0f, 0.0f, 0.0f)
 
 {
@@ -30,8 +28,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	createCompute();
 
 	mBrushBuffer = new BrushBuffer();
-
-
 }
 
 TerrainEditor::~TerrainEditor()
@@ -73,8 +69,8 @@ void TerrainEditor::Update()
 
 	if (KEY_UP(VK_LBUTTON))
 	{
-		//CreateNormal(); // 이거 두개가 프레임 은근 먹는다.
-		//CreateTangent();
+		createNormal(); // 이거 두개가 프레임 은근 먹는다.
+		createTangent();
 		//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
 		mLastPickingMousePosition = MOUSEPOS;
@@ -105,9 +101,6 @@ void TerrainEditor::PostRender()
 {
 	ImGui::Begin("TerrainEditor");
 
-	/*ComputePicking(&mTemp);
-	mBrushBuffer->data.location = mTemp;*/
-
 	ImGui::Text("TerainEditor");
 	ImGui::SliderInt("Type", &mBrushBuffer->data.type, 0, 1);
 	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
@@ -118,6 +111,7 @@ void TerrainEditor::PostRender()
 
 	ImGui::InputText("FileName", mInputFileName, 100);
 	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
+
 	if (ImGui::Button("Save"))
 	{
 		save(heightFile);
@@ -205,8 +199,6 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 	{
 	case 0: // 원.
 	{
-		
-
 		float dist;
 		for (LONG z = rect.bottom; z <= rect.top; z++)
 		{
@@ -286,41 +278,14 @@ void TerrainEditor::paintBrush(Vector3 position)
 
 bool TerrainEditor::checkMouseMove()
 {
-	//int x = static_cast<int>(mCurrentMousePosition.x - mBeforeMousePosition.x);
-	//int y = static_cast<int>(mCurrentMousePosition.y - mBeforeMousePosition.y);
-
-	//if (x == 0 && // 마우스커서가 안움직였으면
-	//	y == 0)
-	//{
-	//	char buff[100];
-	//	sprintf_s(buff, "안움직임 : %d \n x : %d   y : %d\n", t1++, x, y);
-	//	OutputDebugStringA(buff);
-
-	//	return false;
-	//}
-
-	//char buff[100];
-	//sprintf_s(buff, "움직임 : %d \n", t2++);
-	//OutputDebugStringA(buff);
-
-	//return true;
-
 	int x = static_cast<int>(mCurrentMousePosition.x - mLastPickingMousePosition.x);
 	int y = static_cast<int>(mCurrentMousePosition.y - mLastPickingMousePosition.y);
 
 	if (x == 0 && // 마우스커서가 안움직였으면
 		y == 0)
 	{
-	/*	char buff[100];
-		sprintf_s(buff, "안움직임 : %d \n x : %d   y : %d\n", t1++, x, y);
-		OutputDebugStringA(buff);*/
-
 		return false;
 	}
-
-	/*char buff[100];
-	sprintf_s(buff, "움직임 : %d \n", t2++);
-	OutputDebugStringA(buff);*/
 
 	return true;
 }

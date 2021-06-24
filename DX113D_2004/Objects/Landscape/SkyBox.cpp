@@ -4,7 +4,7 @@ SkyBox::SkyBox()
 {
 	sphere = new Sphere(L"SkyBox");
 
-	cubeMap = Texture::Add(L"Textures/Landscape/Snow_ENV.dds");
+	cubeMap = Texture::Add(L"Textures/Landscape/NightSkyCube.dds");
 
 	rasterizerState[0] = new RasterizerState();
 	rasterizerState[1] = new RasterizerState();

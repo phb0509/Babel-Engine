@@ -16,5 +16,6 @@ private:
 	TerrainEditor* terrainEditor;
 	SkyBox* skyBox;
 	Cube* cube;
-	
+
+	RasterizerState* mRasterizerState;
 };

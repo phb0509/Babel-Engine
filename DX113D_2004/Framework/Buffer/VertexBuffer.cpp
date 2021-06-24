@@ -45,20 +45,6 @@ void VertexBuffer::Update(void* data, UINT count) // vertices.data, vertices.siz
 
 void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, dataSize
 {
-	/*D3D11_MAPPED_SUBRESOURCE subResource;
-	subResource.pData = data;
-
-	DC->Map(buffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
-	memcpy((BYTE*)subResource.pData + offset, (BYTE*)data + start, size);
-	DC->Unmap(buffer, 0);*/
-
-	//D3D11_MAPPED_SUBRESOURCE subResource;
-	//subResource.pData = data;
-	//DC->Map(buffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
-	//memcpy((BYTE*)subResource.pData, (BYTE*)data, dataSize);
-	//DC->Unmap(buffer, 0);
-
-
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	mappedResource.pData = data;

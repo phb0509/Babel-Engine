@@ -30,8 +30,8 @@ Environment::~Environment()
 
 void Environment::PostRender()
 {
-	mSun->Update();
-	mSun->Render();
+	//mSun->Update();
+	//mSun->Render();
 
 	if (lightBuffer->data.lightCount >= 1)
 	{

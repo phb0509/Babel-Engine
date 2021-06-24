@@ -18,7 +18,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 {
 	mMaterial = new Material(L"TerrainSplatting");
-	mMaterial->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");
+	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
 
 	mAlphaMap = Texture::Add(L"Textures/HeightMaps/AlphaMap.png");
 	mSecondMap = Texture::Add(L"Textures/Landscape/Floor.png");
@@ -56,7 +56,7 @@ void TerrainEditor::Update()
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}
-		
+
 		if (mbIsPainting)
 		{
 			paintBrush(mPickedPosition);
@@ -69,14 +69,11 @@ void TerrainEditor::Update()
 
 	if (KEY_UP(VK_LBUTTON))
 	{
-		createNormal(); // 이거 두개가 프레임 은근 먹는다.
-		createTangent();
+		//createNormal(); // 이거 두개가 프레임 은근 먹는다.
+		//createTangent();
 		//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
-		mLastPickingMousePosition = MOUSEPOS;
 	}
-
-	mBeforeMousePosition = mCurrentMousePosition;
 
 	UpdateWorld();
 }
@@ -107,6 +104,7 @@ void TerrainEditor::PostRender()
 	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
 	ImGui::Checkbox("Raise", &mbIsRaise);
 	ImGui::Checkbox("Painting", &mbIsPainting);
+	ImGui::Spacing();
 	ImGui::InputInt("SelectMap", &mSelectedMap);
 
 	ImGui::InputText("FileName", mInputFileName, 100);
@@ -199,7 +197,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 	{
 	case 0: // 원.
 	{
-		float dist;
+		float distance;
 		for (LONG z = rect.bottom; z <= rect.top; z++)
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
@@ -209,32 +207,65 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 				float dx = x - position.x;
 				float dz = z - position.z;
 
-				// 원의 중심과 버텍스 사이의 거리 구하기(피타고라스 정리)
-				dist = sqrt(dx * dx + dz * dz);
+				distance = sqrt(dx * dx + dz * dz); // 원의 중심과 버텍스 사이의 거리
 
-				// 원의 중심과 정점의 거리가 반지름의 길이를 넘어갈 경우 계산 안함.
-				if (fabsf(dist) > range) continue;
+				if (fabsf(distance) > range) continue;// 범위내의 버텍스가 아닐경우
 
-				// 원의 중심에서 반지름의 길이를 넘어가는 dist(거리)는 위에서 걸러지고
-				// dist의 값은 정점이 원의 중심과 멀수록 range의 값과 동일해지고 가까워질수록 0으로 간다.
-				// 위를 생각하면서 아래 공식에 값을 넣어보면 어떤 결과가 나오는지 알 수 있다.
-				// float h = range - dist; // 원뿔형태가 나옴
-				float h = pow(range, 2) - (dist * dist); // 반원 형태가 나옴
+				float heightValue = mAdjustValue * max(0, cos(XM_PIDIV2 * distance / mBrushBuffer->data.range));
 
-				if (dist <= range)
+				if (distance <= range && mbIsRaise)
 				{
-					mVertices[index].position.y += h * DELTA;
+					mVertices[index].position.y += heightValue * DELTA;
+
+					if (mVertices[index].position.y >= MAX_HEIGHT)
+					{
+						mVertices[index].position.y = MAX_HEIGHT;
+					}
 				}
-				else if (dist <= range)
+				else if (distance <= range && !mbIsRaise)
 				{
-					mVertices[index].position.y -= h * DELTA;
+					mVertices[index].position.y -= heightValue * DELTA;
+
+					if (mVertices[index].position.y <= 0.0f)
+					{
+						mVertices[index].position.y = 0.0f;
+					}
 				}
 			}
 		}
 	}
 	break;
 	case 1: // 사각형.
-		break;
+	{
+		for (LONG z = rect.bottom; z <= rect.top; z++)
+		{
+			for (LONG x = rect.left; x <= rect.right; x++)
+			{
+				UINT index = mWidth * (UINT)z + (UINT)x;
+
+				// 정점 높이 높이기
+				if (mbIsRaise)
+				{
+					mVertices[index].position.y += mAdjustValue * DELTA;
+
+					if (mVertices[index].position.y >= MAX_HEIGHT)
+					{
+						mVertices[index].position.y = MAX_HEIGHT;
+					}
+				}
+				else if (!mbIsRaise)
+				{
+					mVertices[index].position.y -= mAdjustValue * DELTA;
+
+					if (mVertices[index].position.y <= 0.0f)
+					{
+						mVertices[index].position.y = 0.0f;
+					}
+				}
+			}
+		}
+	}
+	break;
 	default:
 		break;
 	}
@@ -273,7 +304,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 		break;
 	}
 
-	mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
 }
 
 bool TerrainEditor::checkMouseMove()

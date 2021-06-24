@@ -5,6 +5,8 @@ TerrainEditorScene::TerrainEditorScene()
 {
 	terrainEditor = new TerrainEditor();
 	skyBox = new SkyBox();
+
+
 }
 
 TerrainEditorScene::~TerrainEditorScene()

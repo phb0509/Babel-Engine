@@ -62,8 +62,12 @@ private:
 	void paintBrush(Vector3 position);
 	bool checkMouseMove();
 
-	void save(wstring heightFile);
+	void saveHeightMap(wstring heightFileName);
+	void saveTextureMap(wstring textureFileName);
 	void load(wstring heightFile);
+
+	void changeHeightMap(wstring heightFileName);
+	void changeTextureMap(wstring textureFileName);
 
 
 private:
@@ -105,4 +109,7 @@ private:
 	Vector3 mPickedPosition;
 	Vector3 mCurrentMousePosition;
 	Vector3 mLastPickingMousePosition;
+
+	wstring mCurrentHeightMapFileName;
+	wstring mCurrentTextureMapFileName;
 };

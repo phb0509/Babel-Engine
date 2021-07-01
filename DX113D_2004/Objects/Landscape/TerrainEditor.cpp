@@ -75,6 +75,14 @@ void TerrainEditor::Update()
 		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
 	}
 
+
+	if (KEY_DOWN('T'))
+	{
+		mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
+	}
+
+
+
 	UpdateWorld();
 }
 
@@ -110,9 +118,9 @@ void TerrainEditor::PostRender()
 	ImGui::InputText("FileName", mInputFileName, 100);
 	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
 
-	if (ImGui::Button("Save"))
+	if (ImGui::Button("HeightMapSave"))
 	{
-		save(heightFile);
+		saveHeightMap(heightFile);
 	}
 
 	if (ImGui::Button("Open File Dialog"))
@@ -211,7 +219,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 
 				if (fabsf(distance) > range) continue;// 범위내의 버텍스가 아닐경우
 
-				float heightValue = mAdjustValue * max(0, cos(XM_PIDIV2 * distance / mBrushBuffer->data.range));
+				float heightValue = mAdjustValue * max(0, cos(XM_PIDIV2 * distance / range));
 
 				if (distance <= range && mbIsRaise)
 				{
@@ -275,27 +283,49 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 
 void TerrainEditor::paintBrush(Vector3 position)
 {
+	D3D11_RECT rect;
+	float range = mBrushBuffer->data.range;
+	rect.left = (LONG)position.x - range;
+	rect.top = (LONG)position.z + range;
+	rect.right = (LONG)position.x + range;
+	rect.bottom = (LONG)position.z - range;
+
+
+	if (rect.left < 0) rect.left = 0;
+	if (rect.top >= (LONG)mHeight) rect.top = (LONG)mHeight;
+	if (rect.right >= (LONG)mWidth) rect.right = (LONG)mWidth;
+	if (rect.bottom < 0) rect.bottom = 0;
+
 	switch (mBrushBuffer->data.type)
 	{
 	case 0:
 	{
-		for (VertexType& vertex : mVertices)
+		float distance;
+		for (LONG z = rect.bottom; z <= rect.top; z++)
 		{
-			Vector3 p1 = Vector3(vertex.position.x, 0, vertex.position.z);
-			Vector3 p2 = Vector3(position.x, 0, position.z);
-
-			float distance = (p2 - p1).Length();
-
-			float temp = mPaintValue * max(0, cos(XM_PIDIV2 * distance / mBrushBuffer->data.range));
-
-			if (distance <= mBrushBuffer->data.range)
+			for (LONG x = rect.left; x < rect.right; x++)
 			{
-				if (mbIsRaise)
-					vertex.alpha[mSelectedMap] += temp * DELTA;
-				else
-					vertex.alpha[mSelectedMap] -= temp * DELTA;
+				UINT index = mWidth * z + x;
 
-				vertex.alpha[mSelectedMap] = Saturate(vertex.alpha[mSelectedMap]);
+				float dx = x - position.x;
+				float dz = z - position.z;
+
+				distance = sqrt(dx * dx + dz * dz); // 원의 중심과 버텍스 사이의 거리
+
+				if (fabsf(distance) > range) continue;// 범위내의 버텍스가 아닐경우
+
+				float paintValue = mPaintValue * max(0, cos(XM_PIDIV2 * distance / range));
+
+				if (mbIsRaise)
+				{
+					mVertices[index].alpha[mSelectedMap] += paintValue * DELTA; // 
+				}
+				else
+				{
+					mVertices[index].alpha[mSelectedMap] -= paintValue * DELTA;
+				}
+					
+				mVertices[index].alpha[mSelectedMap] = Saturate(mVertices[index].alpha[mSelectedMap]);
 			}
 		}
 	}
@@ -321,7 +351,7 @@ bool TerrainEditor::checkMouseMove()
 	return true;
 }
 
-void TerrainEditor::save(wstring heightFile)
+void TerrainEditor::saveHeightMap(wstring heightFile)
 {
 	UINT size = mWidth * mHeight * 4;
 	uint8_t* pixels = new uint8_t[size];
@@ -351,6 +381,10 @@ void TerrainEditor::save(wstring heightFile)
 		heightFile.c_str());
 }
 
+void TerrainEditor::saveTextureMap(wstring textureFile)
+{
+}
+
 void TerrainEditor::load(wstring heightFile)
 {
 	mHeightMap = Texture::Load(heightFile);
@@ -359,6 +393,16 @@ void TerrainEditor::load(wstring heightFile)
 
 	createMesh();
 	createCompute();
+}
+
+void TerrainEditor::changeHeightMap(wstring heightFileName)
+{
+	//mMaterial->SetHeightMap(heightFileName);
+}
+
+void TerrainEditor::changeTextureMap(wstring textureFileName)
+{
+	mMaterial->SetDiffuseMap(textureFileName);
 }
 
 void TerrainEditor::createMesh()

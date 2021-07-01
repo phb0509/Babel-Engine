@@ -34,7 +34,7 @@ void MapToolScene::PreRender()
 void MapToolScene::Render()
 {
 	skyBox->Render();
-	mRasterizerState->SetState();
+	//mRasterizerState->SetState();
 	terrainEditor->Render();
 
 

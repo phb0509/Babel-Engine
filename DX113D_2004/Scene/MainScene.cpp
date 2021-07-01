@@ -75,13 +75,13 @@ void MainScene::Update()
 		monsters[i]->Update();
 	}
 
-	//for (int i = 0; i < cubes.size(); i++)
-	//{
-	//	if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
-	//	{
-	//		cubes[i]->Update();
-	//	}
-	//}
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
+		{
+			cubes[i]->Update();
+		}
+	}
 }
 
 void MainScene::PreRender()
@@ -103,13 +103,13 @@ void MainScene::Render()
 
 	//monsters[0]->GetAStar()->Render();
 	
-	/*for (int i = 0; i < cubes.size(); i++)
+	for (int i = 0; i < cubes.size(); i++)
 	{
 		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
 		{
 			cubes[i]->Render();
 		}
-	}*/
+	}
 }
 
 void MainScene::PostRender()

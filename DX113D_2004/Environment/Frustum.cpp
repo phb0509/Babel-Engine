@@ -6,8 +6,8 @@ Frustum::Frustum() :
 	mbIsCheck(false),
 	mCamera(nullptr),
 	mbHasInitialized(false),
-	mDistanceToNearZ(0.1f),
-	mDistanceToFarZ(1000.0f),
+	mDistanceToNearZ(10.0f),
+	mDistanceToFarZ(200.0f),
 	mAspectRatio(WIN_WIDTH / (float)WIN_HEIGHT),
 	mFoV(XM_PIDIV4)
 {
@@ -32,11 +32,11 @@ void Frustum::Update()
 
 	mView = CAMERA->GetView(); // Å¸°ÙÄ«¸Þ¶óºä
 
-	//if (!mbHasInitialized)
-	//{
-	//	initialize();
-	//	mbHasInitialized = true;
-	//}
+	if (!mbHasInitialized)
+	{
+		initialize();
+		mbHasInitialized = true;
+	}
 
 	Float4x4 VP;
 	XMStoreFloat4x4(&VP, mView * mProjection);
@@ -92,7 +92,7 @@ void Frustum::Update()
 
 	mEmptyObject->Update();
 	mCollider->Update();
-	moveFrustumCollider();
+	//moveFrustumCollider();
 }
 
 void Frustum::Render()

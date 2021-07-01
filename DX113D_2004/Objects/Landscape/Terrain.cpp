@@ -15,8 +15,8 @@ Terrain::Terrain()
 	fillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
 
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
-	heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png");
-	//heightMap = Texture::Add(L"Textures/HeightMaps/Test1.png");
+	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
+	heightMap = Texture::Add(L"Textures/HeightMaps/Test1.png"); // 100 & 100
 
 	CreateMesh();
 

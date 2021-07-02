@@ -43,4 +43,6 @@ void MapToolScene::Render()
 void MapToolScene::PostRender()
 {
 	terrainEditor->PostRender();
+	//ImGui::ShowDemoWindow();
+	//ImGui::ShowMetricsWindow();
 }

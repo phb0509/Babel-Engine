@@ -251,13 +251,16 @@ namespace igfd
 			const std::string& vPath, const std::string& vDefaultFileName,
 			const std::function<void(std::string, UserDatas, bool*)>& vOptionsPane, const size_t&  vOptionsPaneWidth = 250,
 			const int& vCountSelectionMax = 1, UserDatas vUserDatas = 0);
+
 		void OpenDialog(const std::string& vKey, const char* vName, const char* vFilters,
 			const std::string& vDefaultFileName,
 			const std::function<void(std::string, UserDatas, bool*)>& vOptionsPane, const size_t&  vOptionsPaneWidth = 250,
 			const int& vCountSelectionMax = 1, UserDatas vUserDatas = 0);
+
 		void OpenDialog(const std::string& vKey, const char* vName, const char* vFilters,
 			const std::string& vPath, const std::string& vDefaultFileName,
 			const int& vCountSelectionMax = 1, UserDatas vUserDatas = 0);
+
 		void OpenDialog(const std::string& vKey, const char* vName, const char* vFilters,
 			const std::string& vFilePathName, const int& vCountSelectionMax = 1,
 			UserDatas vUserDatas = 0);

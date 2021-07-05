@@ -123,16 +123,14 @@ void TerrainEditor::PostRender()
 	{
 		saveHeightMap(heightFile);
 	}
-	//igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".png", ImVec4(0, 1, 1, 0.9), ICON_IMFDLG_FILE_TYPE_PIC);
-	//ChooseFileDlgKey
+
 	if (ImGui::Button("Open File Dialog"))
 	{
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", ".");
-
 	}
 
-	igfd::ImGuiFileDialog::Instance()->m_CreateDirectoryMode
-		
+	
+
 	// display
 	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey"))
 	{
@@ -145,8 +143,6 @@ void TerrainEditor::PostRender()
 		
 		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 	}
-
-	//ImGui::Image((void*)mAlphaMap, ImVec2(mAlphaMap->Width(), mAlphaMap->Height()));
 
 	ImGui::End();
 }

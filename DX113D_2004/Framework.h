@@ -47,6 +47,7 @@
 
 #define GM GameManager::Get()
 
+#include <filesystem>
 #include <windows.h>
 #include <assert.h>
 #include <vector>
@@ -63,9 +64,14 @@
 #include <d3dcompiler.h>
 #include <DirectXCollision.h>
 
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
+#define STB_IMAGE_IMPLEMENTATION 
+
+
+
 
 //DirectWrite
 #include <d2d1_2.h>
@@ -92,11 +98,18 @@
 #include <Assimp/scene.h>
 #include <Assimp/postprocess.h>
 
+
+
 #pragma comment(lib, "Assimp/assimp-vc142-mtd.lib")
 
 using namespace DirectX;
 using namespace std;
 using namespace DirectX::TriangleTests;
+
+
+//ImFileDialog
+#include "stb_image.h"
+//#include <ImFileDialog.h>
 
 typedef XMFLOAT4 Float4;
 typedef XMFLOAT3 Float3;

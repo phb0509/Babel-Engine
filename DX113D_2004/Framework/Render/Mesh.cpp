@@ -16,7 +16,7 @@ void Mesh::IASet(D3D11_PRIMITIVE_TOPOLOGY primitiveType)
 {
 	vertexBuffer->IASet();
 	indexBuffer->IASet();
-	DC->IASetPrimitiveTopology(primitiveType);
+	DEVICECONTEXT->IASetPrimitiveTopology(primitiveType);
 }
 
 void Mesh::UpdateVertex(void* data, UINT count)

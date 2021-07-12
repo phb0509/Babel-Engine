@@ -52,7 +52,7 @@ void TessellationScene::Render()
 	rsState->SetState();
 
 	vertexBuffer->IASet();
-	DC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	DEVICECONTEXT->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 
 	edgeBuffer->SetHSBuffer(10);
 	insideBuffer->SetHSBuffer(11);
@@ -61,7 +61,7 @@ void TessellationScene::Render()
 	hullShader->Set();
 	domainShader->Set();
 
-	DC->Draw(4, 0);
+	DEVICECONTEXT->Draw(4, 0);
 }
 
 void TessellationScene::PostRender()

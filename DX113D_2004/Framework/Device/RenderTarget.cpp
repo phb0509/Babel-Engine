@@ -46,10 +46,10 @@ RenderTarget::~RenderTarget()
 
 void RenderTarget::Set(DepthStencil* depthStencil)
 {
-	DC->OMSetRenderTargets(1, &rtv, depthStencil->GetDSV());
+	DEVICECONTEXT->OMSetRenderTargets(1, &rtv, depthStencil->GetDSV());
 	
 	Float4 color = { 0, 0, 0, 0 };
-	DC->ClearRenderTargetView(rtv, (float*)&color);
+	DEVICECONTEXT->ClearRenderTargetView(rtv, (float*)&color);
 	depthStencil->Clear();
 
 	Environment::Get()->SetViewport(width, height);
@@ -63,9 +63,9 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 	for (UINT i = 0; i < count; i++)
 	{
 		rtvs.emplace_back(targets[i]->GetRTV());
-		DC->ClearRenderTargetView(targets[i]->GetRTV(), color);
+		DEVICECONTEXT->ClearRenderTargetView(targets[i]->GetRTV(), color);
 	}
 
 	depthStencil->Clear();
-	DC->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
+	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
 }

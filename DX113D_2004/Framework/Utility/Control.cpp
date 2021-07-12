@@ -18,7 +18,7 @@ void Control::Update()
 
 	for (int i = 0; i < KEYMAX; i++)
 	{
-		byte key = curState[i] & 0x80;
+		::byte key = curState[i] & 0x80;
 		curState[i] = key ? 1 : 0;
 
 		int old = oldState[i];

@@ -32,7 +32,7 @@
 #endif
 
 #define DEVICE Device::Get()->GetDevice()
-#define DC Device::Get()->GetDeviceContext()
+#define DEVICECONTEXT Device::Get()->GetDeviceContext()
 
 #define KEY_DOWN(k) Control::Get()->Down(k)
 #define KEY_UP(k) Control::Get()->Up(k)
@@ -68,7 +68,6 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
-#define STB_IMAGE_IMPLEMENTATION 
 
 
 
@@ -98,6 +97,13 @@
 #include <Assimp/scene.h>
 #include <Assimp/postprocess.h>
 
+//ImFileDialog
+
+
+
+#include <time.h>
+
+
 
 
 #pragma comment(lib, "Assimp/assimp-vc142-mtd.lib")
@@ -106,10 +112,6 @@ using namespace DirectX;
 using namespace std;
 using namespace DirectX::TriangleTests;
 
-
-//ImFileDialog
-#include "stb_image.h"
-//#include <ImFileDialog.h>
 
 typedef XMFLOAT4 Float4;
 typedef XMFLOAT3 Float3;
@@ -134,6 +136,7 @@ const XMVECTORF32 kForward = { 0, 0, 1 };
 #include "Framework/Utility/Timer.h"
 #include "Framework/Utility/Xml.h"
 #include "Framework/Utility/DirectWrite.h"
+
 
 using namespace Utility;
 

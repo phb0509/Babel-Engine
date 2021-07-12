@@ -19,43 +19,43 @@ ConstBuffer::~ConstBuffer()
 
 void ConstBuffer::Update()
 {
-	DC->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); 
+	DEVICECONTEXT->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); 
 	memcpy(subResource.pData, data, dataSize);
-	DC->Unmap(buffer, 0);
+	DEVICECONTEXT->Unmap(buffer, 0);
 }
 
 void ConstBuffer::SetVSBuffer(UINT slot)
 {
 	Update();
-	DC->VSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->VSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void ConstBuffer::SetPSBuffer(UINT slot)
 {
 	Update();
-	DC->PSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->PSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void ConstBuffer::SetCSBuffer(UINT slot)
 {
 	Update();
-	DC->CSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->CSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void ConstBuffer::SetHSBuffer(UINT slot)
 {
 	Update();
-	DC->HSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->HSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void ConstBuffer::SetDSBuffer(UINT slot)
 {
 	Update();
-	DC->DSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->DSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void ConstBuffer::SetGSBuffer(UINT slot)
 {
 	Update();
-	DC->GSSetConstantBuffers(slot, 1, &buffer);
+	DEVICECONTEXT->GSSetConstantBuffers(slot, 1, &buffer);
 }

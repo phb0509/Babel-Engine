@@ -28,13 +28,13 @@ StructuredBuffer::~StructuredBuffer()
 
 void StructuredBuffer::Copy(void* data, UINT size)
 {
-	DC->CopyResource(result, output);
+	DEVICECONTEXT->CopyResource(result, output);
 
 	D3D11_MAPPED_SUBRESOURCE subResource;
 
-	DC->Map(result, 0, D3D11_MAP_READ, 0, &subResource);
+	DEVICECONTEXT->Map(result, 0, D3D11_MAP_READ, 0, &subResource);
 	memcpy(data, subResource.pData, size);
-	DC->Unmap(result, 0);
+	DEVICECONTEXT->Unmap(result, 0);
 }
 
 void StructuredBuffer::CreateInput()

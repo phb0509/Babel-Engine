@@ -67,27 +67,27 @@ void Scattering::PreRender()
 	RenderTarget::Sets(targets, 2, depthStencil);
 
 	quadBuffer->IASet();
-	DC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DEVICECONTEXT->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	targetBuffer->SetPSBuffer(10);
 	quadMaterial->Set();
 
-	DC->Draw(6, 0);
+	DEVICECONTEXT->Draw(6, 0);
 }
 
 void Scattering::Render()
 {
 	mesh->IASet();
 
-	DC->PSSetShaderResources(10, 1, &targets[0]->GetSRV());
-	DC->PSSetShaderResources(11, 1, &targets[1]->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &targets[0]->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(11, 1, &targets[1]->GetSRV());
 
 	starBuffer->SetPSBuffer(10);
 
 	material->Set();
 
 	depthMode[1]->SetState();
-	DC->DrawIndexed(indexCount, 0, 0);
+	DEVICECONTEXT->DrawIndexed(indexCount, 0, 0);
 	depthMode[0]->SetState();
 }
 

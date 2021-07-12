@@ -20,5 +20,5 @@ IndexBuffer::~IndexBuffer()
 
 void IndexBuffer::IASet()
 {
-	DC->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
+	DEVICECONTEXT->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
 }

@@ -44,7 +44,7 @@ void Shadow::Render()
 	qualityBuffer->SetPSBuffer(10);
 	sizeBuffer->SetPSBuffer(11);
 
-	DC->PSSetShaderResources(10, 1, &renderTarget->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &renderTarget->GetSRV());
 }
 
 void Shadow::PostRender()

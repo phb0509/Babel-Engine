@@ -161,13 +161,13 @@ void Effect::Render()
 	if (activeCount != gpuCount)
 	{
 		if(gpuCount > activeCount)
-			DC->DrawIndexed((gpuCount - activeCount) * 6, activeCount * 6, 0);
+			DEVICECONTEXT->DrawIndexed((gpuCount - activeCount) * 6, activeCount * 6, 0);
 		else
 		{
-			DC->DrawIndexed((data.maxParticles - activeCount) * 6, activeCount * 6, 0);
+			DEVICECONTEXT->DrawIndexed((data.maxParticles - activeCount) * 6, activeCount * 6, 0);
 
 			if (gpuCount > 0)
-				DC->DrawIndexed(gpuCount * 6, 0, 0);
+				DEVICECONTEXT->DrawIndexed(gpuCount * 6, 0, 0);
 		}
 	}
 
@@ -188,7 +188,7 @@ void Effect::MapVertices()
 
 	if (leadCount > gpuCount)
 	{
-		DC->Map(mesh->GetVertexBuffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
+		DEVICECONTEXT->Map(mesh->GetVertexBuffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
 
 		UINT start = gpuCount * 4;
 		UINT size = (leadCount - gpuCount) * sizeof(VertexParticle) * 4;
@@ -197,11 +197,11 @@ void Effect::MapVertices()
 		BYTE* p = (BYTE*)subResource.pData + offset;
 		memcpy(p, vertices + start, size);
 
-		DC->Unmap(mesh->GetVertexBuffer(), 0);
+		DEVICECONTEXT->Unmap(mesh->GetVertexBuffer(), 0);
 	}
 	else
 	{
-		DC->Map(mesh->GetVertexBuffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
+		DEVICECONTEXT->Map(mesh->GetVertexBuffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &subResource);
 
 		UINT start = gpuCount * 4;
 		UINT size = (data.maxParticles - gpuCount) * sizeof(VertexParticle) * 4;
@@ -217,7 +217,7 @@ void Effect::MapVertices()
 			memcpy(subResource.pData, vertices, size);
 		}
 
-		DC->Unmap(mesh->GetVertexBuffer(), 0);
+		DEVICECONTEXT->Unmap(mesh->GetVertexBuffer(), 0);
 	}
 
 	gpuCount = leadCount;

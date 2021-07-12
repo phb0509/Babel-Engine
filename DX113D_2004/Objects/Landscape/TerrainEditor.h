@@ -64,10 +64,13 @@ private:
 
 	void saveHeightMap(wstring heightFileName);
 	void saveTextureMap(wstring textureFileName);
-	void load(wstring heightFile);
+	void loadHeightMap(wstring heightFile);
 
 	void changeHeightMap(wstring heightFileName);
 	void changeTextureMap(wstring textureFileName);
+
+	void addTexture();
+	void showAddedTextures();
 
 
 private:
@@ -112,4 +115,9 @@ private:
 
 	wstring mCurrentHeightMapFileName;
 	wstring mCurrentTextureMapFileName;
+
+	Texture* mTempTexture;
+	vector<Texture*> mAddedTextures;
+
+	
 };

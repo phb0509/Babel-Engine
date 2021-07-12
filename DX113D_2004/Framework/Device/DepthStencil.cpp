@@ -45,5 +45,5 @@ DepthStencil::~DepthStencil()
 
 void DepthStencil::Clear()
 {
-	DC->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	DEVICECONTEXT->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

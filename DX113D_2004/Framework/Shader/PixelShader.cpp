@@ -23,5 +23,5 @@ PixelShader::~PixelShader()
 
 void PixelShader::Set()
 {
-	DC->PSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->PSSetShader(shader, nullptr, 0);
 }

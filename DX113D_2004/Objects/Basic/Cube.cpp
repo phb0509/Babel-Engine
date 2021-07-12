@@ -28,7 +28,7 @@ void Cube::Render()
 
 	material->Set();
 
-	DC->DrawIndexed((UINT)indices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed((UINT)indices.size(), 0, 0);
 }
 
 void Cube::Create()

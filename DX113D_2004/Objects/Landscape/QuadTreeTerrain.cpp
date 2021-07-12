@@ -82,7 +82,7 @@ void QuadTreeTerrain::RenderNode(Node* node)
     material->Set();
 
     UINT indexCount = node->triangleCount * 3;
-    DC->DrawIndexed(indexCount, 0, 0);
+    DEVICECONTEXT->DrawIndexed(indexCount, 0, 0);
 
     drawCount += node->triangleCount;
 }

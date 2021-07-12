@@ -64,7 +64,7 @@ void Water::Render()
 
 	blendState[1]->SetState();
 
-	DC->DrawIndexed(indexCount, 0, 0);
+	DEVICECONTEXT->DrawIndexed(indexCount, 0, 0);
 
 	blendState[0]->SetState();
 }

@@ -68,10 +68,10 @@ void TerrainLOD::Render()
     hullShader->Set();
     domainShader->Set();
 
-    DC->DrawIndexed(indices.size(), 0, 0);
+    DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
 
-    DC->HSSetShader(nullptr, nullptr, 0); // 해제안해놓으면 다른곳에서도 그대로 적용되서 버그남. 한번렌더해주고 다시 해제시켜줘야한다.
-    DC->DSSetShader(nullptr, nullptr, 0);
+    DEVICECONTEXT->HSSetShader(nullptr, nullptr, 0); // 해제안해놓으면 다른곳에서도 그대로 적용되서 버그남. 한번렌더해주고 다시 해제시켜줘야한다.
+    DEVICECONTEXT->DSSetShader(nullptr, nullptr, 0);
 }
 
 void TerrainLOD::PostRender()

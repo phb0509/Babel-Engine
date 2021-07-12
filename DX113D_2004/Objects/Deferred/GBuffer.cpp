@@ -44,10 +44,10 @@ void GBuffer::PreRender()
 
 void GBuffer::Render()
 {
-	DC->PSSetShaderResources(3, 1, &srvs[0]);
-	DC->PSSetShaderResources(4, 1, &srvs[1]);
-	DC->PSSetShaderResources(5, 1, &srvs[2]);
-	DC->PSSetShaderResources(6, 1, &srvs[3]);
+	DEVICECONTEXT->PSSetShaderResources(3, 1, &srvs[0]);
+	DEVICECONTEXT->PSSetShaderResources(4, 1, &srvs[1]);
+	DEVICECONTEXT->PSSetShaderResources(5, 1, &srvs[2]);
+	DEVICECONTEXT->PSSetShaderResources(6, 1, &srvs[3]);
 }
 
 void GBuffer::PostRender()

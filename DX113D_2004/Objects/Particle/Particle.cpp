@@ -39,7 +39,7 @@ void Particle::Render()
 
 	SetWorldBuffer();
 	vertexBuffer->IASet();
-	DC->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	CAMERA->GetViewBuffer()->SetGSBuffer(1);
 	Environment::Get()->GetProjectionBuffer()->SetGSBuffer(2);
@@ -47,9 +47,9 @@ void Particle::Render()
 	material->Set();
 	geometryShader->Set();
 
-	DC->Draw(particleCount, 0);
+	DEVICECONTEXT->Draw(particleCount, 0);
 
-	DC->GSSetShader(nullptr, nullptr, 0);
+	DEVICECONTEXT->GSSetShader(nullptr, nullptr, 0);
 
 	blendState[0]->SetState();
 	depthState[0]->SetState();

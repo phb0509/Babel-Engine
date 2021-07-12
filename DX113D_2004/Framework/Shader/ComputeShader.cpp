@@ -23,5 +23,5 @@ ComputeShader::~ComputeShader()
 
 void ComputeShader::Set()
 {
-	DC->CSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->CSSetShader(shader, nullptr, 0);
 }

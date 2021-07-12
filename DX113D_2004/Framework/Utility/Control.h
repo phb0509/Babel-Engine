@@ -15,9 +15,9 @@ private:
 		PRESS
 	};
 
-	byte curState[KEYMAX];
-	byte oldState[KEYMAX];
-	byte mapState[KEYMAX];
+	::byte curState[KEYMAX];
+	::byte oldState[KEYMAX];
+	::byte mapState[KEYMAX];
 
 	Vector3 mousePos;
 	float wheelValue;

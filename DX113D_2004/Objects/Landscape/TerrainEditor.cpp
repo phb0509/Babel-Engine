@@ -23,7 +23,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	mAlphaMap = Texture::Add(L"Textures/HeightMaps/AlphaMap.png");
 	mSecondMap = Texture::Add(L"Textures/Landscape/Floor.png");
-	mThirdMap = Texture::Add(L"Textures/Landscape/Stones.png");
+	//mThirdMap = Texture::Add(L"Textures/Landscape/Stones.png");
 
 	createMesh();
 	createCompute();
@@ -77,10 +77,10 @@ void TerrainEditor::Update()
 	}
 
 
-	if (KEY_DOWN('T'))
-	{
-		mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
-	}
+	//if (KEY_DOWN('T'))
+	//{
+	//	mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
+	//}
 
 
 
@@ -96,17 +96,18 @@ void TerrainEditor::Render()
 
 	mAlphaMap->PSSet(10);
 	mSecondMap->PSSet(11);
-	mThirdMap->PSSet(12);
+	//mThirdMap->PSSet(12);
 
 	mMaterial->Set();
 
-	DC->DrawIndexed((UINT)mIndices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
 void TerrainEditor::PostRender()
 {
-	ImGui::Begin("TerrainEditor");
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".png", ImVec4(0, 1, 1, 0.9), "[PNG]");
 
+	ImGui::Begin("TerrainEditor");
 	ImGui::Text("TerainEditor");
 	ImGui::SliderInt("Type", &mBrushBuffer->data.type, 0, 1);
 	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
@@ -114,36 +115,47 @@ void TerrainEditor::PostRender()
 	ImGui::Checkbox("Raise", &mbIsRaise);
 	ImGui::Checkbox("Painting", &mbIsPainting);
 	ImGui::Spacing();
-	ImGui::InputInt("SelectMap", &mSelectedMap);
+	ImGui::Spacing();
+	ImGui::Spacing();
+	//ImGui::InputInt("SelectMap", &mSelectedMap);
 
-	ImGui::InputText("FileName", mInputFileName, 100);
+	addTexture();
+	showAddedTextures();
+	
+
+
+	//if (ImGui::Button("Open File Dialog"))
+	//{
+	//	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", ".");
+	//}
+
+	//if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) // OpenDialog 했으면..
+	//{
+	//	if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+	//	{
+	//		string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
+	//		loadHeightMap(L"Textures/HeightMaps/" + ToWString(fileName));
+	//	}
+	//	// close
+
+	//	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+	//}
+
+
+
+
+
+	/*ImGui::InputText("FileName", mInputFileName, 100);
 	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
 
 	if (ImGui::Button("HeightMapSave"))
 	{
 		saveHeightMap(heightFile);
-	}
+	}*/
 
-	if (ImGui::Button("Open File Dialog"))
-	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", ".");
-	}
 
-	
 
-	// display
-	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey"))
-	{
-		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{
-			string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-			load(L"Textures/HeightMaps/" + ToWString(fileName));
-		}
-		// close
-		
-		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-	}
-
+	ImGui::ShowDemoWindow();
 	ImGui::End();
 }
 
@@ -158,12 +170,12 @@ bool TerrainEditor::computePicking(OUT Vector3* position)
 
 	mRayBuffer->SetCSBuffer(0);
 
-	DC->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV());
-	DC->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr);
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr);
 
 	UINT x = ceil((float)mPolygonCount / 1024.0f);
 
-	DC->Dispatch(x, 1, 1);
+	DEVICECONTEXT->Dispatch(x, 1, 1);
 
 	mStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
 
@@ -330,7 +342,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 				{
 					mVertices[index].alpha[mSelectedMap] -= paintValue * DELTA;
 				}
-					
+
 				mVertices[index].alpha[mSelectedMap] = Saturate(mVertices[index].alpha[mSelectedMap]);
 			}
 		}
@@ -391,7 +403,7 @@ void TerrainEditor::saveTextureMap(wstring textureFile)
 {
 }
 
-void TerrainEditor::load(wstring heightFile)
+void TerrainEditor::loadHeightMap(wstring heightFile)
 {
 	mHeightMap = Texture::Load(heightFile);
 
@@ -409,6 +421,60 @@ void TerrainEditor::changeHeightMap(wstring heightFileName)
 void TerrainEditor::changeTextureMap(wstring textureFileName)
 {
 	mMaterial->SetDiffuseMap(textureFileName);
+}
+
+void TerrainEditor::addTexture()
+{
+	if (ImGui::Button("Add Texture"))
+	{
+		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
+	}
+
+	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) // OpenDialog 했으면..
+	{
+		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+		{
+			//확인 누른 후 이벤트 처리.
+
+			map<string, string> tMap = igfd::ImGuiFileDialog::Instance()->GetSelection();
+
+			for (auto it = tMap.begin(); it != tMap.end(); it++)
+			{
+				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
+				mAddedTextures.push_back(Texture::Add(tName));
+			}
+		}
+
+		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+	}
+}
+
+void TerrainEditor::showAddedTextures()
+{
+	for (int i = 0; i < mAddedTextures.size(); i++) // 한장의 텍스쳐(texid)로 uv좌표설정해서 8개 출력하는거.
+	{
+		if (i % 5 == 0)
+		{
+			// 줄바꾸기.
+			ImGui::NewLine();
+		}
+		else
+		{
+			ImGui::SameLine();
+		}
+
+		int frame_padding = 2;
+		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		if (ImGui::ImageButton(mAddedTextures[i]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col))
+		{
+			// 이미지클릭시 이벤트.
+		}
+	}
 }
 
 void TerrainEditor::createMesh()

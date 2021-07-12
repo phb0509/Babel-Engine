@@ -28,7 +28,7 @@ BlendState::~BlendState()
 void BlendState::SetState()
 {
 	float blendFactor[] = { 0, 0, 0, 0 };
-	DC->OMSetBlendState(state, blendFactor, 0xffffffff);
+	DEVICECONTEXT->OMSetBlendState(state, blendFactor, 0xffffffff);
 }
 
 void BlendState::Alpha(bool value)

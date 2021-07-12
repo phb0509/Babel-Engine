@@ -46,7 +46,7 @@ void Reflection::PreRender()
 
 void Reflection::Render()
 {
-	DC->PSSetShaderResources(10, 1, &renderTarget->GetSRV()); // 셰이더에 셋팅할 부분.
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &renderTarget->GetSRV()); // 셰이더에 셋팅할 부분.
 	reflectionBuffer->SetVSBuffer(10);
 }
 

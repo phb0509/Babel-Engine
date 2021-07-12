@@ -1302,6 +1302,7 @@ namespace igfd
 	std::map<std::string, std::string> ImGuiFileDialog::GetSelection()
 	{
 		std::map<std::string, std::string> res;
+		//map<string,string> res;
 
 		for (auto & it : m_SelectedFileNames)
 		{
@@ -1310,11 +1311,11 @@ namespace igfd
 #ifdef UNIX
 			if (s_fs_root != result)
 #endif
-				result += PATH_SEP;
+				result += PATH_SEP; //기본 경로 셋팅해주고.
 
-			result += it;
+			result += it; // ex)첫번째꺼만 더해주고
 
-			res[it] = result;
+			res[it] = result; // 그
 		}
 
 		return res;

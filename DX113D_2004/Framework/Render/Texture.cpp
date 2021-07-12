@@ -14,8 +14,8 @@ Texture::~Texture()
 
 Texture* Texture::Add(wstring file)
 {
-    if (totalTexture.count(file) > 0)
-        return totalTexture[file];
+    if (totalTexture.count(file) > 0) // 이미있으면
+        return totalTexture[file]; // 있는거리턴.
 
     ScratchImage image;
 
@@ -72,12 +72,12 @@ void Texture::Delete()
 
 void Texture::PSSet(UINT slot)
 {
-    DC->PSSetShaderResources(slot, 1, &srv);
+    DEVICECONTEXT->PSSetShaderResources(slot, 1, &srv);
 }
 
 void Texture::DSSet(UINT slot)
 {
-    DC->DSSetShaderResources(slot, 1, &srv);
+    DEVICECONTEXT->DSSetShaderResources(slot, 1, &srv);
 }
 
 vector<Float4> Texture::ReadPixels()

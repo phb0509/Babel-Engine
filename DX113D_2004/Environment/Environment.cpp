@@ -133,7 +133,7 @@ void Environment::SetViewport(UINT width, UINT height)
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 
-	DC->RSSetViewports(1, &viewport);
+	DEVICECONTEXT->RSSetViewports(1, &viewport);
 }
 
 void Environment::SetTargetToCamera(Transform* target)

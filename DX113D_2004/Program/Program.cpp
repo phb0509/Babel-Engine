@@ -113,7 +113,7 @@ void Program::Create()
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplDX11_Init(DEVICE, DC);
+	ImGui_ImplDX11_Init(DEVICE, DEVICECONTEXT);
 }
 
 void Program::Delete()

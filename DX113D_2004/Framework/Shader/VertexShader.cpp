@@ -26,8 +26,8 @@ VertexShader::~VertexShader()
 
 void VertexShader::Set()
 {
-	DC->IASetInputLayout(inputLayout);
-	DC->VSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->IASetInputLayout(inputLayout);
+	DEVICECONTEXT->VSSetShader(shader, nullptr, 0);
 }
 
 void VertexShader::CreateInputLayout()

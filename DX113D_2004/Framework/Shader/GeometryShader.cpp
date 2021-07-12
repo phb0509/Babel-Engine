@@ -23,5 +23,5 @@ GeometryShader::~GeometryShader()
 
 void GeometryShader::Set()
 {
-	DC->GSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->GSSetShader(shader, nullptr, 0);
 }

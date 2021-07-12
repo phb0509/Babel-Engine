@@ -29,7 +29,7 @@ void Billboard::Render()
 	mesh->IASet();
 	material->Set();
 
-	DC->DrawIndexed(6, 0, 0);
+	DEVICECONTEXT->DrawIndexed(6, 0, 0);
 }
 
 void Billboard::CreateMesh()

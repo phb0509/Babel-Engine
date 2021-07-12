@@ -78,11 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\Libraries;$(SolutionDir)\ImGui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\Libraries;$(SolutionDir)\ImGui;$(IncludePath);C:\Users\pok98\Desktop\glew-2.1.0\include\GL</IncludePath>
+    <LibraryPath>$(SolutionDir)\Libraries;$(LibraryPath);C:\Users\pok98\Desktop\glew-2.1.0\lib\Debug\Win32</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;C:\Users\pok98\Desktop\glew-2.1.0\include\GL</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\Users\pok98\Desktop\glew-2.1.0\lib\Debug\Win32</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,10 +135,13 @@
       <AdditionalIncludeDirectories>./;C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\stb-master;C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\ImFileDialog-main</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Framework.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\ImFileDialog-main;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <EntryPointName>VS</EntryPointName>
@@ -157,12 +162,15 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>;C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\stb-master;C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\ImFileDialog-main</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\pok98\source\repos\DirectX11_3D_Portfolio\Libraries\ImFileDialog-main;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

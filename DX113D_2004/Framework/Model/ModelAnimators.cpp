@@ -99,7 +99,7 @@ void ModelAnimators::Render()
 		CreateTexture();
 
 	frameBuffer->SetVSBuffer(4);
-	DC->VSSetShaderResources(0, 1, &srv);
+	DEVICECONTEXT->VSSetShaderResources(0, 1, &srv);
 
 	instanceBuffer->IASet(1);
 

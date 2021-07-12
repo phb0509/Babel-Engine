@@ -23,5 +23,5 @@ DomainShader::~DomainShader()
 
 void DomainShader::Set()
 {
-	DC->DSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->DSSetShader(shader, nullptr, 0);
 }

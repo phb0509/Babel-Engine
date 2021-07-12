@@ -35,12 +35,12 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::IASet(UINT slot)
 {
-	DC->IASetVertexBuffers(slot, 1, &buffer, &stride, &offset);
+	DEVICECONTEXT->IASetVertexBuffers(slot, 1, &buffer, &stride, &offset);
 }
 
 void VertexBuffer::Update(void* data, UINT count) // vertices.data, vertices.size
 {
-	DC->UpdateSubresource(buffer, 0, nullptr, data, stride, count); 
+	DEVICECONTEXT->UpdateSubresource(buffer, 0, nullptr, data, stride, count); 
 }
 
 void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, dataSize
@@ -48,8 +48,8 @@ void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, da
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	mappedResource.pData = data;
-	DC->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	DEVICECONTEXT->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	memcpy(mappedResource.pData, data, dataSize);
-	DC->Unmap(buffer, 0);
+	DEVICECONTEXT->Unmap(buffer, 0);
 }
 

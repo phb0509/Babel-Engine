@@ -62,7 +62,7 @@ void Terrain::Render()
 
 	material->Set();
 	//fillMode[1]->SetState();
-	DC->DrawIndexed((UINT)indices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed((UINT)indices.size(), 0, 0);
 	//fillMode[0]->SetState();
 }
 
@@ -121,12 +121,12 @@ bool Terrain::ComputePicking(OUT Vector3* position)
 
 	rayBuffer->SetCSBuffer(0);
 
-	DC->CSSetShaderResources(0, 1, &structuredBuffer->GetSRV()); // SRV 셋팅. 읽기전용자원을 넘기기위한 어댑터 설정.
-	DC->CSSetUnorderedAccessViews(0, 1, &structuredBuffer->GetUAV(), nullptr); // UAV셋팅. 읽고 쓸수있는 자원을 넘기기위한 어댑터 설정.
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &structuredBuffer->GetSRV()); // SRV 셋팅. 읽기전용자원을 넘기기위한 어댑터 설정.
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &structuredBuffer->GetUAV(), nullptr); // UAV셋팅. 읽고 쓸수있는 자원을 넘기기위한 어댑터 설정.
 
 	UINT x = ceil((float)size / 1024.0f); // 폴리곤개수를 1024로 나눴네? 왜?
 
-	DC->Dispatch(x, 1, 1); // ComputeShader 실행.
+	DEVICECONTEXT->Dispatch(x, 1, 1); // ComputeShader 실행.
 
 	structuredBuffer->Copy(output, sizeof(OutputDesc) * size);
 	

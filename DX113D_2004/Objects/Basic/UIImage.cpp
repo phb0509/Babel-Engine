@@ -42,13 +42,13 @@ void UIImage::Render()
 	viewBuffer->SetVSBuffer(1);
 	projectionBuffer->SetVSBuffer(2);
 
-	DC->PSSetShaderResources(0, 1, &srv);
+	DEVICECONTEXT->PSSetShaderResources(0, 1, &srv);
 
 	material->Set();
 
 	blendState[1]->SetState();
 	depthMode[1]->SetState();
-	DC->DrawIndexed(6, 0, 0);
+	DEVICECONTEXT->DrawIndexed(6, 0, 0);
 	blendState[0]->SetState();
 	depthMode[0]->SetState();
 }

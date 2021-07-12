@@ -30,7 +30,7 @@ void Sphere::Render()
 
 	typeBuffer->SetVSBuffer(5);
 
-	DC->DrawIndexed(indices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
 	RenderAxis();
 }
 

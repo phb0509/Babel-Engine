@@ -16,7 +16,7 @@ RasterizerState::~RasterizerState()
 
 void RasterizerState::SetState()
 {
-	DC->RSSetState(state);
+	DEVICECONTEXT->RSSetState(state);
 }
 
 void RasterizerState::FillMode(D3D11_FILL_MODE value)

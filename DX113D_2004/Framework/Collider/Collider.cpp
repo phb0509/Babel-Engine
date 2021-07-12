@@ -58,5 +58,5 @@ void Collider::Render()
     mesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
     material->Set();
 
-    DC->DrawIndexed(indices.size(), 0, 0);
+    DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
 }

@@ -31,7 +31,7 @@ DepthStencilState::~DepthStencilState()
 
 void DepthStencilState::SetState(UINT stencilRef)
 {
-	DC->OMSetDepthStencilState(state, stencilRef);
+	DEVICECONTEXT->OMSetDepthStencilState(state, stencilRef);
 }
 
 void DepthStencilState::DepthEnable(bool value)

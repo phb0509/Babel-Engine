@@ -69,7 +69,7 @@ void Transform::RenderAxis()
 	mMesh->IASet();
 	mMaterial->Set();
 
-	DC->DrawIndexed(mIndices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 }
 
 void Transform::SetWorldBuffer(UINT slot)

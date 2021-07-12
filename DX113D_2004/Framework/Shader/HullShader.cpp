@@ -23,5 +23,5 @@ HullShader::~HullShader()
 
 void HullShader::Set()
 {
-	DC->HSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->HSSetShader(shader, nullptr, 0);
 }

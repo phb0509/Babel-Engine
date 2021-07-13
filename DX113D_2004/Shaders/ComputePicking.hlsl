@@ -24,6 +24,7 @@ struct OutputDesc
 };
 RWStructuredBuffer<OutputDesc> output;
 
+
 void Intersection(uint index)
 {
     float3 A = input[index].v0; // 폴리곤 각 버텍스.

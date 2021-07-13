@@ -460,7 +460,6 @@ void TerrainEditor::addTexture()
 			for (auto it = tMap.begin(); it != tMap.end(); it++)
 			{
 				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
-				//mAddedTextures.push_back(Texture::Add(tName));
 				mAddedTextures.push_back(AddedTextureInfo(Texture::Add(tName), tName));
 			}
 		}
@@ -488,11 +487,8 @@ void TerrainEditor::showAddedTextures()
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
 		{
 			ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-			//mCurrentTextureIndex = i;
-
 			ImGui::EndDragDropSource();
 		}
-
 	}
 
 	ImGui::Spacing();

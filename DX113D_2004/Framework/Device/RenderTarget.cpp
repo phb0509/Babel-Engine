@@ -18,7 +18,7 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 		V(DEVICE->CreateTexture2D(&desc, nullptr, &rtvTexture));
 	}
 
-	{//RTV
+	{//RenderTargetView
 		D3D11_RENDER_TARGET_VIEW_DESC desc = {};
 		desc.Format = format;
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
@@ -26,7 +26,7 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 		V(DEVICE->CreateRenderTargetView(rtvTexture, &desc, &rtv));
 	}
 
-	{//SRV
+	{// ShaderResourceView
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
 		desc.Format = format;
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

@@ -24,7 +24,7 @@ void Device::CreateDeviceAndSwapchain()
 
 	DXGI_SWAP_CHAIN_DESC desc = {};
 	desc.BufferCount = 1;
-	desc.BufferDesc.Width = width;
+	desc.BufferDesc.Width = width; // 창 크기만큼 스왑체인설정.
 	desc.BufferDesc.Height = height;
 	desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.BufferDesc.RefreshRate.Numerator = 60;
@@ -53,11 +53,11 @@ void Device::CreateDeviceAndSwapchain()
 
 void Device::CreateBackBuffer()
 {
-	ID3D11Texture2D* backBuffer;
+	ID3D11Texture2D* backBuffer; // 임시 버퍼.
 
-	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer));
-	V(device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView));
-	backBuffer->Release();	
+	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
+	V(device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
+	backBuffer->Release();	// 필요없으니 해wp
 
 	ID3D11Texture2D* depthBuffer;
 

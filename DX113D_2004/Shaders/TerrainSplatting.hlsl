@@ -3,7 +3,7 @@
 cbuffer Brush : register(b10)
 {
     int type;
-    float3 location;
+    float3 location; // 마우스피킹 포지션.
     
     float range;
     float3 color;
@@ -21,17 +21,28 @@ struct PixelInput
     float4 alpha : Alpha;
 };
 
-float3 BrushColor(float3 pos)
+float3 BrushColor(float3 pos) // 픽셀위치.
 {
     if (type == 0)
     {
-        float x = pos.x - location.x;
+        float x = pos.x - location.x; // 픽셀위치 - 커서위치
         float z = pos.z - location.z;
         
         float distance = sqrt(x * x + z * z);
         
         if (distance <= range)
             return color;
+    }
+    
+    if (type == 1)
+    {
+        if (pos.x >= location.x - range &&
+            pos.x <= location.x + range &&
+            pos.z >= location.z - range &&
+            pos.z <= location.z + range)
+        {
+            return color;
+        }
     }
     
     return float3(0, 0, 0);
@@ -64,6 +75,7 @@ PixelInput VS(VertexUVNormalTangentAlpha input)
 //Texture2D alphaMap : register(t10);
 Texture2D secondMap : register(t11);
 Texture2D thirdMap : register(t12);
+
 
 float4 PS(PixelInput input) : SV_Target
 {

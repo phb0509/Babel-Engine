@@ -39,7 +39,14 @@ private:
 		float u, v, distance;
 	};
 
-	
+	struct AddedTextureInfo
+	{
+		Texture* texture;
+		wstring textureName;
+
+		AddedTextureInfo(Texture* _texture, wstring _textureName) : texture(_texture), textureName(_textureName) {}
+	};
+
 public:
 	TerrainEditor(UINT width = 500, UINT height = 500);
 	~TerrainEditor();
@@ -99,10 +106,9 @@ private:
 
 	BrushBuffer* mBrushBuffer;
 
-	bool mbIsRaise;
 	float mAdjustValue;
 
-	bool mbIsPainting;
+	int mbIsPainting;
 	float mPaintValue;
 
 	int mSelectedMap;
@@ -117,7 +123,9 @@ private:
 	wstring mCurrentTextureMapFileName;
 
 	Texture* mTempTexture;
-	vector<Texture*> mAddedTextures;
+	vector<AddedTextureInfo> mAddedTextures;
+	int mCurrentTextureIndex;
+	Texture* mTerrainTextureImageButton;
+	Texture* mBrushTextureImageButton;
 
-	
 };

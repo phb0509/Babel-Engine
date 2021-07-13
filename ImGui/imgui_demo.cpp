@@ -2082,9 +2082,6 @@ static void ShowDemoWindowWidgets()
         }
 
 
-
-
-
         if (ImGui::TreeNode("Drag and drop to copy/swap items"))
         {
             enum Mode
@@ -2118,7 +2115,7 @@ static void ShowDemoWindowWidgets()
 
                     // Display preview (could be anything, e.g. when dragging an image we could decide to display
                     // the filename and a small preview of the image, etc.)
-                    if (mode == Mode_Copy) { ImGui::Text("Copy %s", names[n]); }
+                    if (mode == Mode_Copy) { ImGui::Text("Copy %s", names[n]); } // 드래그할 때 커서위치에 텍스트이름출력.
                     if (mode == Mode_Move) { ImGui::Text("Move %s", names[n]); }
                     if (mode == Mode_Swap) { ImGui::Text("Swap %s", names[n]); }
                     ImGui::EndDragDropSource();
@@ -2131,7 +2128,7 @@ static void ShowDemoWindowWidgets()
                         int payload_n = *(const int*)payload->Data;
                         if (mode == Mode_Copy)
                         {
-                            names[n] = names[payload_n];
+                            names[n] = names[payload_n]; // names[n]이 타겟. names[payload_n]은 처음 드래그한것.
                         }
                         if (mode == Mode_Move)
                         {

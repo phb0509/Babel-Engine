@@ -63,7 +63,7 @@ PixelInput VS(VertexUVNormalTangentAlpha input)
 
 //Texture2D alphaMap : register(t10);
 Texture2D secondMap : register(t11);
-//Texture2D thirdMap : register(t12);
+Texture2D thirdMap : register(t12);
 
 float4 PS(PixelInput input) : SV_Target
 {
@@ -73,10 +73,10 @@ float4 PS(PixelInput input) : SV_Target
     
     //float4 alpha = alphaMap.Sample(samp, input.uv);
     float4 second = secondMap.Sample(samp, input.uv);
-   // float4 third = thirdMap.Sample(samp, input.uv);
+    float4 third = thirdMap.Sample(samp, input.uv);
     
     albedo = lerp(albedo, second, input.alpha.r);
-   // albedo = lerp(albedo, third, input.alpha.g);
+    albedo = lerp(albedo, third, input.alpha.g);
     
     float3 light = normalize(lights[0].direction);
     

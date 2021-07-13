@@ -2,6 +2,9 @@
 
 class TerrainLOD : public Transform
 {
+
+
+
 private:
 	typedef VertexUV VertexType;
 
@@ -25,6 +28,7 @@ private:
 	Texture* heightTexture;
 
 	Frustum* frustum;
+
 public:
 	TerrainLOD(wstring heightFile);
 	~TerrainLOD();

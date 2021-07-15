@@ -3,7 +3,7 @@
 RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 	: width(width), height(height)
 {
-	{//RTV Texture
+	{//RenderTargetView Texture
 		D3D11_TEXTURE2D_DESC desc = {};
 		desc.Width = width;
 		desc.Height = height;
@@ -44,7 +44,7 @@ RenderTarget::~RenderTarget()
 	rtv->Release();
 }
 
-void RenderTarget::Set(DepthStencil* depthStencil)
+void RenderTarget::SetDepthStencil(DepthStencil* depthStencil)
 {
 	DEVICECONTEXT->OMSetRenderTargets(1, &rtv, depthStencil->GetDSV());
 	

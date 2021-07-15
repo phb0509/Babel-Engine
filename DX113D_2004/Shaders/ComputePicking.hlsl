@@ -13,7 +13,7 @@ struct InputDesc // 폴리곤단위.
     float3 v1;
     float3 v2;
 };
-StructuredBuffer<InputDesc> input;
+StructuredBuffer<InputDesc> input; // 폴리곤배열.
 
 struct OutputDesc
 {

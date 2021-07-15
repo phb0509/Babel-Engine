@@ -98,7 +98,7 @@ private:
 
 	ComputeShader* mComputeShader;
 	RayBuffer* mRayBuffer;
-	StructuredBuffer* mStructuredBuffer;
+	ComputeStructuredBuffer* mComputePickingStructuredBuffer;
 	InputDesc* mInput;
 	OutputDesc* mOutput; // GPU에서 읽어온 값
 

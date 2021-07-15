@@ -40,7 +40,7 @@ void Reflection::Update()
 
 void Reflection::PreRender()
 {
-	renderTarget->Set(depthStencil);  // ¼ÎÀÌ´õ¿¡ ³Ñ±æ ·»´õÅ¸°Ù Àâ´ÂºÎºÐ.
+	renderTarget->SetDepthStencil(depthStencil);  // ¼ÎÀÌ´õ¿¡ ³Ñ±æ ·»´õÅ¸°Ù Àâ´ÂºÎºÐ.
 	reflectionBuffer->SetVSBuffer(1);
 }
 

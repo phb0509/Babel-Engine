@@ -103,7 +103,6 @@ void Environment::showLightInformation()
 		}
 	}
 
-
 	ImGui::End();
 }
 void Environment::Set()

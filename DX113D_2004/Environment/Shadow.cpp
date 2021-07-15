@@ -32,7 +32,7 @@ Shadow::~Shadow()
 
 void Shadow::PreRender()
 {
-	renderTarget->Set(depthStencil);
+	renderTarget->SetDepthStencil(depthStencil);
 	SetViewProjection();
 }
 

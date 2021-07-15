@@ -97,13 +97,6 @@
 #include <Assimp/scene.h>
 #include <Assimp/postprocess.h>
 
-//ImFileDialog
-
-
-
-#include <time.h>
-
-
 
 
 #pragma comment(lib, "Assimp/assimp-vc142-mtd.lib")
@@ -155,7 +148,7 @@ using namespace Utility;
 #include "Framework/Buffer/VertexBuffer.h"
 #include "Framework/Buffer/IndexBuffer.h"
 #include "Framework/Buffer/ConstBuffer.h"
-#include "Framework/Buffer/StructuredBuffer.h"
+#include "Framework/Buffer/ComputeStructuredBuffer.h"
 #include "Framework/Buffer/VertexLayouts.h"
 #include "Framework/Buffer/GlobalBuffers.h"
 

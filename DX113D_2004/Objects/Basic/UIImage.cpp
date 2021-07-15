@@ -49,7 +49,7 @@ void UIImage::Render()
 	blendState[1]->SetState();
 	depthMode[1]->SetState();
 	DEVICECONTEXT->DrawIndexed(6, 0, 0);
-	blendState[0]->SetState();
+	blendState[0]->SetState(); // 다시 0번으로 SetState하는 이유 => 1번 SetState하고 다시 안바꿔놓으면 다른거에 영향을 미치기 떄문.
 	depthMode[0]->SetState();
 }
 

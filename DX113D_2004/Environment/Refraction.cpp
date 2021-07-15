@@ -30,7 +30,7 @@ void Refraction::Update()
 
 void Refraction::PreRender()
 {
-	renderTarget->Set(depthStencil);
+	renderTarget->SetDepthStencil(depthStencil);
 }
 
 void Refraction::Render()

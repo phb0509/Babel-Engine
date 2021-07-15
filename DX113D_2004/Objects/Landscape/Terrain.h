@@ -31,7 +31,7 @@ private:
 
 	ComputeShader* computeShader;
 	RayBuffer* rayBuffer;
-	StructuredBuffer* structuredBuffer;
+	ComputeStructuredBuffer* structuredBuffer;
 	InputDesc* input;
 	OutputDesc* output;
 

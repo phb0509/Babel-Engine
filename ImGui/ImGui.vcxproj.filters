@@ -39,12 +39,6 @@
     <ClCompile Include="imgui_tables.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_impl_opengl3.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui_impl_sdl.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui.h">
@@ -59,15 +53,6 @@
     <ClInclude Include="imgui_internal.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="imstb_rectpack.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="imstb_textedit.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="imstb_truetype.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="dirent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -80,10 +65,13 @@
     <ClInclude Include="imconfig.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_opengl3.h">
+    <ClInclude Include="imstb_rectpack.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_sdl.h">
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

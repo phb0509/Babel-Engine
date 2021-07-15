@@ -29,6 +29,8 @@ Texture* Texture::Add(wstring file)
         LoadFromWICFile(file.c_str(), WIC_FLAGS_FORCE_RGB, nullptr, image);
 
     ID3D11ShaderResourceView* srv;
+    
+
 
     V(CreateShaderResourceView(DEVICE, image.GetImages(), image.GetImageCount(),
         image.GetMetadata(), &srv));
@@ -87,11 +89,11 @@ vector<Float4> Texture::ReadPixels()
 
     float scale = 1.0f / 255.0f;
 
-    vector<Float4> result(size / 4);
+    vector<Float4> result(size / 4); // 픽셀수만큼..
 
     for (UINT i = 0; i < result.size() ; i ++)
     {
-        result[i].x = colors[i*4 + 0] * scale;
+        result[i].x = colors[i*4 + 0] * scale; // rgba값 차례대로 넣어주기.
         result[i].y = colors[i*4 + 1] * scale;
         result[i].z = colors[i*4 + 2] * scale;
         result[i].w = colors[i*4 + 3] * scale;

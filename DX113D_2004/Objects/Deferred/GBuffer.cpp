@@ -19,10 +19,10 @@ GBuffer::GBuffer()
 
 	for (UINT i = 0; i < 4; i++)
 	{
-		targetTextures[i] = new UIImage(L"Texture");
+		targetTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
 		targetTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
 		targetTextures[i]->mScale = { 200, 200, 200 };
-		targetTextures[i]->SetSRV(srvs[i]);
+		targetTextures[i]->SetSRV(srvs[i]);  // 띄울 srv(이미지)
 	}
 }
 
@@ -39,7 +39,7 @@ GBuffer::~GBuffer()
 
 void GBuffer::PreRender()
 {
-	RenderTarget::Sets(rtvs, 3, depthStencil);
+	RenderTarget::Sets(rtvs, 3, depthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil
 }
 
 void GBuffer::Render()

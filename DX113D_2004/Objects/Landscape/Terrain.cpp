@@ -22,7 +22,7 @@ Terrain::Terrain()
 
 	computeShader = Shader::AddCS(L"ComputePicking");	
 
-	structuredBuffer = new StructuredBuffer(input, sizeof(InputDesc), size,
+	structuredBuffer = new ComputeStructuredBuffer(input, sizeof(InputDesc), size,
 		sizeof(OutputDesc), size); // 구조체, 구조체크기, 구조체개수(폴리곤 개수), 
 
 	rayBuffer = new RayBuffer();

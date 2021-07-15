@@ -13,7 +13,7 @@ public:
 	RenderTarget(UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT);
 	~RenderTarget();
 
-	void Set(DepthStencil* depthStencil);
+	void SetDepthStencil(DepthStencil* depthStencil);
 	static void Sets(RenderTarget** targets, UINT count, DepthStencil* depthStencil);
 
 	ID3D11ShaderResourceView*& GetSRV() { return srv; }

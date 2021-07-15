@@ -8,7 +8,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mAdjustValue(50),
 	mHeightMap(nullptr),
 	mInputFileName{},
-	mStructuredBuffer(nullptr),
+	mComputePickingStructuredBuffer(nullptr),
 	mOutput(nullptr),
 	mRayBuffer(nullptr),
 	mPaintValue(5),
@@ -38,7 +38,7 @@ TerrainEditor::~TerrainEditor()
 	delete mMesh;
 
 	delete mRayBuffer;
-	delete mStructuredBuffer;
+	delete mComputePickingStructuredBuffer;
 
 	delete[] mInput;
 	delete[] mOutput;
@@ -76,14 +76,6 @@ void TerrainEditor::Update()
 		//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
 	}
-
-
-	//if (KEY_DOWN('T'))
-	//{
-	//	mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
-	//}
-
-
 
 	UpdateWorld();
 }
@@ -129,8 +121,9 @@ void TerrainEditor::PostRender()
 	ImGui::Spacing();
 	//ImGui::InputInt("SelectMap", &mSelectedMap);
 
-	addTexture();
-	showAddedTextures();
+	addTexture(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
+	showAddedTextures(); // 추가한 텍스쳐들 렌더.
+
 	ImGui::Spacing();
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -160,10 +153,6 @@ void TerrainEditor::PostRender()
 
 
 
-
-
-
-
 	/*ImGui::InputText("FileName", mInputFileName, 100);
 	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
 
@@ -185,19 +174,19 @@ bool TerrainEditor::computePicking(OUT Vector3* position)
 	mRayBuffer->data.position = ray.position;
 	mRayBuffer->data.direction = ray.direction;
 	mRayBuffer->data.size = mPolygonCount;
-	mComputeShader->Set();
+	mComputeShader->Set(); // 디바이스에 Set..
 
 	mRayBuffer->SetCSBuffer(0);
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV());
-	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr);
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
 
-	UINT x = ceil((float)mPolygonCount / 1024.0f);
+	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
 
 	DEVICECONTEXT->Dispatch(x, 1, 1);
 
-	mStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
-
+	mComputePickingStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
+																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
 	float minDistance = FLT_MAX;
 	int minIndex = -1;
 
@@ -711,10 +700,10 @@ void TerrainEditor::createCompute()
 {
 	mComputeShader = Shader::AddCS(L"ComputePicking");
 
-	if (mStructuredBuffer != nullptr)
-		delete mStructuredBuffer;
+	if (mComputePickingStructuredBuffer != nullptr)
+		delete mComputePickingStructuredBuffer;
 
-	mStructuredBuffer = new StructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
+	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
 		sizeof(OutputDesc), mPolygonCount);
 
 	if (mRayBuffer == nullptr)

@@ -72,7 +72,6 @@ void Program::Render()
 	Environment::Get()->GetWorldCamera()->Render();
 	Environment::Get()->Set();
 
-
 	SceneManager::Get()->Render();
 }
 

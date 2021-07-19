@@ -275,6 +275,7 @@
     <ClInclude Include="Program\Program.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene\ColliderSettingScene.h" />
+    <ClInclude Include="Scene\DeferredRenderingScene.h" />
     <ClInclude Include="Scene\MainScene.h" />
     <ClInclude Include="Scene\MapToolScene.h" />
     <ClInclude Include="Scene\ModelExportScene.h" />
@@ -384,6 +385,7 @@
     <ClCompile Include="Objects\PostEffect\Outline.cpp" />
     <ClCompile Include="Program\Program.cpp" />
     <ClCompile Include="Scene\ColliderSettingScene.cpp" />
+    <ClCompile Include="Scene\DeferredRenderingScene.cpp" />
     <ClCompile Include="Scene\MainScene.cpp" />
     <ClCompile Include="Scene\MapToolScene.cpp" />
     <ClCompile Include="Scene\ModelExportScene.cpp" />

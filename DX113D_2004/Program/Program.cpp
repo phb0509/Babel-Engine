@@ -6,6 +6,7 @@
 #include "Scene/ModelExportScene.h"
 #include "Scene/TessellationScene.h"
 #include "Scene/TerrainLODScene.h"
+#include "Scene/DeferredRenderingScene.h"
 #include "Scene/MainScene.h"
 #include "Scene/ColliderSettingScene.h"
 #include "Scene/MapToolScene.h"

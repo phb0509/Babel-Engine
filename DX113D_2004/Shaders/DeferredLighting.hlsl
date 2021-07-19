@@ -12,7 +12,7 @@ struct PixelInput
     float2 uv : UV;
 };
 
-static const float2 arrBasePos[4] =
+static const float2 arrBasePos[4] = // 2차원 NDC공간 꼭지점좌표.
 {
     float2(-1.0f, 1.0f),
     float2(1.0f, 1.0f),
@@ -20,18 +20,18 @@ static const float2 arrBasePos[4] =
     float2(1.0f, -1.0f)
 };
 
-PixelInput VS(uint vertexID : SV_VertexID)
+PixelInput VS(uint vertexID : SV_VertexID) // 주의. 값 그대로 PS에 넘기는 것 아님.
 {
     PixelInput output;
-    output.pos = float4(arrBasePos[vertexID].xy, 0.0f, 1.0f);
+    output.pos = float4(arrBasePos[vertexID].xy, 0.0f, 1.0f); // z값 0, w값 1
     output.uv = output.pos.xy;
     
     return output;
 }
 
-float ConvertDepthToLinear(float depth)
+float ConvertDepthToLinear(float depth) // 
 {
-    float linearDepth = projection._43 / (depth - projection._33);
+    float linearDepth = projection._43 / (depth - projection._33); // 43,33은 뷰공간의 z값 클리핑공간 전환을 위한값.
     
     return linearDepth;
 }
@@ -45,7 +45,7 @@ struct SurfaceData
     float specPow;
 };
 
-SurfaceData UnpackGBuffer(int2 location)
+SurfaceData UnpackGBuffer(int2 location) // 픽셀 포지션 x,y 값.
 {
     SurfaceData output;
     
@@ -68,7 +68,7 @@ SurfaceData UnpackGBuffer(int2 location)
     return output;
 }
 
-float3 CalcWorldPos(float2 csPos, float linearDepth)
+float3 CalcWorldPos(float2 csPos, float linearDepth) // 원래 폴리곤의 픽셸인듯하다.
 {
     float4 position;
     
@@ -83,7 +83,7 @@ float3 CalcWorldPos(float2 csPos, float linearDepth)
 }
 
 float4 PS(PixelInput input) : SV_Target
-{   
+{
     SurfaceData data = UnpackGBuffer(input.pos.xy);
     
     Material material;

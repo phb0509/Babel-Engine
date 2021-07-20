@@ -68,13 +68,13 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀 포지션 x,y 값.
     return output;
 }
 
-float3 CalcWorldPos(float2 csPos, float linearDepth) // 원래 폴리곤의 픽셸인듯하다.
+float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구하기.(라이팅연산해야하니까)
 {
     float4 position;
     
     float2 temp;
-    temp.x = 1 / projection._11;
-    temp.y = 1 / projection._22;
+    temp.x = 1 / projection._11; // x값 정규화용.
+    temp.y = 1 / projection._22; // y값 정규화용.
     position.xy = csPos.xy * temp * linearDepth;
     position.z = linearDepth;
     position.w = 1.0f;
@@ -88,7 +88,7 @@ float4 PS(PixelInput input) : SV_Target
     
     Material material;
     material.normal = data.normal;
-    material.diffuseColor = float4(data.color, 1.0f);
+    material.diffuseColor = float4(data.color, 1.0f); // 디퍼드특성상 알파값 못쓰니 1로 고정.
     material.camPos = PinvView._41_42_43;
     material.shininess = data.specPow;
     material.specularIntensity = data.specInt.xxxx;
@@ -116,8 +116,4 @@ float4 PS(PixelInput input) : SV_Target
     }
     
     return result;
-    //return result + ambient;
-    
-    //float4 emissive = CalcEmissive(material);    
-    //return result + ambient + emissive;
 }

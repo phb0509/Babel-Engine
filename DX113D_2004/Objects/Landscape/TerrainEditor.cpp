@@ -232,7 +232,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 	case 0: // 원.
 	{
 		float distance;
-		for (LONG z = rect.bottom; z <= rect.top; z++)
+		for (LONG z = rect.bottom; z < rect.top; z++)
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
 			{
@@ -271,7 +271,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 	break;
 	case 1: // 사각형.
 	{
-		for (LONG z = rect.bottom; z <= rect.top; z++)
+		for (LONG z = rect.bottom; z < rect.top; z++)
 		{
 			for (LONG x = rect.left; x <= rect.right; x++)
 			{
@@ -604,7 +604,7 @@ void TerrainEditor::createMesh()
 	mPolygonCount = mIndices.size() / 3;
 
 	mInput = new InputDesc[mPolygonCount];
-	for (UINT i = 0; i < mPolygonCount; i++)
+	for (UINT i = 0; i < mPolygonCount; i++) // 폴리곤개수
 	{
 		UINT index0 = mIndices[i * 3 + 0];
 		UINT index1 = mIndices[i * 3 + 1];

@@ -25,6 +25,7 @@ Program::Program()
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
+	//SceneManager::Get()->Add("start", new DeferredRenderingScene());
 	//SceneManager::Get()->AddScene("export");
 	SceneManager::Get()->AddScene("start");
 }

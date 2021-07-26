@@ -8,12 +8,15 @@ private:
 	ID3D11ShaderResourceView* srv;
 
 	static map<wstring, Texture*> totalTexture;
+	static map<ID3D11ShaderResourceView*, Texture*> totalSRVTexture;
 
 	Texture(ID3D11ShaderResourceView* srv, ScratchImage& image);
+	Texture(ID3D11ShaderResourceView* srv);
 	~Texture();
 
 public:
 	static Texture* Add(wstring file);
+	static Texture* Add(ID3D11ShaderResourceView* _srv);
 	static Texture* Load(wstring file);
 	static void Delete();
 

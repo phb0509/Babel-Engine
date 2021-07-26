@@ -2,15 +2,11 @@
 
 
 
-
-Texture2D secondMap : register(t11);
-Texture2D thirdMap : register(t12);
-
-
 cbuffer Brush : register(b10)
 {
     int type;
     float3 location; // 마우스피킹 포지션.
+    
     float range;
     float3 color;
 }
@@ -86,13 +82,11 @@ float4 PS(PixelInput input) : SV_Target
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv);
     
-    float4 second = secondMap.Sample(samp, input.uv);
-    float4 third = thirdMap.Sample(samp, input.uv);
-    
-    albedo = lerp(albedo, second, input.alpha.r);
-    albedo = lerp(albedo, third, input.alpha.g);
-    
-    float3 light = normalize(lights[0].direction); // light 1개만 영향받도록 되어있다. 추후수정 필요할듯?
+    float4 brush = brushMap.Sample(samp, input.uv);
+
+    albedo = lerp(albedo, brush, input.alpha.r);
+
+    float3 light = normalize(lights[0].direction);
     
     float3 T = normalize(input.tangent);
     float3 B = normalize(input.binormal);

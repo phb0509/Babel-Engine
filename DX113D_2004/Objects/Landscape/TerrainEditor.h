@@ -12,7 +12,6 @@ private:
 		{
 			int type;
 			Float3 location;
-
 			float range;
 			Float3 color;
 		}data;
@@ -21,11 +20,12 @@ private:
 		{
 			data.location = Float3(0, 0, 0);			
 			data.color = Float3(0, 0.5f, 0);
-
 			data.type = 0;
 			data.range = 10.0f;
 		}
 	};
+
+	
 
 	struct InputDesc
 	{
@@ -92,9 +92,7 @@ private:
 	UINT mWidth, mHeight;
 
 	Texture* mHeightMap;
-	Texture* mAlphaMap;
-	Texture* mSecondMap;
-	Texture* mThirdMap;
+	Texture* mBrushMap;
 
 	ComputeShader* mComputeShader;
 	RayBuffer* mRayBuffer;
@@ -111,7 +109,7 @@ private:
 	int mbIsPainting;
 	float mPaintValue;
 
-	int mSelectedMap;
+	int mBrushMapIndex;
 
 	char mInputFileName[100];
 

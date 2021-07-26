@@ -108,11 +108,11 @@ float4 PS(PixelInput input) : SV_Target
         if (lights[i].type == 0)
             result += CalcDirectional(material, lights[i]);
         else if (lights[i].type == 1)
-            result += CalcPoint(material, lights[i]);
+            result += CalcPoint(material, lights[i]); // 전구
         else if (lights[i].type == 2)
-            result += CalcSpot(material, lights[i]);
+            result += CalcSpot(material, lights[i]); // 손전등
         else if (lights[i].type == 3)
-            result += CalcCapsule(material, lights[i]);
+            result += CalcCapsule(material, lights[i]); //
     }
     
     return result;

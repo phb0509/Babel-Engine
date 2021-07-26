@@ -12,7 +12,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mOutput(nullptr),
 	mRayBuffer(nullptr),
 	mPaintValue(5),
-	mSelectedMap(0),
+	mBrushMap(0),
 	mCurrentMousePosition(0.0f, 0.0f, 0.0f),
 	mLastPickingMousePosition(0.0f, 0.0f, 0.0f)
 
@@ -20,9 +20,8 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mMaterial = new Material(L"TerrainSplatting");
 	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
 
-	mAlphaMap = Texture::Add(L"Textures/HeightMaps/AlphaMap.png");
-	mSecondMap = Texture::Add(L"Textures/Landscape/Floor.png");
-	mThirdMap = Texture::Add(L"Textures/Landscape/Stones.png");
+	mBrushMap = Texture::Add(L"Textures/Landscape/Floor.png");
+
 	mTerrainTextureImageButton = Texture::Add(L"Textures/Landscape/defaultImageButton.png");
 	mBrushTextureImageButton = Texture::Add(L"Textures/Landscape/defaultImageButton.png");
 
@@ -87,11 +86,9 @@ void TerrainEditor::Render()
 	mWorldBuffer->SetVSBuffer(0);
 	mBrushBuffer->SetPSBuffer(10);
 
-	mAlphaMap->PSSet(10);
-	mSecondMap->PSSet(11);
-	//mThirdMap->PSSet(12);
+	mBrushMap->PSSet(11);
 
-	mMaterial->Set();
+	mMaterial->Set(); // ¹öÆÛ,srv,¼ÎÀÌ´õ Set.
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
@@ -107,7 +104,13 @@ void TerrainEditor::PostRender()
 	ImGui::Spacing();
 	ImGui::Spacing();
 
-	ImGui::SliderInt("Type", &mBrushBuffer->data.type, 0, 1);
+	ImGui::RadioButton("Circle", &mBrushBuffer->data.type, 0); ImGui::SameLine();
+	ImGui::RadioButton("Recr", &mBrushBuffer->data.type, 1);
+
+	ImGui::RadioButton("Raise", &mbIsPainting, 0); ImGui::SameLine();
+	ImGui::RadioButton("Brush", &mbIsPainting, 1);
+
+
 	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
 	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
 
@@ -130,8 +133,6 @@ void TerrainEditor::PostRender()
 
 	ImGui::Separator();
 
-
-
 	ImGui::Unindent();
 	ImGui::Unindent();
 	ImGui::Unindent();
@@ -142,13 +143,8 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 
-	ImGui::Text("EditTerrain");
 
-	ImGui::Spacing();
-	ImGui::Spacing();
-	ImGui::RadioButton("Raise", &mbIsPainting, 0); ImGui::SameLine();
-	ImGui::RadioButton("Brush", &mbIsPainting, 1);
-	
+
 	ImGui::Separator();
 
 
@@ -327,7 +323,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 	case 0:
 	{
 		float distance;
-		for (LONG z = rect.bottom; z <= rect.top; z++)
+		for (LONG z = rect.bottom; z < rect.top; z++)
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
 			{
@@ -342,16 +338,16 @@ void TerrainEditor::paintBrush(Vector3 position)
 
 				float paintValue = mPaintValue * max(0, cos(XM_PIDIV2 * distance / range));
 
-				if(KEY_PRESS(VK_CONTROL))
+				if (KEY_PRESS(VK_CONTROL))
 				{
-					mVertices[index].alpha[mSelectedMap] -= paintValue * DELTA; // TerrainTexture·Î ¼¯±â.
+					mVertices[index].alpha[mBrushMapIndex] -= paintValue * DELTA; // TerrainTexture·Î ¼¯±â.
 				}
 				else
 				{
-					mVertices[index].alpha[mSelectedMap] += paintValue * DELTA; // BrushTexture·Î ¼¯±â.
+					mVertices[index].alpha[mBrushMapIndex] += paintValue * DELTA; // BrushTexture·Î ¼¯±â.
 				}
-				
-				mVertices[index].alpha[mSelectedMap] = Saturate(mVertices[index].alpha[mSelectedMap]);
+
+				mVertices[index].alpha[mBrushMapIndex] = Saturate(mVertices[index].alpha[mBrushMapIndex]);
 			}
 		}
 	}
@@ -547,7 +543,7 @@ void TerrainEditor::showAddedTextures()
 				IM_ASSERT(payload->DataSize == sizeof(int));
 				int payload_n = *(const int*)payload->Data;
 				mBrushTextureImageButton = mAddedTextures[payload_n].texture;
-				mSecondMap = mAddedTextures[payload_n].texture;
+				mBrushMap = mAddedTextures[payload_n].texture;
 			}
 			ImGui::EndDragDropTarget();
 		}

@@ -2,9 +2,6 @@
 
 class Material
 {
-public:
-	string name;
-
 private:
 	class MaterialBuffer : public ConstBuffer
 	{
@@ -37,14 +34,7 @@ private:
 		}
 	};	
 
-	VertexShader* vertexShader;
-	PixelShader* pixelShader;
 
-	MaterialBuffer* buffer;
-
-	Texture* diffuseMap;
-	Texture* specularMap;
-	Texture* normalMap;
 	
 public:
 	Material();
@@ -59,6 +49,30 @@ public:
 	void SetDiffuseMap(wstring file);
 	void SetSpecularMap(wstring file);
 	void SetNormalMap(wstring file);
+	void SetBrushMap(wstring file);
 
-	MaterialBuffer* GetBuffer() { return buffer; }
+	void SetDiffuseMap(Texture* diffuseMap);
+	void SetSpecularMap(Texture* specularMap);
+	void SetNormalMap(Texture* normalMap);
+	void SetBrushMap(Texture* brushMap);
+
+
+	MaterialBuffer* GetBuffer() { return mBuffer; }
+
+
+
+public:
+	string mName;
+
+private:
+	VertexShader* mVertexShader;
+	PixelShader* mPixelShader;
+
+	MaterialBuffer* mBuffer;
+
+	Texture* mDiffuseMap;
+	Texture* mSpecularMap;
+	Texture* mNormalMap;
+	Texture* mBrushMap;
+
 };

@@ -1,9 +1,15 @@
 #include "Framework.h"
 
 map<wstring, Texture*> Texture::totalTexture;
+map<ID3D11ShaderResourceView*, Texture*> Texture::totalSRVTexture;
 
 Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image)
     : srv(srv), image(move(image))
+{
+}
+
+Texture::Texture(ID3D11ShaderResourceView* srv)
+    : srv(srv)
 {
 }
 
@@ -38,6 +44,17 @@ Texture* Texture::Add(wstring file)
     totalTexture[file] = new Texture(srv, image);
 
     return totalTexture[file];
+}
+
+Texture* Texture::Add(ID3D11ShaderResourceView* _srv)
+{
+    if (totalSRVTexture.count(_srv) > 0)
+        return totalSRVTexture[_srv];
+
+    totalSRVTexture[_srv] = new Texture(_srv);
+
+
+    return totalSRVTexture[_srv];
 }
 
 Texture* Texture::Load(wstring file)

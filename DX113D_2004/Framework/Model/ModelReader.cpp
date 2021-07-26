@@ -52,7 +52,7 @@ void ModelReader::ReadMaterial(string file)
 		XmlElement* node = matNode->FirstChildElement();
 
 		Material* material = new Material();
-		material->name = node->GetText();
+		material->mName = node->GetText();
 
 		node = node->NextSiblingElement();
 
@@ -112,7 +112,7 @@ void ModelReader::ReadMaterial(string file)
 		color.w = node->FloatAttribute("A");
 		material->GetBuffer()->data.emissive = color;
 
-		materials[material->name] = material;
+		materials[material->mName] = material;
 
 		matNode = matNode->NextSiblingElement();
 	} while (matNode != nullptr);

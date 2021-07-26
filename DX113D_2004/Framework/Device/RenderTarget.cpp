@@ -18,6 +18,8 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 		V(DEVICE->CreateTexture2D(&desc, nullptr, &rtvTexture));
 	}
 
+	
+
 	{//RenderTargetView
 		D3D11_RENDER_TARGET_VIEW_DESC desc = {};
 		desc.Format = format;
@@ -60,12 +62,15 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 	vector<ID3D11RenderTargetView*> rtvs;
 
 	float color[4] = { 0, 0, 0, 0 };
+	
 	for (UINT i = 0; i < count; i++)
 	{
 		rtvs.emplace_back(targets[i]->GetRTV());
 		DEVICECONTEXT->ClearRenderTargetView(targets[i]->GetRTV(), color);
 	}
 
+
 	depthStencil->Clear();
 	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
+	
 }

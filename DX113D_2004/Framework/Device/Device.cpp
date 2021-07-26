@@ -57,7 +57,7 @@ void Device::CreateBackBuffer()
 
 	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
 	V(device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
-	backBuffer->Release();	// 필요없으니 해wp
+	backBuffer->Release();	// 필요없으니 해제.
 
 	ID3D11Texture2D* depthBuffer;
 

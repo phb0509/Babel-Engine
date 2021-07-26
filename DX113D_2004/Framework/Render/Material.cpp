@@ -1,70 +1,101 @@
 #include "Framework.h"
 
 Material::Material()
-	: vertexShader(nullptr), pixelShader(nullptr),
-	diffuseMap(nullptr), specularMap(nullptr), normalMap(nullptr)
+	: mVertexShader(nullptr), mPixelShader(nullptr),
+	mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr)
 {
-	buffer = new MaterialBuffer();
+	mBuffer = new MaterialBuffer();
 }
 
 Material::Material(wstring file)
-	: diffuseMap(nullptr), specularMap(nullptr), normalMap(nullptr)
+	: mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr)
 {
-	vertexShader = Shader::AddVS(file);
-	pixelShader = Shader::AddPS(file);
+	mVertexShader = Shader::AddVS(file);
+	mPixelShader = Shader::AddPS(file);
 
-	buffer = new MaterialBuffer();
+	mBuffer = new MaterialBuffer();
 }
 
 Material::Material(VertexShader* vertexShader, PixelShader* pixelShader)
-	: vertexShader(vertexShader), pixelShader(pixelShader),
-	diffuseMap(nullptr), specularMap(nullptr), normalMap(nullptr)
+	: mVertexShader(vertexShader), mPixelShader(pixelShader),
+	mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr)
 {
-	buffer = new MaterialBuffer();
+	mBuffer = new MaterialBuffer();
 }
 
 Material::~Material()
 {
-	delete buffer;
+	delete mBuffer;
 }
 
 void Material::Set()
 {
-	if (diffuseMap != nullptr)
-		diffuseMap->PSSet(0);
+	if (mDiffuseMap != nullptr)
+		mDiffuseMap->PSSet(0);
 
-	if (specularMap != nullptr)
-		specularMap->PSSet(1);
+	if (mSpecularMap != nullptr)
+		mSpecularMap->PSSet(1);
 
-	if (normalMap != nullptr)
-		normalMap->PSSet(2);
+	if (mNormalMap != nullptr)
+		mNormalMap->PSSet(2);
 
-	buffer->SetPSBuffer(1);
+	if (mBrushMap != nullptr)
+		mBrushMap->PSSet(7);
 
-	vertexShader->Set();
-	pixelShader->Set();
+	mBuffer->SetPSBuffer(1);
+
+	mVertexShader->Set();
+	mPixelShader->Set();
 }
 
 void Material::SetShader(wstring file)
 {
-	vertexShader = Shader::AddVS(file);
-	pixelShader = Shader::AddPS(file);
+	mVertexShader = Shader::AddVS(file);
+	mPixelShader = Shader::AddPS(file);
 }
 
 void Material::SetDiffuseMap(wstring file)
 {
-	diffuseMap = Texture::Add(file);
-	buffer->data.hasDiffuseMap = 1;
+	mDiffuseMap = Texture::Add(file);
+	mBuffer->data.hasDiffuseMap = 1;
 }
 
 void Material::SetSpecularMap(wstring file)
 {
-	specularMap = Texture::Add(file);
-	buffer->data.hasSpecularMap = 1;
+	mSpecularMap = Texture::Add(file);
+	mBuffer->data.hasSpecularMap = 1;
 }
 
 void Material::SetNormalMap(wstring file)
 {
-	normalMap = Texture::Add(file);
-	buffer->data.hasNormalMap = 1;
+	mNormalMap = Texture::Add(file);
+	mBuffer->data.hasNormalMap = 1;
+}
+
+void Material::SetBrushMap(wstring file)
+{
+	mBrushMap = Texture::Add(file);
+}
+
+void Material::SetDiffuseMap(Texture* diffuseMap)
+{
+	mDiffuseMap = diffuseMap;
+	mBuffer->data.hasDiffuseMap = 1;
+}
+
+void Material::SetSpecularMap(Texture* specularMap)
+{
+	mSpecularMap = specularMap;
+	mBuffer->data.hasSpecularMap = 1;
+}
+
+void Material::SetNormalMap(Texture* normalMap)
+{
+	mNormalMap = normalMap;
+	mBuffer->data.hasNormalMap = 1;
+}
+
+void Material::SetBrushMap(Texture* brushMap)
+{
+	mBrushMap = brushMap;
 }

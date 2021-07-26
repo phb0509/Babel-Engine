@@ -714,6 +714,7 @@
     <FxCompile Include="Shaders\GBuffer.hlsl" />
     <FxCompile Include="Shaders\DeferredLighting.hlsl" />
     <FxCompile Include="Shaders\Effect.hlsl" />
+    <FxCompile Include="Shaders\TestTerrainSplatting.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

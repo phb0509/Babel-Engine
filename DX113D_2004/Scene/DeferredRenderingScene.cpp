@@ -3,9 +3,9 @@
 
 DeferredRenderingScene::DeferredRenderingScene()
 {
-	CreateModels();
+	CreateModels(); // 모델들 디폴트셰이더는 Lighting
 
-	gBuffer = new GBuffer();
+	gBuffer = new GBuffer(); // rtv생성
 
 	material = new Material(L"DeferredLighting");
 
@@ -54,7 +54,7 @@ void DeferredRenderingScene::Render()
 	CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
 	Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
 
-	gBuffer->Render(); // GBuffer에서 만들어서 OM에 셋팅해놨던 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
+	gBuffer->Render(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 
 	vertexBuffer->IASet();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);

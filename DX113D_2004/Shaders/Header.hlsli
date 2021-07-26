@@ -120,6 +120,7 @@ SamplerState samp : register(s0);
 Texture2D diffuseMap : register(t0);
 Texture2D specularMap : register(t1);
 Texture2D normalMap : register(t2);
+Texture2D brushMap : register(t7);
 
 Texture2D depthTexture : register(t3);
 Texture2D diffuseTexture : register(t4);
@@ -394,9 +395,9 @@ float4 CalcDirectional(Material material, Light light)
 
 float4 CalcPoint(Material material, Light light)
 {
-    float3 toLight = light.position - material.worldPos;
-    float distanceToLight = length(toLight);
-    toLight /= distanceToLight;
+    float3 toLight = light.position - material.worldPos; 
+    float distanceToLight = length(toLight); // 광원과의 거리.
+    toLight /= distanceToLight; // 방향벡터(정규화한거)
     
     float NDotL = dot(toLight, material.normal);
     float4 finalColor = light.color * saturate(NDotL);

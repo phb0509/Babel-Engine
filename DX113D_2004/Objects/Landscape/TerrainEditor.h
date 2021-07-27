@@ -78,6 +78,9 @@ private:
 
 	void addTexture();
 	void showAddedTextures();
+	void getFileNames(string path);
+	void showTextureAsset();
+	
 
 
 private:
@@ -92,7 +95,6 @@ private:
 	UINT mWidth, mHeight;
 
 	Texture* mHeightMap;
-	Texture* mBrushMap;
 
 	ComputeShader* mComputeShader;
 	RayBuffer* mRayBuffer;
@@ -109,7 +111,7 @@ private:
 	int mbIsPainting;
 	float mPaintValue;
 
-	int mBrushMapIndex;
+	int mPickedLayerIndex;
 
 	char mInputFileName[100];
 
@@ -123,7 +125,11 @@ private:
 	Texture* mTempTexture;
 	vector<AddedTextureInfo> mAddedTextures;
 	int mCurrentTextureIndex;
-	Texture* mTerrainTextureImageButton;
-	Texture* mBrushTextureImageButton;
 
+	Texture* mTerrainDiffuseMap;
+	vector<const char*> mLayerNames;
+	vector<Texture*> mLayers; // 셰이더에 넘길 레이어들. 
+
+	ID3D11ShaderResourceView* mLayerSRVs[4];
+	vector<string> mTextureAssetFileNames;
 };

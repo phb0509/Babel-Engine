@@ -3,8 +3,6 @@
 
 
 
-Texture2D secondMap : register(t11);
-Texture2D thirdMap : register(t12);
 
 
 cbuffer Brush : register(b10)
@@ -79,18 +77,37 @@ PixelInput VS(VertexUVNormalTangentAlpha input)
 }
 
 
+//Texture2D Layers[4] : register(t11);
+//Texture2D thirdMap : register(t12);
+//Texture2DArray arrays : register(t12);
+
+Texture2D first : register(t11);
+Texture2D second : register(t12);
+Texture2D third : register(t13);
+Texture2D fourth : register(t14);
 
 float4 PS(PixelInput input) : SV_Target
 {
     float4 albedo = float4(1, 1, 1, 1);
+    
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv);
     
-    float4 second = secondMap.Sample(samp, input.uv);
-    float4 third = thirdMap.Sample(samp, input.uv);
+    //float layer1 = Layers[0].Sample(samp, input.uv);
+    //float layer2 = Layers[1].Sample(samp, input.uv);
+    //float layer3 = Layers[2].Sample(samp, input.uv);
+    //float layer4 = Layers[3].Sample(samp, input.uv);
     
-    albedo = lerp(albedo, second, input.alpha.r);
-    albedo = lerp(albedo, third, input.alpha.g);
+    float4 layer1 = first.Sample(samp, input.uv);
+    float4 layer2 = second.Sample(samp, input.uv);
+    float4 layer3 = third.Sample(samp, input.uv);
+    float4 layer4 = fourth.Sample(samp, input.uv);
+    
+    
+    albedo = lerp(albedo, layer1, input.alpha.r);
+    albedo = lerp(albedo, layer2, input.alpha.g);
+    albedo = lerp(albedo, layer3, input.alpha.b);
+    albedo = lerp(albedo, layer4, input.alpha.a);
     
     float3 light = normalize(lights[0].direction); // light 1개만 영향받도록 되어있다. 추후수정 필요할듯?
     
@@ -114,6 +131,7 @@ float4 PS(PixelInput input) : SV_Target
     float diffuseIntensity = saturate(dot(normal, -light));
     
     float4 specular = 0;
+    
     if (diffuseIntensity > 0)
     {
         float3 halfWay = normalize(viewDir + light);

@@ -81,7 +81,7 @@ struct VertexUVNormalTangentAlpha
 
 	VertexUVNormalTangentAlpha()
 		: position(0, 0, 0), uv(0, 0), normal(0, 0, 0),
-		tangent(0, 0, 0), alpha{}
+		tangent(0, 0, 0), alpha{0,0,0,0}
 	{
 	}
 };

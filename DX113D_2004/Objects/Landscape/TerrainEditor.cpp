@@ -12,18 +12,21 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mOutput(nullptr),
 	mRayBuffer(nullptr),
 	mPaintValue(5),
-	mBrushMap(0),
 	mCurrentMousePosition(0.0f, 0.0f, 0.0f),
 	mLastPickingMousePosition(0.0f, 0.0f, 0.0f)
 
 {
 	mMaterial = new Material(L"TerrainSplatting");
 	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
+	mTerrainDiffuseMap = Texture::Add(L"Textures/Landscape/White.png");
 
-	mBrushMap = Texture::Add(L"Textures/Landscape/Floor.png");
+	mLayerNames = { "Layer1", "Layer2", "Layer3", "Layer4" };
+	//mLayerNames = { "Brush" };
 
-	mTerrainTextureImageButton = Texture::Add(L"Textures/Landscape/defaultImageButton.png");
-	mBrushTextureImageButton = Texture::Add(L"Textures/Landscape/defaultImageButton.png");
+	for (int i = 0; i < mLayerNames.size(); i++) // Layers들 초기화들
+	{
+		mLayers.push_back(Texture::Add(L"Textures/Landscape/defaultImageButton.png"));
+	}
 
 	createMesh();
 	createCompute();
@@ -86,7 +89,11 @@ void TerrainEditor::Render()
 	mWorldBuffer->SetVSBuffer(0);
 	mBrushBuffer->SetPSBuffer(10);
 
-	mBrushMap->PSSet(11);
+	//DEVICECONTEXT->PSSetShaderResources(11, mLayers.size(), &mLayerSRVs[0]);
+	mLayers[0]->PSSet(11);
+	mLayers[1]->PSSet(12);
+	mLayers[2]->PSSet(13);
+	mLayers[3]->PSSet(14);
 
 	mMaterial->Set(); // 버퍼,srv,셰이더 Set.
 
@@ -110,7 +117,6 @@ void TerrainEditor::PostRender()
 	ImGui::RadioButton("Raise", &mbIsPainting, 0); ImGui::SameLine();
 	ImGui::RadioButton("Brush", &mbIsPainting, 1);
 
-
 	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
 	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
 
@@ -122,7 +128,7 @@ void TerrainEditor::PostRender()
 	ImGui::Spacing();
 	ImGui::Spacing();
 	ImGui::Spacing();
-	//ImGui::InputInt("SelectMap", &mSelectedMap);
+
 
 	addTexture(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
 	showAddedTextures(); // 추가한 텍스쳐들 렌더.
@@ -142,11 +148,6 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 	ImGui::Unindent();
-
-
-
-	ImGui::Separator();
-
 
 
 	/*ImGui::InputText("FileName", mInputFileName, 100);
@@ -340,14 +341,14 @@ void TerrainEditor::paintBrush(Vector3 position)
 
 				if (KEY_PRESS(VK_CONTROL))
 				{
-					mVertices[index].alpha[mBrushMapIndex] -= paintValue * DELTA; // TerrainTexture로 섞기.
+					mVertices[index].alpha[mPickedLayerIndex] -= paintValue * DELTA; // TerrainTexture로 섞기.
 				}
 				else
 				{
-					mVertices[index].alpha[mBrushMapIndex] += paintValue * DELTA; // BrushTexture로 섞기.
+					mVertices[index].alpha[mPickedLayerIndex] += paintValue * DELTA; // BrushTexture로 섞기.
 				}
 
-				mVertices[index].alpha[mBrushMapIndex] = Saturate(mVertices[index].alpha[mBrushMapIndex]);
+				mVertices[index].alpha[mPickedLayerIndex] = Saturate(mVertices[index].alpha[mPickedLayerIndex]);
 			}
 		}
 	}
@@ -429,6 +430,7 @@ void TerrainEditor::changeTextureMap(wstring textureFileName)
 
 void TerrainEditor::addTexture()
 {
+	
 	if (ImGui::Button("Add Texture"))
 	{
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
@@ -451,6 +453,7 @@ void TerrainEditor::addTexture()
 
 		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 	}
+	
 }
 
 void TerrainEditor::showAddedTextures()
@@ -481,75 +484,116 @@ void TerrainEditor::showAddedTextures()
 	ImGui::Spacing();
 	ImGui::Spacing();
 
-	// TerrainTextureImageButton
-	{
-		int frame_padding = 2;
-		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
-		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	// ImageButton 설정값.
+	int frame_padding = 2;
+	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	
 
-		ImGui::Indent();
-		ImGui::Text("TerrainTexture");
-		ImGui::SameLine();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Text(" BrushTexture");
-		ImGui::NewLine();
+	{ // DiffuseMapButton
+		ImGui::Text("DiffuseMap");
+		ImGui::ImageButton(mTerrainDiffuseMap->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 
-		ImGui::Spacing();
-
-		//ImGui::Indent();
-		ImGui::Unindent();
-		ImGui::Unindent();
-		ImGui::Unindent();
-		ImGui::Unindent();
-		ImGui::Unindent();
-		ImGui::Unindent();
-		ImGui::ImageButton(mTerrainTextureImageButton->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-		if (ImGui::BeginDragDropTarget()) // 타겟에 놓을때 이벤트인듯?
+		if (ImGui::BeginDragDropTarget()) 
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
 			{
 				IM_ASSERT(payload->DataSize == sizeof(int));
 				int payload_n = *(const int*)payload->Data;
-				mTerrainTextureImageButton = mAddedTextures[payload_n].texture;
-				mMaterial->SetDiffuseMap(mAddedTextures[payload_n].textureName);
-			}
-			ImGui::EndDragDropTarget();
-		}
+				mTerrainDiffuseMap = mAddedTextures[payload_n].texture;
+				mMaterial->SetDiffuseMap(mTerrainDiffuseMap);
 
-		ImGui::SameLine();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::Indent();
-		ImGui::ImageButton(mBrushTextureImageButton->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-		if (ImGui::BeginDragDropTarget()) // 타겟에 놓을때 이벤트
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
-			{
-				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int*)payload->Data;
-				mBrushTextureImageButton = mAddedTextures[payload_n].texture;
-				mBrushMap = mAddedTextures[payload_n].texture;
 			}
 			ImGui::EndDragDropTarget();
 		}
 	}
 
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	{
+		{ // LayerButtons 
+			for (int i = 0; i < mLayerNames.size(); i++)
+			{
+				//ImGui::Text(mLayerNames[i]);
+				ImGui::RadioButton(mLayerNames[i], &mPickedLayerIndex, i);
+				ImGui::SameLine();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+			}
+
+			for (int i = 0; i < mLayerNames.size(); i++)
+			{
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+			}
+		}
+	
+		ImGui::NewLine();
+		ImGui::Spacing();
+		
+		for (int i = 0; i < mLayers.size(); i++)
+		{
+			ImGui::ImageButton(mLayers[i]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col); 
+
+			if (ImGui::BeginDragDropTarget()) // 타겟에 놓을때 이벤트인듯?
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(int));
+					int payload_n = *(const int*)payload->Data;
+					mLayers[i] = mAddedTextures[payload_n].texture;
+					mLayerSRVs[i] = mLayers[i]->GetSRV();
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			ImGui::SameLine();
+
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+		}
+
+	}
 }
+
+void TerrainEditor::getFileNames(string path)
+{
+
+	DIR* dirp = opendir(path.c_str());
+	struct dirent* dp;
+
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		mTextureAssetFileNames.push_back(dp->d_name);
+	}
+
+	closedir(dirp);
+}
+
+void TerrainEditor::showTextureAsset()
+{
+	ImGui::Begin("Asset");
+	getFileNames("Textures/LandScape");
+
+
+
+	ImGui::End();
+}
+
+
 
 void TerrainEditor::createMesh()
 {

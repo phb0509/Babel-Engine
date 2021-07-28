@@ -265,7 +265,7 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	Float4x4 temp;
 	XMStoreFloat4x4(&temp, projection);
 
-	point.x /= temp._11;
+	point.x /= temp._11; // 뷰공간으로 전환.
 	point.y /= temp._22;
 
 	Ray ray;

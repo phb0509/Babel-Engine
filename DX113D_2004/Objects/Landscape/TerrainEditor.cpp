@@ -120,6 +120,7 @@ void TerrainEditor::PostRender()
 	ImGui::SliderFloat("Range", &mBrushBuffer->data.range, 1, 50);
 	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
 
+	ImGui::Spacing();
 	ImGui::Separator();
 
 	//ImGui::Checkbox("Raise", &mbIsRaise);
@@ -164,13 +165,13 @@ void TerrainEditor::PostRender()
 	ImGui::End();
 }
 
-bool TerrainEditor::computePicking(OUT Vector3* position)
+bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
 {
 	Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
 
-	mRayBuffer->data.position = ray.position;
-	mRayBuffer->data.direction = ray.direction;
-	mRayBuffer->data.size = mPolygonCount;
+	mRayBuffer->data.position = ray.position; // 카메라 포지션(원점)
+	mRayBuffer->data.direction = ray.direction; // 원점에서 마우스피킹한곳까지(near평면) 방향벡터.
+	mRayBuffer->data.size = mPolygonCount; // 터레인 폴리곤 개수.
 	mComputeShader->Set(); // 디바이스에 Set..
 
 	mRayBuffer->SetCSBuffer(0);
@@ -187,9 +188,10 @@ bool TerrainEditor::computePicking(OUT Vector3* position)
 	float minDistance = FLT_MAX;
 	int minIndex = -1;
 
-	for (UINT i = 0; i < mPolygonCount; i++)
+	for (UINT i = 0; i < mPolygonCount; i++) // 직선위의 피킹된 메쉬들중, 가장 가까운것 선별.
 	{
 		OutputDesc temp = mOutput[i];
+
 		if (temp.picked)
 		{
 			if (minDistance > temp.distance)
@@ -312,7 +314,6 @@ void TerrainEditor::paintBrush(Vector3 position)
 	rect.top = (LONG)position.z + range;
 	rect.right = (LONG)position.x + range;
 	rect.bottom = (LONG)position.z - range;
-
 
 	if (rect.left < 0) rect.left = 0;
 	if (rect.top >= (LONG)mHeight) rect.top = (LONG)mHeight;
@@ -482,8 +483,9 @@ void TerrainEditor::showAddedTextures()
 	ImGui::Spacing();
 	ImGui::Spacing();
 	ImGui::Spacing();
+	
+	ImGui::Separator();
 	ImGui::Spacing();
-
 	// ImageButton 설정값.
 	int frame_padding = 2;
 	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
@@ -739,11 +741,11 @@ void TerrainEditor::createTangent()
 void TerrainEditor::createCompute()
 {
 	mComputeShader = Shader::AddCS(L"ComputePicking");
-
+	
 	if (mComputePickingStructuredBuffer != nullptr)
 		delete mComputePickingStructuredBuffer;
 
-	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
+	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
 		sizeof(OutputDesc), mPolygonCount);
 
 	if (mRayBuffer == nullptr)

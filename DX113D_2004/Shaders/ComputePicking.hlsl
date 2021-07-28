@@ -1,6 +1,6 @@
 cbuffer Ray : register(b0)
 {
-    float3 position; // x,y,z
+    float3 position; // 카메라위치(원점)
     float outputSize; // 폴리곤개수
     
     float3 direction; // x,y,z

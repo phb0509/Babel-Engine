@@ -1,3 +1,5 @@
+#include "Header.hlsli"
+
 cbuffer Ray : register(b0)
 {
     float3 position; // 카메라위치(원점)
@@ -50,6 +52,8 @@ void Intersection(uint index)
                 (output[index].v >= 0.0f) &&
                 (output[index].u + output[index].v <= 1.0f) &&
                 (output[index].distance >= 0.0f);
+    
+    
     
     output[index].picked = b ? 1 : 0;
 }

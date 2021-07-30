@@ -17,6 +17,8 @@ GBuffer::GBuffer()
 	srvs[2] = specularRender->GetSRV();
 	srvs[3] = normalRender->GetSRV();
 
+	
+
 	for (UINT i = 0; i < 4; i++)
 	{
 		targetTextures[i] = new UIImage(L"Texture"); //UIImage ¹è¿­.

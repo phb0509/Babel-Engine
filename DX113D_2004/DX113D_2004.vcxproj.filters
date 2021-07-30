@@ -715,6 +715,7 @@
     <FxCompile Include="Shaders\DeferredLighting.hlsl" />
     <FxCompile Include="Shaders\Effect.hlsl" />
     <FxCompile Include="Shaders\TestTerrainSplatting.hlsl" />
+    <FxCompile Include="Shaders\UVPicking.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

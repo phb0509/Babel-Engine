@@ -178,6 +178,8 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
+	
+
 
 	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
 

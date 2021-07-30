@@ -37,7 +37,7 @@ Texture* Texture::Add(wstring file)
     ID3D11ShaderResourceView* srv;
     
     
-
+    
     V(CreateShaderResourceView(DEVICE, image.GetImages(), image.GetImageCount(),
         image.GetMetadata(), &srv));
 

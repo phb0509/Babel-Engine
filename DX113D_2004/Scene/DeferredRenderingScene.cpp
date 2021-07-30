@@ -105,3 +105,4 @@ void DeferredRenderingScene::CreateMesh()
 	UINT vertices[4] = { 0, 1, 2, 3 };
 	vertexBuffer = new VertexBuffer(vertices, sizeof(UINT), 4);
 }
+

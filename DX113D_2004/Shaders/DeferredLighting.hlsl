@@ -51,8 +51,8 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀 포지션 x,y 값.
     
     int3 location3 = int3(location, 0);
     
-    float depth = depthTexture.Load(location3).x;
-    output.linearDepth = ConvertDepthToLinear(depth);
+    float depth = depthTexture.Load(location3).x; // 깊이버퍼값 빼오기.
+    output.linearDepth = ConvertDepthToLinear(depth); 
     
     float4 diffuse = diffuseTexture.Load(location3);
     

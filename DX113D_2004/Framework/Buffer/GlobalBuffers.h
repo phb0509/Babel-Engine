@@ -119,6 +119,23 @@ public:
 	}
 };
 
+class MouseUVBuffer : public ConstBuffer
+{
+public:
+	struct Data
+	{
+		Float2 mouseUV;
+		float padding1;
+		float padding2;
+	}data;
+
+	MouseUVBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.mouseUV = { 0.0f,0.0f };
+	}
+};
+
+
 class BoneBuffer : public ConstBuffer
 {
 public:

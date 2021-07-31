@@ -26,6 +26,15 @@ private:
 	};
 
 	
+	struct InputUVDesc
+	{
+		Float2 mouseUVPosition;
+	};
+
+	struct OutputUVDesc
+	{
+		Float3 worldPosition;
+	};
 
 	struct InputDesc
 	{
@@ -62,8 +71,10 @@ private:
 	void createNormal();
 	void createTangent();
 	void createCompute();
+	void createUVCompute();
 
 	bool computePicking(OUT Vector3* position);
+	void computeUVPicking(OUT Vector3* position);
 
 	void adjustY(Vector3 position);
 	void paintBrush(Vector3 position);
@@ -102,6 +113,10 @@ private:
 	InputDesc* mInput;
 	OutputDesc* mOutput; // GPU에서 읽어온 값
 
+	InputUVDesc* mInputUVDesc;
+	OutputUVDesc* mOutputUVDesc;
+	MouseUVBuffer* mMouseUVBuffer;
+
 	UINT mPolygonCount;
 
 	BrushBuffer* mBrushBuffer;
@@ -132,4 +147,7 @@ private:
 
 	ID3D11ShaderResourceView* mLayerSRVs[4];
 	vector<string> mTextureAssetFileNames;
+
+	Vector3 testPos;
+	DepthStencil* mDepthStencil;
 };

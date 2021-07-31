@@ -19,6 +19,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mMaterial = new Material(L"TerrainSplatting");
 	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
 	mTerrainDiffuseMap = Texture::Add(L"Textures/Landscape/White.png");
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
 
 	mLayerNames = { "Layer1", "Layer2", "Layer3", "Layer4" };
 	//mLayerNames = { "Brush" };
@@ -29,7 +30,9 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	}
 
 	createMesh();
-	createCompute();
+	//createCompute();
+	createUVCompute();
+	
 
 	mBrushBuffer = new BrushBuffer();
 }
@@ -56,7 +59,8 @@ void TerrainEditor::Update()
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
-			computePicking(&mPickedPosition);
+			//computePicking(&mPickedPosition);
+			computeUVPicking(&mPickedPosition);
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}
@@ -162,6 +166,17 @@ void TerrainEditor::PostRender()
 
 
 	//ImGui::ShowDemoWindow();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
+
+	ImGui::Text("position.x : %f   position.y : %f    position.z : %f\n", testPos.x,testPos.y,testPos.z);
 	ImGui::End();
 }
 
@@ -179,14 +194,12 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
 	
-
-
 	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
 
 	DEVICECONTEXT->Dispatch(x, 1, 1);
 
 	mComputePickingStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
-																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
+																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수), 메모리사이즈만큼 복사해줌.
 	float minDistance = FLT_MAX;
 	int minIndex = -1;
 
@@ -212,6 +225,76 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 
 	return false;
 }
+
+void TerrainEditor::computeUVPicking(OUT Vector3* position)
+{
+	mMouseUVBuffer->data.mouseUV = { 0.5f,0.5f }; // 마우스좌표 uv값.일단은 임의의값.
+	mComputeShader->Set(); // 디바이스에 Set..
+	mMouseUVBuffer->SetCSBuffer(0);
+
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
+
+
+	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
+
+	DEVICECONTEXT->Dispatch(x, 1, 1);
+
+	mComputePickingStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
+																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
+
+	testPos = { mOutput[0].u, mOutput[0].v, mOutput[0].distance };
+
+
+	mOutput;
+	/*char buff[100];
+	sprintf_s(buff, "position.x : %f   position.y : %f    position.z : %f\n", mOutputUVDesc[0].worldPosition.x, mOutputUVDesc[0].worldPosition.y, mOutputUVDesc[0].worldPosition.z);
+	OutputDebugStringA(buff);*/
+
+
+}
+
+
+
+void TerrainEditor::createCompute()
+{
+	mComputeShader = Shader::AddCS(L"ComputePicking");
+
+	if (mComputePickingStructuredBuffer != nullptr)
+		delete mComputePickingStructuredBuffer;
+
+	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
+		sizeof(OutputDesc), mPolygonCount);
+
+	if (mRayBuffer == nullptr)
+		mRayBuffer = new RayBuffer();
+
+	if (mOutput != nullptr)
+		delete[] mOutput;
+
+	mOutput = new OutputDesc[mPolygonCount];
+}
+
+void TerrainEditor::createUVCompute()
+{
+	mComputeShader = Shader::AddCS(L"UVPicking");
+
+	if (mComputePickingStructuredBuffer != nullptr)
+		delete mComputePickingStructuredBuffer;
+
+	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
+		sizeof(OutputDesc), mPolygonCount);
+
+	if (mMouseUVBuffer == nullptr)
+		mMouseUVBuffer = new MouseUVBuffer();
+
+	if (mOutput != nullptr)
+		delete[] mOutput;
+
+	mOutput = new OutputDesc[mPolygonCount];
+}
+
+
 
 void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 {
@@ -459,214 +542,10 @@ void TerrainEditor::addTexture()
 	
 }
 
-void TerrainEditor::showAddedTextures()
-{
-	for (int i = 0; i < mAddedTextures.size(); i++)
-	{
-		if ((i % 5) != 0)
-			ImGui::SameLine();
-
-		int frame_padding = 2;
-		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
-		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-		ImGui::ImageButton(mAddedTextures[i].texture->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
-		{
-			ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-			ImGui::EndDragDropSource();
-		}
-	}
-
-	ImGui::Spacing();
-	ImGui::Spacing();
-	ImGui::Spacing();
-	
-	ImGui::Separator();
-	ImGui::Spacing();
-	// ImageButton 설정값.
-	int frame_padding = 2;
-	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
-	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	
-
-	{ // DiffuseMapButton
-		ImGui::Text("DiffuseMap");
-		ImGui::ImageButton(mTerrainDiffuseMap->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-		if (ImGui::BeginDragDropTarget()) 
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
-			{
-				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int*)payload->Data;
-				mTerrainDiffuseMap = mAddedTextures[payload_n].texture;
-				mMaterial->SetDiffuseMap(mTerrainDiffuseMap);
-
-			}
-			ImGui::EndDragDropTarget();
-		}
-	}
-
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	{
-		{ // LayerButtons 
-			for (int i = 0; i < mLayerNames.size(); i++)
-			{
-				//ImGui::Text(mLayerNames[i]);
-				ImGui::RadioButton(mLayerNames[i], &mPickedLayerIndex, i);
-				ImGui::SameLine();
-				ImGui::Indent();
-				ImGui::Indent();
-				ImGui::Indent();
-				ImGui::Indent();
-				ImGui::Indent();
-			}
-
-			for (int i = 0; i < mLayerNames.size(); i++)
-			{
-				ImGui::Unindent();
-				ImGui::Unindent();
-				ImGui::Unindent();
-				ImGui::Unindent();
-				ImGui::Unindent();
-			}
-		}
-	
-		ImGui::NewLine();
-		ImGui::Spacing();
-		
-		for (int i = 0; i < mLayers.size(); i++)
-		{
-			ImGui::ImageButton(mLayers[i]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col); 
-
-			if (ImGui::BeginDragDropTarget()) // 타겟에 놓을때 이벤트인듯?
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
-				{
-					IM_ASSERT(payload->DataSize == sizeof(int));
-					int payload_n = *(const int*)payload->Data;
-					mLayers[i] = mAddedTextures[payload_n].texture;
-					mLayerSRVs[i] = mLayers[i]->GetSRV();
-				}
-				ImGui::EndDragDropTarget();
-			}
-
-			ImGui::SameLine();
-
-			ImGui::Indent();
-			ImGui::Indent();
-			ImGui::Indent();
-			ImGui::Indent();
-			ImGui::Indent();
-		}
-
-	}
-}
-
-void TerrainEditor::getFileNames(string path)
-{
-
-	DIR* dirp = opendir(path.c_str());
-	struct dirent* dp;
-
-	while ((dp = readdir(dirp)) != NULL)
-	{
-		mTextureAssetFileNames.push_back(dp->d_name);
-	}
-
-	closedir(dirp);
-}
-
-void TerrainEditor::showTextureAsset()
-{
-	ImGui::Begin("Asset");
-	getFileNames("Textures/LandScape");
 
 
 
-	ImGui::End();
-}
 
-
-
-void TerrainEditor::createMesh()
-{
-	vector<Float4> pixels;
-
-	if (mHeightMap != nullptr)
-	{
-		mWidth = mHeightMap->Width();
-		mHeight = mHeightMap->Height();
-		pixels = mHeightMap->ReadPixels();
-	}
-
-	mVertices.clear();
-	mIndices.clear();
-
-	//Vertices
-	for (UINT z = 0; z < mHeight; z++)
-	{
-		for (UINT x = 0; x < mWidth; x++)
-		{
-			VertexType vertex;
-			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
-
-			UINT index = mWidth * z + x;
-			if (pixels.size() > index)
-				vertex.position.y += pixels[index].x * MAX_HEIGHT;
-
-			mVertices.emplace_back(vertex);
-		}
-	}
-
-	//Indices
-	for (UINT z = 0; z < mHeight - 1; z++)
-	{
-		for (UINT x = 0; x < mWidth - 1; x++)
-		{
-			mIndices.emplace_back(mWidth * z + x);//0
-			mIndices.emplace_back(mWidth * (z + 1) + x);//1
-			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
-
-			mIndices.emplace_back(mWidth * z + x);//0
-			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
-			mIndices.emplace_back(mWidth * z + x + 1);//3
-		}
-	}
-
-	mPolygonCount = mIndices.size() / 3;
-
-	mInput = new InputDesc[mPolygonCount];
-	for (UINT i = 0; i < mPolygonCount; i++) // 폴리곤개수
-	{
-		UINT index0 = mIndices[i * 3 + 0];
-		UINT index1 = mIndices[i * 3 + 1];
-		UINT index2 = mIndices[i * 3 + 2];
-
-		mInput[i].v0 = mVertices[index0].position;
-		mInput[i].v1 = mVertices[index1].position;
-		mInput[i].v2 = mVertices[index2].position;
-
-		mInput[i].index = i;
-	}
-
-	createNormal();
-	createTangent();
-
-	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
-		mIndices.data(), (UINT)mIndices.size(), true);
-}
 
 void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 {
@@ -740,21 +619,209 @@ void TerrainEditor::createTangent()
 	}
 }
 
-void TerrainEditor::createCompute()
+void TerrainEditor::createMesh()
 {
-	mComputeShader = Shader::AddCS(L"ComputePicking");
-	
-	if (mComputePickingStructuredBuffer != nullptr)
-		delete mComputePickingStructuredBuffer;
+	vector<Float4> pixels;
 
-	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
-		sizeof(OutputDesc), mPolygonCount);
+	if (mHeightMap != nullptr)
+	{
+		mWidth = mHeightMap->Width();
+		mHeight = mHeightMap->Height();
+		pixels = mHeightMap->ReadPixels();
+	}
 
-	if (mRayBuffer == nullptr)
-		mRayBuffer = new RayBuffer();
+	mVertices.clear();
+	mIndices.clear();
 
-	if (mOutput != nullptr)
-		delete[] mOutput;
+	//Vertices
+	for (UINT z = 0; z < mHeight; z++)
+	{
+		for (UINT x = 0; x < mWidth; x++)
+		{
+			VertexType vertex;
+			vertex.position = Float3((float)x, 0.0f, (float)z);
+			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
 
-	mOutput = new OutputDesc[mPolygonCount];
+			UINT index = mWidth * z + x;
+			if (pixels.size() > index)
+				vertex.position.y += pixels[index].x * MAX_HEIGHT;
+
+			mVertices.emplace_back(vertex);
+		}
+	}
+
+	//Indices
+	for (UINT z = 0; z < mHeight - 1; z++)
+	{
+		for (UINT x = 0; x < mWidth - 1; x++)
+		{
+			mIndices.emplace_back(mWidth * z + x);//0
+			mIndices.emplace_back(mWidth * (z + 1) + x);//1
+			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
+
+			mIndices.emplace_back(mWidth * z + x);//0
+			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
+			mIndices.emplace_back(mWidth * z + x + 1);//3
+		}
+	}
+
+	mPolygonCount = mIndices.size() / 3;
+
+	mInput = new InputDesc[mPolygonCount];
+	for (UINT i = 0; i < mPolygonCount; i++) // 폴리곤개수
+	{
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
+
+		mInput[i].v0 = mVertices[index0].position;
+		mInput[i].v1 = mVertices[index1].position;
+		mInput[i].v2 = mVertices[index2].position;
+
+		mInput[i].index = i;
+	}
+
+	createNormal();
+	createTangent();
+
+	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
+		mIndices.data(), (UINT)mIndices.size(), true);
+}
+
+void TerrainEditor::showAddedTextures()
+{
+	for (int i = 0; i < mAddedTextures.size(); i++)
+	{
+		if ((i % 5) != 0)
+			ImGui::SameLine();
+
+		int frame_padding = 2;
+		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		ImGui::ImageButton(mAddedTextures[i].texture->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
+		{
+			ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
+			ImGui::EndDragDropSource();
+		}
+	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	ImGui::Separator();
+	ImGui::Spacing();
+	// ImageButton 설정값.
+	int frame_padding = 2;
+	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+	{ // DiffuseMapButton
+		ImGui::Text("DiffuseMap");
+		ImGui::ImageButton(mTerrainDiffuseMap->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(int));
+				int payload_n = *(const int*)payload->Data;
+				mTerrainDiffuseMap = mAddedTextures[payload_n].texture;
+				mMaterial->SetDiffuseMap(mTerrainDiffuseMap);
+
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	{
+		{ // LayerButtons 
+			for (int i = 0; i < mLayerNames.size(); i++)
+			{
+				//ImGui::Text(mLayerNames[i]);
+				ImGui::RadioButton(mLayerNames[i], &mPickedLayerIndex, i);
+				ImGui::SameLine();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+				ImGui::Indent();
+			}
+
+			for (int i = 0; i < mLayerNames.size(); i++)
+			{
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+				ImGui::Unindent();
+			}
+		}
+
+		ImGui::NewLine();
+		ImGui::Spacing();
+
+		for (int i = 0; i < mLayers.size(); i++)
+		{
+			ImGui::ImageButton(mLayers[i]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+
+			if (ImGui::BeginDragDropTarget()) // 타겟에 놓을때 이벤트인듯?
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(int));
+					int payload_n = *(const int*)payload->Data;
+					mLayers[i] = mAddedTextures[payload_n].texture;
+					mLayerSRVs[i] = mLayers[i]->GetSRV();
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			ImGui::SameLine();
+
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+			ImGui::Indent();
+		}
+
+	}
+}
+
+void TerrainEditor::getFileNames(string path)
+{
+
+	DIR* dirp = opendir(path.c_str());
+	struct dirent* dp;
+
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		mTextureAssetFileNames.push_back(dp->d_name);
+	}
+
+	closedir(dirp);
+}
+
+void TerrainEditor::showTextureAsset()
+{
+	ImGui::Begin("Asset");
+	getFileNames("Textures/LandScape");
+
+
+
+	ImGui::End();
 }

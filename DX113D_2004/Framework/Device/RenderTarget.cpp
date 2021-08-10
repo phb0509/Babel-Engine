@@ -71,6 +71,8 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 
 
 	depthStencil->Clear();
+
+	//전부 클리어 후, Set하기.
 	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
 	
 }

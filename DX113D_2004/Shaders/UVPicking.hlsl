@@ -1,8 +1,9 @@
-#include "Header.hlsli"
 
 cbuffer MouseUV : register(b0)
 {
     float2 mouseUV;
+    matrix invView;
+    matrix projection;
 }
 
 struct InputDesc // 폴리곤단위.
@@ -24,6 +25,7 @@ struct OutputDesc
 
 StructuredBuffer<InputDesc> input; // CPU에서 읽어들임.
 RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
+Texture2D depthTexture : register(t1);
 
 
 float ConvertDepthToLinear(float depth) // 
@@ -44,7 +46,7 @@ float3 CalcWorldPos(float2 mouseUVPosition, float linearDepth) // 2d상의 픽셀의 
     position.z = linearDepth;
     position.w = 1.0f;
     
-    return mul(position, invView).xyz;
+    return mul(position, invView).xyz; // 뷰역행렬 곱해줌으로써 월드좌표 변환. 
 }
 
 

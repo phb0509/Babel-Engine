@@ -1,5 +1,3 @@
-#include "Header.hlsli"
-
 cbuffer Ray : register(b0)
 {
     float3 position; // 카메라위치(원점)

@@ -43,10 +43,12 @@ void DeferredRenderingScene::PreRender()
 	// GBuffer의 픽셀셰이더에서 OM의 렌더타겟에 float4형태로 리턴시켜놨음.
 
 
-	bunny->Render();
+	bunny->Render(); // 각 렌더에서 렌더링파이프라인 호출함.
 	groot->Render();
 	sphere->Render();
 	plane->Render();
+
+	
 }
 
 void DeferredRenderingScene::Render()
@@ -56,6 +58,8 @@ void DeferredRenderingScene::Render()
 
 	gBuffer->Render(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 
+
+	// 최종화면 렌더셋팅.
 	vertexBuffer->IASet();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 

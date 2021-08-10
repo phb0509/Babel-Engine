@@ -17,10 +17,9 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 {
 	mMaterial = new Material(L"TerrainSplatting");
+	
 	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
 	mTerrainDiffuseMap = Texture::Add(L"Textures/Landscape/White.png");
-	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
-
 	mLayerNames = { "Layer1", "Layer2", "Layer3", "Layer4" };
 	//mLayerNames = { "Brush" };
 
@@ -29,10 +28,32 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 		mLayers.push_back(Texture::Add(L"Textures/Landscape/defaultImageButton.png"));
 	}
 
-	createMesh();
-	//createCompute();
-	createUVCompute();
+	mDepthVertexShader = Shader::AddVS(L"DepthShader");
+	mDepthPixelShader = Shader::AddPS(L"DepthShader");
+
+	// DepthShader Setting.
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
+	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	
+	mRenderTargets[0] = mDepthRenderTarget;
+	
+	//mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
+	mRenderTargetSRVs[0] = mTerrainDiffuseMap->GetSRV();
+	mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
+
+
+	for (int i = 0; i < 2; i++)
+	{
+		mRenderTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
+		mRenderTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
+		mRenderTextures[i]->mScale = { 200, 200, 200 };
+		mRenderTextures[i]->SetSRV(mRenderTargetSRVs[i]); // 띄울 srv(이미지)
+	}
+	
+
+	createMesh();
+	createCompute();
+	//createUVCompute();
 
 	mBrushBuffer = new BrushBuffer();
 }
@@ -41,7 +62,6 @@ TerrainEditor::~TerrainEditor()
 {
 	delete mMaterial;
 	delete mMesh;
-
 	delete mRayBuffer;
 	delete mComputePickingStructuredBuffer;
 
@@ -49,18 +69,24 @@ TerrainEditor::~TerrainEditor()
 	delete[] mOutput;
 
 	delete mBrushBuffer;
+
+	delete mDepthStencil;
+	delete mDepthRenderTarget;
+
+	for (UIImage* texture : mRenderTextures)
+		delete texture;
 }
 
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-
+	
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
-			//computePicking(&mPickedPosition);
-			computeUVPicking(&mPickedPosition);
+			computePicking(&mPickedPosition);
+			//computeUVPicking(&mPickedPosition);
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}
@@ -88,18 +114,30 @@ void TerrainEditor::Update()
 
 void TerrainEditor::Render()
 {
-	mMesh->IASet();
+	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 
 	mWorldBuffer->SetVSBuffer(0);
-	mBrushBuffer->SetPSBuffer(10);
+	
+	{ // 여기다 DepthShader 관련.
+		CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
+		Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
 
+		//RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
+		mDepthVertexShader->Set();
+		mDepthPixelShader->Set(); 
+
+		DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+	}
+
+	mBrushBuffer->SetPSBuffer(10);
 	//DEVICECONTEXT->PSSetShaderResources(11, mLayers.size(), &mLayerSRVs[0]);
-	mLayers[0]->PSSet(11);
+
+	mLayers[0]->PSSet(11); // 텍스쳐 SRV로 PS에 바인딩.
 	mLayers[1]->PSSet(12);
 	mLayers[2]->PSSet(13);
 	mLayers[3]->PSSet(14);
 
-	mMaterial->Set(); // 버퍼,srv,셰이더 Set.
+	mMaterial->Set(); // 버퍼,srv,TerrainEditor 셰이더 Set.
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
@@ -175,9 +213,18 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 	ImGui::Unindent();
+	ImGui::Unindent();
+	ImGui::Unindent();
 
-	ImGui::Text("position.x : %f   position.y : %f    position.z : %f\n", testPos.x,testPos.y,testPos.z);
+
+	mMouseUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f};
+
+	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseUVPosition.x, mMouseUVPosition.y);
+	ImGui::Text("position.x : %.3f   position.y : %.3f    position.z : %.3f\n", testPos.x,testPos.y,testPos.z);
 	ImGui::End();
+
+	for (UIImage* texture : mRenderTextures)
+		texture->Render();
 }
 
 bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
@@ -190,7 +237,11 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 	mComputeShader->Set(); // 디바이스에 Set..
 
 	mRayBuffer->SetCSBuffer(0);
+	
 
+	//DEVICECONTEXT->CSSetShaderResources
+
+	
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
 	
@@ -228,12 +279,17 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 
 void TerrainEditor::computeUVPicking(OUT Vector3* position)
 {
-	mMouseUVBuffer->data.mouseUV = { 0.5f,0.5f }; // 마우스좌표 uv값.일단은 임의의값.
+	mMouseUVBuffer->data.mouseUV = { mMouseUVPosition.x,mMouseUVPosition.y }; // 마우스좌표 uv값.일단은 임의의값.
+	mMouseUVBuffer->data.invViewBuffer = CAMERA->GetViewBuffer()->GetInvView();
+	mMouseUVBuffer->data.projectionBuffer = Environment::Get()->GetProjection();
+
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
+	DEVICECONTEXT->CSSetShaderResources(1, 1, &Device::Get()->GetDepthSRV());
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
+
 
 
 	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
@@ -243,18 +299,21 @@ void TerrainEditor::computeUVPicking(OUT Vector3* position)
 	mComputePickingStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
 																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
 
+
+	*position = { mOutput[0].u,mOutput[0].v, mOutput[0].distance };
+
+	
+
 	testPos = { mOutput[0].u, mOutput[0].v, mOutput[0].distance };
+	
 
-
-	mOutput;
-	/*char buff[100];
-	sprintf_s(buff, "position.x : %f   position.y : %f    position.z : %f\n", mOutputUVDesc[0].worldPosition.x, mOutputUVDesc[0].worldPosition.y, mOutputUVDesc[0].worldPosition.z);
-	OutputDebugStringA(buff);*/
+	
+	//char buff[100];
+	//sprintf_s(buff, "position.x : %f   position.y : %f    position.z : %f\n", mOutputUVDesc[0].worldPosition.x, mOutputUVDesc[0].worldPosition.y, mOutputUVDesc[0].worldPosition.z);
+	//OutputDebugStringA(buff);
 
 
 }
-
-
 
 void TerrainEditor::createCompute()
 {

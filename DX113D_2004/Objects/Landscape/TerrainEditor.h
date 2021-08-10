@@ -149,5 +149,14 @@ private:
 	vector<string> mTextureAssetFileNames;
 
 	Vector3 testPos;
+	RenderTarget* mRenderTargets[1];
+	ID3D11ShaderResourceView* mRenderTargetSRVs[2];
 	DepthStencil* mDepthStencil;
+	RenderTarget* mDepthRenderTarget;
+	Vector3 mMouseUVPosition;
+
+	VertexShader* mDepthVertexShader;
+	PixelShader* mDepthPixelShader;
+
+	UIImage* mRenderTextures[2];
 };

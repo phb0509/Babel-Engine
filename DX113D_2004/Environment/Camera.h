@@ -26,6 +26,8 @@ class Camera : public Transform
 			Matrix temp = XMMatrixInverse(nullptr, value);
 			data.invMatrix = XMMatrixTranspose(temp);
 		}
+
+		Matrix GetInvView() { return data.invMatrix; }
 	};
 
 public:

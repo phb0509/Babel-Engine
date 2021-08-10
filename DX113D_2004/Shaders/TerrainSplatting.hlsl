@@ -1,10 +1,6 @@
 #include "Header.hlsli"
 
 
-
-
-
-
 cbuffer Brush : register(b10)
 {
     int type;

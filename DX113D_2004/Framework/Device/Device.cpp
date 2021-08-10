@@ -1,7 +1,8 @@
 #include "Framework.h"
 #include "Device.h"
 
-Device::Device()
+Device::Device() :
+	mbIsStencil(false)
 {
 	CreateDeviceAndSwapchain();
 	CreateBackBuffer();
@@ -15,6 +16,8 @@ Device::~Device()
 	swapChain->Release();
 
 	renderTargetView->Release();
+	mDSVtexture->Release();
+	
 }
 
 void Device::CreateDeviceAndSwapchain()
@@ -59,31 +62,44 @@ void Device::CreateBackBuffer()
 	V(device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // ¹é¹öÆÛ¶û ·»´õÅ¸°Ùºä ¿¬°á.
 	backBuffer->Release();	// ÇÊ¿ä¾øÀ¸´Ï ÇØÁ¦.
 
-	ID3D11Texture2D* depthBuffer;
 
-	{
+	// DepthStencilView ¼³Á¤.
+
+	{// DSV Texture
 		D3D11_TEXTURE2D_DESC desc = {};
 		desc.Width = WIN_WIDTH;
 		desc.Height = WIN_HEIGHT;
 		desc.MipLevels = 1;
 		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//
+		//desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-		V(device->CreateTexture2D(&desc, nullptr, &depthBuffer));
+		V(device->CreateTexture2D(&desc, nullptr, &mDSVtexture));
 	}
 
-	{
+	{ // DSV
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-		V(device->CreateDepthStencilView(depthBuffer, &desc, &depthStencilView));
-		depthBuffer->Release();
+		V(device->CreateDepthStencilView(mDSVtexture, &desc, &depthStencilView));
+		mDSVtexture->Release();
 	}
+
+	//{//SRV
+	//	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+	//	desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	//	//desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//	desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//	desc.Texture2D.MipLevels = 1;
+	//	//V(device->CreateShaderResourceView(mDSVtexture, &desc, &mDSVsrv));
+	//	device->CreateShaderResourceView(mDSVtexture, &desc, &mDSVsrv);
+
+	//}
 }
 
 void Device::SetRenderTarget()
@@ -95,6 +111,7 @@ void Device::Clear(Float4 color)
 {
 	deviceContext->ClearRenderTargetView(renderTargetView, (float*)&color);
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
 }
 
 void Device::Present()

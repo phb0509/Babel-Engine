@@ -79,7 +79,9 @@ float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구
     position.z = linearDepth;
     position.w = 1.0f;
     
-    return mul(position, invView).xyz;
+    // 뷰공간 좌표로 변환완료.
+    
+    return mul(position, invView).xyz; // 뷰행렬 역행렬 곱해줘서 월드값 도출.
 }
 
 float4 PS(PixelInput input) : SV_Target

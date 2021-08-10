@@ -125,6 +125,8 @@ public:
 	struct Data
 	{
 		Float2 mouseUV;
+		Matrix projectionBuffer;
+		Matrix invViewBuffer;
 		float padding1;
 		float padding2;
 	}data;

@@ -28,32 +28,26 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 		mLayers.push_back(Texture::Add(L"Textures/Landscape/defaultImageButton.png"));
 	}
 
-	mDepthVertexShader = Shader::AddVS(L"DepthShader");
-	mDepthPixelShader = Shader::AddPS(L"DepthShader");
+	//mDepthVertexShader = Shader::AddVS(L"DepthShader");
+	//mDepthPixelShader = Shader::AddPS(L"DepthShader");
 
 	// DepthShader Setting.
-	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
+	mDepthMaterial = new Material(L"DepthShader");
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, false); // 깊이값
 	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
-	
+
 	mRenderTargets[0] = mDepthRenderTarget;
-	
+
 	//mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
-	mRenderTargetSRVs[0] = mTerrainDiffuseMap->GetSRV();
+	mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV();
 	mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
 
-
-	for (int i = 0; i < 2; i++)
-	{
-		mRenderTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
-		mRenderTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
-		mRenderTextures[i]->mScale = { 200, 200, 200 };
-		mRenderTextures[i]->SetSRV(mRenderTargetSRVs[i]); // 띄울 srv(이미지)
-	}
-	
+	mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
 
 	createMesh();
 	createCompute();
 	//createUVCompute();
+	//createTestCompute();
 
 	mBrushBuffer = new BrushBuffer();
 }
@@ -80,13 +74,16 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	
+	//computeTestPicking();
+	//TestUpdate
+
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
 			computePicking(&mPickedPosition);
 			//computeUVPicking(&mPickedPosition);
+			//computeTestPicking();
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}
@@ -112,26 +109,32 @@ void TerrainEditor::Update()
 	UpdateWorld();
 }
 
+void TerrainEditor::PreRender()
+{
+	//CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
+	//Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
+
+	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
+	mWorldBuffer->SetVSBuffer(0);
+
+	// 여기다 DepthShader 관련.
+
+	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
+	mDepthMaterial->Set();
+
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+}
+
 void TerrainEditor::Render()
 {
 	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 
 	mWorldBuffer->SetVSBuffer(0);
-	
-	{ // 여기다 DepthShader 관련.
-		CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
-		Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
-
-		//RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
-		mDepthVertexShader->Set();
-		mDepthPixelShader->Set(); 
-
-		DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
-	}
-
-	mBrushBuffer->SetPSBuffer(10);
 	//DEVICECONTEXT->PSSetShaderResources(11, mLayers.size(), &mLayerSRVs[0]);
 
+	mBrushBuffer->SetPSBuffer(10);
+
+	//mMaterial->SetDiffuseMap(mTempTexture);
 	mLayers[0]->PSSet(11); // 텍스쳐 SRV로 PS에 바인딩.
 	mLayers[1]->PSSet(12);
 	mLayers[2]->PSSet(13);
@@ -154,7 +157,7 @@ void TerrainEditor::PostRender()
 	ImGui::Spacing();
 
 	ImGui::RadioButton("Circle", &mBrushBuffer->data.type, 0); ImGui::SameLine();
-	ImGui::RadioButton("Recr", &mBrushBuffer->data.type, 1);
+	ImGui::RadioButton("Rect", &mBrushBuffer->data.type, 1);
 
 	ImGui::RadioButton("Raise", &mbIsPainting, 0); ImGui::SameLine();
 	ImGui::RadioButton("Brush", &mbIsPainting, 1);
@@ -163,15 +166,12 @@ void TerrainEditor::PostRender()
 	ImGui::ColorEdit3("Color", (float*)&mBrushBuffer->data.color);
 
 	ImGui::Spacing();
+
 	ImGui::Separator();
 
-	//ImGui::Checkbox("Raise", &mbIsRaise);
-	//ImGui::Checkbox("Painting", &mbIsPainting);
-
 	ImGui::Spacing();
 	ImGui::Spacing();
 	ImGui::Spacing();
-
 
 	addTexture(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
 	showAddedTextures(); // 추가한 텍스쳐들 렌더.
@@ -216,20 +216,16 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 
-
-	mMouseUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f};
+	mMouseUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
 
 	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseUVPosition.x, mMouseUVPosition.y);
-	ImGui::Text("position.x : %.3f   position.y : %.3f    position.z : %.3f\n", testPos.x,testPos.y,testPos.z);
+	ImGui::Text("position.x : %.3f   position.y : %.3f    position.z : %.3f\n", testPos.x, testPos.y, testPos.z);
 	ImGui::End();
-
-	for (UIImage* texture : mRenderTextures)
-		texture->Render();
 }
 
 bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
 {
-	Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = WORLDCAMERA->ScreenPointToRay(MOUSEPOS);
 
 	mRayBuffer->data.position = ray.position; // 카메라 포지션(원점)
 	mRayBuffer->data.direction = ray.direction; // 원점에서 마우스피킹한곳까지(near평면) 방향벡터.
@@ -237,14 +233,10 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 	mComputeShader->Set(); // 디바이스에 Set..
 
 	mRayBuffer->SetCSBuffer(0);
-	
 
-	//DEVICECONTEXT->CSSetShaderResources
-
-	
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
-	
+
 	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
 
 	DEVICECONTEXT->Dispatch(x, 1, 1);
@@ -280,16 +272,20 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 void TerrainEditor::computeUVPicking(OUT Vector3* position)
 {
 	mMouseUVBuffer->data.mouseUV = { mMouseUVPosition.x,mMouseUVPosition.y }; // 마우스좌표 uv값.일단은 임의의값.
-	mMouseUVBuffer->data.invViewBuffer = CAMERA->GetViewBuffer()->GetInvView();
+	mMouseUVBuffer->data.invViewBuffer = TARGETCAMERA->GetViewBuffer()->GetInvView();
 	mMouseUVBuffer->data.projectionBuffer = Environment::Get()->GetProjection();
 
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
-	DEVICECONTEXT->CSSetShaderResources(1, 1, &Device::Get()->GetDepthSRV());
+	//mRenderTargetSRVs[1]
+	/*DEVICECONTEXT->CSSetShaderResources(1, 1, &mRenderTargetSRVs[1]);
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
-	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);*/
 
+	//DEVICECONTEXT->CSSetShaderResources(0,1,)
+
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mTexture2DBuffer->GetSRV());
 
 
 	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
@@ -302,17 +298,23 @@ void TerrainEditor::computeUVPicking(OUT Vector3* position)
 
 	*position = { mOutput[0].u,mOutput[0].v, mOutput[0].distance };
 
-	
-
 	testPos = { mOutput[0].u, mOutput[0].v, mOutput[0].distance };
+}
+
+void TerrainEditor::computeTestPicking()
+{
+	mComputeShader->Set();
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mTexture2DBuffer->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mTexture2DBuffer->GetUAV(), nullptr);
+
+	UINT width = mTexture2DBuffer->GetWidth();
+	UINT height = mTexture2DBuffer->GetHeight();
+	UINT page = mTexture2DBuffer->GetPage();
 	
+	UINT x = ((float)width / 32.0f) < 1.0f ? 1.0f : ((float)width / 32.0f);
+	UINT y = ((float)height / 32.0f) < 1.0f ? 1.0f : ((float)height / 32.0f);
 
-	
-	//char buff[100];
-	//sprintf_s(buff, "position.x : %f   position.y : %f    position.z : %f\n", mOutputUVDesc[0].worldPosition.x, mOutputUVDesc[0].worldPosition.y, mOutputUVDesc[0].worldPosition.z);
-	//OutputDebugStringA(buff);
-
-
+	DEVICECONTEXT->Dispatch((UINT)ceilf(x), (UINT)ceilf(y), page);
 }
 
 void TerrainEditor::createCompute()
@@ -336,23 +338,58 @@ void TerrainEditor::createCompute()
 
 void TerrainEditor::createUVCompute()
 {
-	mComputeShader = Shader::AddCS(L"UVPicking");
+	mComputeShader = Shader::AddCS(L"PixelPicking");
+	mInputUVDesc = new InputUVDesc[1];
 
-	if (mComputePickingStructuredBuffer != nullptr)
-		delete mComputePickingStructuredBuffer;
+	/*D3D11_TEXTURE2D_DESC srcDesc;
+	mRenderTargetSRVs[1]->GetDesc(&srcDesc);
 
-	mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
-		sizeof(OutputDesc), mPolygonCount);
+	UINT width = srcDesc.Width;
+	UINT height = srcDesc.Height;
+	UINT page = srcDesc.ArraySize;
+	UINT format = srcDesc.Format;*/
 
-	if (mMouseUVBuffer == nullptr)
-		mMouseUVBuffer = new MouseUVBuffer();
+	//if (mComputePickingStructuredBuffer != nullptr)
+	//	delete mComputePickingStructuredBuffer;
 
-	if (mOutput != nullptr)
-		delete[] mOutput;
+	//mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
+	//	sizeof(OutputDesc), mPolygonCount);
 
-	mOutput = new OutputDesc[mPolygonCount];
+	//if (mMouseUVBuffer == nullptr)
+	//	mMouseUVBuffer = new MouseUVBuffer();
+
+	//if (mOutput != nullptr)
+	//	delete[] mOutput;
+
+	//mOutput = new OutputDesc[mPolygonCount];
 }
 
+void TerrainEditor::createTestCompute()
+{
+	Texture* t = Texture::Add(L"Textures/Landscape/TestBlueImage.png");
+
+	mComputeShader = Shader::AddCS(L"TestCS");
+	mTexture2DBuffer = new Texture2DBuffer(t->GetTexture());
+	mComputeShader->Set();
+
+	/*DEVICECONTEXT->CSSetShaderResources(0,1,&mTexture2DBuffer->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mTexture2DBuffer->GetUAV(), nullptr);
+
+	UINT width = mTexture2DBuffer->GetWidth();
+	UINT height = mTexture2DBuffer->GetHeight();
+	UINT page = mTexture2DBuffer->GetPage();
+
+	float x = ((float)width / 32.0f) < 1.0f ? 1.0f : ((float)width / 32.0f);
+	float y = ((float)height / 32.0f) < 1.0f ? 1.0f : ((float)height / 32.0f);
+	
+
+	DEVICECONTEXT->Dispatch((UINT)ceilf(x), (UINT)ceilf(y), page);*/
+
+	//Texture* tTexture = Texture::AddUsingSRV(mTexture2DBuffer->OutputSRV());
+
+	//mTempTexture = tTexture;
+	
+}
 
 
 void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
@@ -575,7 +612,7 @@ void TerrainEditor::changeTextureMap(wstring textureFileName)
 
 void TerrainEditor::addTexture()
 {
-	
+
 	if (ImGui::Button("Add Texture"))
 	{
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
@@ -598,13 +635,8 @@ void TerrainEditor::addTexture()
 
 		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 	}
-	
+
 }
-
-
-
-
-
 
 void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 {
@@ -684,8 +716,8 @@ void TerrainEditor::createMesh()
 
 	if (mHeightMap != nullptr)
 	{
-		mWidth = mHeightMap->Width();
-		mHeight = mHeightMap->Height();
+		mWidth = mHeightMap->GetWidth();
+		mHeight = mHeightMap->GetHeight();
 		pixels = mHeightMap->ReadPixels();
 	}
 
@@ -776,8 +808,10 @@ void TerrainEditor::showAddedTextures()
 
 	ImGui::Separator();
 	ImGui::Spacing();
+
 	// ImageButton 설정값.
 	int frame_padding = 2;
+	ImVec2 bigSize = ImVec2(128.0f, 128.0f);
 	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
 	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
@@ -797,7 +831,6 @@ void TerrainEditor::showAddedTextures()
 				int payload_n = *(const int*)payload->Data;
 				mTerrainDiffuseMap = mAddedTextures[payload_n].texture;
 				mMaterial->SetDiffuseMap(mTerrainDiffuseMap);
-
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -805,7 +838,16 @@ void TerrainEditor::showAddedTextures()
 
 	ImGui::Spacing();
 	ImGui::Spacing();
+	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
+	ImGui::ImageButton(mRenderTargetSRVs[0], bigSize, uv0, uv1, frame_padding, bg_col, tint_col); // 깊을수록 어둡게... 
+	//ImGui::ImageButton(mDepthStencil->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
+	//ImGui::ImageButton(mTexture2DBuffer->OutputSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
+	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 
+	
+
+	
+	//mRenderTargetSRVs
 	{
 		{ // LayerButtons 
 			for (int i = 0; i < mLayerNames.size(); i++)
@@ -857,6 +899,8 @@ void TerrainEditor::showAddedTextures()
 			ImGui::Indent();
 			ImGui::Indent();
 		}
+
+
 
 	}
 }

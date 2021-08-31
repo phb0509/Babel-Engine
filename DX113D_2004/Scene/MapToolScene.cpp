@@ -3,9 +3,10 @@
 
 MapToolScene::MapToolScene()
 {
+	Environment::Get()->SetIsEnabledTargetCamera(false);
 	terrainEditor = new TerrainEditor();
-	skyBox = new SkyBox();
-	cube = new Cube();
+	//skyBox = new SkyBox();
+	//cube = new Cube();
 
 	mRasterizerState = new RasterizerState();
 	mRasterizerState->FillMode(D3D11_FILL_WIREFRAME);
@@ -14,9 +15,9 @@ MapToolScene::MapToolScene()
 MapToolScene::~MapToolScene()
 {
 	delete terrainEditor;
-	delete skyBox;
+	//delete skyBox;
 	delete mRasterizerState;
-	delete cube;
+	//delete cube;
 }
 
 void MapToolScene::Update()
@@ -29,11 +30,12 @@ void MapToolScene::Update()
 
 void MapToolScene::PreRender()
 {
+	terrainEditor->PreRender();
 }
 
 void MapToolScene::Render()
 {
-	skyBox->Render();
+	//skyBox->Render();
 	//mRasterizerState->SetState();
 	terrainEditor->Render();
 

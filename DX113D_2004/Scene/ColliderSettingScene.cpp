@@ -9,7 +9,7 @@ ColliderSettingScene::ColliderSettingScene() : currentClipIndex(0), currentModel
 
 	// 셋팅할 모델들
 	modelList = { "Player", "Mutant" };
-	CAMERA->moveSpeed = 70.0f;
+	TARGETCAMERA->moveSpeed = 70.0f;
 
 	for (int i = 0; i < modelList.size(); i++)
 	{
@@ -18,8 +18,8 @@ ColliderSettingScene::ColliderSettingScene() : currentClipIndex(0), currentModel
 	}
 
 	// 카메라 위치설정.
-	CAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
-	CAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
+	TARGETCAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
+	TARGETCAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
 
 
 	// 모델들에 기본적으로 TPose 셋팅.

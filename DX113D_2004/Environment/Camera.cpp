@@ -13,7 +13,7 @@ Camera::Camera()
 	rotY(0.0f),
 	rotX(0.0f),
 	target(nullptr),
-	wheelSpeed(15.0f),
+	wheelSpeed(5.0f),
 	mbIsOnFrustumCollider(false),
 	mbIsMouseInputing(true),
 	mbHasInitalized(false),
@@ -38,7 +38,6 @@ void Camera::Update()
 		mbHasInitalized = true;
 	}
 
-
 	if (target != nullptr)
 	{
 		if (mbIsMouseInputing) // 타겟카메라시점일 때
@@ -47,7 +46,7 @@ void Camera::Update()
 		}
 		else
 		{
-			targetMoveInWorldCamera(); // 월드카메라 시점일때 타겟카메라의 이동
+			targetMoveInWorldCamera(); // 월드카메라 시점일때 타겟카메라의 이동, 프러스텀컬링 확인용.
 		}
 	
 		mFrustum->Update();

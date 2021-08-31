@@ -2,6 +2,16 @@
 
 class TestScene : public Scene
 {
+	struct InputDesc
+	{
+
+	};
+
+	struct OutputDesc
+	{
+		
+	};
+
 public:
 	TestScene();
 	~TestScene();
@@ -14,7 +24,10 @@ public:
 
 
 private:
-	Terrain* mTerrain;
-	TerrainLOD* mTerrainLOD;
-	RasterizerState* rsState;
+	Texture2DBuffer* mTexture2DBuffer;
+	ComputeShader* mComputeShader;
+	Texture* mTempTexture;
+	TextureClass* mTextureClass;
+	ComputeStructuredBuffer* mStructuredBuffer;
+	OutputDesc* mOutput;
 };

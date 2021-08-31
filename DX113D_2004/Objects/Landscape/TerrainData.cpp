@@ -16,8 +16,8 @@ TerrainData::~TerrainData()
 
 void TerrainData::CreateData()
 {
-	width = heightMap->Width() - 1;
-	height = heightMap->Height() - 1;
+	width = heightMap->GetWidth() - 1;
+	height = heightMap->GetHeight() - 1;
 
 	vector<Float4> pixels = heightMap->ReadPixels();
 

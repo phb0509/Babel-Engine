@@ -68,7 +68,7 @@ void Terrain::Render()
 
 bool Terrain::Picking(OUT Vector3* position)
 {
-	Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
 
 	for (UINT z = 0; z < height; z++) // 0~255
 	{
@@ -109,7 +109,7 @@ bool Terrain::Picking(OUT Vector3* position)
 
 bool Terrain::ComputePicking(OUT Vector3* position)
 {	
-	Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
 
 	rayBuffer->data.position = ray.position;
 	rayBuffer->data.direction = ray.direction;
@@ -194,8 +194,8 @@ float Terrain::GetHeight(Vector3 position)
 
 void Terrain::CreateMesh()
 {
-	width = heightMap->Width() - 1;
-	height = heightMap->Height() - 1;
+	width = heightMap->GetWidth() - 1;
+	height = heightMap->GetHeight() - 1;
 
 	vector<Float4> pixels = heightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
 

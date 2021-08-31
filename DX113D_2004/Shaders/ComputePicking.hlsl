@@ -22,7 +22,7 @@ struct OutputDesc
     float v;
     float distance;
 };
-RWStructuredBuffer<OutputDesc> output;
+RWStructuredBuffer<OutputDesc> output; // UAV.
 
 
 void Intersection(uint index)
@@ -56,10 +56,12 @@ void Intersection(uint index)
     output[index].picked = b ? 1 : 0;
 }
 
-[numthreads(32, 32, 1)]
+[numthreads(32, 32, 1)] // 하나의 스레드그룹에서 실행할 스레드의 개수.
 void CS(uint3 groupID : SV_GroupID, uint groupIndex : SV_GroupIndex)
+//void CS(uint3 index : SV_DispatchThreadID)
 {
     uint index = groupID.x * 32 * 32 + groupIndex; // 정확힌 모르겠지만 이렇게하면 인덱스에 0부터 대입해서 쭉~ +1씩
+    // 
     
     if(outputSize > index) // 폴리곤개수가 인덱스보다 더 크면? => 폴리곤개수만큼만 계산.
         Intersection(index);

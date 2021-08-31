@@ -27,8 +27,8 @@ Reflection::~Reflection()
 
 void Reflection::Update()
 {	
-	camera->mRotation = CAMERA->mRotation;
-	camera->mPosition = CAMERA->mPosition;
+	camera->mRotation = TARGETCAMERA->mRotation;
+	camera->mPosition = TARGETCAMERA->mPosition;
 
 	camera->mRotation.x *= -1.0f;
 	camera->mPosition.y = transform->mPosition.y * 2.0f - camera->mPosition.y;

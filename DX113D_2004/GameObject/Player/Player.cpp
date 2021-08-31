@@ -104,8 +104,8 @@ void Player::move()
 	{
 		rotate();
 
-		mPosition.z += CAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
-		mPosition.x += CAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += TARGETCAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += TARGETCAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -114,8 +114,8 @@ void Player::move()
 	{
 
 		rotate();
-		mPosition.z += CAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
-		mPosition.x += CAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += TARGETCAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += TARGETCAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -170,12 +170,12 @@ void Player::worldCameraMove()
 
 void Player::rotate()
 {
-	Vector3 temp = Vector3::Cross(CAMERA->cameraForward, -1 * Forward());
+	Vector3 temp = Vector3::Cross(TARGETCAMERA->cameraForward, -1 * Forward());
 
 	if (temp.y < 0.0f) // 플레이어 포워드벡터가 카메라포워드벡터의 왼쪽에 있다면. // 즉 오른쪽으로 회전해야한다면
 	{
-		if (CompareFloat(CAMERA->cameraForward.x, -Forward().x) &&
-			CompareFloat(CAMERA->cameraForward.z, -Forward().z))
+		if (CompareFloat(TARGETCAMERA->cameraForward.x, -Forward().x) &&
+			CompareFloat(TARGETCAMERA->cameraForward.z, -Forward().z))
 		{	}
 		else
 		{
@@ -185,8 +185,8 @@ void Player::rotate()
 
 	else if(temp.y >= 0.0f)// 왼쪽으로 회전해야 한다면.
 	{
-		if (CompareFloat(CAMERA->cameraForward.x, -Forward().x) &&
-			CompareFloat(CAMERA->cameraForward.z, -Forward().z))
+		if (CompareFloat(TARGETCAMERA->cameraForward.x, -Forward().x) &&
+			CompareFloat(TARGETCAMERA->cameraForward.z, -Forward().z))
 		{	}
 		else
 		{

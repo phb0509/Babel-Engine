@@ -1,6 +1,6 @@
 #include "Header.hlsli"
 
-// ±¼Àı. ¹İ»ç¾Æ´Ô!
+// ±¼ÀıÀÓ. ¹İ»ç¾Æ´Ô!
 
 struct PixelInput
 {

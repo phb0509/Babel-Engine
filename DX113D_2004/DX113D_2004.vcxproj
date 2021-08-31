@@ -184,8 +184,10 @@
     <ClInclude Include="Environment\Reflection.h" />
     <ClInclude Include="Environment\Refraction.h" />
     <ClInclude Include="Environment\Shadow.h" />
+    <ClInclude Include="Framework\Buffer\Texture2DBuffer.h" />
     <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
+    <ClInclude Include="Framework\Render\TextureClass.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\AttackState.h" />
@@ -305,6 +307,7 @@
     <ClCompile Include="Framework\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\ComputeStructuredBuffer.cpp" />
+    <ClCompile Include="Framework\Buffer\Texture2DBuffer.cpp" />
     <ClCompile Include="Framework\Collider\BoxCollider.cpp" />
     <ClCompile Include="Framework\Collider\CapsuleCollider.cpp" />
     <ClCompile Include="Framework\Collider\Collider.cpp" />
@@ -329,6 +332,7 @@
     <ClCompile Include="Framework\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Framework\Device\Device.cpp" />
     <ClCompile Include="Framework\Render\Texture.cpp" />
+    <ClCompile Include="Framework\Render\TextureClass.cpp" />
     <ClCompile Include="Framework\Shader\ComputeShader.cpp" />
     <ClCompile Include="Framework\Shader\DomainShader.cpp" />
     <ClCompile Include="Framework\Shader\GeometryShader.cpp" />
@@ -615,6 +619,17 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Shaders\TestCS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CS</EntryPointName>
+    </FxCompile>
     <FxCompile Include="Shaders\Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -640,7 +655,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="Shaders\UVPicking.hlsl">
+    <FxCompile Include="Shaders\PixelPicking.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>

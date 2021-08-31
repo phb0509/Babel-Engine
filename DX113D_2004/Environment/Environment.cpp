@@ -1,8 +1,10 @@
 #include "Framework.h"
 
 Environment::Environment() :
-	mbIsTargetCamera(true),
-	target(nullptr)
+	mbIsTargetCamera(false),
+	target(nullptr),
+	mbIsEnabledTargetCamera(true),
+	mbIsEnabledWorldCamera(true)
 {
 	createPerspective();
 
@@ -16,8 +18,9 @@ Environment::Environment() :
 	lightBuffer = new LightBuffer();
 	lightBuffer->Add();
 
-	mSun = new Cube();
-	mSun->mScale = { 5.0f,5.0f,5.0f };
+	
+	/*mSun = new Cube();
+	mSun->mScale = { 5.0f,5.0f,5.0f };*/
 }
 
 Environment::~Environment()
@@ -25,7 +28,7 @@ Environment::~Environment()
 	delete projectionBuffer;
 	delete lightBuffer;
 	delete samplerState;
-	delete mSun;
+	//delete mSun;
 }
 
 void Environment::PostRender()
@@ -33,10 +36,10 @@ void Environment::PostRender()
 	//mSun->Update();
 	//mSun->Render();
 
-	if (lightBuffer->data.lightCount >= 1)
+	/*if (lightBuffer->data.lightCount >= 1)
 	{
 		mSun->mPosition = lightBuffer->data.lights[0].position;
-	}
+	}*/
 	
 	ImGui::Text("SelectCamera");
 
@@ -150,6 +153,9 @@ void Environment::createPerspective()
 {
 	projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
 		WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f); // 시야각( pie/4니까 90도?,
+
+	//projection = XMMatrixPerspectiveFovLH(XM_PIDIV4,
+	//	WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); // 시야각( pie/4니까 90도?,
 
 	projectionBuffer = new MatrixBuffer();
 

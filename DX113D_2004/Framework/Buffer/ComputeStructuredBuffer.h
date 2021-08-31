@@ -22,6 +22,7 @@ private:
 public:
 	ComputeStructuredBuffer(void* inputData, UINT inputStride, UINT inputCount,
 		UINT outputStride = 0, UINT outputCount = 0);
+	ComputeStructuredBuffer(UINT outputStride = 0, UINT outputCount = 0);
 	~ComputeStructuredBuffer();
 
 	void Copy(void* data, UINT size);

@@ -48,19 +48,21 @@ void DeferredRenderingScene::PreRender()
 	sphere->Render();
 	plane->Render();
 
-	
+	// Device::Clear() // 디바이스꺼 RTV,DSV 클리어 하고 렌더로 넘어감.
 }
 
 void DeferredRenderingScene::Render()
 {
-	CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
+	// Device::SetRenderTarget
+
+	TARGETCAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
 	Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
 
 	gBuffer->Render(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 
 
 	// 최종화면 렌더셋팅.
-	vertexBuffer->IASet();
+	vertexBuffer->IASet(); // 디폴트 0번.
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	material->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
@@ -75,8 +77,8 @@ void DeferredRenderingScene::PostRender()
 
 void DeferredRenderingScene::CreateModels()
 {
-	CAMERA->mPosition = { 0, 10, -20 };
-	CAMERA->mRotation.x = 0.4f;
+	TARGETCAMERA->mPosition = { 0, 10, -20 };
+	TARGETCAMERA->mRotation.x = 0.4f;
 
 	bunny = new ModelObject("StanfordBunny/StanfordBunny", Collider::NONE);
 	bunny->mScale = { 0.01f, 0.01f, 0.01f };

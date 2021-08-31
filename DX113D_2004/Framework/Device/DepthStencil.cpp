@@ -13,7 +13,7 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil)
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-
+		
 		V(DEVICE->CreateTexture2D(&desc, nullptr, &dsvTexture));
 	}
 
@@ -46,4 +46,5 @@ DepthStencil::~DepthStencil()
 void DepthStencil::Clear()
 {
 	DEVICECONTEXT->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
 }

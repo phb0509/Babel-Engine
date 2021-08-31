@@ -351,6 +351,12 @@
     <ClInclude Include="Scene\DeferredRenderingScene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\Buffer\Texture2DBuffer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Render\TextureClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX113D_2004.cpp">
@@ -662,6 +668,12 @@
     <ClCompile Include="Scene\DeferredRenderingScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Buffer\Texture2DBuffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Render\TextureClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX113D_2004.rc">
@@ -714,8 +726,9 @@
     <FxCompile Include="Shaders\GBuffer.hlsl" />
     <FxCompile Include="Shaders\DeferredLighting.hlsl" />
     <FxCompile Include="Shaders\Effect.hlsl" />
-    <FxCompile Include="Shaders\UVPicking.hlsl" />
+    <FxCompile Include="Shaders\PixelPicking.hlsl" />
     <FxCompile Include="Shaders\DepthShader.hlsl" />
+    <FxCompile Include="Shaders\TestCS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

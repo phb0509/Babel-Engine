@@ -16,7 +16,7 @@ Device::~Device()
 	swapChain->Release();
 
 	renderTargetView->Release();
-	mDSVtexture->Release();
+	//mDSVtexture->Release();
 	
 }
 

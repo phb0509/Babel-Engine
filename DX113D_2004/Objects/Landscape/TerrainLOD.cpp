@@ -54,8 +54,8 @@ void TerrainLOD::Render()
     mWorldBuffer->SetHSBuffer(0);
     mWorldBuffer->SetDSBuffer(0);
 
-    CAMERA->GetViewBuffer()->SetHSBuffer(1);
-    CAMERA->GetViewBuffer()->SetDSBuffer(1);
+    TARGETCAMERA->GetViewBuffer()->SetHSBuffer(1);
+    TARGETCAMERA->GetViewBuffer()->SetDSBuffer(1);
 
     Environment::Get()->GetProjectionBuffer()->SetDSBuffer(2);
 
@@ -95,8 +95,8 @@ void TerrainLOD::ReadHeightData()
 {
     heightTexture = Texture::Add(heightFile);
 
-    width = heightTexture->Width();
-    height = heightTexture->Height();
+    width = heightTexture->GetWidth();
+    height = heightTexture->GetHeight();
 }
 
 void TerrainLOD::CreatePatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주기.

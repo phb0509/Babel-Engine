@@ -42,7 +42,8 @@
 
 #define DELTA Timer::Get()->GetElapsedTime()
 
-#define CAMERA Environment::Get()->GetTargetCamera()
+#define TARGETCAMERA Environment::Get()->GetTargetCamera()
+#define WORLDCAMERA Environment::Get()->GetWorldCamera()
 #define LIGHT Environment::Get()->GetLight()
 
 #define GM GameManager::Get()
@@ -149,12 +150,14 @@ using namespace Utility;
 #include "Framework/Buffer/IndexBuffer.h"
 #include "Framework/Buffer/ConstBuffer.h"
 #include "Framework/Buffer/ComputeStructuredBuffer.h"
+#include "Framework/Buffer/Texture2DBuffer.h"
 #include "Framework/Buffer/VertexLayouts.h"
 #include "Framework/Buffer/GlobalBuffers.h"
 
 #include "Framework/Render/Mesh.h"
 #include "Framework/Render/Texture.h"
 #include "Framework/Render/Material.h"
+#include "Framework/Render/TextureClass.h"
 
 #include "Framework/Math/Vector3.h"
 #include "Framework/Math/Transform.h"

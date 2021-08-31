@@ -18,7 +18,7 @@ void AStar::Update()
 {
 	if (KEY_DOWN(VK_LBUTTON))
 	{
-		Ray ray = CAMERA->ScreenPointToRay(MOUSEPOS);
+		Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
 
 		for (Node* node : nodes)
 		{

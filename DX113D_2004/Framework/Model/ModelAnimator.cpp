@@ -13,8 +13,15 @@ ModelAnimator::~ModelAnimator()
 	delete[] clipTransform;
 	delete[] nodeTransform;
 
-	texture->Release();
-	srv->Release();
+	if (texture != nullptr)
+	{
+		texture->Release();
+	}
+	if (srv != nullptr)
+	{
+		srv->Release();
+	}
+	
 
 	for (ModelClip* clip : clips)
 		delete clip;

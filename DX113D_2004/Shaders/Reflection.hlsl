@@ -1,6 +1,6 @@
 #include "Header.hlsli"
 
-// ¹İ»ç. ±¼Àı¾Æ´Ô!
+// ¹İ»çÀÓ. ±¼Àı¾Æ´Ô!
 
 cbuffer ReflectionBuffer : register(b10)
 {

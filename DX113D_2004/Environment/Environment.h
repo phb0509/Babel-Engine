@@ -25,6 +25,9 @@ public:
 	Vector3 GetLightPosition();
 	bool GetIsTargetCamera() { return mbIsTargetCamera; }
 
+	bool GetIsEnabledTargetCamera() { return mbIsEnabledTargetCamera; }
+	void SetIsEnabledTargetCamera(bool value) { mbIsEnabledTargetCamera = value; }
+
 private:
 	Environment();
 	~Environment();
@@ -49,4 +52,7 @@ private:
 	Transform* target;
 
 	Cube* mSun;
+
+	bool mbIsEnabledTargetCamera;
+	bool mbIsEnabledWorldCamera;
 };

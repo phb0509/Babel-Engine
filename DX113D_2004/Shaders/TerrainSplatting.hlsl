@@ -15,6 +15,7 @@ struct PixelInput
     float2 uv : UV;
     float3 normal : Normal;
     float3 tangent : Tangent;
+    
     float3 binormal : Binormal;
     float3 viewDir : ViewDir;
     float3 worldPos : Position;

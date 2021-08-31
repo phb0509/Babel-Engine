@@ -21,7 +21,7 @@ Program::Program()
 	//SceneManager::Get()->Add("start", new MainScene());
 	SceneManager::Get()->Add("start", new MapToolScene());
 	//SceneManager::Get()->Add("start", new ColliderSettingScene());
-//	SceneManager::Get()->Add("start", new TestScene());
+	//SceneManager::Get()->Add("start", new TestScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
@@ -55,7 +55,11 @@ void Program::Update()
 	//}
 
 
-	Environment::Get()->GetTargetCamera()->Update();
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+	
 	Environment::Get()->GetWorldCamera()->Update();
 	
 	Control::Get()->SetWheel(0.0f);
@@ -70,7 +74,12 @@ void Program::PreRender()
 void Program::Render()
 {
 	Device::Get()->SetRenderTarget();
-	Environment::Get()->GetTargetCamera()->Render();
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+	
 	Environment::Get()->GetWorldCamera()->Render();
 	Environment::Get()->Set();
 

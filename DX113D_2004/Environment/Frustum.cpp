@@ -30,7 +30,7 @@ void Frustum::Update()
 	// 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
 	// 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
 
-	mView = CAMERA->GetView(); // 타겟카메라뷰
+	mView = TARGETCAMERA->GetView(); // 타겟카메라뷰
 
 	if (!mbHasInitialized)
 	{

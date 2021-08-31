@@ -4,13 +4,13 @@
 TerrainEditorScene::TerrainEditorScene()
 {
 	terrainEditor = new TerrainEditor();
-	skyBox = new SkyBox();
+	//skyBox = new SkyBox();
 }
 
 TerrainEditorScene::~TerrainEditorScene()
 {
 	delete terrainEditor;
-	delete skyBox;
+	//delete skyBox;
 }
 
 void TerrainEditorScene::Update()
@@ -24,7 +24,7 @@ void TerrainEditorScene::PreRender()
 
 void TerrainEditorScene::Render()
 {
-	skyBox->Render();
+	//skyBox->Render();
 	terrainEditor->Render();	
 }
 

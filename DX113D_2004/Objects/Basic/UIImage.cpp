@@ -36,9 +36,10 @@ void UIImage::Update()
 
 void UIImage::Render()
 {
+	
 	mesh->IASet();
 
-	SetWorldBuffer();
+	SetWorldBuffer(); // 0¹ø¿¡
 	viewBuffer->SetVSBuffer(1);
 	projectionBuffer->SetVSBuffer(2);
 

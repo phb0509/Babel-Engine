@@ -38,9 +38,10 @@ void VertexBuffer::IASet(UINT slot)
 	DEVICECONTEXT->IASetVertexBuffers(slot, 1, &buffer, &stride, &offset);
 }
 
-void VertexBuffer::Update(void* data, UINT count) // vertices.data, vertices.size
+void VertexBuffer::Update(void* data, UINT count) // vertices.data, vertices.size(원소개수)
 {
-	DEVICECONTEXT->UpdateSubresource(buffer, 0, nullptr, data, stride, count); 
+	DEVICECONTEXT->UpdateSubresource(buffer, 0, nullptr, data, stride, count);  // 벡터주소,원소크기,원소개수 
+	//deviceContext->UpdateSubresource(m_texture, 0, NULL, m_targaData, rowPitch, 0);
 }
 
 void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, dataSize

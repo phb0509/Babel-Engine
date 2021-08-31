@@ -61,6 +61,7 @@ public:
 	~TerrainEditor();
 
 	void Update();
+	void PreRender();
 	void Render();
 	void PostRender();
 		
@@ -72,9 +73,12 @@ private:
 	void createTangent();
 	void createCompute();
 	void createUVCompute();
+	void createTestCompute();
+	
 
 	bool computePicking(OUT Vector3* position);
 	void computeUVPicking(OUT Vector3* position);
+	void computeTestPicking();
 
 	void adjustY(Vector3 position);
 	void paintBrush(Vector3 position);
@@ -137,7 +141,6 @@ private:
 	wstring mCurrentHeightMapFileName;
 	wstring mCurrentTextureMapFileName;
 
-	Texture* mTempTexture;
 	vector<AddedTextureInfo> mAddedTextures;
 	int mCurrentTextureIndex;
 
@@ -159,4 +162,11 @@ private:
 	PixelShader* mDepthPixelShader;
 
 	UIImage* mRenderTextures[2];
+	Texture* mTempTexture;
+	Material* mDepthMaterial;
+	
+	Texture2DBuffer* mTexture2DBuffer;
+
+	UINT tWidth;
+	UINT tHeight;
 };

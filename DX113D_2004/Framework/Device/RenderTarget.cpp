@@ -1,6 +1,6 @@
 #include "Framework.h"
 
-RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
+RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // 툴씬에선 R8G8B8A8 UNORM (0~1로 사상되는 타입)
 	: width(width), height(height)
 {
 	{//RenderTargetView Texture
@@ -19,7 +19,6 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format)
 	}
 
 	
-
 	{//RenderTargetView
 		D3D11_RENDER_TARGET_VIEW_DESC desc = {};
 		desc.Format = format;

@@ -45,8 +45,20 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
 
 	createMesh();
-	createCompute();
-	//createUVCompute();
+
+	mbIsUVPicking = FALSE;
+
+	if (!mbIsUVPicking)
+	{
+		createCompute();
+	}
+	else
+	{
+		createUVCompute();
+	}
+	
+	
+	
 	//createTestCompute();
 
 	mBrushBuffer = new BrushBuffer();
@@ -74,16 +86,22 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	//computeTestPicking();
-	//TestUpdate
+	
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
-			computePicking(&mPickedPosition);
-			//computeUVPicking(&mPickedPosition);
-			//computeTestPicking();
+			
+			if (!mbIsUVPicking)
+			{
+				computePicking(&mPickedPosition);
+			}
+			else
+			{
+				computeUVPicking(&mPickedPosition);
+			}
+
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}

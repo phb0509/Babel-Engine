@@ -25,7 +25,7 @@ Player::Player()
 
 	PlayClip(1);
 
-	mRotation.y = XM_PI;
+	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
 	bodyCollider = new BoxCollider();
 	swordCollider = new BoxCollider();
@@ -78,11 +78,11 @@ void Player::input()
 {
 	if (Environment::Get()->GetIsTargetCamera())
 	{
-		move();
+		moveInTargetCamera();
 	}
 	else
 	{
-		worldCameraMove();
+		moveInWorldCamera();
 	}
 	
 
@@ -92,7 +92,7 @@ void Player::input()
 	}
 }
 
-void Player::move()
+void Player::moveInTargetCamera()
 {
 	if (mIsNormalAttack) return;
 
@@ -112,7 +112,6 @@ void Player::move()
 
 	if (KEY_PRESS('S'))
 	{
-
 		rotate();
 		mPosition.z += TARGETCAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
 		mPosition.x += TARGETCAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
@@ -133,7 +132,7 @@ void Player::move()
 	}
 }
 
-void Player::worldCameraMove()
+void Player::moveInWorldCamera()
 {
 	if (mIsNormalAttack) return;
 

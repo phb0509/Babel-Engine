@@ -169,4 +169,6 @@ private:
 
 	UINT tWidth;
 	UINT tHeight;
+
+	bool mbIsUVPicking = false;
 };

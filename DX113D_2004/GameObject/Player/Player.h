@@ -45,8 +45,8 @@ private:
 	void setIdle();
 	void setAnimation(State value);
 	void input();
-	void move();
-	void worldCameraMove();
+	void moveInTargetCamera();
+	void moveInWorldCamera();
 	void setColliders();
 	void loadCollider();
 	void findCollider(string name, Collider* collider);

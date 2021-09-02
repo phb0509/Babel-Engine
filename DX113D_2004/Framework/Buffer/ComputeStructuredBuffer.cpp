@@ -17,7 +17,7 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(void* inputData, UINT inputStri
 	CreateResult();
 }
 
-ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputCount):
+ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputCount): // 구조체크기, 개수
 	outputStride(outputStride),
 	outputCount(outputCount)
 {
@@ -28,13 +28,20 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputC
 
 ComputeStructuredBuffer::~ComputeStructuredBuffer()
 {
-	input->Release();
-	srv->Release();
+	if (input != nullptr)
+	{
+		input->Release();
+	}
+
+	if (srv != nullptr)
+	{
+		srv->Release();
+	}
+	
 	output->Release();
 	uav->Release();
 	result->Release();
 }
-
 
 
 void ComputeStructuredBuffer::CreateInput() // 계산셰이더로 넘길 버퍼 설정,생성.

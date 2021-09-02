@@ -19,7 +19,7 @@ public:
 
 	Camera* GetTargetCamera() { return mTargetCamera; }
 	Camera* GetWorldCamera() { return mWorldCamera; }
-	Matrix GetProjection() { return projection; }
+	Matrix GetProjection() { return mProjectionMatrix; }
 	LightBuffer* GetLight() { return lightBuffer; }
 	MatrixBuffer* GetProjectionBuffer() { return projectionBuffer; }
 	Vector3 GetLightPosition();
@@ -37,19 +37,19 @@ private:
 
 private:
 
-	Matrix projection;
+	Matrix mProjectionMatrix;
 
 	MatrixBuffer* projectionBuffer;
 	LightBuffer* lightBuffer;
 
-	D3D11_VIEWPORT viewport;
+	D3D11_VIEWPORT mViewPort;
 
 	Camera* mTargetCamera;
 	Camera* mWorldCamera;
 
-	SamplerState* samplerState;
+	SamplerState* mSamplerState;
 	bool mbIsTargetCamera;
-	Transform* target;
+	Transform* mTarget;
 
 	Cube* mSun;
 

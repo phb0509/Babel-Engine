@@ -26,14 +26,15 @@ private:
 	};
 
 	
-	struct InputUVDesc
-	{
-		Float2 mouseUVPosition;
-	};
-
 	struct OutputUVDesc
 	{
+		float u;
+		float v;
+		float depthTextureRedValue;
+		float padding;
+
 		Float3 worldPosition;
+		float padding1;
 	};
 
 	struct InputDesc
@@ -116,11 +117,6 @@ private:
 	ComputeStructuredBuffer* mComputePickingStructuredBuffer;
 	InputDesc* mInput;
 	OutputDesc* mOutput; // GPU에서 읽어온 값
-
-	InputUVDesc* mInputUVDesc;
-	OutputUVDesc* mOutputUVDesc;
-	MouseUVBuffer* mMouseUVBuffer;
-
 	UINT mPolygonCount;
 
 	BrushBuffer* mBrushBuffer;
@@ -171,4 +167,10 @@ private:
 	UINT tHeight;
 
 	bool mbIsUVPicking = false;
+
+	ComputeStructuredBuffer* mPixelPickingStructuredBuffer;
+	OutputUVDesc* mOutputUVDesc;
+	MouseUVBuffer* mMouseUVBuffer;
+	OutputUVDesc mTestOutpuvDesc;
+	float mDepthRedValue = 0.0f;
 };

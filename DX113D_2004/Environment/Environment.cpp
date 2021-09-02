@@ -2,14 +2,14 @@
 
 Environment::Environment() :
 	mbIsTargetCamera(false),
-	target(nullptr),
+	mTarget(nullptr),
 	mbIsEnabledTargetCamera(true),
 	mbIsEnabledWorldCamera(true)
 {
 	createPerspective();
 
-	samplerState = new SamplerState();
-	samplerState->SetState();
+	mSamplerState = new SamplerState();
+	mSamplerState->SetState();
 
 	mTargetCamera = new Camera();
 	mTargetCamera->CreateFrustum();
@@ -27,7 +27,7 @@ Environment::~Environment()
 {
 	delete projectionBuffer;
 	delete lightBuffer;
-	delete samplerState;
+	delete mSamplerState;
 	//delete mSun;
 }
 
@@ -67,9 +67,7 @@ void Environment::PostRender()
 	ImGui::Spacing();
 	ImGui::Text("WorldCameraForward : %.1f,  %.1f,  %.1f", mWorldCamera->Forward().x, mWorldCamera->Forward().y, mWorldCamera->Forward().z);
 
-
 	ImGui::Spacing();
-
 
 	showLightInformation();
 
@@ -131,19 +129,19 @@ void Environment::Set()
 
 void Environment::SetViewport(UINT width, UINT height)
 {
-	viewport.Width = (float)width;
-	viewport.Height = (float)height;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
+	mViewPort.Width = (float)width;
+	mViewPort.Height = (float)height;
+	mViewPort.MinDepth = 0.0f;
+	mViewPort.MaxDepth = 1.0f;
+	mViewPort.TopLeftX = 0;
+	mViewPort.TopLeftY = 0;
 
-	DEVICECONTEXT->RSSetViewports(1, &viewport);
+	DEVICECONTEXT->RSSetViewports(1, &mViewPort);
 }
 
 void Environment::SetTargetToCamera(Transform* target)
 {
-	this->target = target;
+	this->mTarget = target;
 	mTargetCamera->SetTarget(target);
 }
 
@@ -154,15 +152,15 @@ void Environment::SetProjection()
 
 void Environment::createPerspective()
 {
-	projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
+	mProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
 		WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f); // 시야각( pie/4니까 90도?,
 
-	//projection = XMMatrixPerspectiveFovLH(XM_PIDIV4,
-	//	WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); // 시야각( pie/4니까 90도?,
+	//mProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4,
+	//	WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 100.0f); // 시야각( pie/4니까 90도?,
 
 	projectionBuffer = new MatrixBuffer();
 
-	projectionBuffer->Set(projection);
+	projectionBuffer->Set(mProjectionMatrix);
 }
 
 

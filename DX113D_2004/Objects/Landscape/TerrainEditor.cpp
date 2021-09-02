@@ -17,7 +17,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 {
 	mMaterial = new Material(L"TerrainSplatting");
-	
+
 	mMaterial->SetDiffuseMap(L"Textures/Landscape/White.png");
 	mTerrainDiffuseMap = Texture::Add(L"Textures/Landscape/White.png");
 	mLayerNames = { "Layer1", "Layer2", "Layer3", "Layer4" };
@@ -46,7 +46,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	createMesh();
 
-	mbIsUVPicking = FALSE;
+	mbIsUVPicking = true;
 
 	if (!mbIsUVPicking)
 	{
@@ -56,9 +56,9 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	{
 		createUVCompute();
 	}
-	
-	
-	
+
+
+
 	//createTestCompute();
 
 	mBrushBuffer = new BrushBuffer();
@@ -86,13 +86,13 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	
+	computeUVPicking(&mPickedPosition);
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
-			
+
 			if (!mbIsUVPicking)
 			{
 				computePicking(&mPickedPosition);
@@ -237,7 +237,11 @@ void TerrainEditor::PostRender()
 	mMouseUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
 
 	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseUVPosition.x, mMouseUVPosition.y);
-	ImGui::Text("position.x : %.3f   position.y : %.3f    position.z : %.3f\n", testPos.x, testPos.y, testPos.z);
+	ImGui::Text("OutputMouseUV.x : %.3f  OutputMouseUV.y : %.3f\n  depthRedValue : %.8f", 
+		mTestOutpuvDesc.u, mTestOutpuvDesc.v, mTestOutpuvDesc.depthTextureRedValue);
+	ImGui::Text("pixelWorldPosition.x : %.3f   pixelWorldPosition.y : %.3f\n  pixelWorldPosition.z : %.3f\n",
+		mTestOutpuvDesc.worldPosition.x, mTestOutpuvDesc.worldPosition.y, mTestOutpuvDesc.worldPosition.z);
+
 	ImGui::End();
 }
 
@@ -289,34 +293,30 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 
 void TerrainEditor::computeUVPicking(OUT Vector3* position)
 {
-	mMouseUVBuffer->data.mouseUV = { mMouseUVPosition.x,mMouseUVPosition.y }; // 마우스좌표 uv값.일단은 임의의값.
-	mMouseUVBuffer->data.invViewBuffer = TARGETCAMERA->GetViewBuffer()->GetInvView();
+	//Texture* tempTexture = Texture::Add(L"Textures/Landscape/TestBlueImage.png");
+	mMouseUVBuffer->data.mouseUV = { mMouseUVPosition.x,mMouseUVPosition.y }; // 마우스좌표 uv값
+	mMouseUVBuffer->data.invViewBuffer = WORLDCAMERA->GetViewBuffer()->GetInvView();
 	mMouseUVBuffer->data.projectionBuffer = Environment::Get()->GetProjection();
 
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
-	//mRenderTargetSRVs[1]
-	/*DEVICECONTEXT->CSSetShaderResources(1, 1, &mRenderTargetSRVs[1]);
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mComputePickingStructuredBuffer->GetSRV());
-	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputePickingStructuredBuffer->GetUAV(), nullptr);*/
+	//DEVICECONTEXT->CSSetShaderResources(1, 1, &tempTexture->GetSRV());
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mDepthStencil->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mPixelPickingStructuredBuffer->GetUAV(), nullptr);
 
-	//DEVICECONTEXT->CSSetShaderResources(0,1,)
+	DEVICECONTEXT->Dispatch(1, 1, 1);
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mTexture2DBuffer->GetSRV());
-
-
-	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수 / 1024.0f 반올림.
-
-	DEVICECONTEXT->Dispatch(x, 1, 1);
-
-	mComputePickingStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
+	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
 																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
 
+	*position = { 0.0f,0.0f,0.0f };
 
-	*position = { mOutput[0].u,mOutput[0].v, mOutput[0].distance };
-
-	testPos = { mOutput[0].u, mOutput[0].v, mOutput[0].distance };
+	mTestOutpuvDesc.u = mOutputUVDesc->u;
+	mTestOutpuvDesc.v = mOutputUVDesc->v;
+	mTestOutpuvDesc.depthTextureRedValue = mOutputUVDesc->depthTextureRedValue;
+	mTestOutpuvDesc.worldPosition = mOutputUVDesc->worldPosition;
+	//mTestOutpuvDesc.padding = mOutputUVDesc->padding;
 }
 
 void TerrainEditor::computeTestPicking()
@@ -328,7 +328,7 @@ void TerrainEditor::computeTestPicking()
 	UINT width = mTexture2DBuffer->GetWidth();
 	UINT height = mTexture2DBuffer->GetHeight();
 	UINT page = mTexture2DBuffer->GetPage();
-	
+
 	UINT x = ((float)width / 32.0f) < 1.0f ? 1.0f : ((float)width / 32.0f);
 	UINT y = ((float)height / 32.0f) < 1.0f ? 1.0f : ((float)height / 32.0f);
 
@@ -357,29 +357,13 @@ void TerrainEditor::createCompute()
 void TerrainEditor::createUVCompute()
 {
 	mComputeShader = Shader::AddCS(L"PixelPicking");
-	mInputUVDesc = new InputUVDesc[1];
+	mPixelPickingStructuredBuffer = new ComputeStructuredBuffer(sizeof(OutputUVDesc), 1);
 
-	/*D3D11_TEXTURE2D_DESC srcDesc;
-	mRenderTargetSRVs[1]->GetDesc(&srcDesc);
+	if (mMouseUVBuffer == nullptr)
+		mMouseUVBuffer = new MouseUVBuffer();
 
-	UINT width = srcDesc.Width;
-	UINT height = srcDesc.Height;
-	UINT page = srcDesc.ArraySize;
-	UINT format = srcDesc.Format;*/
 
-	//if (mComputePickingStructuredBuffer != nullptr)
-	//	delete mComputePickingStructuredBuffer;
-
-	//mComputePickingStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount, //mInput에 터레인버텍스정보 들어있다.
-	//	sizeof(OutputDesc), mPolygonCount);
-
-	//if (mMouseUVBuffer == nullptr)
-	//	mMouseUVBuffer = new MouseUVBuffer();
-
-	//if (mOutput != nullptr)
-	//	delete[] mOutput;
-
-	//mOutput = new OutputDesc[mPolygonCount];
+	mOutputUVDesc = new OutputUVDesc[1];
 }
 
 void TerrainEditor::createTestCompute()
@@ -399,14 +383,14 @@ void TerrainEditor::createTestCompute()
 
 	float x = ((float)width / 32.0f) < 1.0f ? 1.0f : ((float)width / 32.0f);
 	float y = ((float)height / 32.0f) < 1.0f ? 1.0f : ((float)height / 32.0f);
-	
+
 
 	DEVICECONTEXT->Dispatch((UINT)ceilf(x), (UINT)ceilf(y), page);*/
 
 	//Texture* tTexture = Texture::AddUsingSRV(mTexture2DBuffer->OutputSRV());
 
 	//mTempTexture = tTexture;
-	
+
 }
 
 
@@ -862,9 +846,9 @@ void TerrainEditor::showAddedTextures()
 	//ImGui::ImageButton(mTexture2DBuffer->OutputSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 
-	
 
-	
+
+
 	//mRenderTargetSRVs
 	{
 		{ // LayerButtons 

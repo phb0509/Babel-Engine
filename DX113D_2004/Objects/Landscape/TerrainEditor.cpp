@@ -33,7 +33,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	// DepthShader Setting.
 	mDepthMaterial = new Material(L"DepthShader");
-	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, false); // ±íÀÌ°ª
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // ±íÀÌ°ª
 	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	mRenderTargets[0] = mDepthRenderTarget;

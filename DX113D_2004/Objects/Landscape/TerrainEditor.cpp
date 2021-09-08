@@ -46,7 +46,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	createMesh();
 
-	mbIsUVPicking = true;
+	mbIsUVPicking = false;
 
 	if (!mbIsUVPicking)
 	{
@@ -86,7 +86,7 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	computeUVPicking(&mPickedPosition);
+	//computeUVPicking(&mPickedPosition);
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
@@ -234,11 +234,16 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 
-	mMouseUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
+	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
+	mMouseNDCPosition = { ((2 * MOUSEPOS.x) / WIN_WIDTH) - 1.0f,
+		(((2 * MOUSEPOS.y) / WIN_HEIGHT) - 1.0f) * -1.0f,
+		0.0f }; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 
-	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseUVPosition.x, mMouseUVPosition.y);
-	ImGui::Text("OutputMouseUV.x : %.3f  OutputMouseUV.y : %.3f\n  depthRedValue : %.8f", 
+	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseScreenPosition.x, mMouseScreenPosition.y);
+
+	ImGui::Text("OutputMouseNDC.x : %.3f  OutputMouseNDC.y : %.3f\n  depthRedValue : %.8f", 
 		mTestOutpuvDesc.u, mTestOutpuvDesc.v, mTestOutpuvDesc.depthTextureRedValue);
+
 	ImGui::Text("pixelWorldPosition.x : %.3f   pixelWorldPosition.y : %.3f\n  pixelWorldPosition.z : %.3f\n",
 		mTestOutpuvDesc.worldPosition.x, mTestOutpuvDesc.worldPosition.y, mTestOutpuvDesc.worldPosition.z);
 
@@ -294,9 +299,10 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 void TerrainEditor::computeUVPicking(OUT Vector3* position)
 {
 	//Texture* tempTexture = Texture::Add(L"Textures/Landscape/TestBlueImage.png");
-	mMouseUVBuffer->data.mouseUV = { mMouseUVPosition.x,mMouseUVPosition.y }; // 마우스좌표 uv값
-	mMouseUVBuffer->data.invViewBuffer = WORLDCAMERA->GetViewBuffer()->GetInvView();
-	mMouseUVBuffer->data.projectionBuffer = Environment::Get()->GetProjection();
+	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
+	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
+	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvView();
+	mMouseUVBuffer->data.projectionMatrix = Environment::Get()->GetProjection();
 
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
@@ -612,33 +618,7 @@ void TerrainEditor::changeTextureMap(wstring textureFileName)
 	mMaterial->SetDiffuseMap(textureFileName);
 }
 
-void TerrainEditor::addTexture()
-{
 
-	if (ImGui::Button("Add Texture"))
-	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
-	}
-
-	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) // OpenDialog 했으면..
-	{
-		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{
-			//확인 누른 후 이벤트 처리.
-
-			map<string, string> tMap = igfd::ImGuiFileDialog::Instance()->GetSelection();
-
-			for (auto it = tMap.begin(); it != tMap.end(); it++)
-			{
-				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
-				mAddedTextures.push_back(AddedTextureInfo(Texture::Add(tName), tName));
-			}
-		}
-
-		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-	}
-
-}
 
 void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 {
@@ -781,8 +761,32 @@ void TerrainEditor::createMesh()
 		mIndices.data(), (UINT)mIndices.size(), true);
 }
 
-void TerrainEditor::showAddedTextures()
+void TerrainEditor::addTexture()
 {
+	ImGui::Begin("TerrainTextures");
+	if (ImGui::Button("Add Texture"))
+	{
+		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
+	}
+
+	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) // OpenDialog 했으면..
+	{
+		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+		{
+			//확인 누른 후 이벤트 처리.
+
+			map<string, string> tMap = igfd::ImGuiFileDialog::Instance()->GetSelection();
+
+			for (auto it = tMap.begin(); it != tMap.end(); it++)
+			{
+				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
+				mAddedTextures.push_back(AddedTextureInfo(Texture::Add(tName), tName));
+			}
+		}
+
+		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+	}
+
 	for (int i = 0; i < mAddedTextures.size(); i++)
 	{
 		if ((i % 5) != 0)
@@ -803,6 +807,33 @@ void TerrainEditor::showAddedTextures()
 			ImGui::EndDragDropSource();
 		}
 	}
+
+	ImGui::End();
+}
+
+void TerrainEditor::showAddedTextures()
+{
+	//for (int i = 0; i < mAddedTextures.size(); i++)
+	//{
+	//	if ((i % 5) != 0)
+	//		ImGui::SameLine();
+
+	//	int frame_padding = 2;
+	//	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+	//	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	//	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	//	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+	//	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	//	ImGui::ImageButton(mAddedTextures[i].texture->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+
+	//	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
+	//	{
+	//		ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
+	//		ImGui::EndDragDropSource();
+	//	}
+	//}
+	
 
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -841,7 +872,7 @@ void TerrainEditor::showAddedTextures()
 	ImGui::Spacing();
 	ImGui::Spacing();
 	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
-	ImGui::ImageButton(mRenderTargetSRVs[0], bigSize, uv0, uv1, frame_padding, bg_col, tint_col); // 깊을수록 어둡게... 
+	//ImGui::ImageButton(mRenderTargetSRVs[0], bigSize, uv0, uv1, frame_padding, bg_col, tint_col); // 깊을수록 어둡게... 
 	//ImGui::ImageButton(mDepthStencil->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 	//ImGui::ImageButton(mTexture2DBuffer->OutputSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
@@ -901,9 +932,6 @@ void TerrainEditor::showAddedTextures()
 			ImGui::Indent();
 			ImGui::Indent();
 		}
-
-
-
 	}
 }
 

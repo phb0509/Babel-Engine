@@ -152,7 +152,8 @@ private:
 	ID3D11ShaderResourceView* mRenderTargetSRVs[2];
 	DepthStencil* mDepthStencil;
 	RenderTarget* mDepthRenderTarget;
-	Vector3 mMouseUVPosition;
+	Vector3 mMouseScreenPosition;
+	Vector3 mMouseNDCPosition;
 
 	VertexShader* mDepthVertexShader;
 	PixelShader* mDepthPixelShader;

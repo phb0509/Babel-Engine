@@ -124,18 +124,18 @@ class MouseUVBuffer : public ConstBuffer
 public:
 	struct Data
 	{
-		Float2 mouseUV;
-		float padding1;
-		float padding2;
+		Float2 mouseScreenPosition;
+		Float2 mouseNDCPosition;
 
-		Matrix projectionBuffer;
-		Matrix invViewBuffer;
+		Matrix projectionMatrix;
+		Matrix invViewMatrix;
 
 	}data;
 
 	MouseUVBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
-		data.mouseUV = { 0.0f,0.0f };
+		data.mouseScreenPosition = { 0.0f,0.0f };
+		data.mouseNDCPosition = { 0.0f,0.0f };
 	}
 };
 

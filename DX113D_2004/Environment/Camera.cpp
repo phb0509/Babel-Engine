@@ -256,7 +256,7 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	Float2 screenSize(WIN_WIDTH, WIN_HEIGHT);
 
 	Float2 point;
-	point.x = ((2 * pos.x) / screenSize.x) - 1.0f; // 마우스위치값을 -1~1로 정규화.
+	point.x = ((2 * pos.x) / screenSize.x) - 1.0f; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 	point.y = (((2 * pos.y) / screenSize.y) - 1.0f) * -1.0f;
 
 	Matrix projection = Environment::Get()->GetProjection();
@@ -265,14 +265,15 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	XMStoreFloat4x4(&temp, projection);
 
 	//Unprojection
-	point.x /= temp._11; // 뷰공간으로 전환.
+	point.x /= temp._11; // 뷰공간의 x,y좌표로 전환.
 	point.y /= temp._22;
 
+	
 	Ray ray;
 	ray.position = mPosition;
 
 	Matrix invView = XMMatrixInverse(nullptr, mViewMatrix);
-
+	
 	Vector3 tempPos(point.x, point.y, 1.0f);
 
 	ray.direction = XMVector3TransformNormal(tempPos.data, invView);

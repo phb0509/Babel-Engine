@@ -48,7 +48,7 @@ public:
 	void SetViewMatrixToBuffer();
 
 	Vector3 GetOriginForward() { return originForward; }
-	Matrix GetView() { return mViewMatrix; }
+	Matrix GetViewMatrix() { return mViewMatrix; }
 	ViewBuffer* GetViewBuffer() { return mViewBuffer; }
 	Frustum* GetFrustum() { return mFrustum; }
 	Transform* GetCameraTarget() { return target; }

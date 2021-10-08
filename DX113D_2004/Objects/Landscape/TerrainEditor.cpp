@@ -14,7 +14,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mPaintValue(5),
 	mCurrentMousePosition(0.0f, 0.0f, 0.0f),
 	mLastPickingMousePosition(0.0f, 0.0f, 0.0f)
-
 {
 	mMaterial = new Material(L"TerrainSplatting");
 
@@ -46,7 +45,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	createMesh();
 
-	mbIsUVPicking = false;
+	mbIsUVPicking = true;
 
 	if (!mbIsUVPicking)
 	{
@@ -86,21 +85,24 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	//computeUVPicking(&mPickedPosition);
+	//computePicking(&mPickedPosition);
+	computeUVPicking(&mPickedPosition);
+	mBrushBuffer->data.location = mPickedPosition;
+
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
 
-			if (!mbIsUVPicking)
+			/*if (!mbIsUVPicking)
 			{
 				computePicking(&mPickedPosition);
 			}
 			else
 			{
 				computeUVPicking(&mPickedPosition);
-			}
+			}*/
 
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
@@ -239,14 +241,6 @@ void TerrainEditor::PostRender()
 		(((2 * MOUSEPOS.y) / WIN_HEIGHT) - 1.0f) * -1.0f,
 		0.0f }; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 
-	ImGui::Text("mouseUV.x : %.3f   mouseUV.y : %.3f \n", mMouseScreenPosition.x, mMouseScreenPosition.y);
-
-	ImGui::Text("OutputMouseNDC.x : %.3f  OutputMouseNDC.y : %.3f\n  depthRedValue : %.8f", 
-		mTestOutpuvDesc.u, mTestOutpuvDesc.v, mTestOutpuvDesc.depthTextureRedValue);
-
-	ImGui::Text("pixelWorldPosition.x : %.3f   pixelWorldPosition.y : %.3f\n  pixelWorldPosition.z : %.3f\n",
-		mTestOutpuvDesc.worldPosition.x, mTestOutpuvDesc.worldPosition.y, mTestOutpuvDesc.worldPosition.z);
-
 	ImGui::End();
 }
 
@@ -302,7 +296,7 @@ void TerrainEditor::computeUVPicking(OUT Vector3* position)
 	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
 	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvView();
-	mMouseUVBuffer->data.projectionMatrix = Environment::Get()->GetProjection();
+	mMouseUVBuffer->data.invProjectionMatrix = Environment::Get()->GetProjectionBuffer()->GetInvProjectionMatrix();
 
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
@@ -316,13 +310,10 @@ void TerrainEditor::computeUVPicking(OUT Vector3* position)
 	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
 																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
 
-	*position = { 0.0f,0.0f,0.0f };
+	mTestOutputDesc.worldPosition = mOutputUVDesc->worldPosition;
+	//mTestOutputDesc.padding1 = mOutputUVDesc->padding1;
 
-	mTestOutpuvDesc.u = mOutputUVDesc->u;
-	mTestOutpuvDesc.v = mOutputUVDesc->v;
-	mTestOutpuvDesc.depthTextureRedValue = mOutputUVDesc->depthTextureRedValue;
-	mTestOutpuvDesc.worldPosition = mOutputUVDesc->worldPosition;
-	//mTestOutpuvDesc.padding = mOutputUVDesc->padding;
+	*position = mOutputUVDesc->worldPosition;
 }
 
 void TerrainEditor::computeTestPicking()

@@ -40,13 +40,18 @@ void Camera::Update()
 
 	if (target != nullptr)
 	{
-		if (mbIsMouseInputing) // 타겟카메라시점일 때
+		/*char buff[100];
+		sprintf_s(buff, "타겟카메라 업데이트중\n");
+		OutputDebugStringA(buff);*/
+
+
+		if (mbIsMouseInputing) // 1인칭시점이 타겟카메라시점일 때
 		{
 			targetMove(); // 타겟카메라시점의 타겟카메라이동
 		}
 		else
 		{
-			targetMoveInWorldCamera(); // 월드카메라 시점일때 타겟카메라의 이동, 프러스텀컬링 확인용.
+			targetMoveInWorldCamera(); // 1인칭 시점이 월드카메라 시점일때 타겟카메라의 이동, 프러스텀컬링 확인용.
 		}
 	
 		mFrustum->Update();

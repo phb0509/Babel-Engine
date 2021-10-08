@@ -54,7 +54,7 @@ Vector3 GameMath::WorldToScreen(const Vector3& worldPos)
 {
     Vector3 screenPos;
 
-    screenPos = XMVector3TransformCoord(worldPos.data, TARGETCAMERA->GetView());
+    screenPos = XMVector3TransformCoord(worldPos.data, TARGETCAMERA->GetViewMatrix());
     screenPos = XMVector3TransformCoord(screenPos.data, Environment::Get()->GetProjection());
     //NDC공간 좌표(-1 ~ 1) -> 화면좌표(0 ~ WIN_WIDTH)
 

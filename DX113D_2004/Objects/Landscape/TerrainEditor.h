@@ -28,10 +28,10 @@ private:
 	
 	struct OutputUVDesc
 	{
-		float u;
-		float v;
-		float depthTextureRedValue;
-		float padding;
+		//float u;
+		//float v;
+		//float depthTextureRedValue;
+		//float padding;
 
 		Float3 worldPosition;
 		float padding1;
@@ -172,6 +172,6 @@ private:
 	ComputeStructuredBuffer* mPixelPickingStructuredBuffer;
 	OutputUVDesc* mOutputUVDesc;
 	MouseUVBuffer* mMouseUVBuffer;
-	OutputUVDesc mTestOutpuvDesc;
+	OutputUVDesc mTestOutputDesc;
 	float mDepthRedValue = 0.0f;
 };

@@ -32,10 +32,10 @@
 //}
 
 //float4 PS(PixelInput input) : SV_Target
-//{   
+//{
 //    float4 albedo = float4(1, 1, 1, 1);
 
-//    if(hasDiffuseMap) 
+//    if (hasDiffuseMap) 
 //        albedo = diffuseMap.Sample(samp, input.uv);
     
 //    float3 light = normalize(lightDirection);
@@ -46,14 +46,14 @@
     
 //    float3 normal = N;
     
-//    if(hasNormalMap) // 노말맵 있으면
+//    if (hasNormalMap) // 노말맵 있으면
 //    {
 //        float4 normalMapping = normalMap.Sample(samp, input.uv); // 노말맵 RGB값 가져오기.
     
 //        float3x3 TBN = float3x3(T, B, N); // 월드공간 -> 접선공간으로 변경. 변환행렬
 //        normal = normalMapping * 2.0f - 1.0f; // 노말맵의 RGB값(0~1)을 벡터단위(-1~1)로 변환함.
 //        normal = normalize(mul(normal, TBN)); // return 1*3 행렬
-//    }    
+//    }
     
 //    float3 viewDir = normalize(input.viewDir);
     
@@ -75,12 +75,12 @@
     
 //    float4 diffuse = albedo * diffuseIntensity * mDiffuse; // 텍스쳐 픽셀 * 디퓨즈량 *
 //    specular *= mSpecular;
-//    float4 ambient = albedo * mAmbient;       
+//    float4 ambient = albedo * mAmbient;
     
 //    float emissive = 0.0f;
     
 //    [flatten]
-//    if(mEmissive.a > 0.0f)
+//    if (mEmissive.a > 0.0f)
 //    {
 //        float3 E = -viewDir;
         

@@ -20,6 +20,33 @@ public:
 	}
 };
 
+class ProjectionBuffer : public ConstBuffer
+{
+private:
+	struct Data
+	{
+		Matrix matrix;
+		Matrix invMatrix;
+	}data;
+
+public:
+	ProjectionBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.matrix = XMMatrixIdentity();
+		data.invMatrix = XMMatrixIdentity();
+	}
+
+	void Set(Matrix value)
+	{
+		data.matrix = XMMatrixTranspose(value); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
+		Matrix temp = XMMatrixInverse(nullptr, value);
+		data.invMatrix = XMMatrixTranspose(temp);
+	}
+
+	Matrix GetProjectionMatrix() { return data.matrix; }
+	Matrix GetInvProjectionMatrix() { return data.invMatrix; }
+};
+
 #define MAX_LIGHT 10
 
 struct Light
@@ -127,9 +154,8 @@ public:
 		Float2 mouseScreenPosition;
 		Float2 mouseNDCPosition;
 
-		Matrix projectionMatrix;
 		Matrix invViewMatrix;
-
+		Matrix invProjectionMatrix;
 	}data;
 
 	MouseUVBuffer() : ConstBuffer(&data, sizeof(Data))

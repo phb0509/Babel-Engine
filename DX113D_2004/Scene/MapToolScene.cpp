@@ -4,7 +4,7 @@
 MapToolScene::MapToolScene()
 {
 	Environment::Get()->SetIsEnabledTargetCamera(false);
-	WORLDCAMERA->mPosition = { -35.2f,113.6f, -105.7f };
+	//WORLDCAMERA->mPosition = { -35.2f,113.6f, -105.7f };
 	terrainEditor = new TerrainEditor();
 	//skyBox = new SkyBox();
 	//cube = new Cube();

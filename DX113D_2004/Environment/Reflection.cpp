@@ -35,7 +35,7 @@ void Reflection::Update()
 
 	camera->SetViewMatrixToBuffer();
 
-	reflectionBuffer->Set(camera->GetView());
+	reflectionBuffer->Set(camera->GetViewMatrix());
 }
 
 void Reflection::PreRender()

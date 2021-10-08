@@ -20,8 +20,8 @@ public:
 	Camera* GetTargetCamera() { return mTargetCamera; }
 	Camera* GetWorldCamera() { return mWorldCamera; }
 	Matrix GetProjection() { return mProjectionMatrix; }
-	LightBuffer* GetLight() { return lightBuffer; }
-	MatrixBuffer* GetProjectionBuffer() { return projectionBuffer; }
+	LightBuffer* GetLight() { return mLightBuffer; }
+	ProjectionBuffer* GetProjectionBuffer() { return mProjectionBuffer; }
 	Vector3 GetLightPosition();
 	bool GetIsTargetCamera() { return mbIsTargetCamera; }
 
@@ -39,8 +39,8 @@ private:
 
 	Matrix mProjectionMatrix;
 
-	MatrixBuffer* projectionBuffer;
-	LightBuffer* lightBuffer;
+	ProjectionBuffer* mProjectionBuffer;
+	LightBuffer* mLightBuffer;
 
 	D3D11_VIEWPORT mViewPort;
 

@@ -17,6 +17,7 @@ cbuffer View : register(b1)
 cbuffer Projection : register(b2)
 {
     matrix projection;
+    matrix invProjection;
 }
 
 cbuffer Bone : register(b3)
@@ -409,6 +410,7 @@ float4 CalcPoint(Material material, Light light)
     
     finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
     */    
+    
     float distanceToLightNormal = 1.0f - saturate(distanceToLight / light.range);
     float attention = distanceToLightNormal * distanceToLightNormal;
 

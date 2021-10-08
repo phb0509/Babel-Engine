@@ -62,7 +62,7 @@ PixelInput VS(VertexUVNormalTangentAlpha input)
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
-    
+   
     output.normal = mul(input.normal, (float3x3) world);
     output.tangent = mul(input.tangent, (float3x3) world);
     output.binormal = cross(output.normal, output.tangent);

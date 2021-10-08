@@ -4,17 +4,16 @@ cbuffer MouseUV : register(b0)
     float2 mouseScreenPosition;
     float2 mouseNDCPosition;
     matrix invViewMatrix;
-    matrix projectionMatrix;
+    matrix invProjectionMatrix;
 }
 
 
 struct OutputDesc
 {
-    float outputU;
-    float outputV;
-    float depthRedValue;
-    float padding3;
-    
+    //float outputU;
+    //float outputV;
+    //float depthRedValue;
+    //float padding;
     float3 worldPosition;
     float padding1;
 };
@@ -24,28 +23,6 @@ RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
 Texture2D<float> depthTexture : register(t0);
 //Texture2D<float> testTexture : register(t1);
 
-float ConvertDepthToLinear(float depth) // 
-{
-    float linearDepth = projectionMatrix._43 / (depth - projectionMatrix._33); // 43,33은 뷰공간의 z값 클리핑공간 전환을 위한값.
-    
-    return linearDepth;
-}
-
-float3 CalcWorldPos(float2 mouseNDCPosition, float linearDepth) // 2d상의 픽셀의 월드위치구하기.(라이팅연산해야하니까) // -1~1로 정규화해야한다.
-{
-    float4 position;
-    
-    float2 temp;
-    temp.x = 1 / projectionMatrix._11; // 투영행렬의 _11,_22는 '뷰좌표' -> '-1~1값' 으로의 정규화용 컴포넌트.
-    temp.y = 1 / projectionMatrix._22; 
-    position.xy = mouseNDCPosition.xy * temp * linearDepth; // UnProjection 과정.
-    position.z = linearDepth;
-    position.w = 1.0f;
-    
-    // 그러면 지금 position좌표는 뷰공간의 좌표라는 의미.
-    
-    return mul(position, invViewMatrix).xyz; // 뷰역행렬 곱해줌으로써 월드좌표 변환. 
-}
 
 SamplerState LinearSampler
 {
@@ -58,12 +35,7 @@ SamplerState LinearSampler
 [numthreads(1, 1, 1)]
 void CS(uint3 index : SV_DispatchThreadID)
 {
-   // int3 location3 = int3(mouseUV, 0);
-    
-    output[0].outputU = mouseNDCPosition.x;
-    output[0].outputV = mouseNDCPosition.y;
-    
-    float2 screenCoord;
+    float2 screenCoord; // depth sampling을 위한 스크린좌표.
     screenCoord.x = mouseScreenPosition.x;
     screenCoord.y = mouseScreenPosition.y;
     
@@ -71,28 +43,22 @@ void CS(uint3 index : SV_DispatchThreadID)
     ndcCoord.x = mouseNDCPosition.x;
     ndcCoord.y = mouseNDCPosition.y;
      
-    output[0].depthRedValue = asfloat(depthTexture.SampleLevel(LinearSampler, screenCoord, 0.0f));
-    
-    
-    
+    //DepthSampling
     float depth = asfloat(depthTexture.SampleLevel(LinearSampler, screenCoord, 0.0f)); // 0~1로 정규화한 마우스좌표로 샘플링.
     
-    // ConvertDepthToLinear
-    float linearDepth = projectionMatrix._43 / (depth - projectionMatrix._33); 
-  
-    // CalcWorldPos
-    float4 position;
-    float2 temp;
-    temp.x = 1 / projectionMatrix._11; // 투영행렬의 _11,_22는 뷰좌표의 x,y값 정규화시키는 컴포넌트. 나눴으니 UnProjection 과정.
-    temp.y = 1 / projectionMatrix._22; // 
-    position.xy = mouseNDCPosition.xy * temp * linearDepth; 
-    position.z = linearDepth;
-    position.w = 1.0f;
+    //CalcWorldPositin
+   
+    // depth는 클립공간의 z값인가?(투영행렬을 곱한이후의 z값?) 0~1로 정규화되어있어서;;
+    float4 clipSpacePosition = float4(ndcCoord.x, ndcCoord.y, depth, 1.0f); // 
+    float4 viewSpacePosition = mul(clipSpacePosition, invProjectionMatrix); // 여기까지해서 뷰공간좌표구함.
+
+    // Perspective division
+     
+    viewSpacePosition /= viewSpacePosition.w; // inverseView의 w값이라 나눠주는것.
+                                              // farZ 1000으로 설정하면 모든픽셀이 안보일쯔음이면 W값이 0.001임.100이면 0.01이런식..      
+
+    float4 worldSpacePosition = mul(viewSpacePosition, invViewMatrix);
     
-    float3 worldPosition =  mul(position, invViewMatrix).xyz; // 뷰역행렬 곱해줌으로써 월드좌표 변환. 
-    
-    
-    //float3 worldPosition = CalcWorldPos(ndcCoord, linearDepth);
-    output[0].worldPosition = worldPosition;
+    output[0].worldPosition = worldSpacePosition.xyz;
 }
 

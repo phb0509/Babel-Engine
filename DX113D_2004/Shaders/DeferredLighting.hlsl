@@ -45,7 +45,7 @@ struct SurfaceData
     float specPow;
 };
 
-SurfaceData UnpackGBuffer(int2 location) // 픽셀 포지션 x,y 값.
+SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
 {
     SurfaceData output;
     
@@ -60,7 +60,7 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀 포지션 x,y 값.
     output.specInt = diffuse.w;
     
     output.normal = normalTexture.Load(location3).xyz;
-    output.normal = normalize(output.normal * 2.0f - 1.0f);
+    output.normal = normalize(output.normal * 2.0f - 1.0f); // -1~1 정규화.
     
     float specular = specularTexture.Load(location3).x;
     output.specPow = specPowerRange.x + specular * specPowerRange.y;
@@ -72,11 +72,12 @@ float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구
 {
     float4 position;
     
+    // UnProjection 과정.
     float2 temp;
     temp.x = 1 / projection._11; // x값 정규화용.
     temp.y = 1 / projection._22; // y값 정규화용.
-    position.xy = csPos.xy * temp * linearDepth;
-    position.z = linearDepth;
+    position.xy = csPos.xy * temp * linearDepth; // 스크린창uv좌표 * UnProjection x,y컴포넌트 * linearDepth
+    position.z = linearDepth; // 카메라와 픽셀사이의 거리.(월드상의 거리)
     position.w = 1.0f;
     
     // 뷰공간 좌표로 변환완료.

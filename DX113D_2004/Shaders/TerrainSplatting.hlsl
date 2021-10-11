@@ -74,14 +74,14 @@ PixelInput VS(VertexUVNormalTangentAlpha input)
 }
 
 
-//Texture2D Layers[4] : register(t11);
+Texture2D Layers[4] : register(t11);
 //Texture2D thirdMap : register(t12);
 //Texture2DArray arrays : register(t12);
 
-Texture2D first : register(t11);
-Texture2D second : register(t12);
-Texture2D third : register(t13);
-Texture2D fourth : register(t14);
+//Texture2D first : register(t11);
+//Texture2D second : register(t12);
+//Texture2D third : register(t13);
+//Texture2D fourth : register(t14);
 
 float4 PS(PixelInput input) : SV_Target
 {
@@ -90,15 +90,15 @@ float4 PS(PixelInput input) : SV_Target
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv);
     
-    //float layer1 = Layers[0].Sample(samp, input.uv);
-    //float layer2 = Layers[1].Sample(samp, input.uv);
-    //float layer3 = Layers[2].Sample(samp, input.uv);
-    //float layer4 = Layers[3].Sample(samp, input.uv);
+    float4 layer1 = Layers[0].Sample(samp, input.uv);
+    float4 layer2 = Layers[1].Sample(samp, input.uv);
+    float4 layer3 = Layers[2].Sample(samp, input.uv);
+    float4 layer4 = Layers[3].Sample(samp, input.uv);
     
-    float4 layer1 = first.Sample(samp, input.uv);
-    float4 layer2 = second.Sample(samp, input.uv);
-    float4 layer3 = third.Sample(samp, input.uv);
-    float4 layer4 = fourth.Sample(samp, input.uv);
+    //float4 layer1 = first.Sample(samp, input.uv);
+    //float4 layer2 = second.Sample(samp, input.uv);
+    //float4 layer3 = third.Sample(samp, input.uv);
+    //float4 layer4 = fourth.Sample(samp, input.uv);
     
     
     albedo = lerp(albedo, layer1, input.alpha.r);

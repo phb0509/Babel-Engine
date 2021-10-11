@@ -16,6 +16,7 @@ public:
 
 	void Update(void* data, UINT count);
 	void Map(void* data,  UINT dataSize);
+	void UpdateBox();
 	
 
 	ID3D11Buffer* GetBuffer() { return buffer; }

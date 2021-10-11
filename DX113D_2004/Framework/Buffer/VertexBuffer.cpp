@@ -54,3 +54,8 @@ void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, da
 	DEVICECONTEXT->Unmap(buffer, 0);
 }
 
+void VertexBuffer::UpdateBox()
+{
+	//DEVICECONTEXT->CopySubresourceRegion
+}
+

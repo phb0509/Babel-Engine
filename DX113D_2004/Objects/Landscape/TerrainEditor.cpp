@@ -27,9 +27,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 		mLayers.push_back(Texture::Add(L"Textures/Landscape/defaultImageButton.png"));
 	}
 
-	//mDepthVertexShader = Shader::AddVS(L"DepthShader");
-	//mDepthPixelShader = Shader::AddPS(L"DepthShader");
-
 	// DepthShader Setting.
 	mDepthMaterial = new Material(L"DepthShader");
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
@@ -47,19 +44,9 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	mbIsUVPicking = true;
 
-	if (!mbIsUVPicking)
-	{
-		createCompute();
-	}
-	else
-	{
-		createUVCompute();
-	}
-
-
-
-	//createTestCompute();
-
+	//createCompute();
+	createPixelPickingCompute();
+	
 	mBrushBuffer = new BrushBuffer();
 }
 
@@ -85,25 +72,14 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
+	computePixelPicking(&mPickedPosition);
 	//computePicking(&mPickedPosition);
-	computeUVPicking(&mPickedPosition);
 	mBrushBuffer->data.location = mPickedPosition;
-
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
 	{
 		if (checkMouseMove()) // 커서가 움직였다면
 		{
-
-			/*if (!mbIsUVPicking)
-			{
-				computePicking(&mPickedPosition);
-			}
-			else
-			{
-				computeUVPicking(&mPickedPosition);
-			}*/
-
 			mBrushBuffer->data.location = mPickedPosition;
 			mLastPickingMousePosition = mCurrentMousePosition;
 		}
@@ -131,14 +107,10 @@ void TerrainEditor::Update()
 
 void TerrainEditor::PreRender()
 {
-	//CAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
-	//Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
-
 	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 	mWorldBuffer->SetVSBuffer(0);
 
 	// 여기다 DepthShader 관련.
-
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
 	mDepthMaterial->Set();
 
@@ -150,15 +122,13 @@ void TerrainEditor::Render()
 	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 
 	mWorldBuffer->SetVSBuffer(0);
-	//DEVICECONTEXT->PSSetShaderResources(11, mLayers.size(), &mLayerSRVs[0]);
-
 	mBrushBuffer->SetPSBuffer(10);
 
-	//mMaterial->SetDiffuseMap(mTempTexture);
-	mLayers[0]->PSSet(11); // 텍스쳐 SRV로 PS에 바인딩.
-	mLayers[1]->PSSet(12);
-	mLayers[2]->PSSet(13);
-	mLayers[3]->PSSet(14);
+	DEVICECONTEXT->PSSetShaderResources(11, 4, mLayerArray);
+	//mLayers[0]->PSSet(11); // 텍스쳐 SRV로 PS에 바인딩.
+	//mLayers[1]->PSSet(12);
+	//mLayers[2]->PSSet(13);
+	//mLayers[3]->PSSet(14);
 
 	mMaterial->Set(); // 버퍼,srv,TerrainEditor 셰이더 Set.
 
@@ -290,9 +260,8 @@ bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의
 	return false;
 }
 
-void TerrainEditor::computeUVPicking(OUT Vector3* position)
+void TerrainEditor::computePixelPicking(OUT Vector3* position)
 {
-	//Texture* tempTexture = Texture::Add(L"Textures/Landscape/TestBlueImage.png");
 	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
 	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvView();
@@ -301,17 +270,14 @@ void TerrainEditor::computeUVPicking(OUT Vector3* position)
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
-	//DEVICECONTEXT->CSSetShaderResources(1, 1, &tempTexture->GetSRV());
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mDepthStencil->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mPixelPickingStructuredBuffer->GetUAV(), nullptr);
 
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
-	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴. // 여기서 프레임 많이먹음.
-																		  // 구조체, 받아와야할 전체크기 (구조체크기 * 폴리곤개수)
-
+	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴. 
+																			 
 	mTestOutputDesc.worldPosition = mOutputUVDesc->worldPosition;
-	//mTestOutputDesc.padding1 = mOutputUVDesc->padding1;
 
 	*position = mOutputUVDesc->worldPosition;
 }
@@ -351,14 +317,13 @@ void TerrainEditor::createCompute()
 	mOutput = new OutputDesc[mPolygonCount];
 }
 
-void TerrainEditor::createUVCompute()
+void TerrainEditor::createPixelPickingCompute()
 {
 	mComputeShader = Shader::AddCS(L"PixelPicking");
 	mPixelPickingStructuredBuffer = new ComputeStructuredBuffer(sizeof(OutputUVDesc), 1);
 
 	if (mMouseUVBuffer == nullptr)
 		mMouseUVBuffer = new MouseUVBuffer();
-
 
 	mOutputUVDesc = new OutputUVDesc[1];
 }
@@ -755,6 +720,7 @@ void TerrainEditor::createMesh()
 void TerrainEditor::addTexture()
 {
 	ImGui::Begin("TerrainTextures");
+
 	if (ImGui::Button("Add Texture"))
 	{
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose TextureFile", ".png,.jpg,.dds", ".", 0);
@@ -780,7 +746,7 @@ void TerrainEditor::addTexture()
 
 	for (int i = 0; i < mAddedTextures.size(); i++)
 	{
-		if ((i % 5) != 0)
+		if ((i % 3) != 0)
 			ImGui::SameLine();
 
 		int frame_padding = 2;
@@ -912,6 +878,12 @@ void TerrainEditor::showAddedTextures()
 					mLayers[i] = mAddedTextures[payload_n].texture;
 					mLayerSRVs[i] = mLayers[i]->GetSRV();
 				}
+
+				for (int i = 0; i < mLayers.size(); i++) // PS에 넘길 텍스쳐배열 업데이트.
+				{
+					mLayerArray[i] = mLayers[i]->GetSRV();
+				}
+
 				ImGui::EndDragDropTarget();
 			}
 

@@ -28,11 +28,6 @@ private:
 	
 	struct OutputUVDesc
 	{
-		//float u;
-		//float v;
-		//float depthTextureRedValue;
-		//float padding;
-
 		Float3 worldPosition;
 		float padding1;
 	};
@@ -73,12 +68,12 @@ private:
 	void createNormal();
 	void createTangent();
 	void createCompute();
-	void createUVCompute();
+	void createPixelPickingCompute();
 	void createTestCompute();
 	
 
 	bool computePicking(OUT Vector3* position);
-	void computeUVPicking(OUT Vector3* position);
+	void computePixelPicking(OUT Vector3* position);
 	void computeTestPicking();
 
 	void adjustY(Vector3 position);
@@ -174,4 +169,6 @@ private:
 	MouseUVBuffer* mMouseUVBuffer;
 	OutputUVDesc mTestOutputDesc;
 	float mDepthRedValue = 0.0f;
+
+	ID3D11ShaderResourceView* mLayerArray[4];
 };

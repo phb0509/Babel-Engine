@@ -10,10 +10,6 @@ cbuffer MouseUV : register(b0)
 
 struct OutputDesc
 {
-    //float outputU;
-    //float outputV;
-    //float depthRedValue;
-    //float padding;
     float3 worldPosition;
     float padding1;
 };
@@ -21,8 +17,6 @@ struct OutputDesc
 
 RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
 Texture2D<float> depthTexture : register(t0);
-//Texture2D<float> testTexture : register(t1);
-
 
 SamplerState LinearSampler
 {
@@ -54,7 +48,7 @@ void CS(uint3 index : SV_DispatchThreadID)
 
     // Perspective division
      
-    viewSpacePosition /= viewSpacePosition.w; // inverseView의 w값이라 나눠주는것.
+    viewSpacePosition /= viewSpacePosition.w; // inverse W값이라 나눠주는것.
                                               // farZ 1000으로 설정하면 모든픽셀이 안보일쯔음이면 W값이 0.001임.100이면 0.01이런식..      
 
     float4 worldSpacePosition = mul(viewSpacePosition, invViewMatrix);

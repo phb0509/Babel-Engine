@@ -219,10 +219,6 @@ int ModelReader::GetNodeByName(string name)
 			return node->index;
 	}
 
-
-
-
-
 	return 0;
 }
 

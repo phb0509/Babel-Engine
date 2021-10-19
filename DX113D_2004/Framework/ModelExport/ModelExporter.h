@@ -4,7 +4,7 @@ class ModelExporter
 {
 private:
 	Assimp::Importer* importer;
-	const aiScene* scene;
+	const aiScene* scene; // assimp에 있는 구조체.
 
 	vector<MaterialData*> materials;
 	vector<MeshData*> meshes;

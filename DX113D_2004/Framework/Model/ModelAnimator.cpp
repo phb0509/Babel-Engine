@@ -65,7 +65,7 @@ void ModelAnimator::Update()
 {
 	FrameBuffer::TweenDesc& tweenDesc = frameBuffer->data.tweenDesc[0];
 
-	{//CurAnimation
+	{ // 현재 애니메이션.
 		FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
 		ModelClip* clip = clips[desc.clip];
 		
@@ -82,15 +82,15 @@ void ModelAnimator::Update()
 					EndParamEvent[desc.clip](param[desc.clip]);
 			}
 
-			desc.curFrame = (desc.curFrame + 1) % clip->frameCount;
-			desc.nextFrame = (desc.curFrame + 1) % clip->frameCount;
+			desc.curFrame = (desc.curFrame + 1) % clip->frameCount; // 현재 프레임
+			desc.nextFrame = (desc.curFrame + 1) % clip->frameCount; // 다음 프레임.
 			desc.runningTime = 0.0f;
 		}
 
 		desc.time = desc.runningTime / time;
 	}
 
-	{//NextAnimation
+	{ // 다음 애니메이션.
 		FrameBuffer::KeyFrameDesc& desc = tweenDesc.next;
 
 		if (desc.clip > -1)
@@ -214,10 +214,10 @@ void ModelAnimator::CreateTexture()
 
 	{//CreatTexture
 		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = MAX_BONE * 4;
+		desc.Width = MAX_BONE * 4; // 4픽셀당 행렬 1개
 		desc.Height = MAX_FRAME_KEY;
-		desc.ArraySize = clipCount;
-		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		desc.ArraySize = clipCount; // 클립 개수만큼
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 픽셀당 16바이트.
 		desc.Usage = D3D11_USAGE_IMMUTABLE;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		desc.MipLevels = 1;
@@ -227,19 +227,21 @@ void ModelAnimator::CreateTexture()
 
 		void* p = VirtualAlloc(nullptr, pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE);
 
-		for (UINT c = 0; c < clipCount; c++)
+		for (UINT c = 0; c < clipCount; c++) // 모델 클립 개수만큼
 		{
-			UINT start = c * pageSize;
+			UINT start = c * pageSize; // 페이지의 시작
 
-			for (UINT y = 0; y < MAX_FRAME_KEY; y++)
+			for (UINT y = 0; y < MAX_FRAME_KEY; y++) // 전체 키프레임만큼
 			{
-				void* temp = (BYTE*)p + MAX_BONE * y * sizeof(Matrix) + start;
+				void* temp = (BYTE*)p + MAX_BONE * y * sizeof(Matrix) + start; // 한줄의 시작
 
-				VirtualAlloc(temp, MAX_BONE * sizeof(Matrix), MEM_COMMIT, PAGE_READWRITE);
-				memcpy(temp, clipTransform[c].transform[y], MAX_BONE * sizeof(Matrix));
+				VirtualAlloc(temp, MAX_BONE * sizeof(Matrix), MEM_COMMIT, PAGE_READWRITE); // MEM_COMMIT : temp에 쓰겠다고 커밋함(아직 쓴건 아님) PAGE_READWRITE용도로 사용.
+				memcpy(temp, clipTransform[c].transform[y], MAX_BONE * sizeof(Matrix)); // 실제로 써주는 부분.
 			}
 		}
 
+
+		// SRV 세팅.
 		D3D11_SUBRESOURCE_DATA* subResource = new D3D11_SUBRESOURCE_DATA[clipCount];
 		for (UINT c = 0; c < clipCount; c++)
 		{
@@ -257,7 +259,7 @@ void ModelAnimator::CreateTexture()
 
 	{//Create SRV
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 위와 동일 포맷으로 설정.
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 		desc.Texture2DArray.MipLevels = 1;
 		desc.Texture2DArray.ArraySize = clipCount;
@@ -268,15 +270,26 @@ void ModelAnimator::CreateTexture()
 
 void ModelAnimator::CreateClipTransform(UINT index)
 {
-	ModelClip* clip = clips[index];
-	for (UINT f = 0; f < clip->frameCount; f++)
+	ModelClip* clip = clips[index]; // 클립 가져오기
+
+	for (UINT f = 0; f < clip->frameCount; f++) // 클립 프레임수만큼.
 	{
 		UINT nodeIndex = 0;
-		for (NodeData* node : nodes)
+
+		for (NodeData* node : nodes) // 모델 본 개수만큼.
 		{
+			Matrix parent;
+			int parentIndex = node->parent; // 부모 인덱스 받기.
+
+			if (parentIndex < 0)
+				parent = XMMatrixIdentity(); // 부모가 없다면.
+			else
+				parent = nodeTransform[index].transform[f][parentIndex]; // 부모가 있다면.
+
 			Matrix animation;
-			KeyFrame* frame = clip->GetKeyFrame(node->name);
-			if (frame != nullptr)
+			KeyFrame* frame = clip->GetKeyFrame(node->name); 
+
+			if (frame != nullptr) // 프레임이 있다면 animation의 SRT 가져오기.
 			{
 				KeyTransform& transform = frame->transforms[f];
 
@@ -291,22 +304,16 @@ void ModelAnimator::CreateClipTransform(UINT index)
 				animation = XMMatrixIdentity();
 			}
 
-			Matrix parent;
-			int parentIndex = node->parent;
+			nodeTransform[index].transform[f][nodeIndex] = animation * parent; // animation SRT를 기준으로 parent만큼 움직인다.
 
-			if (parentIndex < 0)
-				parent = XMMatrixIdentity();
-			else
-				parent = nodeTransform[index].transform[f][parentIndex];
-
-			nodeTransform[index].transform[f][nodeIndex] = animation * parent;
-
-			if (boneMap.count(node->name) > 0)
+			if (boneMap.count(node->name) > 0) // 최종행렬 계산.
 			{
 				int boneIndex = boneMap[node->name];
 				Matrix transform = XMLoadFloat4x4(&bones[boneIndex]->offset);
 				transform *= nodeTransform[index].transform[f][nodeIndex];
 				clipTransform[index].transform[f][boneIndex] = transform;
+				// 본의 글로벌좌표(invGlobal) * 애니메이션 SRT, 로컬좌표(animation) * 부모의 글로벌좌표(parent)
+				// 즉, invGlobal을 기준으로 애니메이션 local 좌표만큼 이동하고, 부모의 Global만큼 이동.
 			}
 
 			nodeIndex++;

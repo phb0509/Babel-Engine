@@ -15,6 +15,9 @@ public:
 
 
 private:
+	void printToCSV();
+
+private:
 	Player* mPlayer;
 	Monster* mMonster;
 	Terrain* mTerrain;

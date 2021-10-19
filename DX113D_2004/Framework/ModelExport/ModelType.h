@@ -48,11 +48,11 @@ struct VertexWeights
 	VertexWeights() : indices{}, weights{}
 	{}
 
-	void Add(const UINT& index, const float& weight)
+	void Add(const UINT& index, const float& weight) // weight는 본에대한 보간값.
 	{
 		for (UINT i = 0; i < 4; i++)
 		{
-			if (weights[i] == 0.0f)
+			if (weights[i] == 0.0f) // 비어있으면
 			{
 				indices[i] = index;
 				weights[i] = weight;
@@ -73,10 +73,11 @@ struct VertexWeights
 	}
 };
 
-struct KeyTransform
+struct KeyTransform // 키프레임 데이터구성 (SRT)
 {
-	float time;
+	float time; // 몇프레임인지
 
+	// 해당 본이 어느정도 움직일지에 대한 SRT
 	Float3 scale;
 	Float4 rotation;
 	Float3 position;
@@ -84,25 +85,26 @@ struct KeyTransform
 
 struct KeyFrame
 {
+	// 본 하나당 프레임 개수만큼의 키프레임 데이터를 가짐.
 	string boneName;
 	vector<KeyTransform> transforms;
 };
 
-struct ClipNode
+struct ClipNode 
 {
 	vector<KeyTransform> keyFrame;
 	aiString name;
 };
 
-struct Clip
+struct Clip // 각각의 애니메이션. // 키프레임 정보를 가진다.
 {
 	string name;
 
-	UINT frameCount;
-	float tickPerSecond;
-	float duration;
+	UINT frameCount; // 총 프레임개수. 
+	float tickPerSecond; // 초당 프레임개수. 적으면 애니메이션이 부자연스럽고 많으면 데이터크기가 너무크고..
+	float duration; // 애니메이션 총 시간. 클립의 길이.
 
-	vector<KeyFrame*> keyFrame;
+	vector<KeyFrame*> keyFrame; // 키프레임 정보.
 };
 
 struct ClipTransform

@@ -16,7 +16,7 @@ Terrain::Terrain()
 
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	heightMap = Texture::Add(L"Textures/HeightMaps/Test1.png"); // 100 & 100
+	heightMap = Texture::Add(L"Textures/HeightMaps/HeightMap.png"); // 100 & 100
 
 	CreateMesh();
 

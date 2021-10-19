@@ -5,7 +5,7 @@ ModelExporter::ModelExporter(string file) : boneCount(0)
 	importer = new Assimp::Importer();
 
 	scene = importer->ReadFile(file,
-		aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_MaxQuality);
+		aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_MaxQuality); //FBX파일 리드.
 	assert(scene != nullptr);
 }
 
@@ -31,7 +31,7 @@ void ModelExporter::ExportMesh(string savePath)
 
 void ModelExporter::ExportClip(string savePath)
 {
-	for (UINT i = 0; i < scene->mNumAnimations; i++)
+	for (UINT i = 0; i < scene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
 		Clip* clip = ReadClip(scene->mAnimations[i]);
 		string path = "ModelData/Clips/" + savePath + to_string(i) + ".clip";
@@ -364,29 +364,29 @@ Clip* ModelExporter::ReadClip(aiAnimation* animation)
 {
 	Clip* clip = new Clip();
 	clip->name = animation->mName.C_Str();
-	clip->tickPerSecond = (float)animation->mTicksPerSecond;
-	clip->frameCount = (UINT)animation->mDuration + 1;
+	clip->tickPerSecond = (float)animation->mTicksPerSecond; // FramePerSecond.
+	clip->frameCount = (UINT)animation->mDuration + 1; // +1 하는 이유 : 
 	clip->duration = 0.0f;
 
 	vector<ClipNode> clipNodes;
-	for (UINT i = 0; i < animation->mNumChannels; i++)
+	for (UINT i = 0; i < animation->mNumChannels; i++) // 애니메이션의 Node정보. 즉, Bone 정보들이 들어있다.
 	{
 		aiNodeAnim* srcNode = animation->mChannels[i];
 
-		ClipNode node;
+		ClipNode node; // 사용할 노드구조체.
 		node.name = srcNode->mNodeName;
 
 		UINT keyCount = max(srcNode->mNumPositionKeys, srcNode->mNumRotationKeys);
-		keyCount = max(keyCount, srcNode->mNumScalingKeys);
+		keyCount = max(keyCount, srcNode->mNumScalingKeys); // 각 키들마다 키값이 싹다 달라서 제일 많은거 기준으로 잡아줘야함.
 
 		KeyTransform transform;
 		for (UINT k = 0; k < keyCount; k++)
 		{
 			bool isFound = false;
-			UINT t = node.keyFrame.size();
+			UINT t = node.keyFrame.size(); // 현재 프레임 저장.
 
-			if (k < srcNode->mNumPositionKeys &&
-				abs((float)srcNode->mPositionKeys[k].mTime - (float)t) <= FLT_EPSILON)
+			if (k < srcNode->mNumPositionKeys && // 현재 프레임(t)와 Position의 프레임이 같다면.
+				abs((float)srcNode->mPositionKeys[k].mTime - (float)t) <= FLT_EPSILON) // 엡실론값 비교로 체크.
 			{
 				aiVectorKey key = srcNode->mPositionKeys[k];
 				memcpy_s(&transform.position, sizeof(Float3),
@@ -422,24 +422,27 @@ Clip* ModelExporter::ReadClip(aiAnimation* animation)
 				isFound = true;
 			}
 
-			if (isFound)
+			if (isFound) // 3개의 체크에서 하나라도 데이터가 있다면 키프레임 데이터 벡터에 저장.
 				node.keyFrame.emplace_back(transform);
 		}//KeyTransform
 
-		if (node.keyFrame.size() < clip->frameCount)
-		{
-			UINT count = clip->frameCount - node.keyFrame.size();
-			KeyTransform keyTransform = node.keyFrame.back();
 
-			for (UINT n = 0; n < count; n++)
+		if (node.keyFrame.size() < clip->frameCount) // Position, Rotation, Scale중 데이터가 부족한 부분을 채워준다.
+		{
+			UINT count = clip->frameCount - node.keyFrame.size(); // 프레임 몇개가 부족한지.
+			
+			KeyTransform keyTransform = node.keyFrame.back(); // 마지막꺼로 복사해서 다 채울것임.
+
+			for (UINT n = 0; n < count; n++) // 마지막 동작 부족한 프레임만큼 돌려서 채운다.
 				node.keyFrame.emplace_back(keyTransform);
 		}
-		clip->duration = max(clip->duration, node.keyFrame.back().time);
 
-		clipNodes.emplace_back(node);
+		clip->duration = max(clip->duration, node.keyFrame.back().time); // 클립 재생길이
+
+		clipNodes.emplace_back(node); // 우리가 사용할 구조체에 저장.
 	}//Bone
 
-	ReadKeyFrame(clip, scene->mRootNode, clipNodes);
+	ReadKeyFrame(clip, scene->mRootNode, clipNodes); // 재귀를 타면서 노드 쭉 내려가면서 키프레임 데이터에 쓴다.
 
 	return clip;
 }
@@ -449,12 +452,13 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 	KeyFrame* keyFrame = new KeyFrame();
 	keyFrame->boneName = node->mName.C_Str();
 
-	for (UINT i = 0; i < clip->frameCount; i++)
+	for (UINT i = 0; i < clip->frameCount; i++) // 클립의 프레임만큼
 	{
 		ClipNode* clipNode = nullptr;
-		for (ClipNode& temp : clipNodes)
+
+		for (ClipNode& temp : clipNodes) // 본의 키프레임 size 만큼 
 		{
-			if (temp.name == node->mName)
+			if (temp.name == node->mName) // 일치하는 본이 있으면 가져옴.
 			{
 				clipNode = &temp;
 				break;
@@ -462,8 +466,9 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 		}
 
 		KeyTransform keyTransform;
-		if (clipNode == nullptr)
+		if (clipNode == nullptr) // 일치하는 본이 없다면
 		{
+			// 새로 채워준다.
 			Matrix transform(node->mTransformation[0]);
 			transform = XMMatrixTranspose(transform);
 
@@ -476,7 +481,7 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 
 			keyTransform.time = (float)i;
 		}
-		else
+		else // 일치하는 본이 있다면
 		{
 			keyTransform = clipNode->keyFrame[i];
 		}
@@ -484,7 +489,7 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 	}
 	clip->keyFrame.emplace_back(keyFrame);
 
-	for (UINT i = 0; i < node->mNumChildren; i++)
+	for (UINT i = 0; i < node->mNumChildren; i++) // 재귀
 		ReadKeyFrame(clip, node->mChildren[i], clipNodes);
 }
 

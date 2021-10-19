@@ -201,15 +201,15 @@ public:
 		float padding[2];
 	};
 
-	struct TweenDesc
+	struct TweenDesc // 현재동작->다음동작으로 lerp해서 부드럽게 넘겨주기 위한 구조체.
 	{
-		float takeTime;
+		float takeTime; // 총 걸리는 시간
 		float tweenTime;
 		float runningTime;
 		float padding;
 
-		KeyFrameDesc cur;
-		KeyFrameDesc next;
+		KeyFrameDesc cur; // 현재 동작
+		KeyFrameDesc next; // 다음 동작
 
 		TweenDesc() : takeTime(0.5f), tweenTime(0.5f), runningTime(0.0f)
 		{

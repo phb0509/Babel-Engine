@@ -4,7 +4,7 @@ GameManager::GameManager()
 {
 	player = new Player();
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		monster = new Mutant;
 		monsters.push_back(monster);

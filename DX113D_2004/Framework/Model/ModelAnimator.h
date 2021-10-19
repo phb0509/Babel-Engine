@@ -2,19 +2,7 @@
 
 class ModelAnimator : public ModelReader
 {
-protected:
-	FrameBuffer* frameBuffer;
-	ClipTransform* clipTransform;
-	ClipTransform* nodeTransform;
 
-	ID3D11Texture2D* texture;
-	ID3D11ShaderResourceView* srv;
-
-	vector<ModelClip*> clips;	
-
-	map<UINT, CallBack> EndEvent;
-	map<UINT, CallBackParam> EndParamEvent;	
-	map<UINT, int> param;
 public:
 	ModelAnimator(string file);
 	virtual ~ModelAnimator();
@@ -32,7 +20,26 @@ public:
 
 	Matrix GetTransformByNode(int nodeIndex);
 	Matrix GetTransformByNode(UINT instance, int nodeIndex);
+
 protected:
+	// 본을 텍스쳐로 만듬 (Shader로 넘길 수 있는 최대 한계는 16바이트 * 5000.
+	// 본 하나 매프레임마다 수많은 키프레임이 있기 때문에 한계를 넘는다.
+	// 그래서 텍스쳐로 만들어서 대량의 데이터를 넘겨줘야함.
 	void CreateTexture();
 	void CreateClipTransform(UINT index);
+
+
+protected:
+	FrameBuffer* frameBuffer;
+	ClipTransform* clipTransform;
+	ClipTransform* nodeTransform;
+
+	ID3D11Texture2D* texture;
+	ID3D11ShaderResourceView* srv;
+
+	vector<ModelClip*> clips;
+
+	map<UINT, CallBack> EndEvent;
+	map<UINT, CallBackParam> EndParamEvent;
+	map<UINT, int> param;
 };

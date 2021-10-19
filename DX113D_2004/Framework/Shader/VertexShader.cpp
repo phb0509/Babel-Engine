@@ -99,9 +99,9 @@ void VertexShader::CreateInputLayout()
 
 		if (temp == "Instance")
 		{
-			elementDesc.InputSlot = 1;
-			elementDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
-			elementDesc.InstanceDataStepRate = 1;
+			elementDesc.InputSlot = 1; // 레지스터번호인듯?
+			elementDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;  // 입력원소는 인스턴스별 자료이다..를 명시.
+			elementDesc.InstanceDataStepRate = 1; // 인스턴스별자료와 인스턴스를 1:1로 대응.
 		}
 
 		inputLayouts.emplace_back(elementDesc);

@@ -1,16 +1,16 @@
 #include "Framework.h"
 #include "MainScene.h"
 
-MainScene::MainScene():
+MainScene::MainScene() :
 	mTargetCameraFrustum(nullptr)
 {
 	mTerrain = new Terrain();
-	mPlayer = GM->GetPlayer();
-	mPlayer->SetTerrain(mTerrain);
-	Environment::Get()->SetTargetToCamera(mPlayer);
+	//mPlayer = GM->GetPlayer();
+	//mPlayer->SetTerrain(mTerrain);
+	//Environment::Get()->SetTargetToCamera(mPlayer);
 	monsters = GM->GetMonsters();
 
-	mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	/*mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
 	mObstacle1->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle1->mPosition = { 40, 20, 40 };
 	mObstacle1->UpdateWorld();
@@ -20,16 +20,33 @@ MainScene::MainScene():
 	mObstacle2->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle2->mPosition = { 90, 20, 90 };
 	mObstacle2->UpdateWorld();
-	mObstacle2->GetCollider()->UpdateWorld();
-	
+	mObstacle2->GetCollider()->UpdateWorld();*/
 
-	monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
+
+	//monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
 	//monsters[1]->position = { 45.0f, 0.0f, 50.0f };
 
-	monsters[0]->SetTerrain(mTerrain);
+	//monsters[0]->SetTerrain(mTerrain);
 	//monsters[1]->SetTerrain(terrain);
 
-	vector<Collider*> monsters0Obstacles;
+	for (int i = 0; i < monsters.size(); i++)
+	{
+		monsters[i]->SetTerrain(mTerrain);
+	}
+
+	int dInt = 5;
+	int vInt = 20;
+
+
+	for (int i = 0; i < monsters.size(); i++)
+	{
+		monsters[i]->mPosition.z = (i / dInt) * vInt;
+		monsters[i]->mPosition.x = i * vInt;
+	}
+
+	//printToCSV();
+	
+	//vector<Collider*> monsters0Obstacles;
 	//monsters0Obstacles.push_back(mObstacle1->GetCollider());
 	//monsters0Obstacles.push_back(mObstacle2->GetCollider());
 	//vector<Collider*> monsters1Obstacles;
@@ -37,11 +54,11 @@ MainScene::MainScene():
 	//monsters0Obstacles.push_back(monsters[1]->GetColliderForAStar());
 	//monsters1Obstacles.push_back(monsters[0]->GetColliderForAStar());
 
-	monsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
+	//monsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
 	//monsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
 
 
-	for (int y = -3; y < 4; y++)
+	/*for (int y = -3; y < 4; y++)
 	{
 		for (int i = 0; i < 25; i++)
 		{
@@ -54,10 +71,10 @@ MainScene::MainScene():
 				cubes.push_back(cube);
 			}
 		}
-	}
+	}*/
 	
 	
-	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
+	//mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
 }
 
 MainScene::~MainScene()
@@ -68,20 +85,20 @@ MainScene::~MainScene()
 void MainScene::Update()
 {
 	mTerrain->Update();
-	mPlayer->Update();
+	//mPlayer->Update();
 	
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monsters[i]->Update();
 	}
 
-	for (int i = 0; i < cubes.size(); i++)
+	/*for (int i = 0; i < cubes.size(); i++)
 	{
 		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
 		{
 			cubes[i]->Update();
 		}
-	}
+	}*/
 }
 
 void MainScene::PreRender()
@@ -91,7 +108,7 @@ void MainScene::PreRender()
 void MainScene::Render()
 {
 	mTerrain->Render();
-	mPlayer->Render();
+	//mPlayer->Render();
 
 	for (int i = 0; i < monsters.size(); i++)
 	{
@@ -103,16 +120,34 @@ void MainScene::Render()
 
 	//monsters[0]->GetAStar()->Render();
 	
-	for (int i = 0; i < cubes.size(); i++)
+	/*for (int i = 0; i < cubes.size(); i++)
 	{
 		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
 		{
 			cubes[i]->Render();
 		}
-	}
+	}*/
 }
 
 void MainScene::PostRender()
 {
-	mPlayer->PostRender();
+	//mPlayer->PostRender();
+}
+
+void MainScene::printToCSV()
+{
+	FILE* file;
+	fopen_s(&file, "TextData/monstersPosition.csv", "w");
+
+	for (UINT i = 0; i < monsters.size(); i++)
+	{
+		fprintf(
+			file,
+			"%d,%.3f,%.3f,%.3f\n",
+			i,
+			monsters[i]->mPosition.x, monsters[i]->mPosition.y, monsters[i]->mPosition.z
+		);
+	}
+
+	fclose(file);
 }

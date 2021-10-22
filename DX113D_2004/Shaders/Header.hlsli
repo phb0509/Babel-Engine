@@ -234,21 +234,32 @@ matrix SkinWorld(float4 indices, float4 weights)
     [unroll(4)]
     for (int i = 0; i < 4; i++)
     {
-        c0 = transformMap.Load(int4(indices[i] * 4 + 0, curFrame[0], clip[0], 0));
-        c1 = transformMap.Load(int4(indices[i] * 4 + 1, curFrame[0], clip[0], 0));
-        c2 = transformMap.Load(int4(indices[i] * 4 + 2, curFrame[0], clip[0], 0));
-        c3 = transformMap.Load(int4(indices[i] * 4 + 3, curFrame[0], clip[0], 0));        
-        cur = matrix(c0, c1, c2, c3);
+        /*
+           Sample을 안쓰고 Load 사용.
+           Sample은 레스터라이징에서 확대,축소가 일어나기 때문에 원본값을 가져오기 위함.
+           indices : 본 번호, 4픽셀당 하나의 행렬이므로 4를 곱해주고 0,1,2,3을 더해줌으로써 1,2,3,4 번째 픽셀을 가리킴
+           currFrame : 현재 프레임의 번호
+           clip : 면
+           w는 밉맵인데 사용하지 않기 때문에 .
+        */
+        c0 = transformMap.Load(int4(indices[i] * 4 + 0, curFrame[0], clip[0], 0)); // 첫번째 픽셀
+        c1 = transformMap.Load(int4(indices[i] * 4 + 1, curFrame[0], clip[0], 0)); // 두번째 픽셀
+        c2 = transformMap.Load(int4(indices[i] * 4 + 2, curFrame[0], clip[0], 0)); // 세번째 픽셀
+        c3 = transformMap.Load(int4(indices[i] * 4 + 3, curFrame[0], clip[0], 0)); // 네번째 픽셀
+        cur = matrix(c0, c1, c2, c3); // 가중치에 영향을 받을 동작
         
+        // 다음 동작
         n0 = transformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], clip[0], 0));
         n1 = transformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], clip[0], 0));
         n2 = transformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], clip[0], 0));
         n3 = transformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], clip[0], 0));
-        next = matrix(n0, n1, n2, n3);
+        next = matrix(n0, n1, n2, n3); // 가중치에 영향을 받을 다음 동작.
         
+        // 현재 동작에서 다음동작으로 lerp 해서 동작을 부드럽게 이어준다.
         curAnim = lerp(cur, next, time[0]);
         
         [flatten]
+        // 다음 클립
         if(clip[1] > -1)
         {
             c0 = transformMap.Load(int4(indices[i] * 4 + 0, curFrame[1], clip[1], 0));
@@ -268,7 +279,7 @@ matrix SkinWorld(float4 indices, float4 weights)
             curAnim = lerp(curAnim, nextAnim, tweenFrame[0].tweenTime);
         }
         
-        transform += mul(weights[i], curAnim);
+        transform += mul(weights[i], curAnim); // 가중치를 곱해서 더해줌.
     }
 
     return transform;

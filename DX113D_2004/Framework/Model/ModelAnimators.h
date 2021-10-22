@@ -11,18 +11,7 @@ private:
 		UINT index;
 	};
 
-	vector<Transform*> transforms;
-	InstanceData instanceData[MAX_INSTANCE];
 
-	VertexBuffer* instanceBuffer;
-
-	Frustum* frustum;
-	UINT drawCount;
-
-	Vector3 minBox, maxBox;
-
-	vector<map<UINT, CallBackParam>> EndEvents;
-	vector<map<UINT, int>> params;
 public:
 	ModelAnimators(string file);
 	~ModelAnimators();
@@ -38,8 +27,23 @@ public:
 
 	void UpdateTransforms();
 
-	Transform* GetTransform(UINT instance) { return transforms[instance]; }
+	Transform* GetTransform(UINT instance) { return mTransforms[instance]; }
 
-	void SetEndEvents(UINT instance, UINT clip, CallBackParam Event) { EndEvents[instance][clip] = Event; }
-	void SetParams(UINT instance, UINT clip, int param) { params[instance][clip] = param; }
+	void SetEndEvents(UINT instance, UINT clip, CallBackParam Event) { mEndEvents[instance][clip] = Event; }
+	void SetParams(UINT instance, UINT clip, int param) { mParams[instance][clip] = param; }
+
+
+private:
+	vector<Transform*> mTransforms;
+	InstanceData mInstanceData[MAX_INSTANCE];
+
+	VertexBuffer* mInstanceBuffer;
+
+	Frustum* mTargetCameraFrustum;
+	UINT mDrawCount;
+
+	Vector3 mMinBox, mMaxBox;
+
+	vector<map<UINT, CallBackParam>> mEndEvents;
+	vector<map<UINT, int>> mParams;
 };

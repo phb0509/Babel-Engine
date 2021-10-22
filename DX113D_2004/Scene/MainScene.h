@@ -16,6 +16,7 @@ public:
 
 private:
 	void printToCSV();
+	void setIdle(int instance);
 
 private:
 	Player* mPlayer;
@@ -26,7 +27,7 @@ private:
 	ModelObject* mObstacle1;
 	ModelObject* mObstacle2;
 
-	Cube* cube;
-	vector<Cube*> cubes;
 	Frustum* mTargetCameraFrustum;
+	ModelAnimators* mInstancedMutants;
+	vector<Matrix> boneMatrix;
 };

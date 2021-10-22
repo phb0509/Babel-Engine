@@ -209,6 +209,7 @@ void ModelAnimator::CreateTexture()
 
 	clipTransform = new ClipTransform[clipCount];
 	nodeTransform = new ClipTransform[clipCount];
+
 	for (UINT i = 0; i < clipCount; i++)
 		CreateClipTransform(i);
 
@@ -223,11 +224,12 @@ void ModelAnimator::CreateTexture()
 		desc.MipLevels = 1;
 		desc.SampleDesc.Count = 1;
 
-		UINT pageSize = MAX_BONE * sizeof(Matrix) * MAX_FRAME_KEY;
+		UINT pageSize = MAX_BONE * sizeof(Matrix) * MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
 
-		void* p = VirtualAlloc(nullptr, pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE);
+		void* p = VirtualAlloc(nullptr, pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE); // 용량이 너무 크면 데이터복사가 안되기 때문에 가상으로 '이정도 쓸거라'고 잡아놓는것
+																							// 전체클립데이터 크기 잡아놓은것.
 
-		for (UINT c = 0; c < clipCount; c++) // 모델 클립 개수만큼
+		for (UINT c = 0; c < clipCount; c++) // 모델 클립 개수만큼, 메모리용량은 전체클립크기로 잡아놨지만 너무 크기떄문에 한클립씩 메모리복사.
 		{
 			UINT start = c * pageSize; // 페이지의 시작
 

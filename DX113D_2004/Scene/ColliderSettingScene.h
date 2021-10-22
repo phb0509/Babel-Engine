@@ -11,19 +11,12 @@ public:
 		Vector3 scale;
 	};
 
-
 	ColliderSettingScene();
 	~ColliderSettingScene();
 
-	
-
-	// Scene을(를) 통해 상속됨
 	virtual void Update() override;
-
 	virtual void PreRender() override;
-
 	virtual void Render() override;
-
 	virtual void PostRender() override;
 
 	void SelectClip();
@@ -36,43 +29,46 @@ public:
 
 	void TreeNodePreProcessing();
 	void TreeNodeRecurs(int nodesIndex);
+
+private:
+	void printToCSV();
 	
 	
 
 
 private:
-	ToolModel* model;
-	ToolModel* currentModel;
+	ToolModel* mModel;
+	ToolModel* mCurrentModel;
 
-	string projectPath;
-	string path;
-	string currentModelName;
+	string mProjectPath;
+	string mPath;
+	string mCurrentModelName;
 
-	vector<string> clips;
-	vector<string> modelList;
+	vector<string> mClips;
+	vector<string> mModelList;
 
-	const char* clipTypes[20];
-	const char* modelTypes[20];
+	const char* mClipTypes[20];
+	const char* mModelTypes[20];
 
 
-	int currentModelIndex;
-	int oldModelIndex;
-	int currentClipIndex;
-	int currentColliderIndex;
+	int mCurrentModelIndex;
+	int mOldModelIndex;
+	int mCurrentClipIndex;
+	int mCurrentColliderIndex;
 
-	map<string, vector<string>> clipsMap;
-	vector<ToolModel*> models;
-	vector<NodeData*> nodes;
-	vector<Collider*> nodeColliders;
+	map<string, vector<string>> mClipsMap;
+	vector<ToolModel*> mModels;
+	vector<NodeData*> mNodes;
+	vector<Collider*> mNodeColliders;
 
-	map<int, vector<int>> preprocessedNodes;
-	map<int, bool> nodeCheck;
-	map<int, bool> createdCollidersCheck;
-	map<int, Collider*> nodeCollidersMap;
-	map<int, string> nodeNamesMap;
-	map<int, char[100]> colliderTagMap;
+	map<int, vector<int>> mPreprocessedNodes;
+	map<int, bool> mNodeCheck;
+	map<int, bool> mCreatedCollidersCheck;
+	map<int, Collider*> mNodeCollidersMap;
+	map<int, string> mNodeNameMap;
+	map<int, char[100]> mColliderTagMap;
 
-	Collider* nodeCollider;
+	Collider* mNodeCollider;
 
 
 

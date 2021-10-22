@@ -1,29 +1,28 @@
 #include "Framework.h"
 
 ModelAnimators::ModelAnimators(string file)
-    : ModelAnimator(file), drawCount(0)
+    : ModelAnimator(file), mDrawCount(0)
 {
-	for (int i = 0; i < MAX_INSTANCE; i++)
+	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
-		instanceData[i].world = XMMatrixIdentity();
-		instanceData[i].index = i;
+		mInstanceData[i].world = XMMatrixIdentity();
+		mInstanceData[i].index = i;
 	}
 
-    instanceBuffer = new VertexBuffer(instanceData, sizeof(InstanceData), MAX_INSTANCE);
-	frustum = new Frustum();
+    mInstanceBuffer = new VertexBuffer(mInstanceData, sizeof(InstanceData), MAX_INSTANCE);
+	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
 
-	SetBox(&minBox, &maxBox);
+	SetBox(&mMinBox, &mMaxBox);
 }
 
 ModelAnimators::~ModelAnimators()
 {
-    delete instanceBuffer;
-	delete frustum;
+    delete mInstanceBuffer;
 }
 
 void ModelAnimators::Update()
 {
-	for (UINT i = 0; i < transforms.size(); i++)
+	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
 		FrameBuffer::TweenDesc& tweenDesc = frameBuffer->data.tweenDesc[i];
 
@@ -38,8 +37,8 @@ void ModelAnimators::Update()
 			{
 				if (desc.curFrame + desc.time >= clip->frameCount)
 				{
-					if (EndEvents[i].count(desc.clip) > 0)
-						EndEvents[i][desc.clip](params[i][desc.clip]);
+					if (mEndEvents[i].count(desc.clip) > 0)
+						mEndEvents[i][desc.clip](mParams[i][desc.clip]);
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->frameCount;
@@ -90,7 +89,7 @@ void ModelAnimators::Update()
 		}
 	}	
 
-	UpdateTransforms();
+	UpdateTransforms(); // 컬링 및 인스턴스버퍼 셋팅.
 }
 
 void ModelAnimators::Render()
@@ -101,14 +100,14 @@ void ModelAnimators::Render()
 	frameBuffer->SetVSBuffer(4);
 	DEVICECONTEXT->VSSetShaderResources(0, 1, &srv);
 
-	instanceBuffer->IASet(1);
+	mInstanceBuffer->IASet(1);
 
-	MeshRender(drawCount);
+	MeshRender(mDrawCount);
 }
 
 void ModelAnimators::PostRender()
 {
-	for (Transform* transform : transforms)
+	for (Transform* transform : mTransforms)
 	{
 		Vector3 screenPos = WorldToScreen(transform->GetGlobalPosition());
 
@@ -126,10 +125,10 @@ void ModelAnimators::PostRender()
 Transform* ModelAnimators::Add()
 {
 	Transform* transform = new Transform();
-	transforms.emplace_back(transform);
+	mTransforms.emplace_back(transform);
 
-	EndEvents.emplace_back();
-	params.emplace_back();
+	mEndEvents.emplace_back();
+	mParams.emplace_back();
 
 	return transform;
 }
@@ -141,24 +140,23 @@ void ModelAnimators::PlayClip(UINT instance, UINT clip, float speed, float takeT
 	frameBuffer->data.tweenDesc[instance].next.speed = speed;
 }
 
-void ModelAnimators::UpdateTransforms()
+void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 {
-	frustum->Update();
-	drawCount = 0;
+	//mTargetCameraFrustum->Update();
+	mDrawCount = 0;
 
-	for (UINT i = 0; i < transforms.size(); i++)
+	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
-		//if (frustum->ContainPoint(transforms[i]->GlobalPos()))
-		Vector3 worldMin = XMVector3TransformCoord(minBox.data, *transforms[i]->GetWorld());
-		Vector3 worldMax = XMVector3TransformCoord(maxBox.data, *transforms[i]->GetWorld());
-		if (frustum->ContainBox(worldMin, worldMax))
+		Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorld());
+		Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorld());
+		if (mTargetCameraFrustum->ContainBox(worldMin, worldMax))
 		{			
-			transforms[i]->UpdateWorld();
-			instanceData[drawCount].world = XMMatrixTranspose(*transforms[i]->GetWorld());
-			instanceData[drawCount].index = i;
-			drawCount++;
+			mTransforms[i]->UpdateWorld();
+			mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorld());
+			mInstanceData[mDrawCount].index = i;
+			mDrawCount++;
 		}
 	}
 
-	instanceBuffer->Update(instanceData, drawCount);
+	mInstanceBuffer->Update(mInstanceData, mDrawCount);
 }

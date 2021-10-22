@@ -147,7 +147,7 @@ void Mutant::loadCollider()
 
 	void* ptr1 = (void*)mTempColliderDatas.data();
 
-	for (int i = 0; i < colliderSize; i++)
+	for (int i = 0; i < colliderSize; i++) // 툴에서 저장한 컬라이더이름.
 	{
 		mColliderDatas[i].name = colliderReader.String();
 	}

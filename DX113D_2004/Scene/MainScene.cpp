@@ -5,12 +5,12 @@ MainScene::MainScene() :
 	mTargetCameraFrustum(nullptr)
 {
 	mTerrain = new Terrain();
-	//mPlayer = GM->GetPlayer();
-	//mPlayer->SetTerrain(mTerrain);
-	//Environment::Get()->SetTargetToCamera(mPlayer);
+	mPlayer = GM->GetPlayer();
+	mPlayer->SetTerrain(mTerrain);
+	Environment::Get()->SetTargetToCamera(mPlayer);
 	monsters = GM->GetMonsters();
 
-	/*mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
 	mObstacle1->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle1->mPosition = { 40, 20, 40 };
 	mObstacle1->UpdateWorld();
@@ -20,33 +20,16 @@ MainScene::MainScene() :
 	mObstacle2->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle2->mPosition = { 90, 20, 90 };
 	mObstacle2->UpdateWorld();
-	mObstacle2->GetCollider()->UpdateWorld();*/
+	mObstacle2->GetCollider()->UpdateWorld();
 
 
-	//monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
+	monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
 	//monsters[1]->position = { 45.0f, 0.0f, 50.0f };
 
-	//monsters[0]->SetTerrain(mTerrain);
+	monsters[0]->SetTerrain(mTerrain);
 	//monsters[1]->SetTerrain(terrain);
 
-	for (int i = 0; i < monsters.size(); i++)
-	{
-		monsters[i]->SetTerrain(mTerrain);
-	}
-
-	int dInt = 5;
-	int vInt = 20;
-
-
-	for (int i = 0; i < monsters.size(); i++)
-	{
-		monsters[i]->mPosition.z = (i / dInt) * vInt;
-		monsters[i]->mPosition.x = i * vInt;
-	}
-
-	//printToCSV();
-	
-	//vector<Collider*> monsters0Obstacles;
+	vector<Collider*> monsters0Obstacles;
 	//monsters0Obstacles.push_back(mObstacle1->GetCollider());
 	//monsters0Obstacles.push_back(mObstacle2->GetCollider());
 	//vector<Collider*> monsters1Obstacles;
@@ -54,27 +37,34 @@ MainScene::MainScene() :
 	//monsters0Obstacles.push_back(monsters[1]->GetColliderForAStar());
 	//monsters1Obstacles.push_back(monsters[0]->GetColliderForAStar());
 
-	//monsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
+	monsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
 	//monsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
 
+	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
+	
+	//mInstancedMutants = new ModelAnimators("Mutant/Mutant");
+	//mInstancedMutants->SetShader(L"Models");
+	//mInstancedMutants->ReadClip("Mutant/Idle0.clip");
 
-	/*for (int y = -3; y < 4; y++)
-	{
-		for (int i = 0; i < 25; i++)
-		{
-			for (int j = 0; j < 25; j++)
-			{
-				cube = new Cube();
-				cube->mPosition.x = i * 10.0f;
-				cube->mPosition.y = y * 10.0f;
-				cube->mPosition.z = j * 10.0f;
-				cubes.push_back(cube);
-			}
-		}
-	}*/
-	
-	
-	//mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
+	//Vector3 minBox, maxBox;
+	//mInstancedMutants->SetBox(&minBox, &maxBox);
+
+	//for (float z = 0.0f; z < 5.0f; z++)
+	//{
+	//	for (float x = 0.0f; x < 50.0f; x++)
+	//	{
+	//		Transform* transform = mInstancedMutants->Add();
+	//		transform->tag = "x : " + to_string((int)x) + " z : " + to_string((int)z);
+	//		transform->mPosition = { x, 0.0f, z };
+	//		transform->mScale = { 0.1f, 0.1f, 0.1f };
+
+	//		mInstancedMutants->SetEndEvents(boneMatrix.size(), 2, // 인스턴스,클립
+	//			bind(&MainScene::SetIdle, this, placeholders::_1));
+	//		mInstancedMutants->SetParams(boneMatrix.size(), 2, boneMatrix.size());
+
+	//		boneMatrix.emplace_back(XMMatrixIdentity()); // 인스턴스수만큼 단위행렬로 초기화.			
+	//	}
+	//}
 }
 
 MainScene::~MainScene()
@@ -85,20 +75,14 @@ MainScene::~MainScene()
 void MainScene::Update()
 {
 	mTerrain->Update();
-	//mPlayer->Update();
-	
+	mPlayer->Update();
+
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monsters[i]->Update();
 	}
 
-	/*for (int i = 0; i < cubes.size(); i++)
-	{
-		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
-		{
-			cubes[i]->Update();
-		}
-	}*/
+	//mInstancedMutants->Update();
 }
 
 void MainScene::PreRender()
@@ -108,33 +92,24 @@ void MainScene::PreRender()
 void MainScene::Render()
 {
 	mTerrain->Render();
-	//mPlayer->Render();
+	mPlayer->Render();
 
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monsters[i]->Render();
 	}
 
-	/*mObstacle1->Render();
-	mObstacle2->Render();*/
-
-	//monsters[0]->GetAStar()->Render();
-	
-	/*for (int i = 0; i < cubes.size(); i++)
-	{
-		if (mTargetCameraFrustum->ContainPoint(cubes[i]->mPosition))
-		{
-			cubes[i]->Render();
-		}
-	}*/
+	//mInstancedMutants->Render();
 }
 
 void MainScene::PostRender()
 {
-	//mPlayer->PostRender();
+	mPlayer->PostRender();
 }
 
-void MainScene::printToCSV()
+
+
+void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함수.
 {
 	FILE* file;
 	fopen_s(&file, "TextData/monstersPosition.csv", "w");
@@ -150,4 +125,9 @@ void MainScene::printToCSV()
 	}
 
 	fclose(file);
+}
+
+void MainScene::setIdle(int instance)
+{
+	mInstancedMutants->PlayClip(instance, 0); // Idle.
 }

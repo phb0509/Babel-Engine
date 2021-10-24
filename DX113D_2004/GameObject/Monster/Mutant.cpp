@@ -161,6 +161,7 @@ void Mutant::loadCollider()
 		mColliderDatas[i].scale = mTempColliderDatas[i].scale;
 	}
 
+
 	findCollider("smashAttackCollider", mSmashAttackCollider);
 	findCollider("BodyCollider", mBodyCollider);
 }

@@ -305,11 +305,49 @@ void ColliderSettingScene::TreeNodeRecurs(int nodesIndex)
 void ColliderSettingScene::printToCSV()
 {
 	FILE* file;
-	const char* fileName;
-	//fopen_s(&file, "TextData/Saved" + mCurrentModelName + "Collider.csv", "w");
+
+	string str = "TextData/Saved" + mCurrentModelName + "Colliders.csv";
+	vector<char> writable(str.begin(), str.end());
+	writable.push_back('\0');
+	const char* fileName = &writable[0];
+
+	fopen_s(&file, fileName, "w");
 
 
-	for (UINT i = 0; i < monsters.size(); i++)
+	fprintf( // ÄÃ·³¸í
+		file,
+		"%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		"Position.x", "Position.y", "Position.z",
+		"Rotation.x", "Rotation.y", "Rotation.z",
+		"Scale.x", "Scale.y", "Scale.z"
+	);
+
+	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	{
+		if (it->second)
+		{
+			colliderData data;
+			data.position = mNodeCollidersMap[it->first]->mPosition;
+			data.rotation = mNodeCollidersMap[it->first]->mRotation;
+			data.scale = mNodeCollidersMap[it->first]->mScale;
+
+			string tag = mCurrentModelName;
+
+			fprintf(
+				file,
+				"%s,%.3f,%.3f,%.3f, %.3f,%.3f,%.3f, %.3f,%.3f,%.3f\n",
+				tag,
+				data.position.x, data.position.y, data.position.z,
+				data.rotation.x, data.rotation.y, data.rotation.z,
+				data.scale.x, data.scale.y, data.scale.z
+			);
+		}
+	}
+
+	fclose(file);
+
+
+	/*for (UINT i = 0; i < monsters.size(); i++)
 	{
 		fprintf(
 			file,
@@ -319,7 +357,7 @@ void ColliderSettingScene::printToCSV()
 		);
 	}
 
-	fclose(file);
+	fclose(file);*/
 }
 
 void ColliderSettingScene::ShowColliderEditor()

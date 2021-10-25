@@ -119,22 +119,22 @@ void Mutant::SetAnimation(eAnimationStates value)
 	}
 }
 
-void Mutant::setColliders()
-{
-	int bodyIndex = GetNodeByName("Mutant:Spine");
-	mBodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
-	mBodyCollider->SetParent(&mBodyMatrix);
 
-	int smashAttackIndex = GetNodeByName("Mutant:LeftHand");
-	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * mWorldMatrix;
-	mSmashAttackCollider->SetParent(&mSmashAttackMatrix);
-}
 
 void Mutant::setAttackEnd()
 {
 	mPlayer = GM->Get()->GetPlayer();
 	RotateToDestinationForModel(this, mPlayer->mPosition);
 }
+
+Collider* Mutant::GetHitCollider()
+{
+	return mBodyCollider;
+}
+
+
+
+
 
 void Mutant::loadCollider()
 {
@@ -149,7 +149,8 @@ void Mutant::loadCollider()
 
 	for (int i = 0; i < colliderSize; i++) // 툴에서 저장한 컬라이더이름.
 	{
-		mColliderDatas[i].name = colliderReader.String();
+		mColliderDatas[i].colliderName = colliderReader.String();
+		mColliderDatas[i].nodeName = colliderReader.String();
 	}
 
 	colliderReader.Byte(&ptr1, sizeof(temp_colliderData) * colliderSize);
@@ -170,7 +171,7 @@ void Mutant::findCollider(string name, Collider* collider)
 {
 	for (int i = 0; i < mColliderDatas.size(); i++)
 	{
-		if (mColliderDatas[i].name == name)
+		if (mColliderDatas[i].colliderName == name)
 		{
 			collider->mPosition = mColliderDatas[i].position;
 			collider->mRotation = mColliderDatas[i].rotation;
@@ -180,7 +181,17 @@ void Mutant::findCollider(string name, Collider* collider)
 }
 
 
-Collider* Mutant::GetHitCollider()
+void Mutant::setColliders()
 {
-	return mBodyCollider;
+	int bodyIndex = GetNodeByName("Mutant:Spine");
+	mBodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
+	mBodyCollider->SetParent(&mBodyMatrix);
+
+	int smashAttackIndex = GetNodeByName("Mutant:LeftHand");
+	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * mWorldMatrix;
+	mSmashAttackCollider->SetParent(&mSmashAttackMatrix);
 }
+
+
+
+

@@ -1,2 +1,4 @@
-µò),0.000,0.000,0.000, 0.000,0.000,0.000, 70.000,110.000,50.000
-«ò),40.000,0.000,-10.000, 0.000,0.000,0.000, 50.000,30.000,30.000
+ColliderName,,NodeName,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
+,,,,,,,,,,,,,,
+hipsCollider,,Mutant:Hips,,0,0,0,,0,0,0,,20,20,20
+SpineCollider,,Mutant:Spine,,0,0,0,,0,0,0,,40,40,40

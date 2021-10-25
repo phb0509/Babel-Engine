@@ -4,12 +4,20 @@ class ColliderSettingScene : public Scene
 {
 public:
 
-	struct colliderData
+	struct ColliderDataForSave
 	{
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
 	};
+
+	struct TreeNodeData
+	{
+		Collider* collider;
+		string nodeName;
+	};
+
+	
 
 	ColliderSettingScene();
 	~ColliderSettingScene();
@@ -52,24 +60,22 @@ private:
 
 
 	int mCurrentModelIndex;
-	int mOldModelIndex;
+	int mBeforeModelIndex;
 	int mCurrentClipIndex;
 	int mCurrentColliderIndex;
 
 	map<string, vector<string>> mClipsMap;
 	vector<ToolModel*> mModels;
 	vector<NodeData*> mNodes;
-	vector<Collider*> mNodeColliders;
+	//vector<Collider*> mNodeColliders;
 
 	map<int, vector<int>> mPreprocessedNodes;
 	map<int, bool> mNodeCheck;
 	map<int, bool> mCreatedCollidersCheck;
-	map<int, Collider*> mNodeCollidersMap;
+	map<int, TreeNodeData> mNodeCollidersMap;
 	map<int, string> mNodeNameMap;
-	map<int, char[100]> mColliderTagMap;
+	map<int, char[100]> mColliderNameMap;
 
 	Collider* mNodeCollider;
-
-
 
 };

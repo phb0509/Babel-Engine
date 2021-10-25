@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "ColliderSettingScene.h"
 
-ColliderSettingScene::ColliderSettingScene() : mCurrentClipIndex(0), mCurrentModelIndex(0), mOldModelIndex(0)
+ColliderSettingScene::ColliderSettingScene() : mCurrentClipIndex(0), mCurrentModelIndex(0), mBeforeModelIndex(0)
 {
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
@@ -51,9 +51,9 @@ void ColliderSettingScene::Update()
 
 		matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorld()));
 
-		it->second->SetParent(&matrix);
+		it->second.collider->SetParent(&matrix);
 
-		it->second->Update();
+		it->second.collider->Update();
 	}
 }
 
@@ -68,7 +68,7 @@ void ColliderSettingScene::Render()
 
 	for (auto it = mNodeCollidersMap.begin(); it != mNodeCollidersMap.end(); it++)
 	{
-		it->second->Render();
+		it->second.collider->Render();
 		//it->second->RenderAxis();
 	}
 }
@@ -114,7 +114,7 @@ void ColliderSettingScene::SelectModel()
 
 	// 모델이 바뀔때만 초기화해주면 되는곳.
 
-	if (mCurrentModelIndex != mOldModelIndex) 
+	if (mCurrentModelIndex != mBeforeModelIndex) 
 	{
 		for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++) // 노드콜라이더 생성여부체크맵 초기화.
 		{
@@ -123,7 +123,7 @@ void ColliderSettingScene::SelectModel()
 
 		for (auto it = mNodeCollidersMap.begin(); it != mNodeCollidersMap.end(); it++) // 모델의 생성됐던 콜라이더들 초기화.
 		{
-			delete it->second;
+			delete it->second.collider;
 		}
 		mNodeCollidersMap.clear();
 
@@ -132,7 +132,7 @@ void ColliderSettingScene::SelectModel()
 			it->second = "";
 		}
 
-		mOldModelIndex = mCurrentModelIndex;
+		mBeforeModelIndex = mCurrentModelIndex;
 	}
 
 
@@ -205,9 +205,6 @@ void ColliderSettingScene::ShowModelHierarchy()
 }
 
 
-
-
-
 void ColliderSettingScene::TreeNodePreProcessing()
 {
 	mNodes = mCurrentModel->GetNodes();
@@ -260,6 +257,7 @@ void ColliderSettingScene::TreeNodeRecurs(int nodesIndex)
 				else // 안만들어져있으면 만들어주기.
 				{
 					mCreatedCollidersCheck[mNodes[nodesIndex]->index] = true;
+
 					switch (mCurrentColliderIndex)
 					{
 					case 0:
@@ -278,9 +276,16 @@ void ColliderSettingScene::TreeNodeRecurs(int nodesIndex)
 						break;
 					}
 					
-					mNodeCollider->mScale = { 10.0f,10.0f,10.0f };
-					mNodeCollidersMap[mNodes[nodesIndex]->index] = mNodeCollider;
-					mNodeColliders.push_back(mNodeCollider);
+					
+					mNodeCollider->mScale = { 10.0f,10.0f,10.0f }; // 생성했을 때 너무 작으면 안보여서 10으로 세팅.
+
+					//mNodeColliders.push_back(mNodeCollider); // 안쓰여서 일단 주석.
+
+					TreeNodeData treeNodeData; 
+					treeNodeData.collider = mNodeCollider;
+					treeNodeData.nodeName = mNodes[nodesIndex]->name; // 노드이름 for binarysave
+
+					mNodeCollidersMap[mNodes[nodesIndex]->index] = treeNodeData;
 				}
 			}
 
@@ -302,63 +307,7 @@ void ColliderSettingScene::TreeNodeRecurs(int nodesIndex)
 	ImGui::Unindent();
 }
 
-void ColliderSettingScene::printToCSV()
-{
-	FILE* file;
 
-	string str = "TextData/Saved" + mCurrentModelName + "Colliders.csv";
-	vector<char> writable(str.begin(), str.end());
-	writable.push_back('\0');
-	const char* fileName = &writable[0];
-
-	fopen_s(&file, fileName, "w");
-
-
-	fprintf( // 컬럼명
-		file,
-		"%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-		"Position.x", "Position.y", "Position.z",
-		"Rotation.x", "Rotation.y", "Rotation.z",
-		"Scale.x", "Scale.y", "Scale.z"
-	);
-
-	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
-	{
-		if (it->second)
-		{
-			colliderData data;
-			data.position = mNodeCollidersMap[it->first]->mPosition;
-			data.rotation = mNodeCollidersMap[it->first]->mRotation;
-			data.scale = mNodeCollidersMap[it->first]->mScale;
-
-			string tag = mCurrentModelName;
-
-			fprintf(
-				file,
-				"%s,%.3f,%.3f,%.3f, %.3f,%.3f,%.3f, %.3f,%.3f,%.3f\n",
-				tag,
-				data.position.x, data.position.y, data.position.z,
-				data.rotation.x, data.rotation.y, data.rotation.z,
-				data.scale.x, data.scale.y, data.scale.z
-			);
-		}
-	}
-
-	fclose(file);
-
-
-	/*for (UINT i = 0; i < monsters.size(); i++)
-	{
-		fprintf(
-			file,
-			"%d,%.3f,%.3f,%.3f\n",
-			i,
-			monsters[i]->mPosition.x, monsters[i]->mPosition.y, monsters[i]->mPosition.z
-		);
-	}
-
-	fclose(file);*/
-}
 
 void ColliderSettingScene::ShowColliderEditor()
 {
@@ -383,18 +332,18 @@ void ColliderSettingScene::ShowColliderEditor()
 			if (ImGui::Button(deleteName.c_str()))
 			{
 				it->second = false;
-				delete mNodeCollidersMap[it->first];
+				delete mNodeCollidersMap[it->first].collider;
 				mNodeCollidersMap.erase(it->first);
 				continue;
 			}
 
-			ImGui::InputText(tagName.c_str(), mColliderTagMap[it->first], 100);
+			ImGui::InputText(tagName.c_str(), mColliderNameMap[it->first], 100);
 
 			ImGui::Text("");
 
-			ImGui::InputFloat3(Position.c_str(), (float*)&mNodeCollidersMap[it->first]->mPosition);
-			ImGui::InputFloat3(Rotation.c_str(), (float*)&mNodeCollidersMap[it->first]->mRotation);
-			ImGui::InputFloat3(Scale.c_str(), (float*)&mNodeCollidersMap[it->first]->mScale);
+			ImGui::InputFloat3(Position.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mPosition);
+			ImGui::InputFloat3(Rotation.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mRotation);
+			ImGui::InputFloat3(Scale.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mScale);
 		}
 	}
 
@@ -416,7 +365,7 @@ void ColliderSettingScene::Save()
 
 	BinaryWriter colliderWriter(t);
 
-	vector<colliderData> colliderDatas;
+	vector<ColliderDataForSave> colliderDatas;
 
 	int tSize = 0;
 
@@ -434,18 +383,85 @@ void ColliderSettingScene::Save()
 	{
 		if (it->second)
 		{
-			colliderWriter.String(mColliderTagMap[it->first]);
+			colliderWriter.String(mColliderNameMap[it->first]);
+			colliderWriter.String(mNodeCollidersMap[it->first].nodeName);
 
-			colliderData data;
-			data.position = mNodeCollidersMap[it->first]->mPosition;
-			data.rotation = mNodeCollidersMap[it->first]->mRotation;
-			data.scale = mNodeCollidersMap[it->first]->mScale;
+			ColliderDataForSave data;
+			data.position = mNodeCollidersMap[it->first].collider->mPosition;
+			data.rotation = mNodeCollidersMap[it->first].collider->mRotation;
+			data.scale = mNodeCollidersMap[it->first].collider->mScale;
 
 			colliderDatas.push_back(data);
 		}
 	}
 
-	colliderWriter.Byte(colliderDatas.data(), sizeof(colliderData) * colliderDatas.size());
+	colliderWriter.Byte(colliderDatas.data(), sizeof(ColliderDataForSave) * colliderDatas.size());
 
 	printToCSV(); // 보기쉽게 CSV로 저장도 해줌.
+}
+
+void ColliderSettingScene::printToCSV()
+{
+	FILE* file;
+
+	string str = "TextData/Saved" + mCurrentModelName + "Colliders.csv";
+	const char* fileName = str.c_str();
+
+	fopen_s(&file, fileName, "w");
+
+
+	fprintf( // 컬럼명
+		file,
+		"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", 
+		"ColliderName","",
+		"NodeName","",
+		"Position.x", "Position.y", "Position.z","",
+		"Rotation.x", "Rotation.y", "Rotation.z","",
+		"Scale.x", "Scale.y", "Scale.z"
+	);
+
+	fprintf( // 줄바꿈용
+		file,
+		"\n"
+	);
+
+	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	{
+		if (it->second)
+		{
+			ColliderDataForSave data;
+			data.position = mNodeCollidersMap[it->first].collider->mPosition;
+			data.rotation = mNodeCollidersMap[it->first].collider->mRotation;
+			data.scale = mNodeCollidersMap[it->first].collider->mScale;
+
+			const char* modelName = mCurrentModelName.c_str();
+
+			string colliderName = mColliderNameMap[it->first];
+			string nodeName = mNodeCollidersMap[it->first].nodeName;
+
+			fprintf(
+				file,
+				"%s,%s,%s,%s,%.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f\n",
+				colliderName.c_str(),"",nodeName.c_str(), "",
+				data.position.x, data.position.y, data.position.z,"",
+				data.rotation.x, data.rotation.y, data.rotation.z,"",
+				data.scale.x, data.scale.y, data.scale.z
+			);
+		}
+	}
+
+	fclose(file);
+
+
+	/*for (UINT i = 0; i < monsters.size(); i++)
+	{
+		fprintf(
+			file,
+			"%d,%.3f,%.3f,%.3f\n",
+			i,
+			monsters[i]->mPosition.x, monsters[i]->mPosition.y, monsters[i]->mPosition.z
+		);
+	}
+
+	fclose(file);*/
 }

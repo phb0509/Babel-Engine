@@ -154,7 +154,7 @@ void ColliderSettingScene::SelectClip()
 			Replace(&mPath, "\\", "/");
 			mPath = mPath.substr(17 + mCurrentModelName.size(), mPath.length());
 
-			mClipsMap[mCurrentModelName].push_back(mPath);
+			mClipsMap[mCurrentModelName].push_back(mPath); // "SmashAttack0.clip" push_back
 
 			int t_currentClipIndex = mCurrentModel->currentClipIndex;
 
@@ -170,6 +170,7 @@ void ColliderSettingScene::SelectClip()
 
 			mModels[mCurrentModelIndex] = mModel; // 새로 할당받은 모델 다시 원래 인덱스에 넣어놓기.
 		}
+
 		// close
 		igfd::ImGuiFileDialog::Instance()->CloseDialog("TextureKey");
 	}
@@ -451,17 +452,4 @@ void ColliderSettingScene::printToCSV()
 	}
 
 	fclose(file);
-
-
-	/*for (UINT i = 0; i < monsters.size(); i++)
-	{
-		fprintf(
-			file,
-			"%d,%.3f,%.3f,%.3f\n",
-			i,
-			monsters[i]->mPosition.x, monsters[i]->mPosition.y, monsters[i]->mPosition.z
-		);
-	}
-
-	fclose(file);*/
 }

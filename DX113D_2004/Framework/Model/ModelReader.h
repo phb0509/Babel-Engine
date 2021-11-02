@@ -2,15 +2,7 @@
 
 class ModelReader
 {
-protected:
-	map<string, Material*> materials;
-	vector<ModelMesh*> meshes;
-	vector<NodeData*> nodes;
-	vector<BoneData*> bones;
 
-	map<string, UINT> boneMap;
-
-	TypeBuffer* typeBuffer;
 public:
 	ModelReader(string file);
 	virtual ~ModelReader();
@@ -31,4 +23,14 @@ public:
 
 	void SetBox(Vector3* minBox, Vector3* maxBox);
 	vector<NodeData*> GetNodes() {return nodes;}
+
+protected:
+	map<string, Material*> materials;
+	vector<ModelMesh*> meshes;
+	vector<NodeData*> nodes;
+	vector<BoneData*> bones;
+
+	map<string, UINT> boneMap;
+
+	TypeBuffer* typeBuffer;
 };

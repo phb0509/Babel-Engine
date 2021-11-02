@@ -27,18 +27,22 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-	void SelectClip();
-	void SelectModel();
-
-	void ShowModelHierarchy();
-	void ShowModelSelect();
-	void ShowColliderEditor();
-	void Save();
-
-	void TreeNodePreProcessing();
-	void TreeNodeRecurs(int nodesIndex);
+	
 
 private:
+	void selectClip();
+	void selectModel();
+	void showAddButton();
+
+	void showModelHierarchy();
+	void showModelSelect();
+	void showColliderEditor();
+	void showAssets();
+	void save();
+
+	void treeNodePreProcessing();
+	void treeNodeRecurs(int nodesIndex);
+
 	void printToCSV();
 	
 	
@@ -61,7 +65,6 @@ private:
 
 	int mCurrentModelIndex;
 	int mBeforeModelIndex;
-	int mCurrentClipIndex;
 	int mCurrentColliderIndex;
 
 	map<string, vector<string>> mClipsMap;

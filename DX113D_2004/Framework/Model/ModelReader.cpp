@@ -26,7 +26,7 @@ void ModelReader::MeshRender()
 		mesh->Render();
 }
 
-void ModelReader::MeshRender(UINT drawCount)
+void ModelReader::MeshRender(UINT drawCount) // 인스턴싱용.
 {
 	typeBuffer->SetVSBuffer(5);
 
@@ -36,7 +36,7 @@ void ModelReader::MeshRender(UINT drawCount)
 
 void ModelReader::ReadMaterial(string file)
 {
-	file = "ModelData/Materials/" + file + ".mat";
+	file = "ModelData/Materials/" + file + ".mat"; // ModelExporter로 만든 MaterialFile.
 
 	wstring folder = ToWString(GetDirectoryName(file));
 

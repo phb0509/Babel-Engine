@@ -139,7 +139,7 @@ void ModelAnimator::Render()
 	frameBuffer->SetVSBuffer(4);
 	DEVICECONTEXT->VSSetShaderResources(0, 1, &srv);
 
-	MeshRender();
+	MeshRender(); // 부모클래스(ModelReader)함수.
 }
 
 void ModelAnimator::PostRender()
@@ -203,7 +203,7 @@ Matrix ModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
 	return LERP(curClip, nextClip, frameBuffer->data.tweenDesc[instance].tweenTime);
 }
 
-void ModelAnimator::CreateTexture()
+void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 {
 	UINT clipCount = clips.size();
 

@@ -48,6 +48,7 @@
 
 #define GM GameManager::Get()
 
+#include <io.h>
 #include <filesystem>
 #include <windows.h>
 #include <assert.h>

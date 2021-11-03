@@ -24,11 +24,11 @@ void ModelAnimators::Update()
 {
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
-		FrameBuffer::TweenDesc& tweenDesc = frameBuffer->data.tweenDesc[i];
+		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[i];
 
 		{//CurAnimation
 			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
-			ModelClip* clip = clips[desc.clip];
+			ModelClip* clip = mClips[desc.clip];
 
 			float time = 1.0f / clip->tickPerSecond / desc.speed;
 			desc.runningTime += DELTA;
@@ -54,7 +54,7 @@ void ModelAnimators::Update()
 
 			if (desc.clip > -1)
 			{
-				ModelClip* clip = clips[desc.clip];
+				ModelClip* clip = mClips[desc.clip];
 
 				tweenDesc.runningTime += DELTA;
 				tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
@@ -94,11 +94,11 @@ void ModelAnimators::Update()
 
 void ModelAnimators::Render()
 {
-	if (texture == nullptr)
+	if (mTexture == nullptr)
 		CreateTexture();
 
-	frameBuffer->SetVSBuffer(4);
-	DEVICECONTEXT->VSSetShaderResources(0, 1, &srv);
+	mFrameBuffer->SetVSBuffer(4);
+	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV);
 
 	mInstanceBuffer->IASet(1);
 
@@ -135,9 +135,9 @@ Transform* ModelAnimators::Add()
 
 void ModelAnimators::PlayClip(UINT instance, UINT clip, float speed, float takeTime)
 {
-	frameBuffer->data.tweenDesc[instance].takeTime = takeTime;
-	frameBuffer->data.tweenDesc[instance].next.clip = clip;
-	frameBuffer->data.tweenDesc[instance].next.speed = speed;
+	mFrameBuffer->data.tweenDesc[instance].takeTime = takeTime;
+	mFrameBuffer->data.tweenDesc[instance].next.clip = clip;
+	mFrameBuffer->data.tweenDesc[instance].next.speed = speed;
 }
 
 void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.

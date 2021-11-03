@@ -717,7 +717,7 @@ void TerrainEditor::createMesh()
 		mIndices.data(), (UINT)mIndices.size(), true);
 }
 
-void TerrainEditor::addTexture()
+void TerrainEditor::addTexture() // 왼쪽텍스쳐에셋창.
 {
 	ImGui::Begin("TerrainTextures");
 
@@ -734,9 +734,9 @@ void TerrainEditor::addTexture()
 
 			map<string, string> tMap = igfd::ImGuiFileDialog::Instance()->GetSelection();
 
-			for (auto it = tMap.begin(); it != tMap.end(); it++)
+			for (auto it = tMap.begin(); it != tMap.end(); it++) // ImGuiFileDialog에서 선택한 파일이름들 Map.
 			{
-				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
+				wstring tName = L"Textures/LandScape/" + ToWString(it->first); 
 				mAddedTextures.push_back(AddedTextureInfo(Texture::Add(tName), tName));
 			}
 		}
@@ -770,28 +770,6 @@ void TerrainEditor::addTexture()
 
 void TerrainEditor::showAddedTextures()
 {
-	//for (int i = 0; i < mAddedTextures.size(); i++)
-	//{
-	//	if ((i % 5) != 0)
-	//		ImGui::SameLine();
-
-	//	int frame_padding = 2;
-	//	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-	//	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-	//	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	//	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
-	//	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//	ImGui::ImageButton(mAddedTextures[i].texture->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-	//	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
-	//	{
-	//		ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-	//		ImGui::EndDragDropSource();
-	//	}
-	//}
-	
-
 	ImGui::Spacing();
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -833,8 +811,6 @@ void TerrainEditor::showAddedTextures()
 	//ImGui::ImageButton(mDepthStencil->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 	//ImGui::ImageButton(mTexture2DBuffer->OutputSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
 	//ImGui::ImageButton(mTempTexture->GetSRV(), bigSize, uv0, uv1, frame_padding, bg_col, tint_col);
-
-
 
 
 	//mRenderTargetSRVs

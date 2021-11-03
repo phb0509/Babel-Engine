@@ -47,7 +47,7 @@ ColliderSettingScene::~ColliderSettingScene()
 
 void ColliderSettingScene::Update()
 {
-	if (mModels.size() != 0)
+	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
 		mCurrentModel = mModels[mCurrentModelIndex];
 		mCurrentModelName = mModelList[mCurrentModelIndex];
@@ -75,7 +75,7 @@ void ColliderSettingScene::PreRender()
 
 void ColliderSettingScene::Render()
 {
-	if (mModels.size() != 0)
+	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
 	{
 		mCurrentModel->Render();
 
@@ -91,7 +91,7 @@ void ColliderSettingScene::PostRender()
 {
 	showModelSelect();
 
-	if (mModels.size() != 0)
+	if (mModels.size() != 0) // 이건 ToolModel이 반드시 있어야함...
 	{
 		showModelHierarchy();
 		showColliderEditor();
@@ -163,10 +163,32 @@ void ColliderSettingScene::selectModel() // perFrame
 			mBeforeModelIndex = mCurrentModelIndex;
 		}
 
-
 		treeNodePreProcessing();
 	}
 	
+}
+
+void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자식으로있는지 세팅.
+{
+	mNodes = mCurrentModel->GetNodes();
+
+	for (int i = 0; i < mNodes.size(); i++)
+	{
+		int parent = mNodes[i]->index; // 맨 처음 인덱스 부모로잡고.
+
+		for (int j = 0; j < mNodes.size(); j++)
+		{
+			if (mNodes[j]->parent == parent)
+			{
+				if (mNodes[j]->index == parent)
+				{
+					continue;
+				}
+
+				mPreprocessedNodes[parent].push_back(mNodes[j]->index);
+			}
+		}
+	}
 }
 
 void ColliderSettingScene::showAddButton()
@@ -197,7 +219,15 @@ void ColliderSettingScene::showAddButton()
 				i++;
 			}
 
-			
+			mModelList.push_back(name);
+			//mModels.push_back(new ToolModel(name));
+			mCurrentModelIndex = mModels.size() - 1;
+			//mCurrentModel = mModels[mCurrentModelIndex];
+			mCurrentModelName = name;
+
+			//mCurrentModel->ReadTPoseClip();
+
+
 			savePath += name;
 			savePath += '/';
 			CreateFolders(savePath);
@@ -284,30 +314,6 @@ void ColliderSettingScene::showModelHierarchy()
 	ImGui::End();
 }
 
-
-void ColliderSettingScene::treeNodePreProcessing() // 부모
-{
-	mNodes = mCurrentModel->GetNodes();
-
-	for (int i = 0; i < mNodes.size(); i++)
-	{
-		int parent = mNodes[i]->index; // 맨 처음 인덱스 부모로잡고.
-
-		for (int j = 0; j < mNodes.size(); j++)
-		{
-			if (mNodes[j]->parent == parent)
-			{
-				if (mNodes[j]->index == parent)
-				{
-					continue;
-				}
-
-				mPreprocessedNodes[parent].push_back(mNodes[j]->index);
-			}
-		}
-	}
-}
-
 void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 {
 	if (mNodeCheck[mNodes[nodesIndex]->index])
@@ -387,8 +393,6 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 	ImGui::Unindent();
 }
 
-
-
 void ColliderSettingScene::showColliderEditor()
 {
 	ImGui::Begin("ColliderEditor");
@@ -439,6 +443,10 @@ void ColliderSettingScene::showColliderEditor()
 void ColliderSettingScene::showAssets()
 {
 	// 이미 mModels Size가 1이상체크하고 들어왔다.
+
+
+
+
 
 	string tempImGuiName = mCurrentModelName + "Assets";
 
@@ -533,6 +541,31 @@ void ColliderSettingScene::save()
 	colliderWriter.Byte(colliderDatas.data(), sizeof(ColliderDataForSave) * colliderDatas.size());
 
 	printToCSV(); // 보기쉽게 CSV로 저장도 해줌.
+}
+
+void ColliderSettingScene::LoadFileList(string folderName)
+{
+	vector<char[100]> t;
+
+	//string path = "C:\\Users\\JYP\\Desktop\\p\\resource\\spam\\*.*";
+	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\*.clip";
+
+	struct _finddata_t fd;
+
+	intptr_t handle;
+
+	if ((handle = _findfirst(path.c_str(), &fd)) == -1L)
+	{
+		//cout << "No file in directory!" << endl;
+	}
+	do
+	{
+		fd.name;
+		int a = 0;
+
+	} while (_findnext(handle, &fd) == 0);
+
+	_findclose(handle);
 }
 
 void ColliderSettingScene::printToCSV()

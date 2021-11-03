@@ -39,6 +39,7 @@ private:
 	void showColliderEditor();
 	void showAssets();
 	void save();
+	void LoadFileList(string folderName);
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);

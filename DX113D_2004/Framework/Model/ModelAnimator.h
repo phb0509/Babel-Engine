@@ -8,15 +8,16 @@ public:
 	virtual ~ModelAnimator();
 
 	void ReadClip(string file);
+	void ReadTPoseClip(); 
 
 	virtual void Update();
 	virtual void Render();
 	void PostRender();
 
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
-	void SetEndEvent(UINT clip, CallBack Event) { EndEvent[clip] = Event; }
-	void SetEndParamEvent(UINT clip, CallBackParam Event) { EndParamEvent[clip] = Event; }	
-	void SetParam(UINT clip, int value) { param[clip] = value; }
+	void SetEndEvent(UINT clip, CallBack Event) { mEndEvent[clip] = Event; }
+	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }	
+	void SetParam(UINT clip, int value) { mParam[clip] = value; }
 
 	Matrix GetTransformByNode(int nodeIndex);
 	Matrix GetTransformByNode(UINT instance, int nodeIndex);
@@ -30,16 +31,16 @@ protected:
 
 
 protected:
-	FrameBuffer* frameBuffer;
-	ClipTransform* clipTransform;
-	ClipTransform* nodeTransform;
+	FrameBuffer* mFrameBuffer;
+	ClipTransform* mClipTransform;
+	ClipTransform* mNodeTransform;
 
-	ID3D11Texture2D* texture;
-	ID3D11ShaderResourceView* srv;
+	ID3D11Texture2D* mTexture;
+	ID3D11ShaderResourceView* mSRV;
 
-	vector<ModelClip*> clips;
+	vector<ModelClip*> mClips;
 
-	map<UINT, CallBack> EndEvent;
-	map<UINT, CallBackParam> EndParamEvent;
-	map<UINT, int> param;
+	map<UINT, CallBack> mEndEvent;
+	map<UINT, CallBackParam> mEndParamEvent;
+	map<UINT, int> mParam;
 };

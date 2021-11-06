@@ -22,6 +22,12 @@ ColliderSettingScene::ColliderSettingScene() :
 	TARGETCAMERA->moveSpeed = 70.0f;
 
 
+	mExtensionPreviewImages["mesh"] = Texture::Add(L"ModelData/Mesh_PreviewImage.png");
+	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
+	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
+	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
+
+	
 	//// mModelList뿐만 아니라 mModels도 일단 비워놓고, AddModel할때마다 추가해줘야한다.
 	//for (int i = 0; i < mModelList.size(); i++)
 	//{
@@ -95,6 +101,11 @@ void ColliderSettingScene::PostRender()
 	{
 		showModelHierarchy();
 		showColliderEditor();
+		
+	}
+
+	if (mModelList.size() != 0)
+	{
 		showAssets();
 	}
 }
@@ -440,64 +451,7 @@ void ColliderSettingScene::showColliderEditor()
 	ImGui::End();
 }
 
-void ColliderSettingScene::showAssets()
-{
-	// 이미 mModels Size가 1이상체크하고 들어왔다.
 
-
-
-
-
-	string tempImGuiName = mCurrentModelName + "Assets";
-
-	ImGui::Begin(tempImGuiName.c_str());
-
-	if (ImGui::Button("Import"))
-	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose FBX File", ".fbx", ".", 0);
-	}
-
-	if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) // OpenDialog 했으면..
-	{
-		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{
-			//확인 누른 후 이벤트 처리.
-
-			map<string, string> tMap = igfd::ImGuiFileDialog::Instance()->GetSelection();
-
-			/*for (auto it = tMap.begin(); it != tMap.end(); it++)
-			{
-				wstring tName = L"Textures/LandScape/" + ToWString(it->first);
-				mAddedTextures.push_back(AddedTextureInfo(Texture::Add(tName), tName));
-			}*/
-		}
-
-		igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-	}
-
-	//for (int i = 0; i < mAddedTextures.size(); i++)
-	//{
-	//	if ((i % 3) != 0)
-	//		ImGui::SameLine();
-
-	//	int frame_padding = 2;
-	//	ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-	//	ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-	//	ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	//	ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
-	//	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//	ImGui::ImageButton(mAddedTextures[i].texture->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
-
-	//	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
-	//	{
-	//		ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-	//		ImGui::EndDragDropSource();
-	//	}
-	//}
-
-	ImGui::End();
-}
 
 void ColliderSettingScene::save()
 {
@@ -543,29 +497,107 @@ void ColliderSettingScene::save()
 	printToCSV(); // 보기쉽게 CSV로 저장도 해줌.
 }
 
-void ColliderSettingScene::LoadFileList(string folderName)
+void ColliderSettingScene::LoadFileList(string folderName, vector<string>& fileList)
 {
-	vector<char[100]> t;
-
-	//string path = "C:\\Users\\JYP\\Desktop\\p\\resource\\spam\\*.*";
-	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\*.clip";
+	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
+	path = path += folderName + "\\"; 
+	path += "*.*";
 
 	struct _finddata_t fd;
-
 	intptr_t handle;
+
+	int i = 0;
 
 	if ((handle = _findfirst(path.c_str(), &fd)) == -1L)
 	{
-		//cout << "No file in directory!" << endl;
+		// 파일 없을때 발생시킬 이벤트.
 	}
 	do
 	{
-		fd.name;
-		int a = 0;
-
+		if (i >= 2)
+		{
+			fd.name;
+			string temp(fd.name);
+			fileList.push_back(temp);
+			int a = 0;
+		}
+		
+		i++;
 	} while (_findnext(handle, &fd) == 0);
 
 	_findclose(handle);
+}
+
+void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들.
+{
+	// 이미 mModels Size가 1이상체크하고 들어왔다.
+
+	string tempImGuiName = mCurrentModelName + "Assets";
+
+	ImGui::Begin(tempImGuiName.c_str());
+
+	if (ImGui::Button("Import")) // FBX파일 추출.
+	{
+		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose FBX File", ".fbx", ".", 0);
+
+		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+		{
+			//확인 누른 후 이벤트 처리.
+
+			string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
+
+			exportFBX(fileName);
+
+
+			igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+		}
+
+	}
+
+
+
+
+
+	vector<string> fileList;
+	LoadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
+
+	for (int i = 0; i < fileList.size(); i++)
+	{
+		if ((i % 3) != 0)
+			ImGui::SameLine();
+
+		int frame_padding = 2;
+		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		string fileExtension = GetExtension(fileList[i]);
+
+		if (fileExtension == "png")
+		{
+			string temp = "ModelData/" + mCurrentModelName + "/" + fileList[i];
+			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
+		}
+		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
+		{
+			ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
+			ImGui::EndDragDropSource();
+		}
+	}
+
+	ImGui::End();
+}
+
+void ColliderSettingScene::exportFBX(string fbxFileName) // Model.fbx나 Animation.fbx 추출. 멀티쓰레드로 처리하고싶은데 일단 나중에
+{
+	// 일단 옵션고르자.
+	ImGui::RadioButton("Export Model", &mExportSettingIndex, 0); // Model.fbx
+	ImGui::RadioButton("Export Animation", &mExportSettingIndex, 1); // Animation.fbx
 }
 
 void ColliderSettingScene::printToCSV()

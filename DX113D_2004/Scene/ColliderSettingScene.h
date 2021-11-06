@@ -39,7 +39,8 @@ private:
 	void showColliderEditor();
 	void showAssets();
 	void save();
-	void LoadFileList(string folderName);
+	void LoadFileList(string folderName, vector<string>& fileList);
+	void exportFBX(string fbxFileName);
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
@@ -63,11 +64,10 @@ private:
 	const char* mClipTypes[20];
 	const char* mModelTypes[20];
 
-
 	int mCurrentModelIndex;
 	int mBeforeModelIndex;
 	int mCurrentColliderIndex;
-
+	
 	map<string, vector<string>> mClipsMap;
 	vector<ToolModel*> mModels;
 	vector<NodeData*> mNodes;
@@ -79,7 +79,9 @@ private:
 	map<int, TreeNodeData> mNodeCollidersMap;
 	map<int, string> mNodeNameMap;
 	map<int, char[100]> mColliderNameMap;
-
+	map<string, Texture*> mExtensionPreviewImages;
 	Collider* mNodeCollider;
+
+	int mExportSettingIndex;
 
 };

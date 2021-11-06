@@ -52,6 +52,13 @@ wstring Utility::GetExtension(wstring path)
     return path.substr(index + 1, path.length());
 }
 
+string Utility::GetExtension(string path)
+{
+    size_t index = path.find_last_of('.');
+
+    return path.substr(index + 1, path.length());
+}
+
 string Utility::GetDirectoryName(string path)
 {
     Replace(&path, "\\", "/");

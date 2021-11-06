@@ -13,6 +13,7 @@ namespace Utility
 	vector<string> SplitString(string origin, string tok);
 
 	wstring GetExtension(wstring path);
+	string GetExtension(string path);
 	string GetDirectoryName(string path);
 	string GetFileName(string path);
 	string GetFileNameWithoutExtension(string path);

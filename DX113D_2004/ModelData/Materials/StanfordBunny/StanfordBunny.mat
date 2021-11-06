@@ -1,7 +1,7 @@
 <Materials>
     <Material>
         <Name>Wood Light</Name>
-        <DiffuseMap>WoodLight_COLOR.png</DiffuseMap>
+        <DiffuseMap>sibar</DiffuseMap>
         <SpecularMap>WoodLight_SPEC.png</SpecularMap>
         <NormalMap>WoodLight_NRM.png</NormalMap>
         <Ambient R="0" G="0" B="0" A="1"/>

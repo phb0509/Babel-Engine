@@ -1,7 +1,11 @@
 #include "Framework.h"
 
-ModelAnimator::ModelAnimator(string file)
-	: ModelReader(file), mTexture(nullptr), mSRV(nullptr)
+ModelAnimator::ModelAnimator(string file): 
+	ModelReader(file), 
+	mTexture(nullptr), 
+	mSRV(nullptr),
+	mClipTransform(nullptr),
+	mNodeTransform(nullptr)
 {
 	mFrameBuffer = new FrameBuffer();
 	typeBuffer->data.values[0] = 2;
@@ -56,6 +60,7 @@ void ModelAnimator::ReadClip(string file)
 		}
 		clip->keyFrames[keyFrame->boneName] = keyFrame;
 	}
+
 	mClips.emplace_back(clip);
 
 	delete r;
@@ -171,7 +176,7 @@ void ModelAnimator::Render()
 		CreateTexture(); // TransformMapTexture.
 
 	mFrameBuffer->SetVSBuffer(4);
-	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV);
+	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
 
 	MeshRender(); // 부모클래스(ModelReader)함수.
 }

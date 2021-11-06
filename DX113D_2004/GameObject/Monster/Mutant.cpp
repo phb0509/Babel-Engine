@@ -133,9 +133,6 @@ Collider* Mutant::GetHitCollider()
 }
 
 
-
-
-
 void Mutant::loadCollider()
 {
 	BinaryReader colliderReader(L"TextData/Mutant.map");

@@ -768,7 +768,7 @@ void TerrainEditor::addTexture() // 왼쪽텍스쳐에셋창.
 	ImGui::End();
 }
 
-void TerrainEditor::showAddedTextures()
+void TerrainEditor::showAddedTextures() // 우측창..
 {
 	ImGui::Spacing();
 	ImGui::Spacing();

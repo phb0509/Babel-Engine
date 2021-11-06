@@ -38,10 +38,11 @@ void ModelReader::ReadMaterial(string file)
 {
 	file = "ModelData/Materials/" + file + ".mat"; // ModelExporter로 만든 MaterialFile.
 
-	wstring folder = ToWString(GetDirectoryName(file));
+	wstring filePath = ToWString(GetDirectoryName(file));
 
 	XmlDocument* document = new XmlDocument();
 	document->LoadFile(file.c_str());
+	
 
 	XmlElement* root = document->FirstChildElement();
 
@@ -56,29 +57,43 @@ void ModelReader::ReadMaterial(string file)
 
 		node = node->NextSiblingElement();
 
-		if (node->GetText())
+		// 바꿀 디퓨즈맵파일스트링값 가져왔다  치고.
+		if (node->GetText()) // DiffuseMap
 		{
+			//node->SetText("sibar");
+			//document->SaveFile(file.c_str());
+			
 			wstring file = ToWString(node->GetText());
-			if(ExistFile(ToString(folder + file)))
-				material->SetDiffuseMap(folder + file);
+			
+			if (ExistFile(ToString(filePath + file)))
+			{
+				material->SetDiffuseMap(filePath + file); // 여기서 그냥 해버려도 상관은 없는데, mat파일안이라
+			}
+				
 		}
 
 		node = node->NextSiblingElement();
 
-		if (node->GetText())
+		if (node->GetText()) // SpecularMap
 		{
 			wstring file = ToWString(node->GetText());
-			if (ExistFile(ToString(folder + file)))
-				material->SetSpecularMap(folder + file);
+			if (ExistFile(ToString(filePath + file)))
+			{
+				material->SetSpecularMap(filePath + file);
+			}
+				
 		}
 
 		node = node->NextSiblingElement();
 
-		if (node->GetText())
+		if (node->GetText()) // NormalMap
 		{
 			wstring file = ToWString(node->GetText());
-			if (ExistFile(ToString(folder + file)))
-				material->SetNormalMap(folder + file);
+			if (ExistFile(ToString(filePath + file)))
+			{
+				material->SetNormalMap(filePath + file);
+			}
+				
 		}			
 
 		Float4 color;
@@ -132,7 +147,6 @@ void ModelReader::ReadMesh(string file)
 		ModelMesh* mesh = new ModelMesh();
 		mesh->name = r->String();
 		mesh->materialName = r->String();
-
 		mesh->material = materials[mesh->materialName];
 
 		{//Vertices

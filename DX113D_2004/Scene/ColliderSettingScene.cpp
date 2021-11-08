@@ -1,13 +1,21 @@
 #include "Framework.h"
 #include "ColliderSettingScene.h"
 
-ColliderSettingScene::ColliderSettingScene() : 
+
+ColliderSettingScene::ColliderSettingScene() :
 	mModel(nullptr),
 	mCurrentModel(nullptr),
-	mCurrentModelIndex(0), 
+	mCurrentModelIndex(0),
 	mCurrentModelName(""),
-	mBeforeModelIndex(0)
+	mBeforeModelIndex(0),
+	mExtractor(nullptr)
 {
+
+	/*string temp = "Mutant";
+	mExtractor = new ModelExporter("ModelData/Mutant.fbx");
+	mExtractor->ExportMaterial(temp + "/" + temp);
+	mExtractor->ExportMesh(temp + "/" + temp);*/
+
 	// 카메라 위치설정.
 	TARGETCAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
 	TARGETCAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
@@ -27,7 +35,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
 	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
 
-	
+
 	//// mModelList뿐만 아니라 mModels도 일단 비워놓고, AddModel할때마다 추가해줘야한다.
 	//for (int i = 0; i < mModelList.size(); i++)
 	//{
@@ -101,7 +109,7 @@ void ColliderSettingScene::PostRender()
 	{
 		showModelHierarchy();
 		showColliderEditor();
-		
+
 	}
 
 	if (mModelList.size() != 0)
@@ -133,7 +141,7 @@ void ColliderSettingScene::selectModel() // perFrame
 		mModelTypes[i] = mModelList[i].c_str();
 	}
 
-	ImGui::Combo("Models", (int*)&mCurrentModelIndex, mModelTypes, mModelList.size()); 
+	ImGui::Combo("Models", (int*)&mCurrentModelIndex, mModelTypes, mModelList.size());
 
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -176,7 +184,7 @@ void ColliderSettingScene::selectModel() // perFrame
 
 		treeNodePreProcessing();
 	}
-	
+
 }
 
 void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자식으로있는지 세팅.
@@ -218,7 +226,7 @@ void ColliderSettingScene::showAddButton()
 		if (ImGui::Button("OK", ImVec2(120, 0)))
 		{
 			// ModelData폴더에 InputText에 작성한 값 그대로 폴더 생성. 
-			
+
 			string savePath = "ModelData/";
 			string name;
 
@@ -238,21 +246,20 @@ void ColliderSettingScene::showAddButton()
 
 			//mCurrentModel->ReadTPoseClip();
 
-
 			savePath += name;
 			savePath += '/';
 			CreateFolders(savePath);
 
-			ImGui::CloseCurrentPopup(); 
+			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SetItemDefaultFocus();
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Cancel", ImVec2(120, 0)))
-		{ 
+		{
 			// Cancel 이벤트는 딱히 넣을게없다.
-			ImGui::CloseCurrentPopup(); 
+			ImGui::CloseCurrentPopup();
 		}
 
 		ImGui::EndPopup();
@@ -500,7 +507,7 @@ void ColliderSettingScene::save()
 void ColliderSettingScene::LoadFileList(string folderName, vector<string>& fileList)
 {
 	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
-	path = path += folderName + "\\"; 
+	path = path += folderName + "\\";
 	path += "*.*";
 
 	struct _finddata_t fd;
@@ -521,7 +528,7 @@ void ColliderSettingScene::LoadFileList(string folderName, vector<string>& fileL
 			fileList.push_back(temp);
 			int a = 0;
 		}
-		
+
 		i++;
 	} while (_findnext(handle, &fd) == 0);
 
@@ -536,27 +543,81 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 	ImGui::Begin(tempImGuiName.c_str());
 
-	if (ImGui::Button("Import")) // FBX파일 추출.
+	if (ImGui::Button("Import")) // FBX파일 추출. ExportFBX
 	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose FBX File", ".fbx", ".", 0);
-
-		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{
-			//확인 누른 후 이벤트 처리.
-
-			string fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-
-			exportFBX(fileName);
-
-
-			igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-		}
-
+		ImGui::OpenPopup("Extractor");
 	}
 
+	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	if (ImGui::BeginPopupModal("Extractor", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		// 옵션 선택.
+		ImGui::Checkbox("Export Mesh", &mIsExportMesh);
+		ImGui::Checkbox("Export Material", &mIsExportMaterial);
+		ImGui::Checkbox("Export Animation", &mIsExportAnimation);
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Open..."))
+		{
+			OPENFILENAME OFN;
+			TCHAR filePathName[100] = L"";
+			TCHAR lpstrFile[100] = L"";
+			//TCHAR filter[] = L"C++ 소스와 헤더 파일\0*.cpp\0Every File(*.*) \0 *.* \0Text File\0*.txt,*.doc\0";
+			static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0fbx 파일\0*.fbx";
+
+			memset(&OFN, 0, sizeof(OPENFILENAME));
+			OFN.lStructSize = sizeof(OPENFILENAME);
+			OFN.hwndOwner = hWnd;
+			OFN.lpstrFilter = filter;
+			OFN.lpstrFile = lpstrFile;
+			OFN.nMaxFile = 100;
+			OFN.lpstrInitialDir = L".";
+
+			if (GetOpenFileName(&OFN) != 0) {
+				wsprintf(filePathName, L"%s 파일을 열겠습니까?", OFN.lpstrFile);
+				MessageBox(hWnd, filePathName, L"열기 선택", MB_OK);
+
+				mSelectedFilePath = ToString(OFN.lpstrFile);
+				mSelectedFilePath = mSelectedFilePath.substr(mProjectPath.size() + 1, mSelectedFilePath.length());
+				Replace(&mSelectedFilePath, "\\", "/");	// "ModelData/Mutant.fbx" 추출.
+
+				mSelectedFilePath;
+				int a = 0;
+			}
+		}
 
 
+		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
+		{
+			mSelectedFilePath;
 
+			int a = 0;
+			//mExtractor = new ModelExporter(mSelectedFilePath);
+			/*mExtractor = new ModelExporter("ModelData/Mutant.fbx");
+			mExtractor->ExportMaterial(mCurrentModelName + "/" + mCurrentModelName);
+			mExtractor->ExportMesh(mCurrentModelName + "/" + mCurrentModelName);*/
+
+			tempCheck = true;
+
+		}
+
+		ImGui::SetItemDefaultFocus();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120, 0)))
+		{
+			// Cancel 이벤트는 딱히 넣을게없다.
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 
 	vector<string> fileList;
 	LoadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
@@ -598,6 +659,11 @@ void ColliderSettingScene::exportFBX(string fbxFileName) // Model.fbx나 Animatio
 	// 일단 옵션고르자.
 	ImGui::RadioButton("Export Model", &mExportSettingIndex, 0); // Model.fbx
 	ImGui::RadioButton("Export Animation", &mExportSettingIndex, 1); // Animation.fbx
+}
+
+void ColliderSettingScene::showExtractor()
+{
+
 }
 
 void ColliderSettingScene::printToCSV()
@@ -650,6 +716,6 @@ void ColliderSettingScene::printToCSV()
 		}
 	}
 
-	
+
 	fclose(file);
 }

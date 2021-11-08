@@ -1,11 +1,16 @@
 #include "Framework.h"
 
-ModelExporter::ModelExporter(string file) : boneCount(0)
+ModelExporter::ModelExporter(string file) : boneCount(0) // "ModelData/Models/" + name + ".fbx" // ModelData/Models/Mutant.fbx
 {
 	importer = new Assimp::Importer();
 
-	scene = importer->ReadFile(file,
-		aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_MaxQuality); //FBX파일 리드.
+	file;
+	int a = 0;
+
+	scene = importer->ReadFile(
+		file,
+		aiProcess_ConvertToLeftHanded | 
+		aiProcessPreset_TargetRealtime_MaxQuality); //FBX파일 리드.
 	assert(scene != nullptr);
 }
 
@@ -14,10 +19,11 @@ ModelExporter::~ModelExporter()
 	delete importer;
 }
 
-void ModelExporter::ExportMaterial(string savePath)
+void ModelExporter::ExportMaterial(string savePath) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
 {
 	ReadMaterial();
-	savePath = "ModelData/Materials/" + savePath + ".mat";
+	//savePath = "ModelData/Materials/" + savePath + ".mat"; // ModelData/Materials/Mutant/Mutant.mat  // 저장경로임.
+	savePath = "ModelData/" + savePath + ".mat";
 	WriteMaterial(savePath);
 }
 
@@ -25,7 +31,8 @@ void ModelExporter::ExportMesh(string savePath)
 {
 	ReadNode(scene->mRootNode, -1, -1);
 	ReadMesh(scene->mRootNode);
-	savePath = "ModelData/Meshes/" + savePath + ".mesh";
+	//savePath = "ModelData/Meshes/" + savePath + ".mesh";
+	savePath = "ModelData/" + savePath + ".mesh";
 	WriteMesh(savePath);
 }
 

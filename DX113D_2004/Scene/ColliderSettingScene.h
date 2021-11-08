@@ -41,11 +41,13 @@ private:
 	void save();
 	void LoadFileList(string folderName, vector<string>& fileList);
 	void exportFBX(string fbxFileName);
+	void showExtractor();
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
 
 	void printToCSV();
+
 	
 	
 
@@ -82,6 +84,15 @@ private:
 	map<string, Texture*> mExtensionPreviewImages;
 	Collider* mNodeCollider;
 
+	ModelExporter* mExtractor;
 	int mExportSettingIndex;
 
+	bool mIsExportMesh;
+	bool mIsExportMaterial;
+	bool mIsExportAnimation;
+
+	string mSelectedFilePath;
+
+	bool tempCheck = false;
+	int tempCount = 0;
 };

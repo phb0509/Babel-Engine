@@ -60,6 +60,10 @@
 #include <fstream>
 #include <float.h>
 #include <typeinfo>
+#include <iostream>
+#include <commdlg.h>
+#include "resource.h"
+#include <thread>
 
 #include <d3d11.h>
 #include <DirectXMath.h>

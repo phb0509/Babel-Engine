@@ -19,6 +19,6 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-	delete player;
-	delete monster;
+	//delete player;
+	//delete monster;
 }

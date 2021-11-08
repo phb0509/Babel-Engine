@@ -7,14 +7,15 @@ ModelExportScene::ModelExportScene()
 	string name = "Mutant";
 	
 	//exporter = new ModelExporter("ModelData/Models/" + name + ".fbx");
-	//exporter->ExportMaterial(name + "/" + name);
-	//exporter->ExportMesh(name + "/" + name);
+	exporter = new ModelExporter("ModelData/" + name + ".fbx");
+	exporter->ExportMaterial(name + "/" + name);
+	exporter->ExportMesh(name + "/" + name);
+
 	
 	
-	
-	string clip = "/OnDamage";
-	exporter = new ModelExporter("ModelData/Animations/" + name + clip + ".fbx");
-	exporter->ExportClip(name + clip);
+	//string clip = "/OnDamage";
+	//exporter = new ModelExporter("ModelData/Animations/" + name + clip + ".fbx");
+	//exporter->ExportClip(name + clip);
 	
 	//delete exporter;
 	//

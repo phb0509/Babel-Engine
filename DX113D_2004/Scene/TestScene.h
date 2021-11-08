@@ -2,17 +2,9 @@
 
 class TestScene : public Scene
 {
-	struct InputDesc
-	{
-
-	};
-
-	struct OutputDesc
-	{
-		
-	};
 
 public:
+	
 	TestScene();
 	~TestScene();
 
@@ -22,12 +14,9 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
+	
 
+	
 private:
-	Texture2DBuffer* mTexture2DBuffer;
-	ComputeShader* mComputeShader;
-	Texture* mTempTexture;
-	TextureClass* mTextureClass;
-	ComputeStructuredBuffer* mStructuredBuffer;
-	OutputDesc* mOutput;
+	//ModelExporter* mModelExporter;
 };

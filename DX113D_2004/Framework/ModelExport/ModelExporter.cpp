@@ -3,14 +3,20 @@
 ModelExporter::ModelExporter(string file) : boneCount(0) // "ModelData/Models/" + name + ".fbx" // ModelData/Models/Mutant.fbx
 {
 	importer = new Assimp::Importer();
-
-	file;
 	int a = 0;
+	
+	const string temp = "ModelData/Mutant.fbx";
 
-	scene = importer->ReadFile(
-		file,
+	scene = importer->ReadFile
+	(
+		temp,
 		aiProcess_ConvertToLeftHanded | 
-		aiProcessPreset_TargetRealtime_MaxQuality); //FBX颇老 府靛.
+		aiProcessPreset_TargetRealtime_MaxQuality
+	); //FBX颇老 府靛.
+
+	const char* t = importer->GetErrorString();
+
+	int b = 0;
 	assert(scene != nullptr);
 }
 

@@ -22,3 +22,11 @@ GameManager::~GameManager()
 	//delete player;
 	//delete monster;
 }
+
+void GameManager::Export()
+{
+	ModelExporter* exporter = new ModelExporter("ModelData/Mutant.fbx");
+	exporter->ExportMaterial("Mutant/Mutant");
+	exporter->ExportMesh("Mutant/Mutant");
+	delete exporter;
+}

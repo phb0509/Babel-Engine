@@ -17,6 +17,7 @@ public:
 		string nodeName;
 	};
 
+
 	
 
 	ColliderSettingScene();
@@ -40,13 +41,14 @@ private:
 	void showAssets();
 	void save();
 	void LoadFileList(string folderName, vector<string>& fileList);
-	void exportFBX(string fbxFileName);
-	void showExtractor();
+
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
 
 	void printToCSV();
+	string openFileDialog();
+	HRESULT CDialogEventHandler_CreateInstance(REFIID riid, void** ppv);
 
 	
 	

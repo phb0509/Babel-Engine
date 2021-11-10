@@ -15,7 +15,7 @@ public:
 	vector<Monster*> GetMonsters() { return monsters; }
 	map<Monster*, bool> GetHitCheckMap() { return monstersHitCheck; }
 	void SetHitCheckMap(Monster* monster, bool hitCheck) { monstersHitCheck[monster] = hitCheck; }
-
+	void Export();
 
 
 private:

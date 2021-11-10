@@ -13,6 +13,7 @@ private:
 
 	map<string, UINT> boneMap;
 	UINT boneCount;
+
 public:
 	ModelExporter(string file);
 	~ModelExporter();

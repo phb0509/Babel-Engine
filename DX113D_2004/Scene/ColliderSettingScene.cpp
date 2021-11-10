@@ -1,6 +1,13 @@
 #include "Framework.h"
 #include "ColliderSettingScene.h"
 
+void exportFBX()
+{
+	ModelExporter* exporter = new ModelExporter("ModelData/Mutant.fbx");
+	exporter->ExportMaterial("Mutant/Mutant");
+	exporter->ExportMesh("Mutant/Mutant");
+}
+
 
 ColliderSettingScene::ColliderSettingScene() :
 	mModel(nullptr),
@@ -11,11 +18,6 @@ ColliderSettingScene::ColliderSettingScene() :
 	mExtractor(nullptr)
 {
 
-	/*string temp = "Mutant";
-	mExtractor = new ModelExporter("ModelData/Mutant.fbx");
-	mExtractor->ExportMaterial(temp + "/" + temp);
-	mExtractor->ExportMesh(temp + "/" + temp);*/
-
 	// 카메라 위치설정.
 	TARGETCAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
 	TARGETCAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
@@ -25,10 +27,8 @@ ColliderSettingScene::ColliderSettingScene() :
 	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 
 	// 셋팅할 모델들
-	//mModelList = { "Player", "Mutant" };
 	mModelList = {};
 	TARGETCAMERA->moveSpeed = 70.0f;
-
 
 	mExtensionPreviewImages["mesh"] = Texture::Add(L"ModelData/Mesh_PreviewImage.png");
 	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
@@ -109,7 +109,6 @@ void ColliderSettingScene::PostRender()
 	{
 		showModelHierarchy();
 		showColliderEditor();
-
 	}
 
 	if (mModelList.size() != 0)
@@ -148,7 +147,6 @@ void ColliderSettingScene::selectModel() // perFrame
 	ImGui::Spacing();
 
 	showAddButton();
-
 
 	if (mModels.size() != 0)
 	{
@@ -537,7 +535,7 @@ void ColliderSettingScene::LoadFileList(string folderName, vector<string>& fileL
 
 void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들.
 {
-	// 이미 mModels Size가 1이상체크하고 들어왔다.
+	// 이미 mModelsList.size() 1이상체크하고 들어왔다.
 
 	string tempImGuiName = mCurrentModelName + "Assets";
 
@@ -562,48 +560,18 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		if (ImGui::Button("Open..."))
+		if (ImGui::Button("Open...")) // 여기부분에서부터 문제가 생기는듯하다.
 		{
-			OPENFILENAME OFN;
-			TCHAR filePathName[100] = L"";
-			TCHAR lpstrFile[100] = L"";
-			//TCHAR filter[] = L"C++ 소스와 헤더 파일\0*.cpp\0Every File(*.*) \0 *.* \0Text File\0*.txt,*.doc\0";
-			static TCHAR filter[] = L"모든 파일\0*.*\0텍스트 파일\0*.txt\0fbx 파일\0*.fbx";
+			string t = openFileDialog();
+			thread t1(exportFBX);
 
-			memset(&OFN, 0, sizeof(OPENFILENAME));
-			OFN.lStructSize = sizeof(OPENFILENAME);
-			OFN.hwndOwner = hWnd;
-			OFN.lpstrFilter = filter;
-			OFN.lpstrFile = lpstrFile;
-			OFN.nMaxFile = 100;
-			OFN.lpstrInitialDir = L".";
-
-			if (GetOpenFileName(&OFN) != 0) {
-				wsprintf(filePathName, L"%s 파일을 열겠습니까?", OFN.lpstrFile);
-				MessageBox(hWnd, filePathName, L"열기 선택", MB_OK);
-
-				mSelectedFilePath = ToString(OFN.lpstrFile);
-				mSelectedFilePath = mSelectedFilePath.substr(mProjectPath.size() + 1, mSelectedFilePath.length());
-				Replace(&mSelectedFilePath, "\\", "/");	// "ModelData/Mutant.fbx" 추출.
-
-				mSelectedFilePath;
-				int a = 0;
-			}
+			t1.join();
 		}
 
 
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
-			mSelectedFilePath;
-
-			int a = 0;
-			//mExtractor = new ModelExporter(mSelectedFilePath);
-			/*mExtractor = new ModelExporter("ModelData/Mutant.fbx");
-			mExtractor->ExportMaterial(mCurrentModelName + "/" + mCurrentModelName);
-			mExtractor->ExportMesh(mCurrentModelName + "/" + mCurrentModelName);*/
-
-			tempCheck = true;
-
+			//tempCheck = true;
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -619,6 +587,8 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		ImGui::EndPopup();
 	}
 
+
+	// mCurrentModelAssets 표시.(.mat, .mest, .clip 등등)
 	vector<string> fileList;
 	LoadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
 
@@ -641,8 +611,8 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 			string temp = "ModelData/" + mCurrentModelName + "/" + fileList[i];
 			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
 		}
-		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 
+		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
 		{
@@ -651,20 +621,12 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		}
 	}
 
+
+
 	ImGui::End();
 }
 
-void ColliderSettingScene::exportFBX(string fbxFileName) // Model.fbx나 Animation.fbx 추출. 멀티쓰레드로 처리하고싶은데 일단 나중에
-{
-	// 일단 옵션고르자.
-	ImGui::RadioButton("Export Model", &mExportSettingIndex, 0); // Model.fbx
-	ImGui::RadioButton("Export Animation", &mExportSettingIndex, 1); // Animation.fbx
-}
 
-void ColliderSettingScene::showExtractor()
-{
-
-}
 
 void ColliderSettingScene::printToCSV()
 {
@@ -719,3 +681,128 @@ void ColliderSettingScene::printToCSV()
 
 	fclose(file);
 }
+
+string ColliderSettingScene::openFileDialog()
+{
+	const COMDLG_FILTERSPEC c_rgSaveTypes[] =
+	{
+		{L"Word Document (*.doc)",       L"*.doc"},
+		{L"Web Page (*.htm; *.html)",    L"*.htm;*.html"},
+		{L"Text Document (*.txt)",       L"*.txt"},
+		{L"All Documents (*.*)",         L"*.*"}
+	};
+
+	string filePath;
+
+	IFileDialog* pfd = NULL;
+
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pfd));
+
+	if (SUCCEEDED(hr))
+	{
+		// Create an event handling object, and hook it up to the dialog.
+		IFileDialogEvents* pfde = NULL;
+		hr = CDialogEventHandler_CreateInstance(IID_PPV_ARGS(&pfde));
+		if (SUCCEEDED(hr))
+		{
+			// Hook up the event handler.
+			DWORD dwCookie;
+			hr = pfd->Advise(pfde, &dwCookie);
+
+			if (SUCCEEDED(hr))
+			{
+				// Set the options on the dialog.
+				DWORD dwFlags;
+
+				// Before setting, always get the options first in order 
+				// not to override existing options.
+				hr = pfd->GetOptions(&dwFlags);
+				if (SUCCEEDED(hr))
+				{
+					// In this case, get shell items only for file system items.
+					hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
+					if (SUCCEEDED(hr))
+					{
+						// Set the file types to display only. 
+						// Notice that this is a 1-based array.
+						hr = pfd->SetFileTypes(ARRAYSIZE(c_rgSaveTypes), c_rgSaveTypes); // 확장자 표시하는곳.
+						if (SUCCEEDED(hr))
+						{
+							// Set the selected file type index to Word Docs for this example.
+							hr = pfd->SetFileTypeIndex(INDEX_WORDDOC);
+							if (SUCCEEDED(hr))
+							{
+								// Set the default extension to be ".doc" file.
+								hr = pfd->SetDefaultExtension(L"doc;docx");
+								if (SUCCEEDED(hr))
+								{
+									// Show the dialog
+									hr = pfd->Show(NULL);
+									if (SUCCEEDED(hr))
+									{
+										// Obtain the result once the user clicks 
+										// the 'Open' button.
+										// The result is an IShellItem object.
+										IShellItem* psiResult;
+										hr = pfd->GetResult(&psiResult);
+										if (SUCCEEDED(hr))
+										{
+											// We are just going to print out the 
+											// name of the file for sample sake.
+
+											PWSTR pszFilePath = NULL; // 선택된 파일경로.
+											hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+											if (SUCCEEDED(hr))
+											{
+												TaskDialog(NULL,
+													NULL,
+													L"CommonFileDialogApp", // 파일고르고 확인누르면 뜨는 확인차뜨는 팝업창.
+													pszFilePath,
+													NULL,
+													TDCBF_OK_BUTTON,
+													TD_INFORMATION_ICON,
+													NULL);
+												CoTaskMemFree(pszFilePath);
+											}
+
+											filePath = ToString(pszFilePath);
+
+											psiResult->Release();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				// Unhook the event handler.
+				pfd->Unadvise(dwCookie);
+			}
+			pfde->Release();
+		}
+		pfd->Release();
+	}
+
+	return filePath;
+}
+
+HRESULT ColliderSettingScene::CDialogEventHandler_CreateInstance(REFIID riid, void** ppv)
+{
+	*ppv = NULL;
+	CDialogEventHandler* pDialogEventHandler = new (std::nothrow) CDialogEventHandler();
+	HRESULT hr = pDialogEventHandler ? S_OK : E_OUTOFMEMORY;
+
+	if (SUCCEEDED(hr))
+	{
+		hr = pDialogEventHandler->QueryInterface(riid, ppv);
+		pDialogEventHandler->Release();
+	}
+
+	return hr;
+}
+
+

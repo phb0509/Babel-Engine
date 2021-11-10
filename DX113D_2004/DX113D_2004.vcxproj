@@ -188,6 +188,7 @@
     <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
     <ClInclude Include="Framework\Render\TextureClass.h" />
+    <ClInclude Include="GameObject\CDialogEventHandler.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\AttackState.h" />
@@ -351,6 +352,7 @@
     <ClCompile Include="Framework\Utility\Timer.cpp" />
     <ClCompile Include="Framework\Utility\Utility.cpp" />
     <ClCompile Include="Framework\Utility\Xml.cpp" />
+    <ClCompile Include="GameObject\CDialogEventHandler.cpp" />
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\AttackState.cpp" />

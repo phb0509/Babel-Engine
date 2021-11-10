@@ -64,6 +64,63 @@
 #include <commdlg.h>
 #include "resource.h"
 #include <thread>
+//shobjidl_core.h
+//#include <shlwapi.h>
+//#include <ShObjIdl_core.h>
+//#include <objbase.h>      // For COM headers
+//#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
+//
+//#include <shlobj.h>
+//#include <objbase.h>      // For COM headers
+//#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
+//#include <knownfolders.h> // for KnownFolder APIs/datatypes/function headers
+//#include <propvarutil.h>  // for PROPVAR-related functions
+//#include <propkey.h>      // for the Property key APIs/datatypes
+//#include <propidl.h>      // for the Property System APIs
+//#include <strsafe.h>      // for StringCchPrintfW
+//#include <shtypes.h>      // for COMDLG_FILTERSPEC
+//#include <new>
+
+#include <windows.h>      // For common windows data types and function headers
+#define STRICT_TYPED_ITEMIDS
+#include <CommCtrl.h>
+#pragma comment(lib, "comctl32");
+#include <shlobj.h>
+#include <objbase.h>      // For COM headers
+#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
+#include <shlwapi.h>
+#pragma comment(lib, "shlwapi")
+
+#include <knownfolders.h> // for KnownFolder APIs/datatypes/function headers
+#include <propvarutil.h>  // for PROPVAR-related functions
+#include <propkey.h>      // for the Property key APIs/datatypes
+#include <propidl.h>      // for the Property System APIs
+#include <strsafe.h>      // for StringCchPrintfW
+#include <shtypes.h>      // for COMDLG_FILTERSPEC
+#include <new>
+
+#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+// Indices of file types
+#define INDEX_WORDDOC 1
+#define INDEX_WEBPAGE 2
+#define INDEX_TEXTDOC 3
+
+// Controls
+#define CONTROL_GROUP           2000
+#define CONTROL_RADIOBUTTONLIST 2
+#define CONTROL_RADIOBUTTON1    1
+#define CONTROL_RADIOBUTTON2    2       // It is OK for this to have the same ID as CONTROL_RADIOBUTTONLIST,
+                                        // because it is a child control under CONTROL_RADIOBUTTONLIST
+
+// IDs for the Task Dialog Buttons
+#define IDC_BASICFILEOPEN                       100
+#define IDC_ADDITEMSTOCUSTOMPLACES              101
+#define IDC_ADDCUSTOMCONTROLS                   102
+#define IDC_SETDEFAULTVALUESFORPROPERTIES       103
+#define IDC_WRITEPROPERTIESUSINGHANDLERS        104
+#define IDC_WRITEPROPERTIESWITHOUTUSINGHANDLERS 105
+
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -74,6 +131,8 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
+
+
 
 
 
@@ -127,6 +186,8 @@ const XMVECTORF32 kUp = { 0, 1, 0 };
 const XMVECTORF32 kForward = { 0, 0, 1 };
 
 //Framework Header
+#include "GameObject/CDialogEventHandler.h"
+
 #include "Framework/Utility/Utility.h"
 #include "Framework/Utility/Singleton.h"
 #include "Framework/Utility/BinaryReader.h"

@@ -1,22 +1,20 @@
 #include "Framework.h"
 
-ModelExporter::ModelExporter(string file) : boneCount(0) // "ModelData/Models/" + name + ".fbx" // ModelData/Models/Mutant.fbx
+ModelExporter::ModelExporter(string fileName) : boneCount(0) // fileName만 ex) Mutant
 {
 	importer = new Assimp::Importer();
-	int a = 0;
 	
-	const string temp = "ModelData/Mutant.fbx";
+	const string filePath = "ModelData/" + fileName + ".fbx";
 
 	scene = importer->ReadFile
 	(
-		temp,
+		filePath,
 		aiProcess_ConvertToLeftHanded | 
 		aiProcessPreset_TargetRealtime_MaxQuality
 	); //FBX파일 리드.
 
 	const char* t = importer->GetErrorString();
 
-	int b = 0;
 	assert(scene != nullptr);
 }
 
@@ -25,29 +23,29 @@ ModelExporter::~ModelExporter()
 	delete importer;
 }
 
-void ModelExporter::ExportMaterial(string savePath) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
+void ModelExporter::ExportMaterial(string fileName) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
 {
 	ReadMaterial();
-	//savePath = "ModelData/Materials/" + savePath + ".mat"; // ModelData/Materials/Mutant/Mutant.mat  // 저장경로임.
-	savePath = "ModelData/" + savePath + ".mat";
+
+	string savePath = "ModelData/" + fileName + "/" + fileName + ".mat";
 	WriteMaterial(savePath);
 }
 
-void ModelExporter::ExportMesh(string savePath)
+void ModelExporter::ExportMesh(string fileName)
 {
 	ReadNode(scene->mRootNode, -1, -1);
 	ReadMesh(scene->mRootNode);
-	//savePath = "ModelData/Meshes/" + savePath + ".mesh";
-	savePath = "ModelData/" + savePath + ".mesh";
+
+	string savePath = "ModelData/" + fileName + "/" + fileName + ".mesh";
 	WriteMesh(savePath);
 }
 
-void ModelExporter::ExportClip(string savePath)
+void ModelExporter::ExportClip(string fileName)
 {
 	for (UINT i = 0; i < scene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
 		Clip* clip = ReadClip(scene->mAnimations[i]);
-		string path = "ModelData/Clips/" + savePath + to_string(i) + ".clip"; // 뮤턴트폴더에 OnDamage0.clip 생성.
+		string path = "ModelData/Clips/" + fileName + to_string(i) + ".clip"; // 뮤턴트폴더에 OnDamage0.clip 생성.
 		WriteClip(clip, path);
 	}
 }

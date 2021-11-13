@@ -40,18 +40,14 @@ private:
 	void showColliderEditor();
 	void showAssets();
 	void save();
-	void LoadFileList(string folderName, vector<string>& fileList);
-
+	void loadFileList(string folderName, vector<string>& fileList);
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
 
 	void printToCSV();
-	string openFileDialog();
-	HRESULT CDialogEventHandler_CreateInstance(REFIID riid, void** ppv);
+	void exportFBX(string fileName);
 
-	
-	
 
 
 private:
@@ -95,6 +91,7 @@ private:
 
 	string mSelectedFilePath;
 
-	bool tempCheck = false;
-	int tempCount = 0;
+	ImVec2 beforeCursorPos;
+	ImVec2 standardCursorPos;
+
 };

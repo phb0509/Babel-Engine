@@ -6,6 +6,7 @@ class Vector3;
 
 namespace Utility
 {
+
 	string ToString(wstring value);
 	wstring ToWString(string value);
 
@@ -17,10 +18,14 @@ namespace Utility
 	string GetDirectoryName(string path);
 	string GetFileName(string path);
 	string GetFileNameWithoutExtension(string path);
+	string OpenFileDialog();
 
 	void CreateFolders(string path);
 
 	bool ExistDirectory(string path);
 	bool ExistFile(string path);
+
+
+	HRESULT CDialogEventHandler_CreateInstance(REFIID riid, void** ppv);
 
 }

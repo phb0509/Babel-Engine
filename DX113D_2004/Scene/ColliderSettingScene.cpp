@@ -1,12 +1,13 @@
 #include "Framework.h"
 #include "ColliderSettingScene.h"
 
-void exportFBX()
-{
-	ModelExporter* exporter = new ModelExporter("ModelData/Mutant.fbx");
-	exporter->ExportMaterial("Mutant/Mutant");
-	exporter->ExportMesh("Mutant/Mutant");
-}
+//void exportFBX(string fileName) // Mutant
+//{
+//	ModelExporter* exporter = new ModelExporter(fileName);
+//	exporter->ExportMaterial(fileName);
+//	exporter->ExportMesh(fileName);
+//	delete exporter;
+//}
 
 
 ColliderSettingScene::ColliderSettingScene() :
@@ -23,7 +24,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	TARGETCAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
-	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
 	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 
 	// 셋팅할 모델들
@@ -456,8 +457,6 @@ void ColliderSettingScene::showColliderEditor()
 	ImGui::End();
 }
 
-
-
 void ColliderSettingScene::save()
 {
 	string path = "TextData/";
@@ -502,7 +501,7 @@ void ColliderSettingScene::save()
 	printToCSV(); // 보기쉽게 CSV로 저장도 해줌.
 }
 
-void ColliderSettingScene::LoadFileList(string folderName, vector<string>& fileList)
+void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
 {
 	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
 	path = path += folderName + "\\";
@@ -551,6 +550,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 	if (ImGui::BeginPopupModal("Extractor", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
+
 		// 옵션 선택.
 		ImGui::Checkbox("Export Mesh", &mIsExportMesh);
 		ImGui::Checkbox("Export Material", &mIsExportMaterial);
@@ -562,16 +562,17 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 		if (ImGui::Button("Open...")) // 여기부분에서부터 문제가 생기는듯하다.
 		{
-			string t = openFileDialog();
-			thread t1(exportFBX);
-
-			t1.join();
+			mSelectedFilePath = OpenFileDialog();
+			mSelectedFilePath = GetFileNameWithoutExtension(mSelectedFilePath);
 		}
 
 
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
-			//tempCheck = true;
+			thread t1([&]() {exportFBX(mSelectedFilePath); }); // 람다식으로 파라미터넘기기.
+			ImGui::CloseCurrentPopup();
+			t1.join();
+
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -590,43 +591,85 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 	// mCurrentModelAssets 표시.(.mat, .mest, .clip 등등)
 	vector<string> fileList;
-	LoadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
+	loadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
+
+
+	standardCursorPos = ImGui::GetCursorPos(); // 8, 50
+
+	int standardLineIndex = 8;
+	int currentLineIndex = 0;
+	float distanceYgap = 80.0f;
+	float distanceXgap = 90.0f;
 
 	for (int i = 0; i < fileList.size(); i++)
 	{
-		if ((i % 3) != 0)
-			ImGui::SameLine();
-
-		int frame_padding = 2;
+		if ((i % standardLineIndex) == 0) // 나머지가 0 아니여야 실행.
+		{
+			if (i != 0)
+			{
+				standardCursorPos.y += distanceYgap;
+				currentLineIndex = 0;
+			}
+		}
+	
+		int frame_padding = 0;
 		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
 		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color)        
+		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color) 검정.       
 		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		string fileExtension = GetExtension(fileList[i]);
-
+		
 		if (fileExtension == "png")
 		{
 			string temp = "ModelData/" + mCurrentModelName + "/" + fileList[i];
 			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
 		}
 
+		//ImVec2 temp1 = ImGui::GetCursorPos();
+		//int a = 0;
+
+		ImGui::SetCursorPosY(standardCursorPos.y); // 이러면 다시 첫째줄로.
+		ImGui::SetCursorPosX(standardCursorPos.x + currentLineIndex * distanceXgap);
 		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
-		{
-			ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-			ImGui::EndDragDropSource();
-		}
+		currentLineIndex++;
+
+		//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 68.0f); // 이러면 다시 첫째줄로.
+		//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 70.0f);
+
+		/*ImVec2 temp2 = ImGui::GetCursorPos();
+		int b = 0;*/
+
+		/*static float wrap_width = 200.0f;
+
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		ImVec2 marker_min = ImVec2(pos.x + wrap_width, pos.y);
+		ImVec2 marker_max = ImVec2(pos.x + wrap_width + 10, pos.y + ImGui::GetTextLineHeight());
+
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+		ImGui::Text(fileList[i].c_str(), wrap_width);
+
+		ImGui::PopTextWrapPos();*/
+
+		//if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
+		//{
+		//	ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
+		//	ImGui::EndDragDropSource();
+		//}
+
+		//if ((i % 10) != 0) // 
+		//{
+		//	ImGui::SetCursorPosY(currentCursorPos.y);
+		//	ImGui::SetCursorPosX(currentCursorPos.x + 10.0f);
+		//}
 	}
-
-
 
 	ImGui::End();
 }
-
-
 
 void ColliderSettingScene::printToCSV()
 {
@@ -682,127 +725,10 @@ void ColliderSettingScene::printToCSV()
 	fclose(file);
 }
 
-string ColliderSettingScene::openFileDialog()
+void ColliderSettingScene::exportFBX(string fileName) // Mutant
 {
-	const COMDLG_FILTERSPEC c_rgSaveTypes[] =
-	{
-		{L"Word Document (*.doc)",       L"*.doc"},
-		{L"Web Page (*.htm; *.html)",    L"*.htm;*.html"},
-		{L"Text Document (*.txt)",       L"*.txt"},
-		{L"All Documents (*.*)",         L"*.*"}
-	};
-
-	string filePath;
-
-	IFileDialog* pfd = NULL;
-
-	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
-		NULL,
-		CLSCTX_INPROC_SERVER,
-		IID_PPV_ARGS(&pfd));
-
-	if (SUCCEEDED(hr))
-	{
-		// Create an event handling object, and hook it up to the dialog.
-		IFileDialogEvents* pfde = NULL;
-		hr = CDialogEventHandler_CreateInstance(IID_PPV_ARGS(&pfde));
-		if (SUCCEEDED(hr))
-		{
-			// Hook up the event handler.
-			DWORD dwCookie;
-			hr = pfd->Advise(pfde, &dwCookie);
-
-			if (SUCCEEDED(hr))
-			{
-				// Set the options on the dialog.
-				DWORD dwFlags;
-
-				// Before setting, always get the options first in order 
-				// not to override existing options.
-				hr = pfd->GetOptions(&dwFlags);
-				if (SUCCEEDED(hr))
-				{
-					// In this case, get shell items only for file system items.
-					hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
-					if (SUCCEEDED(hr))
-					{
-						// Set the file types to display only. 
-						// Notice that this is a 1-based array.
-						hr = pfd->SetFileTypes(ARRAYSIZE(c_rgSaveTypes), c_rgSaveTypes); // 확장자 표시하는곳.
-						if (SUCCEEDED(hr))
-						{
-							// Set the selected file type index to Word Docs for this example.
-							hr = pfd->SetFileTypeIndex(INDEX_WORDDOC);
-							if (SUCCEEDED(hr))
-							{
-								// Set the default extension to be ".doc" file.
-								hr = pfd->SetDefaultExtension(L"doc;docx");
-								if (SUCCEEDED(hr))
-								{
-									// Show the dialog
-									hr = pfd->Show(NULL);
-									if (SUCCEEDED(hr))
-									{
-										// Obtain the result once the user clicks 
-										// the 'Open' button.
-										// The result is an IShellItem object.
-										IShellItem* psiResult;
-										hr = pfd->GetResult(&psiResult);
-										if (SUCCEEDED(hr))
-										{
-											// We are just going to print out the 
-											// name of the file for sample sake.
-
-											PWSTR pszFilePath = NULL; // 선택된 파일경로.
-											hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-
-											if (SUCCEEDED(hr))
-											{
-												TaskDialog(NULL,
-													NULL,
-													L"CommonFileDialogApp", // 파일고르고 확인누르면 뜨는 확인차뜨는 팝업창.
-													pszFilePath,
-													NULL,
-													TDCBF_OK_BUTTON,
-													TD_INFORMATION_ICON,
-													NULL);
-												CoTaskMemFree(pszFilePath);
-											}
-
-											filePath = ToString(pszFilePath);
-
-											psiResult->Release();
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				// Unhook the event handler.
-				pfd->Unadvise(dwCookie);
-			}
-			pfde->Release();
-		}
-		pfd->Release();
-	}
-
-	return filePath;
+	ModelExporter* exporter = new ModelExporter(fileName);
+	exporter->ExportMaterial(fileName);
+	exporter->ExportMesh(fileName);
+	delete exporter;
 }
-
-HRESULT ColliderSettingScene::CDialogEventHandler_CreateInstance(REFIID riid, void** ppv)
-{
-	*ppv = NULL;
-	CDialogEventHandler* pDialogEventHandler = new (std::nothrow) CDialogEventHandler();
-	HRESULT hr = pDialogEventHandler ? S_OK : E_OUTOFMEMORY;
-
-	if (SUCCEEDED(hr))
-	{
-		hr = pDialogEventHandler->QueryInterface(riid, ppv);
-		pDialogEventHandler->Release();
-	}
-
-	return hr;
-}
-
-

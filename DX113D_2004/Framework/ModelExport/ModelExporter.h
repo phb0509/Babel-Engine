@@ -15,7 +15,7 @@ private:
 	UINT boneCount;
 
 public:
-	ModelExporter(string file);
+	ModelExporter(string fileName);
 	~ModelExporter();
 
 	void ExportMaterial(string savePath);

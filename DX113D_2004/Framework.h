@@ -64,27 +64,12 @@
 #include <commdlg.h>
 #include "resource.h"
 #include <thread>
-//shobjidl_core.h
-//#include <shlwapi.h>
-//#include <ShObjIdl_core.h>
-//#include <objbase.h>      // For COM headers
-//#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
-//
-//#include <shlobj.h>
-//#include <objbase.h>      // For COM headers
-//#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
-//#include <knownfolders.h> // for KnownFolder APIs/datatypes/function headers
-//#include <propvarutil.h>  // for PROPVAR-related functions
-//#include <propkey.h>      // for the Property key APIs/datatypes
-//#include <propidl.h>      // for the Property System APIs
-//#include <strsafe.h>      // for StringCchPrintfW
-//#include <shtypes.h>      // for COMDLG_FILTERSPEC
-//#include <new>
+
 
 #include <windows.h>      // For common windows data types and function headers
 #define STRICT_TYPED_ITEMIDS
 #include <CommCtrl.h>
-#pragma comment(lib, "comctl32");
+#pragma comment(lib, "comctl32")
 #include <shlobj.h>
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents

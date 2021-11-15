@@ -9,7 +9,6 @@
 //#define WIN_WIDTH 1920
 //#define WIN_HEIGHT 1080
 
-
 #define CENTER_X WIN_WIDTH * 0.5f
 #define CENTER_Y WIN_HEIGHT * 0.5f
 
@@ -48,6 +47,8 @@
 
 #define GM GameManager::Get()
 
+#define ASSETSWINDOW 0
+
 #include <io.h>
 #include <filesystem>
 #include <windows.h>
@@ -74,6 +75,7 @@
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
 #include <shlwapi.h>
+#include <shellapi.h>
 #pragma comment(lib, "shlwapi")
 
 #include <knownfolders.h> // for KnownFolder APIs/datatypes/function headers

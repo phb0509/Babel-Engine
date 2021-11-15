@@ -16,8 +16,10 @@ ColliderSettingScene::ColliderSettingScene() :
 	mCurrentModelIndex(0),
 	mCurrentModelName(""),
 	mBeforeModelIndex(0),
-	mExtractor(nullptr)
+	mExtractor(nullptr),
+	mbIsHoveredAssetsWindow(false)
 {
+	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
 
 	// 카메라 위치설정.
 	TARGETCAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
@@ -536,9 +538,22 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 {
 	// 이미 mModelsList.size() 1이상체크하고 들어왔다.
 
+	//
+
+
+
 	string tempImGuiName = mCurrentModelName + "Assets";
 
 	ImGui::Begin(tempImGuiName.c_str());
+
+	if (ImGui::IsWindowHovered())
+	{
+		mbIsHoveredAssetsWindow = true;
+	}
+	else if(!ImGui::IsWindowHovered())
+	{
+		mbIsHoveredAssetsWindow = false;
+	}
 
 	if (ImGui::Button("Import")) // FBX파일 추출. ExportFBX
 	{
@@ -552,9 +567,9 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 	{
 
 		// 옵션 선택.
-		ImGui::Checkbox("Export Mesh", &mIsExportMesh);
-		ImGui::Checkbox("Export Material", &mIsExportMaterial);
-		ImGui::Checkbox("Export Animation", &mIsExportAnimation);
+		ImGui::Checkbox("Export Mesh", &mbIsExportMesh);
+		ImGui::Checkbox("Export Material", &mbIsExportMaterial);
+		ImGui::Checkbox("Export Animation", &mbIsExportAnimation);
 
 		ImGui::Spacing();
 		ImGui::Spacing();
@@ -566,13 +581,11 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 			mSelectedFilePath = GetFileNameWithoutExtension(mSelectedFilePath);
 		}
 
-
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
 			thread t1([&]() {exportFBX(mSelectedFilePath); }); // 람다식으로 파라미터넘기기.
 			ImGui::CloseCurrentPopup();
 			t1.join();
-
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -588,18 +601,28 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		ImGui::EndPopup();
 	}
 
+	ImGui::Spacing();
+	ImGui::Spacing();
+
 
 	// mCurrentModelAssets 표시.(.mat, .mest, .clip 등등)
+
+	// filePreviewImage Render.
+
 	vector<string> fileList;
 	loadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
 
+	mStandardCursorPos = ImGui::GetCursorPos(); // 8, 50
 
-	standardCursorPos = ImGui::GetCursorPos(); // 8, 50
+	ImVec2 windowSize = ImGui::GetWindowSize();
 
-	int standardLineIndex = 8;
+
+
+	int standardLineIndex = 8; // 행당 표시할 파일개수.
 	int currentLineIndex = 0;
-	float distanceYgap = 80.0f;
-	float distanceXgap = 90.0f;
+	float distanceYgap = 120.0f; // 파일간 세로거리.
+	float distanceXgap = 90.0f; // 파일간 가로거리.
+	float distanceTextToImage = 70.0f;
 
 	for (int i = 0; i < fileList.size(); i++)
 	{
@@ -607,7 +630,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		{
 			if (i != 0)
 			{
-				standardCursorPos.y += distanceYgap;
+				mStandardCursorPos.y += distanceYgap;
 				currentLineIndex = 0;
 			}
 		}
@@ -627,33 +650,22 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
 		}
 
-		//ImVec2 temp1 = ImGui::GetCursorPos();
-		//int a = 0;
+		ImVec2 textPosition = { mStandardCursorPos.x + currentLineIndex * distanceXgap , mStandardCursorPos.y + distanceTextToImage };
+	
+		ImGui::SetCursorPosY(mStandardCursorPos.y); 
+		ImGui::SetCursorPosX(mStandardCursorPos.x + currentLineIndex * distanceXgap);
+		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col); // ImageButten Render.
 
-		ImGui::SetCursorPosY(standardCursorPos.y); // 이러면 다시 첫째줄로.
-		ImGui::SetCursorPosX(standardCursorPos.x + currentLineIndex * distanceXgap);
-		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
 
-		currentLineIndex++;
+		// fileName TextRender.
 
-		//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 68.0f); // 이러면 다시 첫째줄로.
-		//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 70.0f);
+		ImGui::SetCursorPos(textPosition); // Set TextPosition.
 
-		/*ImVec2 temp2 = ImGui::GetCursorPos();
-		int b = 0;*/
+		static float wrap_width = 64.0f; // 텍스트줄바꿈해줄 기준크기.
 
-		/*static float wrap_width = 200.0f;
-
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImVec2 marker_min = ImVec2(pos.x + wrap_width, pos.y);
-		ImVec2 marker_max = ImVec2(pos.x + wrap_width + 10, pos.y + ImGui::GetTextLineHeight());
-
-		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-		ImGui::Text(fileList[i].c_str(), wrap_width);
-
-		ImGui::PopTextWrapPos();*/
+		ImGui::PushTextWrapPos(textPosition.x + wrap_width);
+		ImGui::Text(fileList[i].c_str(), wrap_width); // Text Render.
+		ImGui::PopTextWrapPos();
 
 		//if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
 		//{
@@ -661,11 +673,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		//	ImGui::EndDragDropSource();
 		//}
 
-		//if ((i % 10) != 0) // 
-		//{
-		//	ImGui::SetCursorPosY(currentCursorPos.y);
-		//	ImGui::SetCursorPosX(currentCursorPos.x + 10.0f);
-		//}
+		currentLineIndex++;
 	}
 
 	ImGui::End();
@@ -731,4 +739,17 @@ void ColliderSettingScene::exportFBX(string fileName) // Mutant
 	exporter->ExportMaterial(fileName);
 	exporter->ExportMesh(fileName);
 	delete exporter;
+}
+
+void ColliderSettingScene::playAssetsWindowDropEvent()
+{
+	int a = 0;
+
+	if (mbIsHoveredAssetsWindow)
+	{
+		// fileCopy. 
+		vector<wstring> draggedFileList = GM->GetDraggedFileList();
+		draggedFileList;
+		int a = 0;
+	}
 }

@@ -30,3 +30,14 @@ void GameManager::Export()
 	exporter->ExportMesh("Mutant/Mutant");
 	delete exporter;
 }
+
+void GameManager::PlayDropEvents()
+{
+	for (int i = 0; i < mWindowDropEvents.size(); i++)
+	{
+		mWindowDropEvents[i]();
+		int a = 0;
+	}
+}
+
+

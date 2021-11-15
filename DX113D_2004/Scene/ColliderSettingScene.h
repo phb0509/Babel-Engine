@@ -47,6 +47,7 @@ private:
 
 	void printToCSV();
 	void exportFBX(string fileName);
+	void playAssetsWindowDropEvent();
 
 
 
@@ -85,13 +86,15 @@ private:
 	ModelExporter* mExtractor;
 	int mExportSettingIndex;
 
-	bool mIsExportMesh;
-	bool mIsExportMaterial;
-	bool mIsExportAnimation;
+	bool mbIsExportMesh;
+	bool mbIsExportMaterial;
+	bool mbIsExportAnimation;
 
 	string mSelectedFilePath;
 
-	ImVec2 beforeCursorPos;
-	ImVec2 standardCursorPos;
+	ImVec2 mStandardCursorPos;
+	bool mbIsHoveredAssetsWindow;
+
+
 
 };

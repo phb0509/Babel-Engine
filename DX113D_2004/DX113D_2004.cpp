@@ -131,7 +131,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SetMenu(hWnd, nullptr);
 
 	DragAcceptFiles(hWnd, true);
-
+	
 	if (!hWnd)
 	{
 		return FALSE;
@@ -173,14 +173,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 	{
 		Control::Get()->SetMouse(lParam);
-		float x = (float)LOWORD(lParam);
-		float y = (float)HIWORD(lParam);
-
-	/*	char buff[100];
-		sprintf_s(buff, "mousePos.x : %f\n mousePos.y : %f\n", x, y);
-		OutputDebugStringA(buff);*/
-
-		
 	}
 	break;
 
@@ -195,38 +187,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		HDROP hDrop = (HDROP)wParam;
 
-		vector<wstring> dragFiles;
+		vector<wstring> draggedFiles;
 		TCHAR* refFiles = nullptr;
 		UINT refFilesLen = 0;
 		POINT refPoint;
 
-		UINT dropCount = DragQueryFile(hDrop, 0xFFFFFFFF, refFiles, refFilesLen);
+		UINT fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, refFiles, refFilesLen);
 
-		if (dropCount > 0)
+		if (fileCount > 0)
 		{
-			for (int cnt = 0; cnt < dropCount; cnt++) 
+			for (int i = 0; i < fileCount; i++) 
 			{
-				int fLen = DragQueryFile(hDrop, cnt, NULL, 0) + 1; 
-				TCHAR* newFName = new TCHAR[fLen]; 
-				memset(newFName, 0, sizeof(TCHAR) * fLen); 
-				DragQueryFile(hDrop, cnt, newFName, fLen); 
-				
-				//if (checkFileExists(newFName) == true) // 파일있는지체크하는건데 왜하ㅣ지?
-				//{ 
-				//	wstring newFile = newFName; 
-				//	dragFiles.push_back(newFile); 
-				//} 
+				int fileLength = DragQueryFile(hDrop, i, NULL, 0) + 1; 
+				TCHAR* fileName = new TCHAR[fileLength]; 
+				memset(fileName, 0, sizeof(TCHAR) * fileLength); 
 
-				wstring newFile = newFName;
-				dragFiles.push_back(newFile);
+				DragQueryFile(hDrop, i, fileName, fileLength); 
+			
+				wstring newFile = fileName;
+				draggedFiles.push_back(newFile);
 
-				delete[] newFName;
+				delete[] fileName;
 			}
 		}
 
-		GM->Get()->SetDraggedFileList(dragFiles);
+		SetForegroundWindow(hWnd);
+		GM->Get()->SetDraggedFileList(draggedFiles);
 		GM->Get()->PlayDropEvents();
-		ImGui::SetWindowFocus();
 	}
 	break;
 

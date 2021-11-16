@@ -1,14 +1,6 @@
 #include "Framework.h"
 #include "ColliderSettingScene.h"
 
-//void exportFBX(string fileName) // Mutant
-//{
-//	ModelExporter* exporter = new ModelExporter(fileName);
-//	exporter->ExportMaterial(fileName);
-//	exporter->ExportMesh(fileName);
-//	delete exporter;
-//}
-
 
 ColliderSettingScene::ColliderSettingScene() :
 	mModel(nullptr),
@@ -17,7 +9,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mCurrentModelName(""),
 	mBeforeModelIndex(0),
 	mExtractor(nullptr),
-	mbIsHoveredAssetsWindow(false)
+	mbIsDropEvent(false)
 {
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
 
@@ -106,24 +98,24 @@ void ColliderSettingScene::Render()
 
 void ColliderSettingScene::PostRender()
 {
-	showModelSelect();
+	showModelSelectWindow();
 
 	if (mModels.size() != 0) // 이건 ToolModel이 반드시 있어야함...
 	{
-		showModelHierarchy();
-		showColliderEditor();
+		showModelHierarchyWindow();
+		showColliderEditorWindow();
 	}
 
 	if (mModelList.size() != 0)
 	{
-		showAssets();
+		showAssetsWindow();
 	}
 }
 
 
 
 
-void ColliderSettingScene::showModelSelect()
+void ColliderSettingScene::showModelSelectWindow()
 {
 	ImGui::Begin("SelectModel");
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -312,7 +304,7 @@ void ColliderSettingScene::selectClip()
 }
 
 
-void ColliderSettingScene::showModelHierarchy()
+void ColliderSettingScene::showModelHierarchyWindow()
 {
 	ImGui::Begin("Hierachy");
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -412,7 +404,7 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 	ImGui::Unindent();
 }
 
-void ColliderSettingScene::showColliderEditor()
+void ColliderSettingScene::showColliderEditorWindow()
 {
 	ImGui::Begin("ColliderEditor");
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -537,26 +529,24 @@ void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileL
 	_findclose(handle);
 }
 
-void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들.
+void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 assets들.
 {
 	// 이미 mModelsList.size() 1이상체크하고 들어왔다.
 
-	//
+	mAssetsWindowName = mCurrentModelName + "Assets";
+
+	ImGui::Begin(mAssetsWindowName.c_str());
 
 
-
-	string tempImGuiName = mCurrentModelName + "Assets";
-
-	ImGui::Begin(tempImGuiName.c_str());
-
-	if (ImGui::IsWindowHovered())
+	if (mbIsDropEvent)
 	{
-		mbIsHoveredAssetsWindow = true;
+		if (ImGui::IsWindowHovered())
+		{
+			copyDraggedFile();
+		}
+		mbIsDropEvent = false;
 	}
-	else if(!ImGui::IsWindowHovered())
-	{
-		mbIsHoveredAssetsWindow = false;
-	}
+
 
 	if (ImGui::Button("Import")) // FBX파일 추출. ExportFBX
 	{
@@ -568,7 +558,6 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 	if (ImGui::BeginPopupModal("Extractor", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-
 		// 옵션 선택.
 		ImGui::Checkbox("Export Mesh", &mbIsExportMesh);
 		ImGui::Checkbox("Export Material", &mbIsExportMaterial);
@@ -578,7 +567,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		if (ImGui::Button("Open...")) // 여기부분에서부터 문제가 생기는듯하다.
+		if (ImGui::Button("Open..."))
 		{
 			mSelectedFilePath = OpenFileDialog();
 			mSelectedFilePath = GetFileNameWithoutExtension(mSelectedFilePath);
@@ -619,8 +608,6 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 
-
-
 	int standardLineIndex = 8; // 행당 표시할 파일개수.
 	int currentLineIndex = 0;
 	float distanceYgap = 120.0f; // 파일간 세로거리.
@@ -637,7 +624,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 				currentLineIndex = 0;
 			}
 		}
-	
+
 		int frame_padding = 0;
 		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
 		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
@@ -646,7 +633,7 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		string fileExtension = GetExtension(fileList[i]);
-		
+
 		if (fileExtension == "png")
 		{
 			string temp = "ModelData/" + mCurrentModelName + "/" + fileList[i];
@@ -654,8 +641,8 @@ void ColliderSettingScene::showAssets() // ex)ModelData/Mutant내의 모든 assets들
 		}
 
 		ImVec2 textPosition = { mStandardCursorPos.x + currentLineIndex * distanceXgap , mStandardCursorPos.y + distanceTextToImage };
-	
-		ImGui::SetCursorPosY(mStandardCursorPos.y); 
+
+		ImGui::SetCursorPosY(mStandardCursorPos.y);
 		ImGui::SetCursorPosX(mStandardCursorPos.x + currentLineIndex * distanceXgap);
 		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col); // ImageButten Render.
 
@@ -744,21 +731,16 @@ void ColliderSettingScene::exportFBX(string fileName) // Mutant
 	delete exporter;
 }
 
-void ColliderSettingScene::playAssetsWindowDropEvent()
+void ColliderSettingScene::playAssetsWindowDropEvent() // 어쨋든 이건 실행된다.
 {
-	
+	mbIsDropEvent = true;
+}
 
+void ColliderSettingScene::copyDraggedFile()
+{
+	vector<wstring> draggedFileList = GM->GetDraggedFileList();
 
-	char buff[100];
-	sprintf_s(buff, "mousePos.x : %f\n mousePos.y : %f\n", MOUSEPOS.x, MOUSEPOS.y);
-	OutputDebugStringA(buff);
+	draggedFileList;
 
 	int a = 0;
-	//if (mbIsHoveredAssetsWindow) // 여길 안들어오네 
-	//{
-	//	// fileCopy. 
-	//	vector<wstring> draggedFileList = GM->GetDraggedFileList();
-	//	draggedFileList;
-	//	int a = 0;
-	//}
 }

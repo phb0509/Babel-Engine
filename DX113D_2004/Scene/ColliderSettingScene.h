@@ -35,10 +35,10 @@ private:
 	void selectModel();
 	void showAddButton();
 
-	void showModelHierarchy();
-	void showModelSelect();
-	void showColliderEditor();
-	void showAssets();
+	void showModelHierarchyWindow();
+	void showModelSelectWindow();
+	void showColliderEditorWindow();
+	void showAssetsWindow();
 	void save();
 	void loadFileList(string folderName, vector<string>& fileList);
 
@@ -48,6 +48,8 @@ private:
 	void printToCSV();
 	void exportFBX(string fileName);
 	void playAssetsWindowDropEvent();
+		
+	void copyDraggedFile();
 
 
 
@@ -94,7 +96,8 @@ private:
 
 	ImVec2 mStandardCursorPos;
 	bool mbIsHoveredAssetsWindow;
+	bool mbIsDropEvent;
 
-
+	string mAssetsWindowName;
 
 };

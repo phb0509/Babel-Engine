@@ -505,7 +505,10 @@ void ColliderSettingScene::save()
 
 void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
 {
-	string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
+	//string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
+	string path = mProjectPath + "\\ModelData\\";
+
+	int a = 0;
 	path = path += folderName + "\\";
 	path += "*.*";
 
@@ -743,13 +746,19 @@ void ColliderSettingScene::exportFBX(string fileName) // Mutant
 
 void ColliderSettingScene::playAssetsWindowDropEvent()
 {
-	int a = 0;
+	
 
-	if (mbIsHoveredAssetsWindow)
-	{
-		// fileCopy. 
-		vector<wstring> draggedFileList = GM->GetDraggedFileList();
-		draggedFileList;
-		int a = 0;
-	}
+
+	char buff[100];
+	sprintf_s(buff, "mousePos.x : %f\n mousePos.y : %f\n", MOUSEPOS.x, MOUSEPOS.y);
+	OutputDebugStringA(buff);
+
+	int a = 0;
+	//if (mbIsHoveredAssetsWindow) // 여길 안들어오네 
+	//{
+	//	// fileCopy. 
+	//	vector<wstring> draggedFileList = GM->GetDraggedFileList();
+	//	draggedFileList;
+	//	int a = 0;
+	//}
 }

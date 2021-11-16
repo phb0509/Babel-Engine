@@ -3,6 +3,7 @@
 
 DeferredRenderingScene::DeferredRenderingScene()
 {
+
 	CreateModels(); // 모델들 디폴트셰이더는 Lighting
 
 	gBuffer = new GBuffer(); // rtv생성

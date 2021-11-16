@@ -176,9 +176,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		float x = (float)LOWORD(lParam);
 		float y = (float)HIWORD(lParam);
 
-		char buff[100];
+	/*	char buff[100];
 		sprintf_s(buff, "mousePos.x : %f\n mousePos.y : %f\n", x, y);
-		OutputDebugStringA(buff);
+		OutputDebugStringA(buff);*/
 
 		
 	}

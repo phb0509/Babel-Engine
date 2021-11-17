@@ -536,7 +536,6 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 	ImGui::Begin(mAssetsWindowName.c_str());
 
-
 	if (mbIsDropEvent)
 	{
 		if (ImGui::IsWindowHovered())
@@ -545,7 +544,6 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		}
 		mbIsDropEvent = false;
 	}
-
 
 	if (ImGui::Button("Import")) // FBX파일 추출. ExportFBX
 	{
@@ -607,31 +605,43 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 
-	int standardLineIndex = 8; // 행당 표시할 파일개수.
-	int currentLineIndex = 0;
-	float distanceYgap = 120.0f; // 파일간 세로거리.
-	float distanceXgap = 90.0f; // 파일간 가로거리.
-	float distanceTextToImage = 70.0f;
 
+	//ImageButton Setting
+
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+	float widthPadding = 26.0f;
+	float heightPadding = 56.0f;
+	float distanceHorizontalGap = widthPadding + imageButtonSize.x; // 렌더시작위치기준으로 각 이미지버튼사이의 가로거리.
+	float distanceVerticalGap = heightPadding + imageButtonSize.y; // 렌더시작위치기준으로 각 이미지버튼사이의 세로거리. 
+	float distanceTextToImage = 6.0f;
+	int currentLineIndex = 0;
+
+
+
+	int fileCountPerRow = windowSize.x / distanceHorizontalGap; // 행당 표시할 파일개수. 동적으로 변경할것예정.
+	 
+	if (fileCountPerRow < 1)
+	{
+		fileCountPerRow = 1;
+	}
+	
 	for (int i = 0; i < fileList.size(); i++)
 	{
-		if ((i % standardLineIndex) == 0) // 나머지가 0 아니여야 실행.
+		if ((i % fileCountPerRow) == 0) // 나머지가 0 아니여야 실행.
 		{
 			if (i != 0)
 			{
-				mStandardCursorPos.y += distanceYgap;
+				mStandardCursorPos.y += distanceVerticalGap;
 				currentLineIndex = 0;
 			}
 		}
-
-		int frame_padding = 0;
-		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
-		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-		//ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color) 검정.    
-		ImVec4 bg_col = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
-		
-		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		string fileExtension = GetExtension(fileList[i]);
 
@@ -641,11 +651,11 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
 		}
 
-		ImVec2 textPosition = { mStandardCursorPos.x + currentLineIndex * distanceXgap , mStandardCursorPos.y + distanceTextToImage };
+		ImVec2 textPosition = { mStandardCursorPos.x + currentLineIndex * distanceHorizontalGap , mStandardCursorPos.y + (imageButtonSize.y + distanceTextToImage) };
 
 		ImGui::SetCursorPosY(mStandardCursorPos.y);
-		ImGui::SetCursorPosX(mStandardCursorPos.x + currentLineIndex * distanceXgap);
-		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col); // ImageButten Render.
+		ImGui::SetCursorPosX(mStandardCursorPos.x + currentLineIndex * distanceHorizontalGap);
+		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor); // ImageButten Render.
 
 
 		// fileName TextRender.

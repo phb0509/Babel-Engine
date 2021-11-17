@@ -29,6 +29,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
 	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
 	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
+	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
 
 
 	//// mModelList뿐만 아니라 mModels도 일단 비워놓고, AddModel할때마다 추가해줘야한다.
@@ -497,11 +498,9 @@ void ColliderSettingScene::save()
 
 void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
 {
-	//string path = "C:\\Users\\pok98\\source\\repos\\DirectX11_3D_Portfolio\\DX113D_2004\\ModelData\\";
 	string path = mProjectPath + "\\ModelData\\";
 
-	int a = 0;
-	path = path += folderName + "\\";
+	path += folderName + "\\";
 	path += "*.*";
 
 	struct _finddata_t fd;
@@ -629,7 +628,9 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImVec2 size = ImVec2(64.0f, 64.0f); // 이미지버튼 크기설정.                     
 		ImVec2 uv0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 		ImVec2 uv1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-		ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color) 검정.       
+		//ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // 바탕색.(Background Color) 검정.    
+		ImVec4 bg_col = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+		
 		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		string fileExtension = GetExtension(fileList[i]);
@@ -723,7 +724,7 @@ void ColliderSettingScene::printToCSV()
 	fclose(file);
 }
 
-void ColliderSettingScene::exportFBX(string fileName) // Mutant
+void ColliderSettingScene::exportFBX(string fileName) 
 {
 	ModelExporter* exporter = new ModelExporter(fileName);
 	exporter->ExportMaterial(fileName);
@@ -731,7 +732,7 @@ void ColliderSettingScene::exportFBX(string fileName) // Mutant
 	delete exporter;
 }
 
-void ColliderSettingScene::playAssetsWindowDropEvent() // 어쨋든 이건 실행된다.
+void ColliderSettingScene::playAssetsWindowDropEvent() 
 {
 	mbIsDropEvent = true;
 }
@@ -739,8 +740,14 @@ void ColliderSettingScene::playAssetsWindowDropEvent() // 어쨋든 이건 실행된다.
 void ColliderSettingScene::copyDraggedFile()
 {
 	vector<wstring> draggedFileList = GM->GetDraggedFileList();
+	
+	for (int i = 0; i < draggedFileList.size(); i++)
+	{
+		string assetsFolderPath = mProjectPath + "\\ModelData\\" + mCurrentModelName + "\\";
+		string fileName = ToString(draggedFileList[i]);
+		fileName = GetFileName(fileName); 
+		assetsFolderPath += fileName;
+		BOOL bCopy = ::CopyFile(draggedFileList[i].c_str(), ToWString(assetsFolderPath).c_str(), FALSE);
+	}
 
-	draggedFileList;
-
-	int a = 0;
 }

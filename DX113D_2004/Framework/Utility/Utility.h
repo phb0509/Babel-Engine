@@ -19,6 +19,7 @@ namespace Utility
 	string GetFileName(string path);
 	string GetFileNameWithoutExtension(string path);
 	string OpenFileDialog();
+	char* ToCharPointer(string string);
 
 	void CreateFolders(string path);
 

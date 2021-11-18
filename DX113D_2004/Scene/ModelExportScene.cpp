@@ -4,12 +4,12 @@
 
 ModelExportScene::ModelExportScene()
 {
-	string name = "Mutant";
-	
-	//exporter = new ModelExporter("ModelData/Models/" + name + ".fbx");
-	exporter = new ModelExporter("ModelData/" + name + ".fbx");
-	exporter->ExportMaterial(name + "/" + name);
-	exporter->ExportMesh(name + "/" + name);
+	//string name = "Mutant";
+	//
+	////exporter = new ModelExporter("ModelData/Models/" + name + ".fbx");
+	//exporter = new ModelExporter("ModelData/" + name + ".fbx");
+	//exporter->ExportMaterial(name + "/" + name);
+	//exporter->ExportMesh(name + "/" + name);
 
 	
 	

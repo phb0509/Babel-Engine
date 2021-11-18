@@ -163,7 +163,8 @@ string Utility::OpenFileDialog()
 											{
 												TaskDialog(NULL,
 													NULL,
-													L"CommonFileDialogApp", // 파일고르고 확인누르면 뜨는 확인차뜨는 팝업창.
+													///L"CommonFileDialogApp", // 파일고르고 확인누르면 뜨는 확인차뜨는 팝업창.
+													NULL,
 													pszFilePath,
 													NULL,
 													TDCBF_OK_BUTTON,
@@ -191,6 +192,16 @@ string Utility::OpenFileDialog()
 	}
 
 	return filePath;
+}
+
+
+char* Utility::ToCharPointer(string string)
+{
+	vector<char> writable(string.begin(), string.end());
+	writable.push_back('\0');
+	char* ptr = &writable[0];
+
+	return ptr;
 }
 
 void Utility::CreateFolders(string path)

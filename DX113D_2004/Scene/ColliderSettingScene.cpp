@@ -118,7 +118,7 @@ void ColliderSettingScene::PostRender()
 
 void ColliderSettingScene::showModelSelectWindow()
 {
-	ImGui::Begin("SelectModel");
+	ImGui::Begin("Select Model");
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_None;
 
@@ -206,13 +206,13 @@ void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자
 
 void ColliderSettingScene::showAddButton()
 {
-	if (ImGui::Button("AddModel.."))
-		ImGui::OpenPopup("AddModel");
+	if (ImGui::Button("Create Model.."))
+		ImGui::OpenPopup("Create Model");
 
 	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-	if (ImGui::BeginPopupModal("AddModel", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal("Create Model", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		static char inputText[128] = "";
 		ImGui::InputText("Input ModelName", inputText, IM_ARRAYSIZE(inputText));
@@ -262,7 +262,7 @@ void ColliderSettingScene::showAddButton()
 
 void ColliderSettingScene::selectClip()
 {
-	if (ImGui::Button("SelectClip"))
+	if (ImGui::Button("Select Clip"))
 		igfd::ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose Clip", ".clip", ".");
 
 	// display
@@ -564,17 +564,54 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		if (ImGui::Button("Open..."))
+		if (ImGui::Button("Select File..."))
 		{
 			mSelectedFilePath = OpenFileDialog();
-			mSelectedFilePath = GetFileNameWithoutExtension(mSelectedFilePath);
 		}
 
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		string temp = "Selected File : " + mSelectedFilePath;
+		float wrapWidth = 100.0f;
+
+		if (mSelectedFilePath.size() != 0)
+		{
+			wrapWidth = 280.0f;
+			Replace(&mSelectedFilePath, "\\", "/");
+		}
+
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
+		ImGui::Text(temp.c_str(), wrapWidth);
+		ImGui::PopTextWrapPos();
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		static char buf5[64] = "";
+		//const char buf5[64] = mSelectedFilePath.c_str();
+
+		//char buf4[444] = mSelectedFilePath.c_str();
+
+		string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath);
+		vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
+		writable.push_back('\0');
+		char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
+	
+		ImGui::InputText("fileNmae to Create", inputText, 64, ImGuiInputTextFlags_CharsNoBlank);
+
+	
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
-			thread t1([&]() {exportFBX(mSelectedFilePath); }); // 람다식으로 파라미터넘기기.
+			thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModelName); }); // 람다식으로 파라미터넘기기.
+
 			ImGui::CloseCurrentPopup();
 			t1.join();
+
+			mSelectedFilePath = "";
+			mbIsExportMesh = false;
+			mbIsExportMaterial = false;
+			mbIsExportAnimation = false;
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -583,7 +620,11 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		if (ImGui::Button("Cancel", ImVec2(120, 0)))
 		{
-			// Cancel 이벤트는 딱히 넣을게없다.
+			mSelectedFilePath = "";
+			mbIsExportMesh = false;
+			mbIsExportMaterial = false;
+			mbIsExportAnimation = false;
+
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -615,23 +656,19 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-
 	float widthPadding = 26.0f;
 	float heightPadding = 56.0f;
 	float distanceHorizontalGap = widthPadding + imageButtonSize.x; // 렌더시작위치기준으로 각 이미지버튼사이의 가로거리.
 	float distanceVerticalGap = heightPadding + imageButtonSize.y; // 렌더시작위치기준으로 각 이미지버튼사이의 세로거리. 
 	float distanceTextToImage = 6.0f;
 	int currentLineIndex = 0;
-
-
-
 	int fileCountPerRow = windowSize.x / distanceHorizontalGap; // 행당 표시할 파일개수. 동적으로 변경할것예정.
-	 
+
 	if (fileCountPerRow < 1)
 	{
 		fileCountPerRow = 1;
 	}
-	
+
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		if ((i % fileCountPerRow) == 0) // 나머지가 0 아니여야 실행.
@@ -660,10 +697,9 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		// fileName TextRender.
 
-		ImGui::SetCursorPos(textPosition); // Set TextPosition.
-
 		static float wrap_width = 64.0f; // 텍스트줄바꿈해줄 기준크기.
 
+		ImGui::SetCursorPos(textPosition); // Set TextPosition.
 		ImGui::PushTextWrapPos(textPosition.x + wrap_width);
 		ImGui::Text(fileList[i].c_str(), wrap_width); // Text Render.
 		ImGui::PopTextWrapPos();
@@ -730,19 +766,33 @@ void ColliderSettingScene::printToCSV()
 		}
 	}
 
-
 	fclose(file);
 }
 
-void ColliderSettingScene::exportFBX(string fileName) 
+void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToCreate, string parentFolderName)
 {
-	ModelExporter* exporter = new ModelExporter(fileName);
-	exporter->ExportMaterial(fileName);
-	exporter->ExportMesh(fileName);
+	ModelExporter* exporter = new ModelExporter(SelectedFilePath);
+
+	if (mbIsExportAnimation)
+	{
+		exporter->ExportClip(fileNameToCreate, parentFolderName);
+	}
+	else
+	{
+		if (mbIsExportMesh)
+		{
+			exporter->ExportMesh(fileNameToCreate, parentFolderName);
+		}
+		if (mbIsExportMaterial)
+		{
+			exporter->ExportMaterial(fileNameToCreate, parentFolderName);
+		}
+	}
+
 	delete exporter;
 }
 
-void ColliderSettingScene::playAssetsWindowDropEvent() 
+void ColliderSettingScene::playAssetsWindowDropEvent()
 {
 	mbIsDropEvent = true;
 }
@@ -750,12 +800,12 @@ void ColliderSettingScene::playAssetsWindowDropEvent()
 void ColliderSettingScene::copyDraggedFile()
 {
 	vector<wstring> draggedFileList = GM->GetDraggedFileList();
-	
+
 	for (int i = 0; i < draggedFileList.size(); i++)
 	{
 		string assetsFolderPath = mProjectPath + "\\ModelData\\" + mCurrentModelName + "\\";
 		string fileName = ToString(draggedFileList[i]);
-		fileName = GetFileName(fileName); 
+		fileName = GetFileName(fileName);
 		assetsFolderPath += fileName;
 		BOOL bCopy = ::CopyFile(draggedFileList[i].c_str(), ToWString(assetsFolderPath).c_str(), FALSE);
 	}

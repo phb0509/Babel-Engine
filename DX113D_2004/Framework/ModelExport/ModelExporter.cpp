@@ -1,14 +1,12 @@
 #include "Framework.h"
 
-ModelExporter::ModelExporter(string fileName) : boneCount(0) // fileName만 ex) Mutant
+ModelExporter::ModelExporter(string selectedFilePath) : boneCount(0) // fileName만 ex) Mutant
 {
 	importer = new Assimp::Importer();
 	
-	const string filePath = "ModelData/" + fileName + ".fbx";
-
 	scene = importer->ReadFile
 	(
-		filePath,
+		selectedFilePath,
 		aiProcess_ConvertToLeftHanded | 
 		aiProcessPreset_TargetRealtime_MaxQuality
 	); //FBX파일 리드.
@@ -23,29 +21,29 @@ ModelExporter::~ModelExporter()
 	delete importer;
 }
 
-void ModelExporter::ExportMaterial(string fileName) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
+void ModelExporter::ExportMaterial(string fileNameToCreate, string parentFolderName) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
 {
 	ReadMaterial();
 
-	string savePath = "ModelData/" + fileName + "/" + fileName + ".mat";
+	string savePath = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".mat";
 	WriteMaterial(savePath);
 }
 
-void ModelExporter::ExportMesh(string fileName)
+void ModelExporter::ExportMesh(string fileNameToCreate, string parentFolderName)
 {
 	ReadNode(scene->mRootNode, -1, -1);
 	ReadMesh(scene->mRootNode);
 
-	string savePath = "ModelData/" + fileName + "/" + fileName + ".mesh";
+	string savePath = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".mesh";
 	WriteMesh(savePath);
 }
 
-void ModelExporter::ExportClip(string fileName)
+void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName)
 {
 	for (UINT i = 0; i < scene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
 		Clip* clip = ReadClip(scene->mAnimations[i]);
-		string path = "ModelData/Clips/" + fileName + to_string(i) + ".clip"; // 뮤턴트폴더에 OnDamage0.clip 생성.
+		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 뮤턴트폴더에 OnDamage0.clip 생성.
 		WriteClip(clip, path);
 	}
 }

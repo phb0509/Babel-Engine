@@ -14,12 +14,7 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-	HRESULT CDialogEventHandler_CreateInstance(REFIID riid, void** ppv);
 
-	
 private:
-	//ModelExporter* mModelExporter;
-	bool mCheck = true;
 
-	string tempPath;
 };

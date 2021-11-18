@@ -46,7 +46,7 @@ private:
 	void treeNodeRecurs(int nodesIndex);
 
 	void printToCSV();
-	void exportFBX(string fileName);
+	void exportFBX(string selectedFilePath, string fileNameToCreate, string parentFolderName);
 	void playAssetsWindowDropEvent();
 		
 	void copyDraggedFile();

@@ -15,12 +15,12 @@ private:
 	UINT boneCount;
 
 public:
-	ModelExporter(string fileName);
+	ModelExporter(string selectedFilePath);
 	~ModelExporter();
 
-	void ExportMaterial(string savePath);
-	void ExportMesh(string savePath);
-	void ExportClip(string savePath);
+	void ExportMaterial(string fileNameToCreate, string parentFolderName);
+	void ExportMesh(string fileNameToCreate, string parentFolderName);
+	void ExportClip(string fileNameToCreate, string parentFolderName);
 
 	//Material///////////////////////////
 	void ReadMaterial();

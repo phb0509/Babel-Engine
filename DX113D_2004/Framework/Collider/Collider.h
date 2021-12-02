@@ -26,16 +26,7 @@ public:
 		CAPSULE,
 		NONE
 	};
-protected:
-	Material* material;
-	Mesh* mesh;
 
-	Type type;
-
-	vector<Vertex> vertices;
-	vector<UINT> indices;
-
-	bool isRender;
 
 public:
 	Collider();
@@ -52,5 +43,16 @@ public:
 	void Update();
 	void Render();
 
-	void SetColor(Float4 color) { material->GetBuffer()->data.diffuse = color; }
+	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
+
+protected:
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	Type mType;
+
+	vector<Vertex> mVertices;
+	vector<UINT> mIndices;
+
+	bool mbIsRender;
 };

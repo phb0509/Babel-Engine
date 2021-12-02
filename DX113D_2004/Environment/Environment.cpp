@@ -46,7 +46,7 @@ void Environment::PostRender()
 	if (ImGui::Button("TargetCamera"))
 	{
 		mbIsTargetCamera = true;
-		mTargetCamera->SetIsMouseInputing(true); // 월드카메라시점일 때 타겟카메라의 마우스이동량에 따른 회전을 막기위함.
+		mTargetCamera->SetIsMouseInputing(true); 
 	}
 
 	if (ImGui::Button("WorldCamera"))
@@ -54,7 +54,7 @@ void Environment::PostRender()
 		mbIsTargetCamera = false;
 		mWorldCamera->mPosition = Vector3(110.0f, 175.0f, -40.0f);
 		mWorldCamera->mRotation = Vector3(1.0f, 0.0f, 0.0f);
-		mTargetCamera->SetIsMouseInputing(false);
+		mTargetCamera->SetIsMouseInputing(false); //// 월드카메라시점일 때 타겟카메라의 마우스이동량에 따른 회전을 막기위함.
 	}
 
 	/*ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);

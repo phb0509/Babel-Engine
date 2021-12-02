@@ -262,8 +262,6 @@
     <ClInclude Include="Objects\Landscape\TerrainData.h" />
     <ClInclude Include="Objects\Landscape\TerrainEditor.h" />
     <ClInclude Include="Objects\Landscape\TerrainLOD.h" />
-    <ClInclude Include="Objects\Model\Ken.h" />
-    <ClInclude Include="Objects\Model\Krillin.h" />
     <ClInclude Include="Objects\Model\ModelAnimObject.h" />
     <ClInclude Include="Objects\Model\ModelObject.h" />
     <ClInclude Include="Objects\Particle\Effect.h" />
@@ -377,8 +375,6 @@
     <ClCompile Include="Objects\Landscape\TerrainEditor.cpp" />
     <ClCompile Include="Objects\Landscape\TerrainLOD.cpp" />
     <ClCompile Include="Objects\Landscape\Water.cpp" />
-    <ClCompile Include="Objects\Model\Ken.cpp" />
-    <ClCompile Include="Objects\Model\Krillin.cpp" />
     <ClCompile Include="Objects\Model\ModelAnimObject.cpp" />
     <ClCompile Include="Objects\Model\ModelObject.cpp" />
     <ClCompile Include="Objects\Particle\Effect.cpp" />

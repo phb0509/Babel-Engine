@@ -4,11 +4,10 @@ class ModelAnimator : public ModelReader
 {
 
 public:
-	ModelAnimator(string file);
+	ModelAnimator();
 	virtual ~ModelAnimator();
 
 	void ReadClip(string file);
-	void ReadTPoseClip(); 
 
 	virtual void Update();
 	virtual void Render();
@@ -21,6 +20,13 @@ public:
 
 	Matrix GetTransformByNode(int nodeIndex);
 	Matrix GetTransformByNode(UINT instance, int nodeIndex);
+	int GetModelClipsSize() { return mModelClips.size(); }
+
+
+	// Model Function
+	void MakeBoneTransform();
+	void SetBoneTransforms();
+	void ExecuteSetMeshEvent();
 
 protected:
 	// 본을 텍스쳐로 만듬 (Shader로 넘길 수 있는 최대 한계는 16바이트 * 5000.
@@ -28,6 +34,9 @@ protected:
 	// 그래서 텍스쳐로 만들어서 대량의 데이터를 넘겨줘야함.
 	void CreateTexture();
 	void CreateClipTransform(UINT index);
+	
+
+
 
 
 protected:
@@ -38,9 +47,14 @@ protected:
 	ID3D11Texture2D* mTexture;
 	ID3D11ShaderResourceView* mSRV;
 
-	vector<ModelClip*> mClips;
+	vector<ModelClip*> mModelClips;
 
 	map<UINT, CallBack> mEndEvent;
 	map<UINT, CallBackParam> mEndParamEvent;
 	map<UINT, int> mParam;
+
+	//Model
+	BoneBuffer* mBoneBuffer;
+	map<int, Matrix> mBoneTransforms;
+	Matrix* mNodeTransforms;
 };

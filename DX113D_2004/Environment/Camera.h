@@ -69,10 +69,10 @@ private:
 
 
 public:
-	float moveSpeed;
-	float wheelSpeed;
-	Vector3 cameraForward;
-	POINT pt;
+	float mMoveSpeed;
+	float mWheelSpeed;
+	Vector3 mCameraForward;
+	POINT mPoint;
 
 private:
 	float mRotationSpeed;

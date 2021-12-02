@@ -13,7 +13,7 @@ protected:
 
 	
 public:
-	Models(string file);
+	Models();
 	virtual ~Models();
 
 	void Update();

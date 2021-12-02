@@ -3,7 +3,7 @@
 CapsuleCollider::CapsuleCollider(float radius, float height, UINT stackCount, UINT sliceCount)
     : radius(radius), height(height), stackCount(stackCount), sliceCount(sliceCount)
 {
-    type = CAPSULE;
+    mType = CAPSULE;
     CreateMesh();
 }
 
@@ -165,7 +165,7 @@ void CapsuleCollider::CreateMesh()
 			else
 				vertex.position.y -= height * 0.5f;
 
-			vertices.emplace_back(vertex);
+			mVertices.emplace_back(vertex);
 		}
 	}
 
@@ -173,14 +173,14 @@ void CapsuleCollider::CreateMesh()
 	{
 		for (UINT j = 0; j < sliceCount; j++)
 		{
-			indices.emplace_back((sliceCount + 1) * i + j);//0
-			indices.emplace_back((sliceCount + 1) * i + j + 1);//1			
+			mIndices.emplace_back((sliceCount + 1) * i + j);//0
+			mIndices.emplace_back((sliceCount + 1) * i + j + 1);//1			
 
-			indices.emplace_back((sliceCount + 1) * i + j);//0
-			indices.emplace_back((sliceCount + 1) * (i + 1) + j);//2
+			mIndices.emplace_back((sliceCount + 1) * i + j);//0
+			mIndices.emplace_back((sliceCount + 1) * (i + 1) + j);//2
 		}
 	}
 
-	mesh = new Mesh(vertices.data(), sizeof(Vertex), vertices.size(),
-		indices.data(), indices.size());
+	mMesh = new Mesh(mVertices.data(), sizeof(Vertex), mVertices.size(),
+		mIndices.data(), mIndices.size());
 }

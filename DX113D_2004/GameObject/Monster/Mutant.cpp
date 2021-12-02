@@ -2,12 +2,15 @@
 
 
 Mutant::Mutant()
-	: ModelAnimator("Mutant/Mutant"),
+	: ModelAnimator(),
 	mAnimation(eAnimationStates::Idle),
 	mFSM(eStates::Patrol),
 	mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
+
+	SetMesh("Mutant", "Mutant.mesh");
+	SetMaterial("Mutant", "Mutant.mat");
 
 	SetShader(L"ModelAnimation");
 
@@ -92,11 +95,6 @@ Collider* Mutant::GetColliderForAStar()
 	return mBodyCollider;
 }
 
-
-
-
-
-
 void Mutant::setOnDamageEnd()
 {
 	SetAnimation((eAnimationStates::Idle));
@@ -161,7 +159,7 @@ void Mutant::loadCollider()
 
 
 	findCollider("smashAttackCollider", mSmashAttackCollider);
-	findCollider("BodyCollider", mBodyCollider);
+	findCollider("BodyCollider", mBodyCollider); // BodyCollider의 SRT값을 mBodyCollider에.
 }
 
 void Mutant::findCollider(string name, Collider* collider)

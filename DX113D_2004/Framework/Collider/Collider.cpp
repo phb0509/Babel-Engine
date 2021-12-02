@@ -1,20 +1,20 @@
 #include "Framework.h"
 
-Collider::Collider() : isRender(true)
+Collider::Collider() : mbIsRender(true)
 {
-    material = new Material(L"Collider");
-    material->GetBuffer()->data.diffuse = Float4(0, 1, 0, 1);
+    mMaterial = new Material(L"Collider");
+    mMaterial->GetBuffer()->data.diffuse = Float4(0, 1, 0, 1);
 }
 
 Collider::~Collider()
 {
-    delete material;
-    delete mesh;
+    delete mMaterial;
+    delete mMesh;
 }
 
 bool Collider::Collision(Collider* collider)
 {    
-    switch (collider->type)
+    switch (collider->mType)
     {
     case Collider::BOX:
         return BoxCollision(static_cast<BoxCollider*>(collider));
@@ -34,18 +34,17 @@ void Collider::Update()
 {
     if (KEY_DOWN(VK_F3))
     {
-        if (isRender)
+        if (mbIsRender)
         {
             SetColor({ 0, 1, 0, 1 });
-            isRender = !isRender;
+            mbIsRender = !mbIsRender;
         }
         else
         {
             SetColor({ 0,0,0,0 });
-            isRender = !isRender;
+            mbIsRender = !mbIsRender;
         }
     }
-
 
 
     UpdateWorld();
@@ -54,9 +53,12 @@ void Collider::Update()
 void Collider::Render()
 {
     SetWorldBuffer();
+    
+    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    mMaterial->Set();
 
-    mesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-    material->Set();
+  
+    DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 
-    DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
+    RenderAxis();
 }

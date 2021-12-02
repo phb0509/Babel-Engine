@@ -2,7 +2,7 @@
 
 Camera::Camera()
 	:
-	moveSpeed(50.0f),
+	mMoveSpeed(50.0f),
 	mRotationSpeed(2.0f),
 	distance(13),
 	height(11),
@@ -13,7 +13,7 @@ Camera::Camera()
 	rotY(0.0f),
 	rotX(0.0f),
 	target(nullptr),
-	wheelSpeed(5.0f),
+	mWheelSpeed(5.0f),
 	mbIsOnFrustumCollider(false),
 	mbIsMouseInputing(true),
 	mbHasInitalized(false),
@@ -40,11 +40,6 @@ void Camera::Update()
 
 	if (target != nullptr)
 	{
-		/*char buff[100];
-		sprintf_s(buff, "타겟카메라 업데이트중\n");
-		OutputDebugStringA(buff);*/
-
-
 		if (mbIsMouseInputing) // 1인칭시점이 타겟카메라시점일 때
 		{
 			targetMove(); // 타겟카메라시점의 타겟카메라이동
@@ -101,10 +96,12 @@ void Camera::targetMove()
 	Vector3 targetPosition = target->GetGlobalPosition() + tempOffset;
 
 	//cameraForward = (player->GlobalPos() - position).Normal();
-	cameraForward = forward.Normal();
+	mCameraForward = forward.Normal();
 
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
+
+	// 프러스텀에 뷰버퍼 설정.
 	mViewBuffer->Set(mViewMatrix);
 	setViewToFrustum(mViewMatrix);
 	
@@ -121,6 +118,7 @@ void Camera::targetMoveInWorldCamera()
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
 		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
 
+	// 프러스텀에 뷰버퍼 설정.
 	mViewBuffer->Set(mViewMatrix);
 	setViewToFrustum(mViewMatrix);
 
@@ -201,20 +199,20 @@ void Camera::freeMove()
 	if (KEY_PRESS(VK_RBUTTON))
 	{
 		if (KEY_PRESS('I'))
-			mPosition += Forward() * moveSpeed * DELTA;
+			mPosition += Forward() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('K'))
-			mPosition -= Forward() * moveSpeed * DELTA;
+			mPosition -= Forward() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('J'))
-			mPosition -= Right() * moveSpeed * DELTA;
+			mPosition -= Right() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('L'))
-			mPosition += Right() * moveSpeed * DELTA;
+			mPosition += Right() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('U'))
-			mPosition -= Up() * moveSpeed * DELTA;
+			mPosition -= Up() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('O'))
-			mPosition += Up() * moveSpeed * DELTA;
+			mPosition += Up() * mMoveSpeed * DELTA;
 	}
 
-	mPosition += Forward() * Control::Get()->GetWheel() * wheelSpeed * DELTA;
+	mPosition += Forward() * Control::Get()->GetWheel() * mWheelSpeed * DELTA;
 }
 
 void Camera::rotation()
@@ -244,7 +242,6 @@ void Camera::SetViewMatrixToBuffer()
 
 	Vector3 focus = mPosition + Forward();
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data, Up().data); // 카메라위치, 타겟위치, 카메라 윗벡터
-
 	mViewBuffer->Set(mViewMatrix);
 }
 

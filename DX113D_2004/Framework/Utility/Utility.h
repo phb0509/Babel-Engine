@@ -6,7 +6,6 @@ class Vector3;
 
 namespace Utility
 {
-
 	string ToString(wstring value);
 	wstring ToWString(string value);
 
@@ -22,11 +21,15 @@ namespace Utility
 	char* ToCharPointer(string string);
 
 	void CreateFolders(string path);
+	void Indent(int loopCount);
+	void UnIndent(int loopCount);
+	void Spacing(int loopCount);
+
 
 	bool ExistDirectory(string path);
 	bool ExistFile(string path);
 
-
 	HRESULT CDialogEventHandler_CreateInstance(REFIID riid, void** ppv);
+	
 
 }

@@ -168,9 +168,6 @@
     <ClInclude Include="Framework\Model\ModelClip.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Model\Krillin.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\Collider\Collider.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -181,9 +178,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Collider\CapsuleCollider.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Model\Ken.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\Node.h">
@@ -494,9 +488,6 @@
     <ClCompile Include="Framework\Model\ModelAnimator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Model\Krillin.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Collider\Collider.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -507,9 +498,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Collider\CapsuleCollider.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Model\Ken.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Algorithm\Node.cpp">

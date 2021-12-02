@@ -2,15 +2,16 @@
 
 class ModelObject : public Transform
 {
-private:
-	Model* model;
-	Collider* collider;
 public:
-	ModelObject(string file, Collider::Type type);
+	ModelObject();
 	~ModelObject();
 
 	void Render();
 
-	Collider* GetCollider() { return collider; }
-	Model* GetModel() { return model; }
+	Collider* GetCollider() { return mCollider; }
+	Model* GetModel() { return mModel; }
+
+private:
+	Model* mModel;
+	Collider* mCollider;
 };

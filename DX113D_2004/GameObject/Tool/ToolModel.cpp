@@ -1,9 +1,12 @@
 #include "Framework.h"
 
-ToolModel::ToolModel(string file) : ModelAnimator(file + "/" + file) ,clipIndex(0), currentClipIndex(0)
+ToolModel::ToolModel(string name) : 
+	ModelAnimator(),
+	mClipIndex(0), 
+	mCurrentClipIndex(0)
 {
-	mScale = { 0.05f,0.05f,0.05f };
-	SetShader(L"ModelAnimation");
+	mName = name;
+	mScale = { 0.05f,0.05f,0.05f }; // 기본모델이 너무 커서 줄여야됨.
 }
 
 ToolModel::~ToolModel()
@@ -12,14 +15,20 @@ ToolModel::~ToolModel()
 
 void ToolModel::Update()
 {
-	UpdateWorld();
-	ModelAnimator::Update();
+	if (GetHasMeshes())
+	{
+		UpdateWorld();
+		ModelAnimator::Update();
+	}
 }
 
 void ToolModel::Render()
 {
-	SetWorldBuffer();
-	ModelAnimator::Render();
+	if (GetHasMeshes())
+	{
+		SetWorldBuffer();
+		ModelAnimator::Render();
+	}
 }
 
 void ToolModel::PostRender()
@@ -29,11 +38,13 @@ void ToolModel::PostRender()
 
 void ToolModel::SetAnimation(int _clipIndex)
 {
-	if (clipIndex != _clipIndex)
+	if (mClipIndex != _clipIndex)
 	{
-		clipIndex = _clipIndex;
-		PlayClip(clipIndex);
+		mClipIndex = _clipIndex;
+		PlayClip(mClipIndex);
 	}
 }
+
+
 
 

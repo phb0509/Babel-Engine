@@ -26,6 +26,10 @@ Transform::Transform(string tag):
 
 	mIsUpdateStandTimes.assign(3, true);
 	mNextExecuteTimes.assign(3, -100.0f);
+
+	mRSState = new RasterizerState();
+	Collider* collider;
+	
 }
 
 Transform::~Transform()
@@ -38,12 +42,12 @@ Transform::~Transform()
 void Transform::UpdateWorld()
 {
 	mWorldMatrix = XMMatrixTransformation(
-		mPivot.data, 
-		XMQuaternionIdentity(),
-		mScale.data, 
-		mPivot.data,
+		mPivot.data, // 배율의 중심을 설명하는 3D 벡터.
+		XMQuaternionIdentity(), // 배율의 방향을 설명하는 쿼터니언.
+		mScale.data, // x,y,z축에 대한 스케일링값 벡터.
+		mPivot.data, // 회전중심을 설명하는 3D 벡터.
 		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y,mRotation.z), mPosition.data);
-
+		// x,y,z축을 따라 변환을 설명하는 3D 벡터.
 	
 	if (mParentMatrix != nullptr)
 		mWorldMatrix *= *mParentMatrix;
@@ -54,23 +58,7 @@ void Transform::UpdateWorld()
 	mWorldBuffer->Set(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
-void Transform::RenderAxis()
-{
-	if (!mbIsAxisDrawing)
-		return;
 
-	Vector3 scale(1, 1, 1);
-	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
-		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
-
-	mTransformBuffer->Set(matrix);
-	mTransformBuffer->SetVSBuffer(0);
-
-	mMesh->IASet();
-	mMaterial->Set();
-
-	DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
-}
 
 void Transform::SetWorldBuffer(UINT slot)
 {
@@ -270,4 +258,24 @@ void Transform::createAxis()
 
 	mMesh = new Mesh(mVertices.data(), sizeof(VertexColor), mVertices.size(),
 		mIndices.data(), mIndices.size());
+}
+
+void Transform::RenderAxis()
+{
+	if (!mbIsAxisDrawing)
+		return;
+
+	Vector3 scale(1, 1, 1);
+	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
+		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
+
+	mTransformBuffer->Set(matrix);
+	mTransformBuffer->SetVSBuffer(0);
+
+	mMesh->IASet();
+	mMaterial->Set();
+
+	mRSState->FillMode(D3D11_FILL_WIREFRAME);
+	mRSState->SetState();
+	DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 }

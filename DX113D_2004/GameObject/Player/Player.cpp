@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 Player::Player()
-	: ModelAnimator("Player/Player"), 
+	: ModelAnimator(), 
 	isInitialize(false), 
 	state(IDLE), 
 	mIsNormalAttack(false),
@@ -59,6 +59,12 @@ void Player::Update()
 
 	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 
+
+
+	SetDiffuseMap(L"Textures/Landscape/defaultImageButton.png");
+	
+
+
 	UpdateWorld();
 	ModelAnimator::Update();
 }
@@ -104,8 +110,8 @@ void Player::moveInTargetCamera()
 	{
 		rotate();
 
-		mPosition.z += TARGETCAMERA->cameraForward.z * mMoveSpeed * DELTA * 1.0f;
-		mPosition.x += TARGETCAMERA->cameraForward.x * mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += TARGETCAMERA->mCameraForward.z * mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += TARGETCAMERA->mCameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -113,8 +119,8 @@ void Player::moveInTargetCamera()
 	if (KEY_PRESS('S'))
 	{
 		rotate();
-		mPosition.z += TARGETCAMERA->cameraForward.z * -mMoveSpeed * DELTA * 1.0f;
-		mPosition.x += TARGETCAMERA->cameraForward.x * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.z += TARGETCAMERA->mCameraForward.z * -mMoveSpeed * DELTA * 1.0f;
+		mPosition.x += TARGETCAMERA->mCameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
 		setAnimation(RUN);
 	}
@@ -169,12 +175,12 @@ void Player::moveInWorldCamera()
 
 void Player::rotate()
 {
-	Vector3 temp = Vector3::Cross(TARGETCAMERA->cameraForward, -1 * Forward());
+	Vector3 temp = Vector3::Cross(TARGETCAMERA->mCameraForward, -1 * Forward());
 
 	if (temp.y < 0.0f) // 플레이어 포워드벡터가 카메라포워드벡터의 왼쪽에 있다면. // 즉 오른쪽으로 회전해야한다면
 	{
-		if (CompareFloat(TARGETCAMERA->cameraForward.x, -Forward().x) &&
-			CompareFloat(TARGETCAMERA->cameraForward.z, -Forward().z))
+		if (CompareFloat(TARGETCAMERA->mCameraForward.x, -Forward().x) &&
+			CompareFloat(TARGETCAMERA->mCameraForward.z, -Forward().z))
 		{	}
 		else
 		{
@@ -184,8 +190,8 @@ void Player::rotate()
 
 	else if(temp.y >= 0.0f)// 왼쪽으로 회전해야 한다면.
 	{
-		if (CompareFloat(TARGETCAMERA->cameraForward.x, -Forward().x) &&
-			CompareFloat(TARGETCAMERA->cameraForward.z, -Forward().z))
+		if (CompareFloat(TARGETCAMERA->mCameraForward.x, -Forward().x) &&
+			CompareFloat(TARGETCAMERA->mCameraForward.z, -Forward().z))
 		{	}
 		else
 		{

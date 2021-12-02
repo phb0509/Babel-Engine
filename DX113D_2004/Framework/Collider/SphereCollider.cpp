@@ -3,7 +3,7 @@
 SphereCollider::SphereCollider(float radius, UINT stackCount, UINT sliceCount)
     : radius(radius), stackCount(stackCount), sliceCount(sliceCount)
 {
-    type = SPHERE;
+    mType = SPHERE;
     CreateMesh();
 }
 
@@ -78,7 +78,7 @@ void SphereCollider::CreateMesh()
 			vertex.position.y = cos(phi) * radius;
 			vertex.position.z = sin(phi) * sin(theta) * radius;
 
-			vertices.emplace_back(vertex);
+			mVertices.emplace_back(vertex);
 		}
 	}
 
@@ -86,14 +86,14 @@ void SphereCollider::CreateMesh()
 	{
 		for (UINT j = 0; j < sliceCount; j++)
 		{
-			indices.emplace_back((sliceCount + 1) * i + j);//0
-			indices.emplace_back((sliceCount + 1) * i + j + 1);//1			
+			mIndices.emplace_back((sliceCount + 1) * i + j);//0
+			mIndices.emplace_back((sliceCount + 1) * i + j + 1);//1			
 
-			indices.emplace_back((sliceCount + 1) * i + j);//0
-			indices.emplace_back((sliceCount + 1) * (i + 1) + j);//2
+			mIndices.emplace_back((sliceCount + 1) * i + j);//0
+			mIndices.emplace_back((sliceCount + 1) * (i + 1) + j);//2
 		}
 	}
 
-	mesh = new Mesh(vertices.data(), sizeof(Vertex), vertices.size(),
-		indices.data(), indices.size());
+	mMesh = new Mesh(mVertices.data(), sizeof(Vertex), mVertices.size(),
+		mIndices.data(), mIndices.size());
 }

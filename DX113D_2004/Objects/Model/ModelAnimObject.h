@@ -3,7 +3,7 @@
 class ModelAnimObject : public Transform, public ModelAnimator
 {
 public:
-	ModelAnimObject(string file);
+	ModelAnimObject();
 	~ModelAnimObject();
 
 	void Update();

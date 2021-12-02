@@ -10,7 +10,6 @@ GameManager::GameManager()
 		monsters.push_back(monster);
 	}
 
-	
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monstersHitCheck[monsters[i]] = false;

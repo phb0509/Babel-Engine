@@ -16,5 +16,6 @@ public:
 
 
 private:
-
+	Monster* monster;
+	Terrain* terrain;
 };

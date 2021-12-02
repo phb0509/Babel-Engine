@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-ModelAnimators::ModelAnimators(string file)
-    : ModelAnimator(file), mDrawCount(0)
+ModelAnimators::ModelAnimators()
+    : ModelAnimator(), mDrawCount(0)
 {
 	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
@@ -28,7 +28,7 @@ void ModelAnimators::Update()
 
 		{//CurAnimation
 			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
-			ModelClip* clip = mClips[desc.clip];
+			ModelClip* clip = mModelClips[desc.clip];
 
 			float time = 1.0f / clip->tickPerSecond / desc.speed;
 			desc.runningTime += DELTA;
@@ -54,7 +54,7 @@ void ModelAnimators::Update()
 
 			if (desc.clip > -1)
 			{
-				ModelClip* clip = mClips[desc.clip];
+				ModelClip* clip = mModelClips[desc.clip];
 
 				tweenDesc.runningTime += DELTA;
 				tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;

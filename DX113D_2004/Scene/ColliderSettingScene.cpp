@@ -6,49 +6,36 @@ ColliderSettingScene::ColliderSettingScene() :
 	mModel(nullptr),
 	mCurrentModel(nullptr),
 	mCurrentModelIndex(0),
-	mCurrentModelName(""),
-	mBeforeModelIndex(0),
+	mBeforeModelIndex(-1),
 	mExtractor(nullptr),
-	mbIsDropEvent(false)
+	mbIsDropEvent(false),
+	mbIsWireFrame(true),
+	mDraggedFileName(""),
+	mDroppedFileName("")
 {
+	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
+	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
 
-	// 카메라 위치설정.
-	TARGETCAMERA->mPosition = { -9.4f, 15.5f, -14.8f };
-	TARGETCAMERA->mRotation = { 0.3f, 0.7f, 0.0f };
+	// 카메라 설정.
+	WORLDCAMERA->mPosition = { -7.3f, 13.96f, -14.15f };
+	WORLDCAMERA->mRotation = { 0.64f, 0.58f, 0.0f, };
+	WORLDCAMERA->mMoveSpeed = 50.0f;
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
 	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-
-	// 셋팅할 모델들
-	mModelList = {};
-	TARGETCAMERA->moveSpeed = 70.0f;
 
 	mExtensionPreviewImages["mesh"] = Texture::Add(L"ModelData/Mesh_PreviewImage.png");
 	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
 	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
 	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
 	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
+	mExtensionPreviewImages["default"] = Texture::Add(L"ModelData/DefaultImage.png");
+	mExtensionPreviewImages["Test"] = Texture::Add(L"ModelData/TestImage.png");
 
-
-	//// mModelList뿐만 아니라 mModels도 일단 비워놓고, AddModel할때마다 추가해줘야한다.
-	//for (int i = 0; i < mModelList.size(); i++)
-	//{
-	//	mModel = new ToolModel(mModelList[i]);
-	//	mModels.push_back(mModel);
-	//}
-
-
-	//// 모델들에 기본적으로 TPose 셋팅.
-	//for (int i = 0; i < mModelList.size(); i++)
-	//{
-	//	mClipsMap[mModelList[i]].push_back("TPose0.clip"); // 씬에서 별개로 각 모델이 어떤 클립을 갖고있는지 갱신해줘야됨. 
-	//												// 클립 추가할때마다 메모리해제했다가 새로할당받기 때문에 각 모델의 clips가 초기화됨.
-	//	mModels[i]->clips.push_back("TPose0.clip");
-	//	mModels[i]->ReadClip(mModelList[i] + "/TPose0.clip");
-	//}
-
+	mRSState = new RasterizerState();
+	mRSState->FillMode(D3D11_FILL_WIREFRAME);
 }
 
 ColliderSettingScene::~ColliderSettingScene()
@@ -59,21 +46,21 @@ void ColliderSettingScene::Update()
 {
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
-		mCurrentModel = mModels[mCurrentModelIndex];
-		mCurrentModelName = mModelList[mCurrentModelIndex];
-
-		mCurrentModel->SetAnimation(mCurrentModel->currentClipIndex);
-		mCurrentModel->Update();
-
-		for (auto it = mNodeCollidersMap.begin(); it != mNodeCollidersMap.end(); it++)
+		if (mCurrentModel->GetHasMeshes())
 		{
-			Matrix matrix;
+			mCurrentModel = mModels[mCurrentModelIndex];
+			//mCurrentModel->SetAnimation(mCurrentModel->mCurrentClipIndex);
+			mCurrentModel->Update();
 
-			matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorld()));
+			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++)
+			{
+				Matrix matrix;
 
-			it->second.collider->SetParent(&matrix);
+				matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorld()));
 
-			it->second.collider->Update();
+				it->second.collider->SetParent(&matrix);
+				it->second.collider->Update();
+			}
 		}
 	}
 }
@@ -85,14 +72,19 @@ void ColliderSettingScene::PreRender()
 
 void ColliderSettingScene::Render()
 {
+	mRSState->SetState();
+
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
 	{
-		mCurrentModel->Render();
-
-		for (auto it = mNodeCollidersMap.begin(); it != mNodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+		if (mCurrentModel->GetHasMeshes())
 		{
-			it->second.collider->Render();
-			//it->second->RenderAxis();
+			mCurrentModel->Render();
+
+			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+			{
+				it->second.collider->Render();
+				//it->second->RenderAxis();
+			}
 		}
 	}
 }
@@ -101,8 +93,9 @@ void ColliderSettingScene::PostRender()
 {
 	showModelSelectWindow();
 
-	if (mModels.size() != 0) // 이건 ToolModel이 반드시 있어야함...
+	if (mModels.size() != 0) // ToolModel 생성이후.
 	{
+		showModelInspector();
 		showModelHierarchyWindow();
 		showColliderEditorWindow();
 	}
@@ -110,6 +103,13 @@ void ColliderSettingScene::PostRender()
 	if (mModelList.size() != 0)
 	{
 		showAssetsWindow();
+	}
+
+	showTestWindow();
+
+	if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	{
+		mDraggedFileName = "";
 	}
 }
 
@@ -123,7 +123,6 @@ void ColliderSettingScene::showModelSelectWindow()
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_None;
 
 	selectModel();
-	//SelectClip();
 
 	ImGui::End();
 }
@@ -138,47 +137,51 @@ void ColliderSettingScene::selectModel() // perFrame
 
 	ImGui::Combo("Models", (int*)&mCurrentModelIndex, mModelTypes, mModelList.size());
 
-	ImGui::Spacing();
-	ImGui::Spacing();
-	ImGui::Spacing();
+	if (mCurrentModel != nullptr)
+	{
+		mCurrentModel = mModels[mCurrentModelIndex];
+	}
 
-	showAddButton();
+	showCreateModelButton();
+	Spacing(3);
 
-	if (mModels.size() != 0)
+	if (mModels.size() != 0) // ToolModel 할당 되어야 실행. 하이어라키 렌더해야되니까...
 	{
 		// 모델 변경여부와 상관없이 계속 초기화시켜줘야하는 곳.
 
-		for (auto it = mPreprocessedNodes.begin(); it != mPreprocessedNodes.end(); it++) // 전처리된 노드맵 초기화. 
+		if (mCurrentModel->GetHasMeshes())
 		{
-			it->second.clear();
+			for (auto it = mModelDatas[mCurrentModelIndex].preprocessedNodes.begin(); it != mModelDatas[mCurrentModelIndex].preprocessedNodes.end(); it++) // 전처리된 노드맵 초기화. 
+			{
+				it->second.clear();
+			}
+
+			treeNodePreProcessing();
 		}
+	}
+}
 
-		// 모델이 바뀔때만 초기화해주면 되는곳.
+void ColliderSettingScene::InitializeModelDatas()
+{
+	// 새 모델을 만들든 뭘 하든 '메시가 변경될 때' 무조건 초기화시켜줘야됨.
 
-		if (mCurrentModelIndex != mBeforeModelIndex)
-		{
-			for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++) // 노드콜라이더 생성여부체크맵 초기화.
-			{
-				it->second = false;
-			}
-
-			for (auto it = mNodeCollidersMap.begin(); it != mNodeCollidersMap.end(); it++) // 모델의 생성됐던 콜라이더들 초기화.
-			{
-				delete it->second.collider;
-			}
-			mNodeCollidersMap.clear();
-
-			for (auto it = mNodeNameMap.begin(); it != mNodeNameMap.end(); it++)
-			{
-				it->second = "";
-			}
-
-			mBeforeModelIndex = mCurrentModelIndex;
-		}
-
-		treeNodePreProcessing();
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++) // 노드콜라이더 생성여부체크맵 초기화.
+	{
+		it->second = false;
 	}
 
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeNameMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeNameMap.end(); it++)
+	{
+		it->second = "";
+	}
+
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 모델의 생성됐던 콜라이더들 초기화.
+	{
+		delete it->second.collider;
+		it->second.collider = nullptr;
+	}
+
+	mModelDatas[mCurrentModelIndex].nodeCollidersMap.clear();
 }
 
 void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자식으로있는지 세팅.
@@ -198,13 +201,13 @@ void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자
 					continue;
 				}
 
-				mPreprocessedNodes[parent].push_back(mNodes[j]->index);
+				mModelDatas[mCurrentModelIndex].preprocessedNodes[parent].push_back(mNodes[j]->index);
 			}
 		}
 	}
 }
 
-void ColliderSettingScene::showAddButton()
+void ColliderSettingScene::showCreateModelButton()
 {
 	if (ImGui::Button("Create Model.."))
 		ImGui::OpenPopup("Create Model");
@@ -216,6 +219,13 @@ void ColliderSettingScene::showAddButton()
 	{
 		static char inputText[128] = "";
 		ImGui::InputText("Input ModelName", inputText, IM_ARRAYSIZE(inputText));
+		ImGui::Spacing();
+		ImGui::RadioButton("StaticMesh", &mbIsSkinnedMesh, 0);
+		ImGui::SameLine();
+
+		Indent(6);
+		ImGui::RadioButton("SkinnedMesh", &mbIsSkinnedMesh, 1);
+		UnIndent(6);
 
 		if (ImGui::Button("OK", ImVec2(120, 0)))
 		{
@@ -233,12 +243,15 @@ void ColliderSettingScene::showAddButton()
 			}
 
 			mModelList.push_back(name);
-			//mModels.push_back(new ToolModel(name));
+			mModels.push_back(new ToolModel(name));
 			mCurrentModelIndex = mModels.size() - 1;
-			//mCurrentModel = mModels[mCurrentModelIndex];
-			mCurrentModelName = name;
+			mCurrentModel = mModels[mCurrentModelIndex];
+			mCurrentModel->SetName(name);
+			mCurrentModel->SetIsSkinnedMesh(mbIsSkinnedMesh);
+			//mCurrentModel->SetHasTPoseClip(false);
 
-			//mCurrentModel->ReadTPoseClip();
+			ModelData modelData;
+			mModelDatas.push_back(modelData);
 
 			savePath += name;
 			savePath += '/';
@@ -260,48 +273,50 @@ void ColliderSettingScene::showAddButton()
 	}
 }
 
+
+
 void ColliderSettingScene::selectClip()
 {
-	if (ImGui::Button("Select Clip"))
-		igfd::ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose Clip", ".clip", ".");
+	//if (ImGui::Button("Select Clip"))
+	//	igfd::ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose Clip", ".clip", ".");
 
-	// display
-	if (igfd::ImGuiFileDialog::Instance()->FileDialog("TextureKey"))
-	{
-		if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-		{
-			mPath = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
-			mPath = mPath.substr(mProjectPath.size() + 1, mPath.length());
-			Replace(&mPath, "\\", "/");
-			mPath = mPath.substr(17 + mCurrentModelName.size(), mPath.length());
+	//// display
+	//if (igfd::ImGuiFileDialog::Instance()->FileDialog("TextureKey"))
+	//{
+	//	if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+	//	{
+	//		mPath = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
+	//		mPath = mPath.substr(mProjectPath.size() + 1, mPath.length());
+	//		Replace(&mPath, "\\", "/");
+	//		mPath = mPath.substr(17 + mCurrentModelName.size(), mPath.length());
 
-			mClipsMap[mCurrentModelName].push_back(mPath); // "SmashAttack0.clip" push_back
+	//		mClipsMap[mCurrentModelName].push_back(mPath); // "SmashAttack0.clip" push_back
 
-			int t_currentClipIndex = mCurrentModel->currentClipIndex;
+	//		int t_currentClipIndex = mCurrentModel->currentClipIndex;
 
-			delete mModels[mCurrentModelIndex];
-			mModel = new ToolModel(mCurrentModelName);
-			mModel->currentClipIndex = t_currentClipIndex;
+	//		delete mModels[mCurrentModelIndex];
+	//		mModel = new ToolModel(mCurrentModelName);
+	//		mModel->currentClipIndex = t_currentClipIndex;
 
-			for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // 클립추가할때마다 새로 할당받은 후 현재모델의 클립을 전부 새로 리드클립.
-			{
-				string t = mCurrentModelName + "/" + mClipsMap[mCurrentModelName][i];
-				mModel->ReadClip(t); // 새로 할당받은 model에 씬에서 자체적으로 관리하는 클립리스트 내용대로 ReadClip
-			}
+	//		for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // 클립추가할때마다 새로 할당받은 후 현재모델의 클립을 전부 새로 리드클립.
+	//		{
+	//			string t = mCurrentModelName + "/" + mClipsMap[mCurrentModelName][i];
+	//			mModel->ReadClip(t); // 새로 할당받은 model에 씬에서 자체적으로 관리하는 클립리스트 내용대로 ReadClip
+	//		}
 
-			mModels[mCurrentModelIndex] = mModel; // 새로 할당받은 모델 다시 원래 인덱스에 넣어놓기.
-		}
+	//		mModels[mCurrentModelIndex] = mModel; // 새로 할당받은 모델 다시 원래 인덱스에 넣어놓기.
+	//	}
 
-		// close
-		igfd::ImGuiFileDialog::Instance()->CloseDialog("TextureKey");
-	}
+	//	// close
+	//	igfd::ImGuiFileDialog::Instance()->CloseDialog("TextureKey");
+	//}
 
-	for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // imgui의 클립리스트를 clips의 내용물로 계속 갱신.
-	{
-		mClipTypes[i] = mClipsMap[mCurrentModelName][i].c_str();
-	}
+	//for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // imgui의 클립리스트를 clips의 내용물로 계속 갱신.
+	//{
+	//	mClipTypes[i] = mClipsMap[mCurrentModelName][i].c_str();
+	//}
 
-	ImGui::Combo("Clips", (int*)&mCurrentModel->currentClipIndex, mClipTypes, mClipsMap[mCurrentModelName].size());
+	//ImGui::Combo("Clips", (int*)&mCurrentModel->currentClipIndex, mClipTypes, mClipsMap[mCurrentModelName].size());
 }
 
 
@@ -311,16 +326,19 @@ void ColliderSettingScene::showModelHierarchyWindow()
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_None;
 
-	if (ImGui::TreeNodeEx("ModelBone", ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_Selected))
+	if (mCurrentModel->GetHasMeshes()) // Mesh가 셋팅되어있어야 노드구조가 존재.
 	{
-		ImGui::TreePop();
+		if (ImGui::TreeNodeEx("ModelBone", ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_Selected))
+		{
+			ImGui::TreePop();
 
-		treeNodeRecurs(0);
-	}
+			treeNodeRecurs(0);
+		}
 
-	for (auto it = mNodeCheck.begin(); it != mNodeCheck.end(); ++it) // 노드방문흔적 초기화.
-	{
-		it->second = false;
+		for (auto it = mModelDatas[mCurrentModelIndex].nodeCheck.begin(); it != mModelDatas[mCurrentModelIndex].nodeCheck.end(); ++it) // 노드방문흔적 초기화.
+		{
+			it->second = false;
+		}
 	}
 
 	ImGui::End();
@@ -328,15 +346,14 @@ void ColliderSettingScene::showModelHierarchyWindow()
 
 void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 {
-	if (mNodeCheck[mNodes[nodesIndex]->index])
+	if (mModelDatas[mCurrentModelIndex].nodeCheck[mNodes[nodesIndex]->index])
 	{
 		return;
 	}
 
 	ImGui::Indent();
-	mNodeCheck[mNodes[nodesIndex]->index] = true;
-	mNodeNameMap[mNodes[nodesIndex]->index] = mNodes[nodesIndex]->name;
-
+	mModelDatas[mCurrentModelIndex].nodeCheck[mNodes[nodesIndex]->index] = true;
+	mModelDatas[mCurrentModelIndex].nodeNameMap[mNodes[nodesIndex]->index] = mNodes[nodesIndex]->name;
 
 	if (ImGui::TreeNodeEx(mNodes[nodesIndex]->name.c_str(), ImGuiTreeNodeFlags_OpenOnArrow)) // 노드이름 출력.
 	{
@@ -348,13 +365,12 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 			ImGui::Combo("Colliders", (int*)&mCurrentColliderIndex, colliderTypes, 3);
 			ImGui::Text("");
 
-
-			if (ImGui::Button("CreateCollider"))
+			if (ImGui::Button("Create Collider"))
 			{
-				if (mCreatedCollidersCheck[mNodes[nodesIndex]->index]) {} // 이미 만들어져있으면 넘기기
+				if (mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index]) {} // 이미 만들어져있으면 넘기기
 				else // 안만들어져있으면 만들어주기.
 				{
-					mCreatedCollidersCheck[mNodes[nodesIndex]->index] = true;
+					mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index] = true;
 
 					switch (mCurrentColliderIndex)
 					{
@@ -374,16 +390,13 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 						break;
 					}
 
-
 					mNodeCollider->mScale = { 10.0f,10.0f,10.0f }; // 생성했을 때 너무 작으면 안보여서 10으로 세팅.
-
-					//mNodeColliders.push_back(mNodeCollider); // 안쓰여서 일단 주석.
 
 					TreeNodeData treeNodeData;
 					treeNodeData.collider = mNodeCollider;
 					treeNodeData.nodeName = mNodes[nodesIndex]->name; // 노드이름 for binarysave
 
-					mNodeCollidersMap[mNodes[nodesIndex]->index] = treeNodeData;
+					mModelDatas[mCurrentModelIndex].nodeCollidersMap[mNodes[nodesIndex]->index] = treeNodeData;
 				}
 			}
 
@@ -391,11 +404,11 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 			ImGui::TreePop();
 		}
 
-		if (mPreprocessedNodes[mNodes[nodesIndex]->index].size() != 0) // 자식이 있다면.
+		if (mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index].size() != 0) // 자식이 있다면.
 		{
-			for (int i = 0; i < mPreprocessedNodes[mNodes[nodesIndex]->index].size(); i++)
+			for (int i = 0; i < mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index].size(); i++)
 			{
-				treeNodeRecurs(mPreprocessedNodes[mNodes[nodesIndex]->index][i]);
+				treeNodeRecurs(mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index][i]);
 			}
 		}
 
@@ -411,42 +424,43 @@ void ColliderSettingScene::showColliderEditorWindow()
 	ImGuiWindowFlags CollapsingHeader_flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_None;
 
-	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	if (mCurrentModel->GetHasMeshes())
 	{
-		if (it->second)
+		for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
 		{
-			string labelName = mNodeNameMap[it->first];
-			string deleteName = "Delete " + mNodeNameMap[it->first];
-			string Position = labelName + " Position";
-			string Rotation = labelName + " Rotation";
-			string Scale = labelName + " Scale";
-
-			string tagName = labelName + " Collider";
-
-			ImGui::Text(labelName.c_str());
-
-			if (ImGui::Button(deleteName.c_str()))
+			if (it->second) // 생성 되어있으면
 			{
-				it->second = false;
-				delete mNodeCollidersMap[it->first].collider;
-				mNodeCollidersMap.erase(it->first);
-				continue;
+				string labelName = mModelDatas[mCurrentModelIndex].nodeNameMap[it->first];
+				string deleteName = "Delete " + mModelDatas[mCurrentModelIndex].nodeNameMap[it->first];
+				string Position = labelName + " Position";
+				string Rotation = labelName + " Rotation";
+				string Scale = labelName + " Scale";
+				string tagName = labelName + " Collider";
+
+				ImGui::Text(labelName.c_str());
+
+				if (ImGui::Button(deleteName.c_str()))
+				{
+					it->second = false;
+					delete mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider;
+					mModelDatas[mCurrentModelIndex].nodeCollidersMap.erase(it->first);
+					continue;
+				}
+
+				ImGui::InputText(tagName.c_str(), mModelDatas[mCurrentModelIndex].colliderNameMap[it->first], 100);
+
+				ImGui::Text("");
+
+				ImGui::InputFloat3(Position.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition);
+				ImGui::InputFloat3(Rotation.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation);
+				ImGui::InputFloat3(Scale.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale);
 			}
-
-			ImGui::InputText(tagName.c_str(), mColliderNameMap[it->first], 100);
-
-			ImGui::Text("");
-
-			ImGui::InputFloat3(Position.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mPosition);
-			ImGui::InputFloat3(Rotation.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mRotation);
-			ImGui::InputFloat3(Scale.c_str(), (float*)&mNodeCollidersMap[it->first].collider->mScale);
 		}
-	}
 
-
-	if (ImGui::Button("Save"))
-	{
-		save();
+		if (ImGui::Button("Save"))
+		{
+			save();
+		}
 	}
 
 	ImGui::End();
@@ -455,7 +469,7 @@ void ColliderSettingScene::showColliderEditorWindow()
 void ColliderSettingScene::save()
 {
 	string path = "TextData/";
-	string name = mCurrentModelName;
+	string name = mCurrentModel->GetName();
 
 	wstring t = ToWString(path + name + ".map");
 
@@ -465,7 +479,7 @@ void ColliderSettingScene::save()
 
 	int tSize = 0;
 
-	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
 	{
 		if (it->second)
 		{
@@ -475,18 +489,18 @@ void ColliderSettingScene::save()
 
 	colliderWriter.UInt(tSize); // 저장할 컬라이더개수.
 
-	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
 	{
 		if (it->second)
 		{
-			colliderWriter.String(mColliderNameMap[it->first]);
-			colliderWriter.String(mNodeCollidersMap[it->first].nodeName);
+			colliderWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]);
+			colliderWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName);
 
 			ColliderDataForSave data;
-			data.position = mNodeCollidersMap[it->first].collider->mPosition;
-			data.rotation = mNodeCollidersMap[it->first].collider->mRotation;
-			data.scale = mNodeCollidersMap[it->first].collider->mScale;
-
+			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
+			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
+			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
+			// 어떤종류의 컬라이더인지도 저장해야됨, 박스인지 스피어인지
 			colliderDatas.push_back(data);
 		}
 	}
@@ -498,7 +512,8 @@ void ColliderSettingScene::save()
 
 void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
 {
-	string path = mProjectPath + "\\ModelData\\";
+	//string path = mProjectPath + "\\ModelData\\";
+	string path = mProjectPath;
 
 	path += folderName + "\\";
 	path += "*.*";
@@ -519,7 +534,6 @@ void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileL
 			fd.name;
 			string temp(fd.name);
 			fileList.push_back(temp);
-			int a = 0;
 		}
 
 		i++;
@@ -532,7 +546,7 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 {
 	// 이미 mModelsList.size() 1이상체크하고 들어왔다.
 
-	mAssetsWindowName = mCurrentModelName + "Assets";
+	mAssetsWindowName = mCurrentModel->GetName() + "Assets";
 
 	ImGui::Begin(mAssetsWindowName.c_str());
 
@@ -573,7 +587,7 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Spacing();
 
 		string temp = "Selected File : " + mSelectedFilePath;
-		float wrapWidth = 100.0f;
+		float wrapWidth = 130.0f;
 
 		if (mSelectedFilePath.size() != 0)
 		{
@@ -588,22 +602,17 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		static char buf5[64] = "";
-		//const char buf5[64] = mSelectedFilePath.c_str();
-
-		//char buf4[444] = mSelectedFilePath.c_str();
-
-		string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath);
+		string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath); // string to char*
 		vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
 		writable.push_back('\0');
+
 		char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
-	
+
 		ImGui::InputText("fileNmae to Create", inputText, 64, ImGuiInputTextFlags_CharsNoBlank);
 
-	
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
-			thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModelName); }); // 람다식으로 파라미터넘기기.
+			thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModel->GetName()); }); // 람다식으로 파라미터넘기기.
 
 			ImGui::CloseCurrentPopup();
 			t1.join();
@@ -634,16 +643,15 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 	ImGui::Spacing();
 	ImGui::Spacing();
 
-
 	// mCurrentModelAssets 표시.(.mat, .mest, .clip 등등)
 
 	// filePreviewImage Render.
 
 	vector<string> fileList;
-	loadFileList(mCurrentModelName, fileList); // 확장자까지 포함한 파일명들 리턴.
+	loadFileList("\\ModelData\\" + mCurrentModel->GetName(), fileList); // 확장자까지 포함한 파일명들 리턴.
+	//mModelAssetsFileList = fileList;
 
 	mStandardCursorPos = ImGui::GetCursorPos(); // 8, 50
-
 	ImVec2 windowSize = ImGui::GetWindowSize();
 
 
@@ -681,10 +689,11 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		}
 
 		string fileExtension = GetExtension(fileList[i]);
+		int checkIndex = -1;
 
 		if (fileExtension == "png")
 		{
-			string temp = "ModelData/" + mCurrentModelName + "/" + fileList[i];
+			string temp = "ModelData/" + mCurrentModel->GetName() + "/" + fileList[i];
 			mExtensionPreviewImages[fileExtension] = Texture::Add(ToWString(temp));
 		}
 
@@ -692,8 +701,25 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		ImGui::SetCursorPosY(mStandardCursorPos.y);
 		ImGui::SetCursorPosX(mStandardCursorPos.x + currentLineIndex * distanceHorizontalGap);
-		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor); // ImageButten Render.
 
+		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+		if (ImGui::IsItemHovered())
+		{
+			checkIndex = i;
+		}
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트. 
+		{
+			if (i == checkIndex)
+			{
+				ImGui::SetDragDropPayload("Assets", &i, sizeof(int));
+				ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor); // 드래그 할 경우, 마우스커서위치에 렌더될 미리보기이미지.
+				mDraggedFileName = fileList[i];
+			}
+
+			ImGui::EndDragDropSource();
+		}
 
 		// fileName TextRender.
 
@@ -704,13 +730,174 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Text(fileList[i].c_str(), wrap_width); // Text Render.
 		ImGui::PopTextWrapPos();
 
-		//if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) // 원본 드래그 이벤트.
-		//{
-		//	ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int)); // 드래그할 때 인덱스(int값) 정보 가지고있음.
-		//	ImGui::EndDragDropSource();
-		//}
-
 		currentLineIndex++;
+	}
+
+	ImGui::End();
+}
+
+void ColliderSettingScene::showModelInspector()
+{
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(12.0f, 12.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	static Texture* meshImageButtonTexture = mExtensionPreviewImages["default"];
+	static Texture* materialImageButtonTexture = mExtensionPreviewImages["default"];
+	static string meshText = "";
+	static string materialText = "";
+
+	ImGui::Begin("Inspector");
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	string meshType = "";
+
+	if (mCurrentModel->GetIsSkinnedMesh())
+	{
+		meshType = "MeshType : SkinnedMesh ";
+	}
+	else
+	{
+		meshType = "MeshType : StaticMesh ";
+	}
+
+	ImGui::Text(meshType.c_str());
+
+	Spacing(2);
+
+	// Mesh ImageButton and Text Render.
+	{
+		ImGui::Text("Mesh : ");
+		ImGui::SameLine();
+		ImGui::ImageButton(meshImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+		ImGui::SameLine();
+		ImVec2 meshTextPosition = ImGui::GetCursorPos();
+
+		Spacing(2);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(int));
+				int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
+				//mDraggedFileName = mModelAssetsFileList[payload_n];
+
+				if (GetExtension(mDraggedFileName) == "mesh") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
+				{
+					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
+					meshText = mDraggedFileName;
+					mDroppedFileName = meshText;
+
+					// 메시변경이벤트구간.
+					mCurrentModel->SetMesh(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
+					mCurrentModel->ExecuteSetMeshEvent();
+
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SetCursorPos(meshTextPosition);
+		ImGui::Text(meshText.c_str()); // Text Render.
+	}
+
+	Spacing(2);
+
+	// Material ImageButton and Text Render.
+	{
+		ImGui::Text("Material : ");
+		ImGui::SameLine();
+		ImGui::ImageButton(materialImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+		ImGui::SameLine();
+
+		ImVec2 materialTextPosition = ImGui::GetCursorPos();
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(int));
+				int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
+
+				if (GetExtension(mDraggedFileName) == "mat") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
+				{
+					materialImageButtonTexture = mExtensionPreviewImages["mat"];
+					materialText = mDraggedFileName;
+					mDroppedFileName = materialText;
+
+					mCurrentModel->SetMaterial(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SetCursorPos(materialTextPosition);
+		ImGui::Text(materialText.c_str());
+	}
+
+	Spacing(2);
+
+	ImGui::RadioButton("SolidFrame", &mbIsWireFrame, 0);
+	ImGui::SameLine();
+
+	Indent(6);
+	ImGui::RadioButton("WireFrame", &mbIsWireFrame, 1);
+
+	if (mbIsWireFrame)
+	{
+		mRSState->FillMode(D3D11_FILL_WIREFRAME);
+	}
+	else
+	{
+		mRSState->FillMode(D3D11_FILL_SOLID);
+	}
+
+	UnIndent(6);
+
+
+	ImGui::End();
+}
+
+void ColliderSettingScene::showTestWindow()
+{
+	ImGui::Begin("TestWindow");
+
+	if (mCurrentModel != nullptr)
+	{
+		string t = "CurrentModel : " + mCurrentModel->GetName();
+		ImGui::Text(t.c_str());
+
+		{
+			string t = "DraggedFileName : " + mDraggedFileName;
+			ImGui::Text(t.c_str());
+		}
+
+		{
+			string t = "DroppedFileName : " + mDroppedFileName;
+			ImGui::Text(t.c_str());
+		}
+
+		{
+			string t = "ClipCount : " + to_string(mCurrentModel->GetModelClipsSize());
+			ImGui::Text(t.c_str());
+		}
+	}
+
+
+	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	{
+		ImGui::Text("Mouse Dragging");
+	}
+	else
+	{
+		ImGui::Text("No Mouse Dragging");
 	}
 
 	ImGui::End();
@@ -720,7 +907,7 @@ void ColliderSettingScene::printToCSV()
 {
 	FILE* file;
 
-	string str = "TextData/Saved" + mCurrentModelName + "Colliders.csv";
+	string str = "TextData/Saved" + mCurrentModel->GetName() + "Colliders.csv";
 	const char* fileName = str.c_str();
 
 	fopen_s(&file, fileName, "w");
@@ -741,19 +928,19 @@ void ColliderSettingScene::printToCSV()
 		"\n"
 	);
 
-	for (auto it = mCreatedCollidersCheck.begin(); it != mCreatedCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
 	{
 		if (it->second)
 		{
 			ColliderDataForSave data;
-			data.position = mNodeCollidersMap[it->first].collider->mPosition;
-			data.rotation = mNodeCollidersMap[it->first].collider->mRotation;
-			data.scale = mNodeCollidersMap[it->first].collider->mScale;
+			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
+			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
+			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
 
-			const char* modelName = mCurrentModelName.c_str();
+			const char* modelName = mCurrentModel->GetName().c_str();
 
-			string colliderName = mColliderNameMap[it->first];
-			string nodeName = mNodeCollidersMap[it->first].nodeName;
+			string colliderName = mModelDatas[mCurrentModelIndex].colliderNameMap[it->first];
+			string nodeName = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName;
 
 			fprintf(
 				file,
@@ -775,7 +962,7 @@ void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToC
 
 	if (mbIsExportAnimation)
 	{
-		exporter->ExportClip(fileNameToCreate, parentFolderName);
+		exporter->ExportClip(fileNameToCreate, parentFolderName); // 직접 작성한  파일이름, 폴더이름.
 	}
 	else
 	{
@@ -803,11 +990,10 @@ void ColliderSettingScene::copyDraggedFile()
 
 	for (int i = 0; i < draggedFileList.size(); i++)
 	{
-		string assetsFolderPath = mProjectPath + "\\ModelData\\" + mCurrentModelName + "\\";
+		string assetsFolderPath = mProjectPath + "\\ModelData\\" + mCurrentModel->GetName() + "\\";
 		string fileName = ToString(draggedFileList[i]);
 		fileName = GetFileName(fileName);
 		assetsFolderPath += fileName;
 		BOOL bCopy = ::CopyFile(draggedFileList[i].c_str(), ToWString(assetsFolderPath).c_str(), FALSE);
 	}
-
 }

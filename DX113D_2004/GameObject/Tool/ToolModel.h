@@ -2,8 +2,9 @@
 
 class ToolModel : public ModelAnimator, public Transform
 {
+
 public:
-	ToolModel(string file);
+	ToolModel(string name);
 	~ToolModel();
 
 	void Update();
@@ -11,13 +12,22 @@ public:
 	void PostRender();
 	void SetAnimation(int index);
 
+	void SetIsSkinnedMesh(bool isSkinnedMesh) { mbIsSkinnedMesh = isSkinnedMesh; }
+	bool GetIsSkinnedMesh() { return mbIsSkinnedMesh; }
 
+	/*void SetHasTPoseClip(bool hasTPoseClip) { mbHasTPoseClip = hasTPoseClip; }
+	bool GetHasTPoseClip() { return mbHasTPoseClip; }*/
+
+	void SetName(string name) { mName = name; }
+	string GetName() { return mName; }
 
 private:
-	int clipIndex;
-	
+	int mClipIndex;
+	string mName;
 
 public:
-	vector<string> clips;
-	int currentClipIndex;
+	vector<string> mClipNames;
+	int mCurrentClipIndex;
+	bool mbIsSkinnedMesh;
+	//bool mbHasTPoseClip;
 };

@@ -2,13 +2,9 @@
 
 class Model : public ModelReader
 {
-protected:
-	BoneBuffer* boneBuffer;
 
-	map<int, Matrix> boneTransforms;
-	Matrix* nodeTransforms;
 public:
-	Model(string file);
+	Model();
 	virtual ~Model();
 
 	virtual void Render();
@@ -17,5 +13,12 @@ public:
 	void SetBoneTransforms();	
 
 	int GetNodeByName(string name);
-	UINT GetBoneSize() { return bones.size(); }
+	UINT GetBoneSize() { return mBones.size(); }
+
+
+
+protected:
+	BoneBuffer* mBoneBuffer;
+	map<int, Matrix> mBoneTransforms;
+	Matrix* mNodeTransforms;
 };

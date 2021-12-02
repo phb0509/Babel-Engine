@@ -77,5 +77,6 @@ private:
 
 	vector<VertexColor> mVertices;
 	vector<UINT> mIndices;
+	RasterizerState* mRSState;
 
 };

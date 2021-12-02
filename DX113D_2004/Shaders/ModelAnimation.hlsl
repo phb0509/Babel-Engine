@@ -61,6 +61,7 @@ float4 PS(PixelInput input) : SV_Target
     float diffuseIntensity = saturate(dot(normal, -light));
     
     float4 specular = 0;
+    
     if (diffuseIntensity > 0)
     {
         float3 halfWay = normalize(viewDir + light);

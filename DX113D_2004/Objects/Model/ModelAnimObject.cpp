@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-ModelAnimObject::ModelAnimObject(string file)
-	: ModelAnimator(file)
+ModelAnimObject::ModelAnimObject()
+	: ModelAnimator()
 {
 }
 

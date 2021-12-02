@@ -1,11 +1,13 @@
 #include "Framework.h"
 
-ModelObject::ModelObject(string file, Collider::Type type)
+ModelObject::ModelObject():
+	mModel(nullptr),
+	mCollider(nullptr)
 {
-	model = new Model(file);
-	model->SetShader(L"Lighting");	
+	mModel = new Model();
+	mModel->SetShader(L"Lighting");	
 
-	Vector3 minBox, maxBox;
+	/*Vector3 minBox, maxBox;
 
 	model->SetBox(&minBox, &maxBox);
 
@@ -23,21 +25,21 @@ ModelObject::ModelObject(string file, Collider::Type type)
 		break;
 	}
 	if (collider != nullptr)
-		collider->SetParent(&mWorldMatrix);
+		collider->SetParent(&mWorldMatrix);*/
 }
 
 ModelObject::~ModelObject()
 {
-	delete model;
-	if(collider != nullptr)
-		delete collider;	
+	delete mModel;
+	/*if(collider != nullptr)
+		delete collider;	*/
 }
 
 void ModelObject::Render()
 {
 	SetWorldBuffer();
-	model->Render();
-	if(collider != nullptr)
-		collider->Render();
+	mModel->Render();
+	/*if(collider != nullptr)
+		collider->Render();*/
 	RenderAxis();
 }

@@ -10,7 +10,7 @@ MainScene::MainScene() :
 	Environment::Get()->SetTargetToCamera(mPlayer);
 	monsters = GM->GetMonsters();
 
-	mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
+	/*mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
 	mObstacle1->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle1->mPosition = { 40, 20, 40 };
 	mObstacle1->UpdateWorld();
@@ -20,7 +20,7 @@ MainScene::MainScene() :
 	mObstacle2->mScale = { 0.1f, 0.1f, 0.1f };
 	mObstacle2->mPosition = { 90, 20, 90 };
 	mObstacle2->UpdateWorld();
-	mObstacle2->GetCollider()->UpdateWorld();
+	mObstacle2->GetCollider()->UpdateWorld();*/
 
 
 	monsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };

@@ -81,15 +81,15 @@ void DeferredRenderingScene::CreateModels()
 	TARGETCAMERA->mPosition = { 0, 10, -20 };
 	TARGETCAMERA->mRotation.x = 0.4f;
 
-	bunny = new ModelObject("StanfordBunny/StanfordBunny", Collider::NONE);
+	bunny = new ModelObject();
 	bunny->mScale = { 0.01f, 0.01f, 0.01f };
 	bunny->mPosition.y = 2.35f;
 	bunny->mPosition.x = -3.0f;
 
-	plane = new ModelObject("Plane/Plane", Collider::NONE);
+	plane = new ModelObject();
 	plane->mScale = { 2.0f, 2.0f, 2.0f };
 
-	groot = new ModelAnimObject("Groot/Groot");
+	groot = new ModelAnimObject();
 	groot->mScale = { 0.01f, 0.01f, 0.01f };
 	groot->mPosition.x = 3.0f;
 	groot->SetShader(L"Lighting");

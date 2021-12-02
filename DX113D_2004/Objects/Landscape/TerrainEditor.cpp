@@ -182,17 +182,6 @@ void TerrainEditor::PostRender()
 	ImGui::Unindent();
 	ImGui::Unindent();
 
-
-	/*ImGui::InputText("FileName", mInputFileName, 100);
-	wstring heightFile = L"Textures/HeightMaps/" + ToWString(mInputFileName) + L".png";
-
-	if (ImGui::Button("HeightMapSave"))
-	{
-		saveHeightMap(heightFile);
-	}*/
-
-
-
 	//ImGui::ShowDemoWindow();
 	ImGui::Unindent();
 	ImGui::Unindent();
@@ -574,8 +563,6 @@ void TerrainEditor::changeTextureMap(wstring textureFileName)
 	mMaterial->SetDiffuseMap(textureFileName);
 }
 
-
-
 void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++) // 폴리곤갯수만큼 반복. (한폴리곤에 인덱스3개니까)
@@ -790,13 +777,14 @@ void TerrainEditor::showAddedTextures() // 우측창..
 	{ // DiffuseMapButton
 		ImGui::Text("DiffuseMap");
 		ImGui::ImageButton(mTerrainDiffuseMap->GetSRV(), size, uv0, uv1, frame_padding, bg_col, tint_col);
+		
 
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
 			{
 				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int*)payload->Data;
+				int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
 				mTerrainDiffuseMap = mAddedTextures[payload_n].texture;
 				mMaterial->SetDiffuseMap(mTerrainDiffuseMap);
 			}
@@ -887,7 +875,6 @@ void TerrainEditor::getFileNames(string path)
 
 	closedir(dirp);
 }
-
 void TerrainEditor::showTextureAsset()
 {
 	ImGui::Begin("Asset");

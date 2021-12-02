@@ -13,7 +13,7 @@ private:
 
 
 public:
-	ModelAnimators(string file);
+	ModelAnimators();
 	~ModelAnimators();
 
 	void Update() override;

@@ -18,10 +18,10 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     matrix transform = 0;
     
     [flatten]
-    if(modelType == 2)
+    if(modelType == 2) // Skinned Mesh
         transform = mul(SkinWorld(input.indices, input.weights), world);
 
-    else if(modelType == 1)
+    else if(modelType == 1) // Static Mesh
         transform = mul(BoneWorld(input.indices, input.weights), world);
 
     else

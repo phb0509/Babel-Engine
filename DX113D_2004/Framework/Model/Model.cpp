@@ -1,36 +1,37 @@
 #include "Framework.h"
 #include "Model.h"
 
-Model::Model(string file) : ModelReader(file)
+Model::Model() : 
+	ModelReader()
 {
-	boneBuffer = new BoneBuffer();
+	mBoneBuffer = new BoneBuffer();
 
 	MakeBoneTransform();
 
-	if (!bones.empty())
-		typeBuffer->data.values[0] = 1;
+	if (!mBones.empty()) // 본없으면, 그냥 정적인 메시면 셰이더에서 BoneWolrd로 계산..
+		mTypeBuffer->data.values[0] = 1;
 }
 
 Model::~Model()
 {
-	delete boneBuffer;
-	delete[]  nodeTransforms;
+	delete mBoneBuffer;
+	delete[]  mNodeTransforms;
 }
 
 void Model::Render()
 {
 	SetBoneTransforms();
-	boneBuffer->SetVSBuffer(3);	
+	mBoneBuffer->SetVSBuffer(3);	
 
 	MeshRender();
 }
 
 void Model::MakeBoneTransform()
 {
-	nodeTransforms = new Matrix[nodes.size()];
+	mNodeTransforms = new Matrix[mNodes.size()];
 	UINT nodeIndex = 0;
 
-	for (NodeData* node : nodes)
+	for (NodeData* node : mNodes)
 	{
 		Matrix parent;
 		int parentIndex = node->parent;
@@ -38,18 +39,18 @@ void Model::MakeBoneTransform()
 		if (parentIndex < 0)
 			parent = XMMatrixIdentity();
 		else
-			parent = nodeTransforms[parentIndex];
+			parent = mNodeTransforms[parentIndex];
 
-		nodeTransforms[nodeIndex] = XMLoadFloat4x4(&node->transform) * parent;
+		mNodeTransforms[nodeIndex] = XMLoadFloat4x4(&node->transform) * parent;
 
-		if (boneMap.count(node->name) > 0)
+		if (mBoneMap.count(node->name) > 0)
 		{
-			int boneIndex = boneMap[node->name];
+			int boneIndex = mBoneMap[node->name];
 
-			Matrix offset = XMLoadFloat4x4(&bones[boneIndex]->offset);
+			Matrix offset = XMLoadFloat4x4(&mBones[boneIndex]->offset);
 
 			//boneBuffer->Add(offset * nodeTransforms[nodeIndex], boneIndex);
-			boneTransforms[boneIndex] = offset * nodeTransforms[nodeIndex];
+			mBoneTransforms[boneIndex] = offset * mNodeTransforms[nodeIndex];
 		}
 
 		nodeIndex++;
@@ -58,13 +59,13 @@ void Model::MakeBoneTransform()
 
 void Model::SetBoneTransforms()
 {
-	for (auto bone : boneTransforms)
-		boneBuffer->Add(bone.second, bone.first);
+	for (auto bone : mBoneTransforms)
+		mBoneBuffer->Add(bone.second, bone.first);
 }
 
 int Model::GetNodeByName(string name)
 {
-	for (NodeData* node : nodes)
+	for (NodeData* node : mNodes)
 	{
 		if (node->name == name)
 			return node->index;

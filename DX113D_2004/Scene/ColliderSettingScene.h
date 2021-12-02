@@ -17,8 +17,15 @@ public:
 		string nodeName;
 	};
 
-
-	
+	struct ModelData
+	{
+		map<int, vector<int>> preprocessedNodes;
+		map<int, bool> nodeCheck;
+		map<int, bool> createdCollidersCheck;
+		map<int, TreeNodeData> nodeCollidersMap;
+		map<int, string> nodeNameMap;
+		map<int, char[100]> colliderNameMap;
+	};
 
 	ColliderSettingScene();
 	~ColliderSettingScene();
@@ -33,12 +40,15 @@ public:
 private:
 	void selectClip();
 	void selectModel();
-	void showAddButton();
+	void showCreateModelButton();
+	void InitializeModelDatas();
 
 	void showModelHierarchyWindow();
 	void showModelSelectWindow();
 	void showColliderEditorWindow();
 	void showAssetsWindow();
+	void showModelInspector();
+	void showTestWindow();
 	void save();
 	void loadFileList(string folderName, vector<string>& fileList);
 
@@ -52,14 +62,12 @@ private:
 	void copyDraggedFile();
 
 
-
 private:
 	ToolModel* mModel;
 	ToolModel* mCurrentModel;
 
 	string mProjectPath;
 	string mPath;
-	string mCurrentModelName;
 
 	vector<string> mClips;
 	vector<string> mModelList;
@@ -74,7 +82,7 @@ private:
 	map<string, vector<string>> mClipsMap;
 	vector<ToolModel*> mModels;
 	vector<NodeData*> mNodes;
-	//vector<Collider*> mNodeColliders;
+
 
 	map<int, vector<int>> mPreprocessedNodes;
 	map<int, bool> mNodeCheck;
@@ -82,6 +90,8 @@ private:
 	map<int, TreeNodeData> mNodeCollidersMap;
 	map<int, string> mNodeNameMap;
 	map<int, char[100]> mColliderNameMap;
+
+
 	map<string, Texture*> mExtensionPreviewImages;
 	Collider* mNodeCollider;
 
@@ -99,5 +109,16 @@ private:
 	bool mbIsDropEvent;
 
 	string mAssetsWindowName;
+	string mDraggedFileName;
 
+	int mbIsSkinnedMesh;
+	RasterizerState* mRSState;
+	int mbIsWireFrame;
+
+	vector<ModelData> mModelDatas;
+	vector<string> mModelAssetsFileList;
+
+	string mDroppedFileName;
+	//int checkIndex = 100000;
+	
 };

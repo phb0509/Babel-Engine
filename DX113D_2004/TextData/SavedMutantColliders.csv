@@ -1,4 +1,4 @@
 ColliderName,,NodeName,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
-,,,,,,,,,,,,,,
-hipsCollider,,Mutant:Hips,,0,0,0,,0,0,0,,20,20,20
-SpineCollider,,Mutant:Spine,,0,0,0,,0,0,0,,40,40,40
+
+test1,,Mutant:Hips,,0.000,0.000,0.000,, 0.000,0.000,0.000,, 100.000,20.000,20.000
+test1,,Mutant:LeftShoulder,,0.000,0.000,0.000,, 0.000,0.000,0.000,, 50.000,10.000,10.000

@@ -218,6 +218,30 @@ void Utility::CreateFolders(string path)
 	}
 }
 
+void Utility::Indent(int loopCount)
+{
+	for (int i = 0; i < loopCount; i++)
+	{
+		ImGui::Indent();
+	}
+}
+
+void Utility::UnIndent(int loopCount)
+{
+	for (int i = 0; i < loopCount; i++)
+	{
+		ImGui::Unindent();
+	}
+}
+
+void Utility::Spacing(int loopCount)
+{
+	for (int i = 0; i < loopCount; i++)
+	{
+		ImGui::Spacing();
+	}
+}
+
 bool Utility::ExistDirectory(string path)
 {
 	DWORD fileValue = GetFileAttributesA(path.c_str());

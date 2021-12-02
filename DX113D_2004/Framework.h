@@ -191,6 +191,11 @@ using namespace Utility;
 #include "Framework/Device/DepthStencil.h"
 #include "Framework/Device/RenderTarget.h"
 
+#include "Framework/State/RasterizerState.h"
+#include "Framework/State/SamplerState.h"
+#include "Framework/State/DepthStencilState.h"
+#include "Framework/State/BlendState.h"
+
 #include "Framework/Shader/Shader.h"
 #include "Framework/Shader/VertexShader.h"
 #include "Framework/Shader/HullShader.h"
@@ -220,6 +225,8 @@ using namespace Utility;
 using namespace GameMath;
 using namespace states;
 
+
+
 #include "Framework/Collider/Collider.h"
 #include "Framework/Collider/BoxCollider.h"
 #include "Framework/Collider/SphereCollider.h"
@@ -227,10 +234,8 @@ using namespace states;
 #include "Framework/Collider/TetrahedronCollider.h"
 #include "Framework/Collider/FrustumCollider.h"
 
-#include "Framework/State/RasterizerState.h"
-#include "Framework/State/SamplerState.h"
-#include "Framework/State/DepthStencilState.h"
-#include "Framework/State/BlendState.h"
+
+
 
 #include "Framework/ModelExport/ModelType.h"
 #include "Framework/ModelExport/ModelExporter.h"
@@ -272,9 +277,8 @@ using namespace states;
 #include "Objects/Landscape/Water.h"
 #include "Objects/Landscape/Scattering.h"
 
-#include "Objects/Model/Krillin.h"
+
 #include "Objects/Model/ModelObject.h"
-#include "Objects/Model/Ken.h"
 #include "Objects/Model/ModelAnimObject.h"
 
 #include "Objects/PostEffect/Outline.h"

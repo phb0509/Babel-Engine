@@ -1,49 +1,53 @@
 #include "Framework.h"
 
-ModelReader::ModelReader(string file)
+ModelReader::ModelReader()
 {
-	ReadMaterial(file);
-	ReadMesh(file);
-	typeBuffer = new TypeBuffer();
+	mDefaultMaterial = new Material();
+	mDefaultMaterial->SetDiffuseMap(L"ModelData/DefaultDiffuseMap.png");
+	mTypeBuffer = new TypeBuffer();
 }
+
+
 
 ModelReader::~ModelReader()
 {
-	for (auto material : materials)
+	for (auto material : mMaterials)
 		delete material.second;
 
-	for (ModelMesh* mesh : meshes)
+	for (ModelMesh* mesh : mMeshes)
 		delete mesh;
 
-	delete typeBuffer;
+	delete mTypeBuffer;
+	delete mDefaultMaterial;
+	
 }
 
 void ModelReader::MeshRender()
 {
-	typeBuffer->SetVSBuffer(5);
+	mTypeBuffer->SetVSBuffer(5);
 
-	for (ModelMesh* mesh : meshes)
+	for (ModelMesh* mesh : mMeshes)
 		mesh->Render();
 }
 
 void ModelReader::MeshRender(UINT drawCount) // 인스턴싱용.
 {
-	typeBuffer->SetVSBuffer(5);
+	mTypeBuffer->SetVSBuffer(5);
 
-	for (ModelMesh* mesh : meshes)
+	for (ModelMesh* mesh : mMeshes)
 		mesh->Render(drawCount);
 }
 
-void ModelReader::ReadMaterial(string file)
+void ModelReader::ReadMaterial(string folderName,string fileName)
 {
-	file = "ModelData/Materials/" + file + ".mat"; // ModelExporter로 만든 MaterialFile.
+	//file = "ModelData/Materials/" + file + ".mat"; // ModelExporter로 만든 MaterialFile.
+	string filePath = "ModelData/" + folderName + "/" + fileName;
 
-	wstring filePath = ToWString(GetDirectoryName(file));
+	wstring folderPath = ToWString(GetDirectoryName(filePath)); // 상위폴더까지경로.
 
 	XmlDocument* document = new XmlDocument();
-	document->LoadFile(file.c_str());
+	document->LoadFile(filePath.c_str());
 	
-
 	XmlElement* root = document->FirstChildElement();
 
 	XmlElement* matNode = root->FirstChildElement();
@@ -63,11 +67,11 @@ void ModelReader::ReadMaterial(string file)
 			//node->SetText("sibar");
 			//document->SaveFile(file.c_str());
 			
-			wstring file = ToWString(node->GetText());
+			wstring fileName = ToWString(node->GetText());
 			
-			if (ExistFile(ToString(filePath + file)))
+			if (ExistFile(ToString(folderPath + fileName)))
 			{
-				material->SetDiffuseMap(filePath + file); // 여기서 그냥 해버려도 상관은 없는데, mat파일안이라
+				material->SetDiffuseMap(folderPath + fileName); // 여기서 그냥 해버려도 상관은 없는데, mat파일안이라
 			}
 				
 		}
@@ -76,10 +80,11 @@ void ModelReader::ReadMaterial(string file)
 
 		if (node->GetText()) // SpecularMap
 		{
-			wstring file = ToWString(node->GetText());
-			if (ExistFile(ToString(filePath + file)))
+			wstring fileName = ToWString(node->GetText());
+
+			if (ExistFile(ToString(folderPath + fileName)))
 			{
-				material->SetSpecularMap(filePath + file);
+				material->SetSpecularMap(folderPath + fileName);
 			}
 				
 		}
@@ -88,16 +93,16 @@ void ModelReader::ReadMaterial(string file)
 
 		if (node->GetText()) // NormalMap
 		{
-			wstring file = ToWString(node->GetText());
-			if (ExistFile(ToString(filePath + file)))
+			wstring fileName = ToWString(node->GetText());
+			if (ExistFile(ToString(folderPath + fileName)))
 			{
-				material->SetNormalMap(filePath + file);
+				material->SetNormalMap(folderPath + fileName);
 			}
-				
 		}			
 
 		Float4 color;
 
+		// .mat파일이 가지고 있는 Ambient R값 가져와서 세팅.
 		node = node->NextSiblingElement();
 		color.x = node->FloatAttribute("R");
 		color.y = node->FloatAttribute("G");
@@ -105,7 +110,7 @@ void ModelReader::ReadMaterial(string file)
 		color.w = node->FloatAttribute("A");
 		material->GetBuffer()->data.ambient = color;
 
-		node = node->NextSiblingElement();
+		node = node->NextSiblingElement(); // Diffuse R값. 비율을 말하는거같긴한데...
 		color.x = node->FloatAttribute("R");
 		color.y = node->FloatAttribute("G");
 		color.z = node->FloatAttribute("B");
@@ -117,8 +122,8 @@ void ModelReader::ReadMaterial(string file)
 		color.y = node->FloatAttribute("G");
 		color.z = node->FloatAttribute("B");
 		color.w = 1.0f;
-		material->GetBuffer()->data.specular = color;
-		material->GetBuffer()->data.shininess = node->FloatAttribute("A");	
+		material->GetBuffer()->data.specular = color; // RGBA중에서 RGB까지만 specular값.
+		material->GetBuffer()->data.shininess = node->FloatAttribute("A");	// A는 shininess값.
 
 		node = node->NextSiblingElement();
 		color.x = node->FloatAttribute("R");
@@ -127,7 +132,7 @@ void ModelReader::ReadMaterial(string file)
 		color.w = node->FloatAttribute("A");
 		material->GetBuffer()->data.emissive = color;
 
-		materials[material->mName] = material;
+		mMaterials[material->mName] = material;
 
 		matNode = matNode->NextSiblingElement();
 	} while (matNode != nullptr);
@@ -135,10 +140,16 @@ void ModelReader::ReadMaterial(string file)
 	delete document;
 }
 
-void ModelReader::ReadMesh(string file)
+void ModelReader::ReadMesh(string folderName,string fileName)
 {
-	file = "ModelData/Meshes/" + file + ".mesh";
-	BinaryReader* r = new BinaryReader(file);
+	mMeshes.clear();
+	mNodes.clear();
+	mBones.clear();
+	mBoneMap.clear();
+
+	string filePath = "ModelData/" + folderName + "/" + fileName;
+
+	BinaryReader* r = new BinaryReader(filePath);
 
 	UINT count = r->UInt();
 
@@ -147,8 +158,8 @@ void ModelReader::ReadMesh(string file)
 		ModelMesh* mesh = new ModelMesh();
 		mesh->name = r->String();
 		mesh->materialName = r->String();
-		mesh->material = materials[mesh->materialName];
-
+		mesh->material = mDefaultMaterial; // 
+		
 		{//Vertices
 			UINT count = r->UInt();
 
@@ -170,7 +181,7 @@ void ModelReader::ReadMesh(string file)
 		}
 
 		mesh->CreateMesh();
-		meshes.emplace_back(mesh);
+		mMeshes.emplace_back(mesh);
 	}
 
 	count = r->UInt();
@@ -183,7 +194,7 @@ void ModelReader::ReadMesh(string file)
 		node->parent = r->Int();
 		node->transform = r->Float4x4();
 
-		nodes.emplace_back(node);
+		mNodes.emplace_back(node);
 	}
 
 	count = r->UInt();
@@ -195,39 +206,55 @@ void ModelReader::ReadMesh(string file)
 		bone->index = r->Int();
 		bone->offset = r->Float4x4();
 
-		boneMap[bone->name] = bone->index;
+		mBoneMap[bone->name] = bone->index;
 
-		bones.emplace_back(bone);
+		mBones.emplace_back(bone);
+	}
+
+	int a = 0;
+}
+
+void ModelReader::SetShader(wstring fileName)
+{
+	//if (mbSetMaterialFile)
+	//{
+	//	for (auto material : mMaterials) // 디폴트메시하는거일땐 닫아주긴해야됨. 음
+	//		material.second->SetShader(fileName);
+	//}
+	//else
+	//{
+	//	mDefaultMaterial->SetShader(fileName);
+	//}
+
+	for (int i = 0; i < mMeshes.size(); i++)
+	{
+		mMeshes[i]->material->SetShader(fileName);
 	}
 }
 
-void ModelReader::SetShader(wstring file)
-{
-	for (auto material : materials)
-		material.second->SetShader(file);
-}
+
 
 void ModelReader::SetDiffuseMap(wstring file)
 {
-	for (auto material : materials)
+	for (auto material : mMaterials)
 		material.second->SetDiffuseMap(file);
 }
 
 void ModelReader::SetSpecularMap(wstring file)
 {
-	for (auto material : materials)
+	for (auto material : mMaterials)
 		material.second->SetSpecularMap(file);
 }
 
 void ModelReader::SetNormalMap(wstring file)
 {
-	for (auto material : materials)
+	for (auto material : mMaterials)
 		material.second->SetNormalMap(file);
 }
 
 int ModelReader::GetNodeByName(string name)
 {
-	for (NodeData* node : nodes)
+	for (NodeData* node : mNodes)
 	{
 		if (node->name == name)
 			return node->index;
@@ -236,14 +263,24 @@ int ModelReader::GetNodeByName(string name)
 	return 0;
 }
 
+bool ModelReader::GetHasMeshes()
+{
+	if (mMeshes.size() != 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void ModelReader::SetBox(Vector3* minBox, Vector3* maxBox)
 {	
-	meshes[0]->SetBox(minBox, maxBox);
+	mMeshes[0]->SetBox(minBox, maxBox);
 
-	for (UINT i = 1; i < meshes.size(); i++)
+	for (UINT i = 1; i < mMeshes.size(); i++)
 	{
 		Vector3 minPos, maxPos;
-		meshes[i]->SetBox(&minPos, &maxPos);
+		mMeshes[i]->SetBox(&minPos, &maxPos);
 
 		minBox->x = min(minBox->x, minPos.x);
 		minBox->y = min(minBox->y, minPos.y);
@@ -253,4 +290,36 @@ void ModelReader::SetBox(Vector3* minBox, Vector3* maxBox)
 		maxBox->y = max(maxBox->y, maxPos.y);
 		maxBox->z = max(maxBox->z, maxPos.z);
 	}
+}
+
+void ModelReader::SetMesh(string folderName, string fileName)
+{
+	ReadMesh(folderName,fileName);
+}
+
+void ModelReader::SetMaterial(string folderName, string fileName)
+{
+	
+	{ // 한번 싹 초기화해주기
+		for (auto material : mMaterials)
+			delete material.second;
+		mMaterials.clear();
+	}
+
+
+	ReadMaterial(folderName,fileName); // mMaterials Update.
+
+	for (int i = 0; i < mMeshes.size(); i++) 
+	{
+		if (mMaterials[mMeshes[i]->materialName] == nullptr) // 메시가 요구하는 material이 mMaterials에 없는 경우 (즉, 메시랑 다른 머터리얼파일을 세팅한경우)
+		{
+			mMeshes[i]->material = mDefaultMaterial; // 그냥 흰색으로 바르기.
+		}
+		else
+		{
+			mMeshes[i]->material = mMaterials[mMeshes[i]->materialName];
+		}
+	}
+
+
 }

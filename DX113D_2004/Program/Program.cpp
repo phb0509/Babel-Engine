@@ -38,22 +38,15 @@ Program::~Program()
 void Program::Update()
 {
 	if (KEY_DOWN(VK_F1))
+	{
 		Transform::mbIsAxisDrawing = !Transform::mbIsAxisDrawing;
+	}
+	
 
 	Control::Get()->Update();
 	Timer::Get()->Update();
 
 	SceneManager::Get()->Update();
-
-	//if (Environment::Get()->GetIsTargetCamera())
-	//{
-	//	Environment::Get()->GetTargetCamera()->Update();
-	//}
-	//else
-	//{
-	//	Environment::Get()->GetWorldCamera()->Update();
-	//}
-
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{

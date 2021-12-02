@@ -3,7 +3,7 @@
 BoxCollider::BoxCollider(Vector3 minBox, Vector3 maxBox)
     : minBox(minBox), maxBox(maxBox)
 {
-    type = BOX;
+    mType = BOX;
     CreateMesh();
 }
 
@@ -32,10 +32,10 @@ bool BoxCollider::RayCollision(IN Ray ray, OUT Contact* contact)
     {
         Vector3 p[4];
 
-        p[0] = vertices[face[i * 4 + 0]].position;
-        p[1] = vertices[face[i * 4 + 1]].position;
-        p[2] = vertices[face[i * 4 + 2]].position;
-        p[3] = vertices[face[i * 4 + 3]].position;
+        p[0] = mVertices[face[i * 4 + 0]].position;
+        p[1] = mVertices[face[i * 4 + 1]].position;
+        p[2] = mVertices[face[i * 4 + 2]].position;
+        p[3] = mVertices[face[i * 4 + 3]].position;
 
         p[0] = XMVector3TransformCoord(p[0].data, mWorldMatrix);
         p[1] = XMVector3TransformCoord(p[1].data, mWorldMatrix);
@@ -185,24 +185,24 @@ Obb BoxCollider::GetObb()
 
 void BoxCollider::CreateMesh()
 {
-    vertices.emplace_back(minBox.x, minBox.y, minBox.z);
-    vertices.emplace_back(minBox.x, maxBox.y, minBox.z);
-    vertices.emplace_back(maxBox.x, maxBox.y, minBox.z);
-    vertices.emplace_back(maxBox.x, minBox.y, minBox.z);
+    mVertices.emplace_back(minBox.x, minBox.y, minBox.z);
+    mVertices.emplace_back(minBox.x, maxBox.y, minBox.z);
+    mVertices.emplace_back(maxBox.x, maxBox.y, minBox.z);
+    mVertices.emplace_back(maxBox.x, minBox.y, minBox.z);
 
-    vertices.emplace_back(minBox.x, minBox.y, maxBox.z);
-    vertices.emplace_back(minBox.x, maxBox.y, maxBox.z);
-    vertices.emplace_back(maxBox.x, maxBox.y, maxBox.z);
-    vertices.emplace_back(maxBox.x, minBox.y, maxBox.z);
+    mVertices.emplace_back(minBox.x, minBox.y, maxBox.z);
+    mVertices.emplace_back(minBox.x, maxBox.y, maxBox.z);
+    mVertices.emplace_back(maxBox.x, maxBox.y, maxBox.z);
+    mVertices.emplace_back(maxBox.x, minBox.y, maxBox.z);
 
-    indices = {
+    mIndices = {
         0, 1, 1, 2, 2, 3, 3, 0,
         4, 5, 5, 6, 6, 7, 7, 4,
         0, 4, 1, 5, 2, 6, 3, 7
     };
 
-    mesh = new Mesh(vertices.data(), sizeof(Vertex), vertices.size(),
-        indices.data(), indices.size());
+    mMesh = new Mesh(mVertices.data(), sizeof(Vertex), mVertices.size(),
+        mIndices.data(), mIndices.size());
 }
 
 bool BoxCollider::SeperateAxis(Vector3 D, Vector3 axis, Obb box1, Obb box2)

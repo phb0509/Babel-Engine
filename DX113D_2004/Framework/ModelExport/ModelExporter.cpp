@@ -38,12 +38,12 @@ void ModelExporter::ExportMesh(string fileNameToCreate, string parentFolderName)
 	WriteMesh(savePath);
 }
 
-void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName)
+void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName) // 직접 작성한 파일이름, 폴더이름.
 {
 	for (UINT i = 0; i < scene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
 		Clip* clip = ReadClip(scene->mAnimations[i]);
-		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 뮤턴트폴더에 OnDamage0.clip 생성.
+		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 뮤턴트폴더에 OnDamage.clip 생성.
 		WriteClip(clip, path);
 	}
 }

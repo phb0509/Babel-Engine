@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-Models::Models(string file) : 
-    Model(file), 
+Models::Models() : 
+    Model(), 
     drawCount(0),
     mTargetCameraFrustum(nullptr)
 {
@@ -49,7 +49,7 @@ void Models::Render()
 {
     instanceBuffer->IASet(1);
     SetBoneTransforms();
-    boneBuffer->SetVSBuffer(3);
+    mBoneBuffer->SetVSBuffer(3);
 
     MeshRender(drawCount);
 }

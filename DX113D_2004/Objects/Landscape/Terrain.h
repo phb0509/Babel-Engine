@@ -17,27 +17,7 @@ private:
 		float u, v, distance;
 	};
 
-	Material* material;
-	Mesh* mesh;
 
-	vector<VertexType> vertices;
-	vector<UINT> indices;
-
-	UINT width, height;	
-
-	Texture* heightMap;
-
-	RasterizerState* fillMode[2];
-
-	ComputeShader* computeShader;
-	RayBuffer* rayBuffer;
-	ComputeStructuredBuffer* structuredBuffer;
-	InputDesc* input;
-	OutputDesc* output;
-
-	TypeBuffer* typeBuffer;
-
-	UINT size;
 public:
 	Terrain();
 	~Terrain();
@@ -50,9 +30,36 @@ public:
 
 	float GetHeight(Vector3 position);
 
-	Float2 GetSize() { return Float2(width, height); }
+	Float2 GetSize() { return Float2(mWidth, mHeight); }
 private:
 	void CreateMesh();
 	void CreateNormal();
 	void CreateTangent();
+
+
+
+
+private:
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	vector<VertexType> mVertices;
+	vector<UINT> mIndices;
+
+	UINT mWidth;
+	UINT mHeight;
+
+	Texture* mHeightMap;
+
+	RasterizerState* mFillMode[2];
+
+	ComputeShader* mComputeShader;
+	RayBuffer* mRayBuffer;
+	ComputeStructuredBuffer* mStructuredBuffer;
+	InputDesc* mInput;
+	OutputDesc* mOutput;
+
+	TypeBuffer* mTypeBuffer;
+
+	UINT mPolygonCount;
 };

@@ -5,17 +5,6 @@ class ModelMesh
 private:
 	friend class ModelReader;
 
-	string name;
-	string materialName;
-
-	Material* material;
-	Mesh* mesh;
-
-	ModelVertex* vertices;
-	UINT* indices;
-
-	UINT vertexCount, indexCount;
-
 	ModelMesh();
 	~ModelMesh();
 
@@ -24,4 +13,17 @@ private:
 	void Render(UINT drawCount);
 
 	void SetBox(Vector3* minBox, Vector3* maxBox);
+
+private:
+	string mName;
+	string mMaterialName;
+
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	ModelVertex* mVertices;
+	UINT* mIndices;
+
+	UINT mVertexCount;
+	UINT mIndexCount;
 };

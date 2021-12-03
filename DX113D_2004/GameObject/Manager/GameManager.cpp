@@ -4,7 +4,9 @@ GameManager::GameManager()
 {
 	player = new Player();
 
-	for (int i = 0; i < 1; i++)
+	
+
+	/*for (int i = 0; i < 1; i++)
 	{
 		monster = new Mutant;
 		monsters.push_back(monster);
@@ -13,7 +15,8 @@ GameManager::GameManager()
 	for (int i = 0; i < monsters.size(); i++)
 	{
 		monstersHitCheck[monsters[i]] = false;
-	}
+	}*/
+
 }
 
 GameManager::~GameManager()

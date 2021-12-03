@@ -23,10 +23,11 @@ public:
 	int GetNodeByName(string name);
 	bool GetHasMeshes();
 
-
-
 	void SetBox(Vector3* minBox, Vector3* maxBox);
 	vector<NodeData*> GetNodes() {return mNodes;}
+
+private:
+	void deleteDatas();
 
 protected:
 	map<string, Material*> mMaterials;

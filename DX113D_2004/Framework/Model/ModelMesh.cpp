@@ -6,48 +6,48 @@ ModelMesh::ModelMesh()
 
 ModelMesh::~ModelMesh()
 {
-	delete mesh;
+	delete mMesh;
 
-	delete[] vertices;
-	delete[] indices;
+	delete[] mVertices;
+	delete[] mIndices;
 }
 
 void ModelMesh::CreateMesh()
 {
-	mesh = new Mesh(vertices, sizeof(ModelVertex), vertexCount,
-		indices, indexCount);
+	mMesh = new Mesh(mVertices, sizeof(ModelVertex), mVertexCount,
+		mIndices, mIndexCount);
 }
 
 void ModelMesh::Render()
 {
-	mesh->IASet();
-	material->Set();
+	mMesh->IASet();
+	mMaterial->Set();
 
-	DEVICECONTEXT->DrawIndexed(indexCount, 0, 0);
+	DEVICECONTEXT->DrawIndexed(mIndexCount, 0, 0);
 }
 
 void ModelMesh::Render(UINT drawCount)
 {
-	mesh->IASet();
-	material->Set();
+	mMesh->IASet();
+	mMaterial->Set();
 
-	DEVICECONTEXT->DrawIndexedInstanced(indexCount, drawCount, 0, 0, 0);
+	DEVICECONTEXT->DrawIndexedInstanced(mIndexCount, drawCount, 0, 0, 0);
 }
 
 void ModelMesh::SetBox(Vector3* minBox, Vector3* maxBox)
 {
-	Float3 minPos = vertices[0].position;
-	Float3 maxPos = vertices[0].position;
+	Float3 minPos = mVertices[0].position;
+	Float3 maxPos = mVertices[0].position;
 
-	for (UINT i = 1; i < vertexCount; i++)
+	for (UINT i = 1; i < mVertexCount; i++)
 	{
-		minPos.x = min(minPos.x, vertices[i].position.x);
-		minPos.y = min(minPos.y, vertices[i].position.y);
-		minPos.z = min(minPos.z, vertices[i].position.z);
+		minPos.x = min(minPos.x, mVertices[i].position.x);
+		minPos.y = min(minPos.y, mVertices[i].position.y);
+		minPos.z = min(minPos.z, mVertices[i].position.z);
 
-		maxPos.x = max(maxPos.x, vertices[i].position.x);
-		maxPos.y = max(maxPos.y, vertices[i].position.y);
-		maxPos.z = max(maxPos.z, vertices[i].position.z);
+		maxPos.x = max(maxPos.x, mVertices[i].position.x);
+		maxPos.y = max(maxPos.y, mVertices[i].position.y);
+		maxPos.z = max(maxPos.z, mVertices[i].position.z);
 	}
 
 	*minBox = minPos;

@@ -83,14 +83,12 @@ private:
 	vector<ToolModel*> mModels;
 	vector<NodeData*> mNodes;
 
-
 	map<int, vector<int>> mPreprocessedNodes;
 	map<int, bool> mNodeCheck;
 	map<int, bool> mCreatedCollidersCheck;
 	map<int, TreeNodeData> mNodeCollidersMap;
 	map<int, string> mNodeNameMap;
 	map<int, char[100]> mColliderNameMap;
-
 
 	map<string, Texture*> mExtensionPreviewImages;
 	Collider* mNodeCollider;
@@ -119,6 +117,7 @@ private:
 	vector<string> mModelAssetsFileList;
 
 	string mDroppedFileName;
-	//int checkIndex = 100000;
 	
+	Monster* monster;
+	Terrain* terrain;
 };

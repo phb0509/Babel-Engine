@@ -32,18 +32,35 @@ ColliderSettingScene::ColliderSettingScene() :
 	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
 	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
 	mExtensionPreviewImages["default"] = Texture::Add(L"ModelData/DefaultImage.png");
-	mExtensionPreviewImages["Test"] = Texture::Add(L"ModelData/TestImage.png");
 
 	mRSState = new RasterizerState();
 	mRSState->FillMode(D3D11_FILL_WIREFRAME);
+
+	terrain = new Terrain();
+	monster = new Mutant();
+
+	monster->SetTerrain(terrain);
+	monster->mPosition = { 200.0f,200.0f,200.0f };
 }
 
 ColliderSettingScene::~ColliderSettingScene()
 {
+	for (int i = 0; i < mModels.size(); i++)
+	{
+		delete mModels[i];
+	}
+
+	for (int i = 0; i < mNodes.size(); i++)
+	{
+		delete mNodes[i];
+	}
 }
 
 void ColliderSettingScene::Update()
 {
+	terrain->Update();
+	monster->Update();
+
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
 		if (mCurrentModel->GetHasMeshes())
@@ -72,6 +89,7 @@ void ColliderSettingScene::PreRender()
 
 void ColliderSettingScene::Render()
 {
+	monster->Render();
 	mRSState->SetState();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
@@ -96,8 +114,8 @@ void ColliderSettingScene::PostRender()
 	if (mModels.size() != 0) // ToolModel 생성이후.
 	{
 		showModelInspector();
-		showModelHierarchyWindow();
-		showColliderEditorWindow();
+		//showModelHierarchyWindow();
+		//showColliderEditorWindow();
 	}
 
 	if (mModelList.size() != 0)
@@ -784,20 +802,25 @@ void ColliderSettingScene::showModelInspector()
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
 			{
-				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
+				//IM_ASSERT(payload->DataSize == sizeof(int));
+				//int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
 				//mDraggedFileName = mModelAssetsFileList[payload_n];
 
 				if (GetExtension(mDraggedFileName) == "mesh") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
 					meshText = mDraggedFileName;
-					mDroppedFileName = meshText;
 
 					// 메시변경이벤트구간.
 					mCurrentModel->SetMesh(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 					mCurrentModel->ExecuteSetMeshEvent();
 
+					int a = 0;
+					if (materialText != "") // 메시변경시 머터리얼초기화.
+					{
+						materialText = "";
+						materialImageButtonTexture = Texture::Add(L"ModelData/DefaultImage.png");
+					}
 				}
 			}
 
@@ -823,14 +846,13 @@ void ColliderSettingScene::showModelInspector()
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
 			{
-				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
+				//IM_ASSERT(payload->DataSize == sizeof(int));
+				//int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
 
 				if (GetExtension(mDraggedFileName) == "mat") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					materialImageButtonTexture = mExtensionPreviewImages["mat"];
 					materialText = mDraggedFileName;
-					mDroppedFileName = materialText;
 
 					mCurrentModel->SetMaterial(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 				}

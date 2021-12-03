@@ -1,51 +1,51 @@
 #include "Framework.h"
 
 Terrain::Terrain()
-	: width(10), 
-	height(10)
+	: mWidth(10), 
+	mHeight(10)
 {
-	material = new Material(L"Lighting");
-	material->SetDiffuseMap(L"Textures/Landscape/Stones.png");
-	material->SetNormalMap(L"Textures/Landscape/Stones_normal.png");
+	mMaterial = new Material(L"Lighting");
+	mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
+	mMaterial->SetNormalMap(L"Textures/Landscape/Stones_normal.png");
 
-	material->GetBuffer()->data.emissive = { 0, 0, 0, 0 };
+	mMaterial->GetBuffer()->data.emissive = { 0, 0, 0, 0 };
 
-	fillMode[0] = new RasterizerState();
-	fillMode[1] = new RasterizerState();
-	fillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
+	mFillMode[0] = new RasterizerState();
+	mFillMode[1] = new RasterizerState();
+	mFillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
 
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	heightMap = Texture::Add(L"Textures/HeightMaps/HeightMap.png"); // 100 & 100
+	mHeightMap = Texture::Add(L"Textures/HeightMaps/HeightMap.png"); // 100 & 100
 
 	CreateMesh();
 
-	computeShader = Shader::AddCS(L"ComputePicking");	
+	mComputeShader = Shader::AddCS(L"ComputePicking");	
 
-	structuredBuffer = new ComputeStructuredBuffer(input, sizeof(InputDesc), size,
-		sizeof(OutputDesc), size); // 구조체, 구조체크기, 구조체개수(폴리곤 개수), 
+	mStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
+		sizeof(OutputDesc), mPolygonCount); // 구조체, 구조체크기, 구조체개수(폴리곤 개수), 
 
-	rayBuffer = new RayBuffer();
-	output = new OutputDesc[size];
+	mRayBuffer = new RayBuffer();
+	mOutput = new OutputDesc[mPolygonCount];
 
-	typeBuffer = new TypeBuffer();
+	mTypeBuffer = new TypeBuffer();
 }
 
 Terrain::~Terrain()
 {
-	delete material;
-	delete mesh;	
+	delete mMaterial;
+	delete mMesh;	
 
-	delete fillMode[0];
-	delete fillMode[1];
+	delete mFillMode[0];
+	delete mFillMode[1];
 
-	delete rayBuffer;
-	delete structuredBuffer;
+	delete mRayBuffer;
+	delete mStructuredBuffer;
 
-	delete[] input;
-	delete[] output;
+	delete[] mInput;
+	delete[] mOutput;
 
-	delete typeBuffer;
+	delete mTypeBuffer;
 }
 
 void Terrain::Update()
@@ -55,14 +55,14 @@ void Terrain::Update()
 
 void Terrain::Render()
 {
-	mesh->IASet();
+	mMesh->IASet();
 
 	mWorldBuffer->SetVSBuffer(0);	
-	typeBuffer->SetVSBuffer(5);
+	mTypeBuffer->SetVSBuffer(5);
 
-	material->Set();
+	mMaterial->Set();
 	//fillMode[1]->SetState();
-	DEVICECONTEXT->DrawIndexed((UINT)indices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 	//fillMode[0]->SetState();
 }
 
@@ -70,20 +70,20 @@ bool Terrain::Picking(OUT Vector3* position)
 {
 	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
 
-	for (UINT z = 0; z < height; z++) // 0~255
+	for (UINT z = 0; z < mHeight; z++) // 0~255
 	{
-		for (UINT x = 0; x < width; x++) // 0~255
+		for (UINT x = 0; x < mWidth; x++) // 0~255
 		{
 			UINT index[4];
-			index[0] = (width + 1) * z + x; // 0 ~
-			index[1] = (width + 1) * z + x + 1; // 1~
-			index[2] = (width + 1) * (z + 1) + x; // 1 ~
-			index[3] = (width + 1) * (z + 1) + x + 1; // 2 ~
+			index[0] = (mWidth + 1) * z + x; // 0 ~
+			index[1] = (mWidth + 1) * z + x + 1; // 1~
+			index[2] = (mWidth + 1) * (z + 1) + x; // 1 ~
+			index[3] = (mWidth + 1) * (z + 1) + x + 1; // 2 ~
 
 			Vector3 p[4];
 			for (UINT i = 0; i < 4; i++)
 			{
-				p[i] = vertices[index[i]].position;
+				p[i] = mVertices[index[i]].position;
 			}
 				
 
@@ -111,31 +111,31 @@ bool Terrain::ComputePicking(OUT Vector3* position)
 {	
 	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
 
-	rayBuffer->data.position = ray.position;
-	rayBuffer->data.direction = ray.direction;
-	rayBuffer->data.size = size; // 폴리곤 개수. indices[i] / 3;
-	computeShader->Set();
+	mRayBuffer->data.position = ray.position;
+	mRayBuffer->data.direction = ray.direction;
+	mRayBuffer->data.size = mPolygonCount; // 폴리곤 개수. indices[i] / 3;
+	mComputeShader->Set();
 
 	// inputDesc는 CreateMesh할때 할당받아서 컴퓨트셰이더에 넘김.
 	// size = 폴리곤개수. 각 원소마다 버텍스3개 포지션,index(폴리곤단위)
 
-	rayBuffer->SetCSBuffer(0);
+	mRayBuffer->SetCSBuffer(0);
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &structuredBuffer->GetSRV()); // SRV 셋팅. 읽기전용자원을 넘기기위한 어댑터 설정.
-	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &structuredBuffer->GetUAV(), nullptr); // UAV셋팅. 읽고 쓸수있는 자원을 넘기기위한 어댑터 설정.
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV()); // SRV 셋팅. 읽기전용자원을 넘기기위한 어댑터 설정.
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr); // UAV셋팅. 읽고 쓸수있는 자원을 넘기기위한 어댑터 설정.
 
-	UINT x = ceil((float)size / 1024.0f); // 폴리곤개수를 1024로 나눴네? 왜?
+	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수를 1024로 나눴네? 왜?
 
 	DEVICECONTEXT->Dispatch(x, 1, 1); // ComputeShader 실행.
 
-	structuredBuffer->Copy(output, sizeof(OutputDesc) * size);
+	mStructuredBuffer->Copy(mOutput, sizeof(OutputDesc) * mPolygonCount);
 	
 	float minDistance = FLT_MAX;
 	int minIndex = -1;
 
-	for (UINT i = 0; i < size; i++)
+	for (UINT i = 0; i < mPolygonCount; i++)
 	{
-		OutputDesc temp = output[i];
+		OutputDesc temp = mOutput[i];
 		if (temp.picked)
 		{
 			if (minDistance > temp.distance)
@@ -160,18 +160,18 @@ float Terrain::GetHeight(Vector3 position)
 	UINT x = (UINT)position.x;
 	UINT z = (UINT)position.z;
 
-	if (x < 0 || x > width) return 0.0f;
-	if (z < 0 || z > height) return 0.0f;
+	if (x < 0 || x > mWidth) return 0.0f;
+	if (z < 0 || z > mHeight) return 0.0f;
 
 	UINT index[4];
-	index[0] = (width + 1) * z + x;
-	index[1] = (width + 1) * (z + 1) + x;
-	index[2] = (width + 1) * z + x + 1;
-	index[3] = (width + 1) * (z + 1) + x + 1;
+	index[0] = (mWidth + 1) * z + x;
+	index[1] = (mWidth + 1) * (z + 1) + x;
+	index[2] = (mWidth + 1) * z + x + 1;
+	index[3] = (mWidth + 1) * (z + 1) + x + 1;
 
 	Vector3 p[4];
 	for (int i = 0; i < 4; i++)
-		p[i] = vertices[index[i]].position;
+		p[i] = mVertices[index[i]].position;
 
 	float u = position.x - p[0].x;
 	float v = position.z - p[0].z;
@@ -194,106 +194,106 @@ float Terrain::GetHeight(Vector3 position)
 
 void Terrain::CreateMesh()
 {
-	width = heightMap->GetWidth() - 1;
-	height = heightMap->GetHeight() - 1;
+	mWidth = mHeightMap->GetWidth() - 1;
+	mHeight = mHeightMap->GetHeight() - 1;
 
-	vector<Float4> pixels = heightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
+	vector<Float4> pixels = mHeightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
 
 	//Vertices
-	for (UINT z = 0; z <= height; z++)
+	for (UINT z = 0; z <= mHeight; z++)
 	{
-		for (UINT x = 0; x <= width; x++)
+		for (UINT x = 0; x <= mWidth; x++)
 		{
 			VertexType vertex;
 			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)width, 1.0f - z / (float)height);
+			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
 
-			UINT index = (width + 1) * z + x;
+			UINT index = (mWidth + 1) * z + x;
 			vertex.position.y += pixels[index].x * 20.0f; // 걍 값이 정규화되서 너무 작으니까 임의의 값 20.0f를 곱해준것.
 
-			vertices.emplace_back(vertex);
+			mVertices.emplace_back(vertex);
 		}
 	}
 
 	//Indices
-	for (UINT z = 0; z < height; z++)
+	for (UINT z = 0; z < mHeight; z++)
 	{
-		for (UINT x = 0; x < width; x++)
+		for (UINT x = 0; x < mWidth; x++)
 		{
-			indices.emplace_back((width + 1) * z + x);//0
-			indices.emplace_back((width + 1) * (z + 1) + x);//1
-			indices.emplace_back((width + 1) * (z + 1) + x + 1);//2
+			mIndices.emplace_back((mWidth + 1) * z + x);//0
+			mIndices.emplace_back((mWidth + 1) * (z + 1) + x);//1
+			mIndices.emplace_back((mWidth + 1) * (z + 1) + x + 1);//2
 
-			indices.emplace_back((width + 1) * z + x);//0
-			indices.emplace_back((width + 1) * (z + 1) + x + 1);//2
-			indices.emplace_back((width + 1) * z + x + 1);//3
+			mIndices.emplace_back((mWidth + 1) * z + x);//0
+			mIndices.emplace_back((mWidth + 1) * (z + 1) + x + 1);//2
+			mIndices.emplace_back((mWidth + 1) * z + x + 1);//3
 		}
 	}
 	 
-	size = indices.size() / 3;
+	mPolygonCount = mIndices.size() / 3;
 
-	input = new InputDesc[size];
+	mInput = new InputDesc[mPolygonCount];
 
-	for (UINT i = 0; i < size; i++)
+	for (UINT i = 0; i < mPolygonCount; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		input[i].v0 = vertices[index0].position;
-		input[i].v1 = vertices[index1].position;
-		input[i].v2 = vertices[index2].position;
+		mInput[i].v0 = mVertices[index0].position;
+		mInput[i].v1 = mVertices[index1].position;
+		mInput[i].v2 = mVertices[index2].position;
 
-		input[i].index = i;
+		mInput[i].index = i;
 	}
 
 	CreateNormal();
 	CreateTangent();
 
-	mesh = new Mesh(vertices.data(), sizeof(VertexType), (UINT)vertices.size(),
-		indices.data(), (UINT)indices.size());
+	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
+		mIndices.data(), (UINT)mIndices.size());
 }
 
 void Terrain::CreateNormal()
 {
-	for (UINT i = 0; i < indices.size() / 3; i++)
+	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		Vector3 v0 = vertices[index0].position;
-		Vector3 v1 = vertices[index1].position;
-		Vector3 v2 = vertices[index2].position;
+		Vector3 v0 = mVertices[index0].position;
+		Vector3 v1 = mVertices[index1].position;
+		Vector3 v2 = mVertices[index2].position;
 
 		Vector3 A = v1 - v0;
 		Vector3 B = v2 - v0;
 
 		Vector3 normal = Vector3::Cross(A, B).Normal();
 
-		vertices[index0].normal = normal + vertices[index0].normal;
-		vertices[index1].normal = normal + vertices[index1].normal;
-		vertices[index2].normal = normal + vertices[index2].normal;
+		mVertices[index0].normal = normal + mVertices[index0].normal;
+		mVertices[index1].normal = normal + mVertices[index1].normal;
+		mVertices[index2].normal = normal + mVertices[index2].normal;
 	}
 
-	for (VertexType& vertex : vertices)
+	for (VertexType& vertex : mVertices)
 		vertex.normal = Vector3(vertex.normal).Normal();
 
 	int a = 0;
-	vertices;
+	mVertices;
 }
 
 void Terrain::CreateTangent()
 {
-	for (UINT i = 0; i < indices.size() / 3; i++)
+	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		VertexType vertex0 = vertices[index0];
-		VertexType vertex1 = vertices[index1];
-		VertexType vertex2 = vertices[index2];
+		VertexType vertex0 = mVertices[index0];
+		VertexType vertex1 = mVertices[index1];
+		VertexType vertex2 = mVertices[index2];
 
 		Vector3 p0 = vertex0.position;
 		Vector3 p1 = vertex1.position;
@@ -313,12 +313,12 @@ void Terrain::CreateTangent()
 
 		Vector3 tangent = (v1 * e0 - v0 * e1);
 
-		vertices[index0].tangent = tangent + vertices[index0].tangent;
-		vertices[index1].tangent = tangent + vertices[index1].tangent;
-		vertices[index2].tangent = tangent + vertices[index2].tangent;
+		mVertices[index0].tangent = tangent + mVertices[index0].tangent;
+		mVertices[index1].tangent = tangent + mVertices[index1].tangent;
+		mVertices[index2].tangent = tangent + mVertices[index2].tangent;
 	}
 
-	for (VertexType& vertex : vertices)
+	for (VertexType& vertex : mVertices)
 	{
 		Vector3 t = vertex.tangent;
 		Vector3 n = vertex.normal;

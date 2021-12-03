@@ -14,12 +14,10 @@ ModelReader::~ModelReader()
 	for (auto material : mMaterials)
 		delete material.second;
 
-	for (ModelMesh* mesh : mMeshes)
-		delete mesh;
+	deleteDatas();
 
 	delete mTypeBuffer;
 	delete mDefaultMaterial;
-	
 }
 
 void ModelReader::MeshRender()
@@ -142,9 +140,7 @@ void ModelReader::ReadMaterial(string folderName,string fileName)
 
 void ModelReader::ReadMesh(string folderName,string fileName)
 {
-	mMeshes.clear();
-	mNodes.clear();
-	mBones.clear();
+	deleteDatas();
 	mBoneMap.clear();
 
 	string filePath = "ModelData/" + folderName + "/" + fileName;
@@ -156,31 +152,31 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 	for (UINT i = 0; i < count; i++)
 	{
 		ModelMesh* mesh = new ModelMesh();
-		mesh->name = r->String();
-		mesh->materialName = r->String();
-		mesh->material = mDefaultMaterial; // 
+		mesh->mName = r->String();
+		mesh->mMaterialName = r->String();
+		mesh->mMaterial = mDefaultMaterial; // 
 		
 		{//Vertices
 			UINT count = r->UInt();
 
-			mesh->vertexCount = count;
-			mesh->vertices = new ModelVertex[count];
+			mesh->mVertexCount = count;
+			mesh->mVertices = new ModelVertex[count];
 
-			void* ptr = (void*)mesh->vertices;
+			void* ptr = (void*)mesh->mVertices;
 			r->Byte(&ptr, sizeof(ModelVertex) * count);
 		}
 
 		{//Indices
 			UINT count = r->UInt();
 
-			mesh->indexCount = count;
-			mesh->indices = new UINT[count];
+			mesh->mIndexCount = count;
+			mesh->mIndices = new UINT[count];
 
-			void* ptr = (void*)mesh->indices;
+			void* ptr = (void*)mesh->mIndices;
 			r->Byte(&ptr, sizeof(UINT) * count);
 		}
 
-		mesh->CreateMesh();
+		mesh->CreateMesh(); 
 		mMeshes.emplace_back(mesh);
 	}
 
@@ -210,25 +206,13 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 		mBones.emplace_back(bone);
 	}
-
-	int a = 0;
 }
 
 void ModelReader::SetShader(wstring fileName)
 {
-	//if (mbSetMaterialFile)
-	//{
-	//	for (auto material : mMaterials) // 디폴트메시하는거일땐 닫아주긴해야됨. 음
-	//		material.second->SetShader(fileName);
-	//}
-	//else
-	//{
-	//	mDefaultMaterial->SetShader(fileName);
-	//}
-
 	for (int i = 0; i < mMeshes.size(); i++)
 	{
-		mMeshes[i]->material->SetShader(fileName);
+		mMeshes[i]->mMaterial->SetShader(fileName);
 	}
 }
 
@@ -292,32 +276,51 @@ void ModelReader::SetBox(Vector3* minBox, Vector3* maxBox)
 	}
 }
 
+void ModelReader::deleteDatas()
+{
+	for (int i = 0; i < mMeshes.size(); i++)
+	{
+		delete mMeshes[i];
+	}
+	mMeshes.clear();
+
+	for (int i = 0; i < mNodes.size(); i++)
+	{
+		delete mNodes[i];
+	}
+	mNodes.clear();
+
+	for (int i = 0; i < mBones.size(); i++)
+	{
+		delete mBones[i];
+	}
+	mBones.clear();
+}
+
 void ModelReader::SetMesh(string folderName, string fileName)
 {
-	ReadMesh(folderName,fileName);
+	ReadMesh(folderName,fileName); // 191ms이하.
 }
 
 void ModelReader::SetMaterial(string folderName, string fileName)
 {
-	
 	{ // 한번 싹 초기화해주기
 		for (auto material : mMaterials)
 			delete material.second;
 		mMaterials.clear();
 	}
 
-
 	ReadMaterial(folderName,fileName); // mMaterials Update.
 
 	for (int i = 0; i < mMeshes.size(); i++) 
 	{
-		if (mMaterials[mMeshes[i]->materialName] == nullptr) // 메시가 요구하는 material이 mMaterials에 없는 경우 (즉, 메시랑 다른 머터리얼파일을 세팅한경우)
+		if (mMaterials[mMeshes[i]->mMaterialName] == nullptr) // 메시가 요구하는 material이 mMaterials에 없는 경우 (즉, 메시랑 다른 머터리얼파일을 세팅한경우)
 		{
-			mMeshes[i]->material = mDefaultMaterial; // 그냥 흰색으로 바르기.
+			mMeshes[i]->mMaterial = mDefaultMaterial; // 그냥 흰색으로 바르기.
 		}
 		else
 		{
-			mMeshes[i]->material = mMaterials[mMeshes[i]->materialName];
+			mMeshes[i]->mMaterial = mMaterials[mMeshes[i]->mMaterialName];
 		}
 	}
 

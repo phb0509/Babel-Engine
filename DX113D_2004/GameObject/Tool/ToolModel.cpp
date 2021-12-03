@@ -15,18 +15,20 @@ ToolModel::~ToolModel()
 
 void ToolModel::Update()
 {
+	UpdateWorld();
+
 	if (GetHasMeshes())
 	{
-		UpdateWorld();
 		ModelAnimator::Update();
 	}
 }
 
 void ToolModel::Render()
 {
+	SetWorldBuffer();
+
 	if (GetHasMeshes())
 	{
-		SetWorldBuffer();
 		ModelAnimator::Render();
 	}
 }

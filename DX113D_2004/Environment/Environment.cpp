@@ -69,7 +69,7 @@ void Environment::PostRender()
 
 	ImGui::Spacing();
 
-	showLightInformation();
+	//showLightInformation();
 
 	mTargetCamera->PostRender();
 	mWorldCamera->PostRender();

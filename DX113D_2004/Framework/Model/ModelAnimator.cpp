@@ -5,12 +5,11 @@ ModelAnimator::ModelAnimator():
 	mTexture(nullptr), 
 	mSRV(nullptr),
 	mClipTransform(nullptr),
-	mNodeTransform(nullptr)
+	mNodeTransform(nullptr),
+	mNodeTransforms(nullptr)
 {
 	mFrameBuffer = new FrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
-
-	
 }
 
 ModelAnimator::~ModelAnimator()
@@ -23,6 +22,7 @@ ModelAnimator::~ModelAnimator()
 	{
 		mTexture->Release();
 	}
+
 	if (mSRV != nullptr)
 	{
 		mSRV->Release();
@@ -31,9 +31,8 @@ ModelAnimator::~ModelAnimator()
 	for (ModelClip* clip : mModelClips)
 		delete clip;
 
-
 	delete mBoneBuffer;
-	delete[]  mNodeTransforms;
+	delete[] mNodeTransforms;
 }
 
 void ModelAnimator::ReadClip(string file)
@@ -161,7 +160,7 @@ void ModelAnimator::Render()
 	else // Model
 	{
 		SetShader(L"Lighting");
-		SetBoneTransforms();
+		//SetBoneTransforms();
 		mBoneBuffer->SetVSBuffer(3);
 	}
 
@@ -259,14 +258,28 @@ void ModelAnimator::MakeBoneTransform()
 		nodeIndex++;
 	}
 
+	map<int, Matrix>::iterator iter;
+
+	for (iter = mBoneTransforms.begin(); iter != mBoneTransforms.end(); iter++)
+	{
+		mBoneBuffer->Add(iter->second, iter->first);
+	}
+
 }
 
-void ModelAnimator::SetBoneTransforms()
+void ModelAnimator::SetBoneTransforms() // 
 {
-	for (auto bone : mBoneTransforms)
+	//for (auto bone : mBoneTransforms)
+	//{
+	//	mBoneBuffer->Add(bone.second, bone.first);
+	//}
+
+	/*map<int, Matrix>::iterator iter;
+
+	for (iter = mBoneTransforms.begin(); iter != mBoneTransforms.end(); iter++)
 	{
-		mBoneBuffer->Add(bone.second, bone.first);
-	}
+		mBoneBuffer->Add(iter->second, iter->first);
+	}*/
 }
 
 void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
@@ -391,7 +404,6 @@ void ModelAnimator::CreateClipTransform(UINT index)
 
 void ModelAnimator::ExecuteSetMeshEvent()
 {
-	// Model Constructor
 	if (mBoneBuffer != nullptr)
 	{
 		delete mBoneBuffer;
@@ -399,6 +411,7 @@ void ModelAnimator::ExecuteSetMeshEvent()
 
 	mBoneBuffer = new BoneBuffer();
 	MakeBoneTransform();
+
 	if (!mBones.empty()) // 본없으면, 즉 그냥 정적인 메시면 셰이더에서 BoneWolrd로 계산..
 		mTypeBuffer->data.values[0] = 1;
 }

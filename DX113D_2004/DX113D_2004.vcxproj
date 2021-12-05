@@ -195,6 +195,7 @@
     <ClInclude Include="GameObject\Monster\MonsterStates\PatrolState.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\StalkingState.h" />
     <ClInclude Include="GameObject\Monster\Mutant.h" />
+    <ClInclude Include="GameObject\Monster\Warrok.h" />
     <ClInclude Include="GameObject\Player\Player.h" />
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
     <ClInclude Include="GameObject\Utility\E_States.h" />
@@ -357,6 +358,7 @@
     <ClCompile Include="GameObject\Monster\MonsterStates\PatrolState.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\StalkingState.cpp" />
     <ClCompile Include="GameObject\Monster\Mutant.cpp" />
+    <ClCompile Include="GameObject\Monster\Warrok.cpp" />
     <ClCompile Include="GameObject\Player\Player.cpp" />
     <ClCompile Include="GameObject\Tool\ToolModel.cpp" />
     <ClCompile Include="GameObject\Utility\State.cpp" />

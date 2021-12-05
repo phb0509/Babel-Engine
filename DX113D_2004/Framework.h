@@ -301,6 +301,7 @@ using namespace states;
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"
 #include "GameObject/Monster/Mutant.h"
+#include "GameObject/Monster/Warrok.h"
 #include "GameObject/Player/Player.h"
 
 #include "GameObject/Utility/State.h"

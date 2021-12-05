@@ -13,7 +13,7 @@ public:
 
 	void SetWorldBuffer(UINT slot = 0);
 
-	Matrix* GetWorld() { return &mWorldMatrix; }
+	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
 	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 	Vector3 Forward();

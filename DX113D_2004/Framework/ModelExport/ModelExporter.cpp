@@ -327,7 +327,9 @@ void ModelExporter::WriteMesh(string savePath)
 
 	BinaryWriter* w = new BinaryWriter(savePath);
 
+	savePath;
 	w->UInt(meshes.size());
+
 	for (MeshData* mesh : meshes)
 	{
 		w->String(mesh->name);

@@ -147,9 +147,9 @@ void Frustum::initialize()
 	float tempScale = mCamera->GetCameraTarget()->mScale.x; // 플레이어 스케일값.
 	tempScale = 1.0f / tempScale;
 
-	mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
+	mEmptyObject->SetParent(GM->GetPlayer()->GetWorldMatrix());
 
-	mCollider->SetParent(mEmptyObject->GetWorld());
+	mCollider->SetParent(mEmptyObject->GetWorldMatrix());
 	mCollider->mScale = { tempScale,tempScale,tempScale };// 플레이어스케일 줄인만큼 자식에서 늘려줘야함.
 	mCollider->mRotation.y += 3.141592f; // 반대로되어있어서 180도 돌려줘야함.
 

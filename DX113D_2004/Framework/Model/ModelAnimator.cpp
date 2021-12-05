@@ -150,6 +150,7 @@ void ModelAnimator::Render()
 	if (mModelClips.size() != 0) // ModelAnimation
 	{
 		SetShader(L"ModelAnimation");
+
 		if (mTexture == nullptr)
 			CreateTexture(); // TransformMapTexture.
 
@@ -161,6 +162,10 @@ void ModelAnimator::Render()
 	{
 		SetShader(L"Lighting");
 		//SetBoneTransforms();
+		if (mBoneBuffer == nullptr)
+		{
+			ExecuteSetMeshEvent();
+		}
 		mBoneBuffer->SetVSBuffer(3);
 	}
 
@@ -292,7 +297,7 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 	for (UINT i = 0; i < clipCount; i++)
 		CreateClipTransform(i);
 
-	{//CreatTexture
+	{//Create Texture
 		D3D11_TEXTURE2D_DESC desc = {};
 		desc.Width = MAX_BONE * 4; // 4픽셀당 행렬 1개
 		desc.Height = MAX_FRAME_KEY;

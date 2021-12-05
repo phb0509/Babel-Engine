@@ -147,12 +147,12 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
-		Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorld());
-		Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorld());
+		Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix());
+		Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
 		if (mTargetCameraFrustum->ContainBox(worldMin, worldMax))
 		{			
 			mTransforms[i]->UpdateWorld();
-			mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorld());
+			mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 			mInstanceData[mDrawCount].index = i;
 			mDrawCount++;
 		}

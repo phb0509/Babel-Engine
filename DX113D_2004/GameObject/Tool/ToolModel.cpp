@@ -3,7 +3,8 @@
 ToolModel::ToolModel(string name) : 
 	ModelAnimator(),
 	mClipIndex(0), 
-	mCurrentClipIndex(0)
+	mCurrentClipIndex(0),
+	mName("")
 {
 	mName = name;
 	mScale = { 0.05f,0.05f,0.05f }; // 기본모델이 너무 커서 줄여야됨.

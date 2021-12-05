@@ -15,19 +15,18 @@ public:
 	void SetIsSkinnedMesh(bool isSkinnedMesh) { mbIsSkinnedMesh = isSkinnedMesh; }
 	bool GetIsSkinnedMesh() { return mbIsSkinnedMesh; }
 
-	/*void SetHasTPoseClip(bool hasTPoseClip) { mbHasTPoseClip = hasTPoseClip; }
-	bool GetHasTPoseClip() { return mbHasTPoseClip; }*/
+	int GetCurrentClipIndex() { return mCurrentClipIndex; }
 
 	void SetName(string name) { mName = name; }
 	string GetName() { return mName; }
 
+	//void ReadClipFile
+
 private:
 	int mClipIndex;
 	string mName;
-
-public:
 	vector<string> mClipNames;
 	int mCurrentClipIndex;
 	bool mbIsSkinnedMesh;
-	//bool mbHasTPoseClip;
+	
 };

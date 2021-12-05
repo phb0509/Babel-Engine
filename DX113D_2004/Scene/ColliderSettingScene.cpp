@@ -6,7 +6,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mModel(nullptr),
 	mCurrentModel(nullptr),
 	mCurrentModelIndex(0),
-	mBeforeModelIndex(-1),
+	mBeforeModelIndex(0),
 	mExtractor(nullptr),
 	mbIsDropEvent(false),
 	mbIsWireFrame(true),
@@ -37,10 +37,10 @@ ColliderSettingScene::ColliderSettingScene() :
 	mRSState->FillMode(D3D11_FILL_WIREFRAME);
 
 	terrain = new Terrain();
-	monster = new Mutant();
+	monster = new Warrok();
 
 	monster->SetTerrain(terrain);
-	monster->mPosition = { 200.0f,200.0f,200.0f };
+	monster->mPosition = { 200,0,200 };
 }
 
 ColliderSettingScene::~ColliderSettingScene()
@@ -66,18 +66,28 @@ void ColliderSettingScene::Update()
 		if (mCurrentModel->GetHasMeshes())
 		{
 			mCurrentModel = mModels[mCurrentModelIndex];
-			//mCurrentModel->SetAnimation(mCurrentModel->mCurrentClipIndex);
+			//mCurrentModel->SetAnimation(mCurrentModel->GetCurrentClipIndex());
 			mCurrentModel->Update();
 
 			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++)
 			{
 				Matrix matrix;
 
-				matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorld()));
+				matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorldMatrix())); // ex) 왼팔노드의 월드행렬
 
 				it->second.collider->SetParent(&matrix);
 				it->second.collider->Update();
 			}
+		}
+	}
+
+
+	if (KEY_DOWN(VK_F6))
+	{
+		if (mCurrentModel->GetModelClipsSize() == 0)
+		{
+			mCurrentModel->ReadClip("Mutant/Run0.clip");
+			mCurrentModel->PlayClip(0);
 		}
 	}
 }
@@ -114,8 +124,8 @@ void ColliderSettingScene::PostRender()
 	if (mModels.size() != 0) // ToolModel 생성이후.
 	{
 		showModelInspector();
-		//showModelHierarchyWindow();
-		//showColliderEditorWindow();
+		showModelHierarchyWindow();
+		showColliderEditorWindow();
 	}
 
 	if (mModelList.size() != 0)
@@ -153,12 +163,44 @@ void ColliderSettingScene::selectModel() // perFrame
 		mModelTypes[i] = mModelList[i].c_str();
 	}
 
-	ImGui::Combo("Models", (int*)&mCurrentModelIndex, mModelTypes, mModelList.size());
+	static ImGuiComboFlags flags = 0;
+	const char* combo_label = mModelTypes[mCurrentModelIndex];
+	
+	if (ImGui::BeginCombo("Models", combo_label, flags))
+	{
+		int size = mModelList.size(); 
 
+		for (int i = 0; i < size; i++)
+		{
+			const bool is_selected = (mCurrentModelIndex == i); // 선택한게 현재 index의 텍스트라면
+
+			if (ImGui::Selectable(mModelTypes[i], is_selected)) // itmes[i]가 선택된 상태라면, 즉 여기서 먼저 갱신된다음 mCurrentIndex 갱신.
+																 // 갱신은 무조건해줘야함.
+			{
+				if (i != mCurrentModelIndex) // 다른 모델인덱스를 눌렀다면!
+				{
+					// 모델변경시 수행할 이벤트. 
+
+					// Initialize InspectorWindow Text 
+					//mMeshTextOnInspector = "";
+					//mMaterialTextOnInspector = "";
+				}
+
+				mBeforeModelIndex = mCurrentModelIndex;
+				mCurrentModelIndex = i; // currentIndex에 i값 대입. // 기본 콤보라벨에 업데이트시킬 index임.
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	
 	if (mCurrentModel != nullptr)
 	{
 		mCurrentModel = mModels[mCurrentModelIndex];
 	}
+
+
+
 
 	showCreateModelButton();
 	Spacing(3);
@@ -620,16 +662,29 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath); // string to char*
-		vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
-		writable.push_back('\0');
+		//string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath); // string to char*
+		//vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
+		//writable.push_back('\0');
 
-		char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
+		//char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
 
-		ImGui::InputText("fileNmae to Create", inputText, 64, ImGuiInputTextFlags_CharsNoBlank);
+		static char inputText[128] = "";
+
+		ImGui::InputText("FileName to Create", inputText, 128, ImGuiInputTextFlags_CharsNoBlank);
 
 		if (ImGui::Button("OK", ImVec2(120, 0))) // 옵션고르고 추출실행.
 		{
+			string fileNameToCreate;
+
+			int i = 0;
+
+			while (inputText[i] != '\0')
+			{
+				fileNameToCreate += inputText[i];
+				i++;
+			}
+
+
 			thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModel->GetName()); }); // 람다식으로 파라미터넘기기.
 
 			ImGui::CloseCurrentPopup();
@@ -765,13 +820,10 @@ void ColliderSettingScene::showModelInspector()
 
 	static Texture* meshImageButtonTexture = mExtensionPreviewImages["default"];
 	static Texture* materialImageButtonTexture = mExtensionPreviewImages["default"];
-	static string meshText = "";
-	static string materialText = "";
 
 	ImGui::Begin("Inspector");
 
-	ImGui::Spacing();
-	ImGui::Spacing();
+	Spacing(2);
 
 	string meshType = "";
 
@@ -792,7 +844,18 @@ void ColliderSettingScene::showModelInspector()
 	{
 		ImGui::Text("Mesh : ");
 		ImGui::SameLine();
+
+		if (GetExtension(mModelDatas[mCurrentModelIndex].meshTextOnInspector) == "mesh")
+		{
+			meshImageButtonTexture = mExtensionPreviewImages["mesh"];
+		}
+		else
+		{
+			meshImageButtonTexture = mExtensionPreviewImages["default"];
+		}
+
 		ImGui::ImageButton(meshImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+		
 		ImGui::SameLine();
 		ImVec2 meshTextPosition = ImGui::GetCursorPos();
 
@@ -809,18 +872,18 @@ void ColliderSettingScene::showModelInspector()
 				if (GetExtension(mDraggedFileName) == "mesh") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
-					meshText = mDraggedFileName;
-
+					mModelDatas[mCurrentModelIndex].meshTextOnInspector = mDraggedFileName;
+					
 					// 메시변경이벤트구간.
+
 					mCurrentModel->SetMesh(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 					mCurrentModel->ExecuteSetMeshEvent();
 
-					int a = 0;
-					if (materialText != "") // 메시변경시 머터리얼초기화.
+					if (mModelDatas[mCurrentModelIndex].materialTextOnInspector != "") // 메시변경시 머터리얼초기화.
 					{
-						materialText = "";
+						mModelDatas[mCurrentModelIndex].materialTextOnInspector = "";
 						materialImageButtonTexture = Texture::Add(L"ModelData/DefaultImage.png");
-					}
+					}					
 				}
 			}
 
@@ -828,7 +891,7 @@ void ColliderSettingScene::showModelInspector()
 		}
 
 		ImGui::SetCursorPos(meshTextPosition);
-		ImGui::Text(meshText.c_str()); // Text Render.
+		ImGui::Text(mModelDatas[mCurrentModelIndex].meshTextOnInspector.c_str()); // Text Render.
 	}
 
 	Spacing(2);
@@ -836,8 +899,19 @@ void ColliderSettingScene::showModelInspector()
 	// Material ImageButton and Text Render.
 	{
 		ImGui::Text("Material : ");
+
 		ImGui::SameLine();
+
+		if (GetExtension(mModelDatas[mCurrentModelIndex].materialTextOnInspector) == "mat")
+		{
+			materialImageButtonTexture = mExtensionPreviewImages["mat"];
+		}
+		else
+		{
+			materialImageButtonTexture = mExtensionPreviewImages["default"];
+		}
 		ImGui::ImageButton(materialImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+		
 		ImGui::SameLine();
 
 		ImVec2 materialTextPosition = ImGui::GetCursorPos();
@@ -852,8 +926,8 @@ void ColliderSettingScene::showModelInspector()
 				if (GetExtension(mDraggedFileName) == "mat") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					materialImageButtonTexture = mExtensionPreviewImages["mat"];
-					materialText = mDraggedFileName;
-
+					mModelDatas[mCurrentModelIndex].materialTextOnInspector = mDraggedFileName;
+				
 					mCurrentModel->SetMaterial(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 				}
 			}
@@ -861,7 +935,7 @@ void ColliderSettingScene::showModelInspector()
 		}
 
 		ImGui::SetCursorPos(materialTextPosition);
-		ImGui::Text(materialText.c_str());
+		ImGui::Text(mModelDatas[mCurrentModelIndex].materialTextOnInspector.c_str());
 	}
 
 	Spacing(2);
@@ -883,7 +957,6 @@ void ColliderSettingScene::showModelInspector()
 
 	UnIndent(6);
 
-
 	ImGui::End();
 }
 
@@ -897,6 +970,24 @@ void ColliderSettingScene::showTestWindow()
 		ImGui::Text(t.c_str());
 
 		{
+			string t = "CurrentModelIndex : ";
+			t += to_string(mCurrentModelIndex);
+			ImGui::Text(t.c_str());
+		}
+
+		{
+			string t = "ClipCount : " + to_string(mCurrentModel->GetModelClipsSize());
+			ImGui::Text(t.c_str());
+		}
+
+		{
+			string t = "IsGetHasMeshes : " + to_string(mCurrentModel->GetHasMeshes());
+			ImGui::Text(t.c_str());
+		}
+
+
+
+		{
 			string t = "DraggedFileName : " + mDraggedFileName;
 			ImGui::Text(t.c_str());
 		}
@@ -906,11 +997,11 @@ void ColliderSettingScene::showTestWindow()
 			ImGui::Text(t.c_str());
 		}
 
-		{
-			string t = "ClipCount : " + to_string(mCurrentModel->GetModelClipsSize());
-			ImGui::Text(t.c_str());
-		}
+
+
 	}
+
+
 
 
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))

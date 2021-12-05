@@ -1,0 +1,12 @@
+<Materials>
+    <Material>
+        <Name>warrok_MAT</Name>
+        <DiffuseMap>bear_diffuse.png</DiffuseMap>
+        <SpecularMap>bear_specular.png</SpecularMap>
+        <NormalMap>bear_normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

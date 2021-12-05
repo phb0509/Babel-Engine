@@ -17,7 +17,7 @@ public:
 		string nodeName;
 	};
 
-	struct ModelData
+	struct ModelData // 각 모델이 가지는 데이터..
 	{
 		map<int, vector<int>> preprocessedNodes;
 		map<int, bool> nodeCheck;
@@ -25,7 +25,12 @@ public:
 		map<int, TreeNodeData> nodeCollidersMap;
 		map<int, string> nodeNameMap;
 		map<int, char[100]> colliderNameMap;
+
+		string meshTextOnInspector;
+		string materialTextOnInspector;
 	};
+
+	
 
 	ColliderSettingScene();
 	~ColliderSettingScene();
@@ -120,4 +125,7 @@ private:
 	
 	Monster* monster;
 	Terrain* terrain;
+
+	//string mMeshTextOnInspector;
+	//string mMaterialTextOnInspector;
 };

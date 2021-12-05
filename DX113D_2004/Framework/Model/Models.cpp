@@ -30,13 +30,13 @@ void Models::Update()
 
     for (UINT i = 0; i < transforms.size(); i++)
     {
-        Vector3 worldMin = XMVector3TransformCoord(minBox.data, *transforms[i]->GetWorld());
-        Vector3 worldMax = XMVector3TransformCoord(maxBox.data, *transforms[i]->GetWorld());
+        Vector3 worldMin = XMVector3TransformCoord(minBox.data, *transforms[i]->GetWorldMatrix());
+        Vector3 worldMax = XMVector3TransformCoord(maxBox.data, *transforms[i]->GetWorldMatrix());
 
         if (mTargetCameraFrustum->ContainBox(worldMin, worldMax)) // 프러스텀범위안의 인스턴스들만 렌더링.
         {
             transforms[i]->UpdateWorld();
-            instanceData[drawCount].world = XMMatrixTranspose(*transforms[i]->GetWorld()); // 셰이더에 넘기기위해 전치행렬 변환.
+            instanceData[drawCount].world = XMMatrixTranspose(*transforms[i]->GetWorldMatrix()); // 셰이더에 넘기기위해 전치행렬 변환.
             instanceData[drawCount].index = i;
             drawCount++;
         }

@@ -22,6 +22,7 @@ void ToolModel::Update()
 	{
 		ModelAnimator::Update();
 	}
+	
 }
 
 void ToolModel::Render()
@@ -46,6 +47,13 @@ void ToolModel::SetAnimation(int _clipIndex)
 		mClipIndex = _clipIndex;
 		PlayClip(mClipIndex);
 	}
+}
+
+void ToolModel::SetClip(string modelName, string clipFileName)
+{
+	ReadClip(modelName, clipFileName); // 확장자포함 파일명
+	CreateTexture();
+	PlayClip(mClips.size() - 1);
 }
 
 

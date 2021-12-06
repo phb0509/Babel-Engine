@@ -182,6 +182,7 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 	count = r->UInt();
 
+	// Nodes Update
 	for (UINT i = 0; i < count; i++)
 	{
 		NodeData* node = new NodeData();
@@ -195,7 +196,8 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 	count = r->UInt();
 
-	for (UINT i = 0; i < count; i++)
+	// BoneMap Update
+	for (UINT i = 0; i < count; i++) 
 	{
 		BoneData* bone = new BoneData();
 		bone->name = r->String();

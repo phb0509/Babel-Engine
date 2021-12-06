@@ -14,11 +14,11 @@ Mutant::Mutant()
 
 	SetShader(L"ModelAnimation");
 
-	ReadClip("Mutant/Idle0.clip");
+	/*ReadClip("Mutant/Idle0.clip");
 	ReadClip("Mutant/Run0.clip");
 	ReadClip("Mutant/SmashAttack0.clip");
 	ReadClip("Mutant/OnDamage0.clip");
-	ReadClip("Mutant/Die0.clip");
+	ReadClip("Mutant/Die0.clip");*/
 
 	SetEndEvent(static_cast<int>(eAnimationStates::Run), bind(&Mutant::SetIdle, this));
 	SetEndEvent(static_cast<int>(eAnimationStates::OnDamage), bind(&Mutant::setOnDamageEnd, this));

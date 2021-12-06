@@ -93,7 +93,7 @@ void DeferredRenderingScene::CreateModels()
 	groot->mScale = { 0.01f, 0.01f, 0.01f };
 	groot->mPosition.x = 3.0f;
 	groot->SetShader(L"Lighting");
-	groot->ReadClip("Groot/Dancing0");
+	//groot->ReadClip("Groot/Dancing0");
 
 	groot->SetDiffuseMap(L"ModelData/Materials/Groot/groot_diffuse.png");
 	groot->SetSpecularMap(L"ModelData/Materials/Groot/groot_glossiness.png");

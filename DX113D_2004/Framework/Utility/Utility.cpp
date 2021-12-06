@@ -1,20 +1,20 @@
 #include "Framework.h"
 
-string Utility::ToString(wstring value)
+string utility::ToString(wstring value)
 {
 	string temp;
 	temp.assign(value.begin(), value.end());
 	return temp;
 }
 
-wstring Utility::ToWString(string value)
+wstring utility::ToWString(string value)
 {
 	wstring temp;
 	temp.assign(value.begin(), value.end());
 	return temp;
 }
 
-void Utility::Replace(string* str, string comp, string rep)
+void utility::Replace(string* str, string comp, string rep)
 {
 	string temp = *str;
 
@@ -28,7 +28,7 @@ void Utility::Replace(string* str, string comp, string rep)
 	*str = temp;
 }
 
-vector<string> Utility::SplitString(string origin, string tok)
+vector<string> utility::SplitString(string origin, string tok)
 {
 	vector<string> result;
 
@@ -45,21 +45,21 @@ vector<string> Utility::SplitString(string origin, string tok)
 	return result;
 }
 
-wstring Utility::GetExtension(wstring path)
+wstring utility::GetExtension(wstring path)
 {
 	size_t index = path.find_last_of('.');
 
 	return path.substr(index + 1, path.length());
 }
 
-string Utility::GetExtension(string path)
+string utility::GetExtension(string path)
 {
 	size_t index = path.find_last_of('.');
 
 	return path.substr(index + 1, path.length());
 }
 
-string Utility::GetDirectoryName(string path)
+string utility::GetDirectoryName(string path)
 {
 	Replace(&path, "\\", "/");
 
@@ -68,7 +68,7 @@ string Utility::GetDirectoryName(string path)
 	return path.substr(0, index + 1);
 }
 
-string Utility::GetFileName(string path)
+string utility::GetFileName(string path)
 {
 	Replace(&path, "\\", "/");
 
@@ -77,7 +77,7 @@ string Utility::GetFileName(string path)
 	return path.substr(index + 1, path.length());
 }
 
-string Utility::GetFileNameWithoutExtension(string path)
+string utility::GetFileNameWithoutExtension(string path)
 {
 	string fileName = GetFileName(path);
 
@@ -86,7 +86,7 @@ string Utility::GetFileNameWithoutExtension(string path)
 	return fileName.substr(0, index);
 }
 
-string Utility::OpenFileDialog()
+string utility::OpenFileDialog()
 {
 	const COMDLG_FILTERSPEC c_rgSaveTypes[] =
 	{
@@ -195,7 +195,7 @@ string Utility::OpenFileDialog()
 }
 
 
-char* Utility::ToCharPointer(string string)
+char* utility::ToCharPointer(string string)
 {
 	vector<char> writable(string.begin(), string.end());
 	writable.push_back('\0');
@@ -204,7 +204,7 @@ char* Utility::ToCharPointer(string string)
 	return ptr;
 }
 
-void Utility::CreateFolders(string path)
+void utility::CreateFolders(string path)
 {
 	vector<string> folders = SplitString(path, "/");
 
@@ -218,7 +218,7 @@ void Utility::CreateFolders(string path)
 	}
 }
 
-void Utility::Indent(int loopCount)
+void utility::Indent(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{
@@ -226,7 +226,7 @@ void Utility::Indent(int loopCount)
 	}
 }
 
-void Utility::UnIndent(int loopCount)
+void utility::UnIndent(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{
@@ -234,7 +234,7 @@ void Utility::UnIndent(int loopCount)
 	}
 }
 
-void Utility::Spacing(int loopCount)
+void utility::Spacing(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{
@@ -242,7 +242,7 @@ void Utility::Spacing(int loopCount)
 	}
 }
 
-bool Utility::ExistDirectory(string path)
+bool utility::ExistDirectory(string path)
 {
 	DWORD fileValue = GetFileAttributesA(path.c_str());
 
@@ -252,14 +252,14 @@ bool Utility::ExistDirectory(string path)
 	return temp == TRUE;
 }
 
-bool Utility::ExistFile(string path)
+bool utility::ExistFile(string path)
 {
 	DWORD fileValue = GetFileAttributesA(path.c_str());
 
 	return fileValue < 0xffffffff;
 }
 
-HRESULT Utility::CDialogEventHandler_CreateInstance(REFIID riid, void** ppv)
+HRESULT utility::CDialogEventHandler_CreateInstance(REFIID riid, void** ppv)
 {
 	*ppv = NULL;
 	CDialogEventHandler* pDialogEventHandler = new (std::nothrow) CDialogEventHandler();

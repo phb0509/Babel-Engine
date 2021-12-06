@@ -6,17 +6,22 @@ private:
 	friend class ModelAnimator;
 	friend class ModelAnimators;
 
-	string name;
 
-	float duration;
-	float tickPerSecond;
-	UINT frameCount;
-
-	unordered_map<string, KeyFrame*> keyFrames;
 
 public:
 	ModelClip();
 	~ModelClip();
 
 	KeyFrame* GetKeyFrame(string name);
+
+	string GetName() { return mName; }
+
+private:
+	string mName;
+
+	float mDuration;
+	float mTickPerSecond;
+	UINT mFrameCount;
+
+	unordered_map<string, KeyFrame*> mKeyFrames;
 };

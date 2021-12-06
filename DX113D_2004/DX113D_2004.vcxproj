@@ -250,7 +250,7 @@
     <ClInclude Include="Framework\Utility\Control.h" />
     <ClInclude Include="Framework\Utility\Singleton.h" />
     <ClInclude Include="Framework\Utility\Timer.h" />
-    <ClInclude Include="Framework\Utility\Utility.h" />
+    <ClInclude Include="Framework\Utility\utility.h" />
     <ClInclude Include="Framework\Utility\Xml.h" />
     <ClInclude Include="Objects\Basic\Cube.h" />
     <ClInclude Include="Objects\Basic\Sphere.h" />
@@ -349,7 +349,7 @@
     <ClCompile Include="Framework\Utility\DirectWrite.cpp" />
     <ClCompile Include="Framework\Utility\Control.cpp" />
     <ClCompile Include="Framework\Utility\Timer.cpp" />
-    <ClCompile Include="Framework\Utility\Utility.cpp" />
+    <ClCompile Include="Framework\Utility\utility.cpp" />
     <ClCompile Include="Framework\Utility\Xml.cpp" />
     <ClCompile Include="GameObject\CDialogEventHandler.cpp" />
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />

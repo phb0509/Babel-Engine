@@ -175,7 +175,7 @@ const XMVECTORF32 kForward = { 0, 0, 1 };
 //Framework Header
 #include "GameObject/CDialogEventHandler.h"
 
-#include "Framework/Utility/Utility.h"
+#include "Framework/Utility/utility.h"
 #include "Framework/Utility/Singleton.h"
 #include "Framework/Utility/BinaryReader.h"
 #include "Framework/Utility/BinaryWriter.h"
@@ -185,7 +185,7 @@ const XMVECTORF32 kForward = { 0, 0, 1 };
 #include "Framework/Utility/DirectWrite.h"
 
 
-using namespace Utility;
+using namespace utility;
 
 #include "Framework/Device/Device.h"
 #include "Framework/Device/DepthStencil.h"

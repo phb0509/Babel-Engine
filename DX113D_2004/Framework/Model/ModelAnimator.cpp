@@ -1,8 +1,8 @@
 #include "Framework.h"
 
-ModelAnimator::ModelAnimator(): 
-	ModelReader(), 
-	mTexture(nullptr), 
+ModelAnimator::ModelAnimator() :
+	ModelReader(),
+	mTexture(nullptr),
 	mSRV(nullptr),
 	mClipTransform(nullptr),
 	mNodeTransform(nullptr),
@@ -27,26 +27,28 @@ ModelAnimator::~ModelAnimator()
 	{
 		mSRV->Release();
 	}
-	
-	for (ModelClip* clip : mModelClips)
+
+	for (ModelClip* clip : mClips)
 		delete clip;
 
 	delete mBoneBuffer;
 	delete[] mNodeTransforms;
 }
 
-void ModelAnimator::ReadClip(string file)
+void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포함한 파일명.
 {
-	file = "ModelData/Clips/" + file;
+	mClipNames.push_back(GetFileNameWithoutExtension(clipFileName));
 
-	BinaryReader* r = new BinaryReader(file);
+	string filePath = "ModelData/" + modelName + "/" + clipFileName;
+
+	BinaryReader* r = new BinaryReader(filePath);
 
 	ModelClip* clip = new ModelClip();
 
-	clip->name = r->String();
-	clip->duration = r->Float();
-	clip->tickPerSecond = r->Float();
-	clip->frameCount = r->UInt();
+	clip->mName = r->String();
+	clip->mDuration = r->Float();
+	clip->mTickPerSecond = r->Float();
+	clip->mFrameCount = r->UInt();
 
 	UINT keyFrameCount = r->UInt();
 
@@ -56,6 +58,7 @@ void ModelAnimator::ReadClip(string file)
 		keyFrame->boneName = r->String();
 
 		UINT size = r->UInt();
+
 		if (size > 0)
 		{
 			keyFrame->transforms.resize(size);
@@ -63,30 +66,30 @@ void ModelAnimator::ReadClip(string file)
 			void* ptr = (void*)keyFrame->transforms.data();
 			r->Byte(&ptr, sizeof(KeyTransform) * size);
 		}
-		clip->keyFrames[keyFrame->boneName] = keyFrame;
+		clip->mKeyFrames[keyFrame->boneName] = keyFrame;
 	}
 
-	mModelClips.emplace_back(clip);
+	mClips.emplace_back(clip);
 
 	delete r;
 }
 
 void ModelAnimator::Update()
 {
-	if (mModelClips.size() != 0) // ModelAnimation
+	if (mClips.size() != 0) // ModelAnimation
 	{
 		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0];
 
 		{ // 현재 애니메이션.
 			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
-			ModelClip* clip = mModelClips[desc.clip];
+			ModelClip* clip = mClips[desc.clip];
 
-			float time = 1.0f / clip->tickPerSecond / desc.speed;
+			float time = 1.0f / clip->mTickPerSecond / desc.speed;
 			desc.runningTime += DELTA;
 
 			if (desc.time >= 1.0f)
 			{
-				if (desc.curFrame + desc.time >= clip->frameCount)
+				if (desc.curFrame + desc.time >= clip->mFrameCount)
 				{
 					if (mEndEvent.count(desc.clip) > 0)
 						mEndEvent[desc.clip]();
@@ -94,8 +97,8 @@ void ModelAnimator::Update()
 						mEndParamEvent[desc.clip](mParam[desc.clip]);
 				}
 
-				desc.curFrame = (desc.curFrame + 1) % clip->frameCount; // 현재 프레임
-				desc.nextFrame = (desc.curFrame + 1) % clip->frameCount; // 다음 프레임.
+				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
+				desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
 				desc.runningTime = 0.0f;
 			}
 
@@ -107,7 +110,7 @@ void ModelAnimator::Update()
 
 			if (desc.clip > -1)
 			{
-				ModelClip* clip = mModelClips[desc.clip];
+				ModelClip* clip = mClips[desc.clip];
 
 				tweenDesc.runningTime += DELTA;
 				tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
@@ -126,13 +129,13 @@ void ModelAnimator::Update()
 				}
 				else
 				{
-					float time = 1.0f / clip->tickPerSecond / desc.speed;
+					float time = 1.0f / clip->mTickPerSecond / desc.speed;
 					desc.runningTime += DELTA;
 
 					if (desc.time >= 1.0f)
 					{
-						desc.curFrame = (desc.curFrame + 1) % clip->frameCount;
-						desc.nextFrame = (desc.curFrame + 1) % clip->frameCount;
+						desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
+						desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
 						desc.runningTime = 0.0f;
 					}
 
@@ -141,13 +144,13 @@ void ModelAnimator::Update()
 			}
 		}
 	}
-	
+
 }
 
 
 void ModelAnimator::Render()
 {
-	if (mModelClips.size() != 0) // ModelAnimation
+	if (mClips.size() != 0) // ModelAnimation
 	{
 		SetShader(L"ModelAnimation");
 
@@ -173,7 +176,7 @@ void ModelAnimator::Render()
 }
 
 void ModelAnimator::PostRender()
-{	
+{
 }
 
 void ModelAnimator::PlayClip(UINT clip, float speed, float takeTime)
@@ -289,17 +292,35 @@ void ModelAnimator::SetBoneTransforms() //
 
 void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 {
-	UINT clipCount = mModelClips.size();
+	UINT clipCount = mClips.size();
+
+	if (mTexture != nullptr)
+	{
+		mTexture->Release();
+	}
+
+	if (mClipTransform != nullptr)
+	{
+		delete[] mClipTransform;
+	}
+
+	if (mNodeTransform != nullptr)
+	{
+		delete[] mNodeTransform;
+	}
 
 	mClipTransform = new ClipTransform[clipCount];
 	mNodeTransform = new ClipTransform[clipCount];
 
 	for (UINT i = 0; i < clipCount; i++)
+	{
 		CreateClipTransform(i);
+	}
+
 
 	{//Create Texture
 		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = MAX_BONE * 4; // 4픽셀당 행렬 1개
+		desc.Width = MAX_BONE * 4; // 4픽셀당 행렬 1개 (행렬 1개 = 64바이트, 픽셀당 16바이트씩 해서 64바이트)
 		desc.Height = MAX_FRAME_KEY;
 		desc.ArraySize = clipCount; // 클립 개수만큼
 		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 픽셀당 16바이트.
@@ -308,10 +329,11 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 		desc.MipLevels = 1;
 		desc.SampleDesc.Count = 1;
 
-		UINT pageSize = MAX_BONE * sizeof(Matrix) * MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
+		UINT pageSize = sizeof(Matrix) * MAX_BONE * MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
+		//UINT pageSize =  MAX_BONE * sizeof(Matrix) * MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
 
 		void* p = VirtualAlloc(nullptr, pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE); // 용량이 너무 크면 데이터복사가 안되기 때문에 가상으로 '이정도 쓸거라'고 잡아놓는것
-																							// 전체클립데이터 크기 잡아놓은것.
+																							// 전체클립데이터(n개의 클립데이터) 크기 잡아놓은것.
 
 		for (UINT c = 0; c < clipCount; c++) // 모델 클립 개수만큼, 메모리용량은 전체클립크기로 잡아놨지만 너무 크기떄문에 한클립씩 메모리복사.
 		{
@@ -354,11 +376,11 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 	}
 }
 
-void ModelAnimator::CreateClipTransform(UINT index)
+void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 {
-	ModelClip* clip = mModelClips[index]; // 클립 가져오기
+	ModelClip* clip = mClips[index]; // 클립 가져오기
 
-	for (UINT f = 0; f < clip->frameCount; f++) // 클립 프레임수만큼.
+	for (UINT i = 0; i < clip->mFrameCount; i++) // 클립 프레임수만큼.
 	{
 		UINT nodeIndex = 0;
 
@@ -368,36 +390,40 @@ void ModelAnimator::CreateClipTransform(UINT index)
 			int parentIndex = node->parent; // 부모 인덱스 받기.
 
 			if (parentIndex < 0)
-				parent = XMMatrixIdentity(); // 부모가 없다면.
+				parent = XMMatrixIdentity(); // 부모가 없다면.(최상단노드)
 			else
-				parent = mNodeTransform[index].transform[f][parentIndex]; // 부모가 있다면.
+				parent = mNodeTransform[index].transform[i][parentIndex]; // 부모가 있다면.
+					// = 0번째 클립의 i번째 프레임의 노드(parentIndex니 부모노드)
 
-			Matrix animation;
-			KeyFrame* frame = clip->GetKeyFrame(node->name); 
+			Matrix animationMatrix;
+			KeyFrame* frame = clip->GetKeyFrame(node->name); // node에 해당하는 키프레임. ex) 왼발에 해당하는 키프레임 144개
+
 
 			if (frame != nullptr) // 프레임이 있다면 animation의 SRT 가져오기.
 			{
-				KeyTransform& transform = frame->transforms[f];
+				KeyTransform& transform = frame->transforms[i]; // i번째 프레임의 SRT값
 
 				Matrix S = XMMatrixScaling(transform.scale.x, transform.scale.y, transform.scale.z);
 				Matrix R = XMMatrixRotationQuaternion(XMLoadFloat4(&transform.rotation));
 				Matrix T = XMMatrixTranslation(transform.position.x, transform.position.y, transform.position.z);
 
-				animation = S * R * T;
+				animationMatrix = S * R * T;
 			}
 			else
 			{
-				animation = XMMatrixIdentity();
+				animationMatrix = XMMatrixIdentity();
 			}
 
-			mNodeTransform[index].transform[f][nodeIndex] = animation * parent; // animation SRT를 기준으로 parent만큼 움직인다.
+			mNodeTransform[index].transform[i][nodeIndex] = animationMatrix * parent; // animation SRT를 기준으로 parent만큼 움직인다.
+			// 추출한 클립정보에 있는 i번째 프레임의 SRT값에 부모행렬 곱해주기. 부모에 영향을 받는식이기 때문
 
 			if (mBoneMap.count(node->name) > 0) // 최종행렬 계산.
 			{
 				int boneIndex = mBoneMap[node->name];
 				Matrix transform = XMLoadFloat4x4(&mBones[boneIndex]->offset);
-				transform *= mNodeTransform[index].transform[f][nodeIndex];
-				mClipTransform[index].transform[f][boneIndex] = transform;
+				transform *= mNodeTransform[index].transform[i][nodeIndex]; // 해당본의 offset값도 곱해줌.
+				mClipTransform[index].transform[i][boneIndex] = transform;
+
 				// 본의 글로벌좌표(invGlobal) * 애니메이션 SRT, 로컬좌표(animation) * 부모의 글로벌좌표(parent)
 				// 즉, invGlobal을 기준으로 애니메이션 local 좌표만큼 이동하고, 부모의 Global만큼 이동.
 			}

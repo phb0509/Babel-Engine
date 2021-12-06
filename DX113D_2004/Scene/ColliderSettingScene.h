@@ -40,7 +40,6 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-	
 
 private:
 	void selectClip();
@@ -65,6 +64,7 @@ private:
 	void playAssetsWindowDropEvent();
 		
 	void copyDraggedFile();
+
 
 
 private:

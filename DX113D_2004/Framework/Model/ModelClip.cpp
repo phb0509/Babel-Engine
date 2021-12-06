@@ -1,20 +1,27 @@
 #include "Framework.h"
 
 ModelClip::ModelClip()
-	: duration(0), tickPerSecond(0), frameCount(0)
+	: mDuration(0), mTickPerSecond(0), mFrameCount(0)
 {
 }
 
 ModelClip::~ModelClip()
 {
-	for (auto frame : keyFrames)
+	for (auto frame : mKeyFrames)
 		delete frame.second;
 }
 
 KeyFrame* ModelClip::GetKeyFrame(string name)
 {
-	if (keyFrames.count(name) == 0)
+	if (mKeyFrames.count(name) == 0)
 		return nullptr;
 
-	return keyFrames[name];
+	return mKeyFrames[name]; // unordered_map<string, KeyFrame*> keyFrames;
 }
+
+//struct KeyFrame
+//{
+//	// 본 하나당 프레임 개수만큼의 키프레임 데이터를 가짐.
+//	string boneName;
+//	vector<KeyTransform> transforms;
+//};

@@ -47,12 +47,10 @@ ColliderSettingScene::~ColliderSettingScene()
 {
 	for (int i = 0; i < mModels.size(); i++)
 	{
-		delete mModels[i];
-	}
-
-	for (int i = 0; i < mNodes.size(); i++)
-	{
-		delete mNodes[i];
+		if (mModels[i] != nullptr)
+		{
+			delete mModels[i];
+		}
 	}
 }
 
@@ -82,14 +80,14 @@ void ColliderSettingScene::Update()
 	}
 
 
-	if (KEY_DOWN(VK_F6))
+	/*if (KEY_DOWN(VK_F6))
 	{
 		if (mCurrentModel->GetModelClipsSize() == 0)
 		{
 			mCurrentModel->ReadClip("Mutant/Run0.clip");
 			mCurrentModel->PlayClip(0);
 		}
-	}
+	}*/
 }
 
 
@@ -820,6 +818,7 @@ void ColliderSettingScene::showModelInspector()
 
 	static Texture* meshImageButtonTexture = mExtensionPreviewImages["default"];
 	static Texture* materialImageButtonTexture = mExtensionPreviewImages["default"];
+	static Texture* clipImageButtonTexture = mExtensionPreviewImages["default"];
 
 	ImGui::Begin("Inspector");
 
@@ -910,6 +909,7 @@ void ColliderSettingScene::showModelInspector()
 		{
 			materialImageButtonTexture = mExtensionPreviewImages["default"];
 		}
+
 		ImGui::ImageButton(materialImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 		
 		ImGui::SameLine();
@@ -931,12 +931,67 @@ void ColliderSettingScene::showModelInspector()
 					mCurrentModel->SetMaterial(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 				}
 			}
+
 			ImGui::EndDragDropTarget();
 		}
 
 		ImGui::SetCursorPos(materialTextPosition);
 		ImGui::Text(mModelDatas[mCurrentModelIndex].materialTextOnInspector.c_str());
 	}
+
+	Spacing(2);
+
+
+
+	ImVec2 clipTargetButtonPosition = ImGui::GetCursorPos();
+	ImVec2 wireFrameRadioButtonPosition;
+
+	if (ImGui::TreeNode("Clips"))
+	{
+		static int selected = -1;
+		for (int i = 0; i < mCurrentModel->GetClips().size(); i++)
+		{
+			char buf[50];
+			string t = mCurrentModel->GetClipNames()[i];
+
+			sprintf_s(buf, "%s", t.c_str());
+
+			if (ImGui::Selectable(buf, selected == i))
+			{
+				selected = i;
+				mCurrentModel->PlayClip(i);
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	wireFrameRadioButtonPosition = ImGui::GetCursorPos();
+	clipTargetButtonPosition.x += 100.0f;
+
+	// Clip ImageButton Render.
+	{
+		ImGui::SetCursorPos(clipTargetButtonPosition);
+
+		clipImageButtonTexture = mExtensionPreviewImages["default"];
+
+		ImGui::ImageButton(clipImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
+			{
+				if (GetExtension(mDraggedFileName) == "clip")
+				{
+					mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	
+
+	ImGui::SetCursorPos(wireFrameRadioButtonPosition);
 
 	Spacing(2);
 
@@ -976,7 +1031,7 @@ void ColliderSettingScene::showTestWindow()
 		}
 
 		{
-			string t = "ClipCount : " + to_string(mCurrentModel->GetModelClipsSize());
+			string t = "ClipCount : " + to_string(mCurrentModel->GetClips().size());
 			ImGui::Text(t.c_str());
 		}
 
@@ -984,8 +1039,6 @@ void ColliderSettingScene::showTestWindow()
 			string t = "IsGetHasMeshes : " + to_string(mCurrentModel->GetHasMeshes());
 			ImGui::Text(t.c_str());
 		}
-
-
 
 		{
 			string t = "DraggedFileName : " + mDraggedFileName;
@@ -1024,7 +1077,6 @@ void ColliderSettingScene::printToCSV()
 	const char* fileName = str.c_str();
 
 	fopen_s(&file, fileName, "w");
-
 
 	fprintf( // 컬럼명
 		file,
@@ -1110,3 +1162,4 @@ void ColliderSettingScene::copyDraggedFile()
 		BOOL bCopy = ::CopyFile(draggedFileList[i].c_str(), ToWString(assetsFolderPath).c_str(), FALSE);
 	}
 }
+

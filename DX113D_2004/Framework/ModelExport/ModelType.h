@@ -75,7 +75,7 @@ struct VertexWeights
 
 struct KeyTransform // 키프레임 데이터구성 (SRT)
 {
-	float time; // 몇프레임인지
+	float time; // 정확히 모르겠음 왜있는지
 
 	// 해당 본이 어느정도 움직일지에 대한 SRT
 	Float3 scale;
@@ -87,7 +87,7 @@ struct KeyFrame
 {
 	// 본 하나당 프레임 개수만큼의 키프레임 데이터를 가짐.
 	string boneName;
-	vector<KeyTransform> transforms;
+	vector<KeyTransform> transforms; // time(frameCount), SRT값. 각 프레임마다 SRT값이 바뀌니까
 };
 
 struct ClipNode 
@@ -113,9 +113,9 @@ struct ClipTransform
 
 	ClipTransform()
 	{
-		transform = new Matrix * [MAX_FRAME_KEY];
+		transform = new Matrix * [MAX_FRAME_KEY]; // 600
 
-		for (UINT i = 0; i < MAX_FRAME_KEY; i++)
+		for (UINT i = 0; i < MAX_FRAME_KEY; i++) // 행 : 프레임 열 : 본(노드)
 			transform[i] = new Matrix[MAX_BONE];
 	}
 

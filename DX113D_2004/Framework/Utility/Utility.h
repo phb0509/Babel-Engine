@@ -4,7 +4,7 @@ class Transform;
 class Vector3;
 
 
-namespace Utility
+namespace utility
 {
 	string ToString(wstring value);
 	wstring ToWString(string value);

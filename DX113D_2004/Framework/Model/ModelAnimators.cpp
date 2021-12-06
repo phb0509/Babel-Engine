@@ -28,21 +28,21 @@ void ModelAnimators::Update()
 
 		{//CurAnimation
 			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
-			ModelClip* clip = mModelClips[desc.clip];
+			ModelClip* clip = mClips[desc.clip];
 
-			float time = 1.0f / clip->tickPerSecond / desc.speed;
+			float time = 1.0f / clip->mTickPerSecond / desc.speed;
 			desc.runningTime += DELTA;
 
 			if (desc.time >= 1.0f)
 			{
-				if (desc.curFrame + desc.time >= clip->frameCount)
+				if (desc.curFrame + desc.time >= clip->mFrameCount)
 				{
 					if (mEndEvents[i].count(desc.clip) > 0)
 						mEndEvents[i][desc.clip](mParams[i][desc.clip]);
 				}
 
-				desc.curFrame = (desc.curFrame + 1) % clip->frameCount;
-				desc.nextFrame = (desc.curFrame + 1) % clip->frameCount;
+				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
+				desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
 				desc.runningTime = 0.0f;
 			}
 
@@ -54,7 +54,7 @@ void ModelAnimators::Update()
 
 			if (desc.clip > -1)
 			{
-				ModelClip* clip = mModelClips[desc.clip];
+				ModelClip* clip = mClips[desc.clip];
 
 				tweenDesc.runningTime += DELTA;
 				tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
@@ -73,13 +73,13 @@ void ModelAnimators::Update()
 				}
 				else
 				{
-					float time = 1.0f / clip->tickPerSecond / desc.speed;
+					float time = 1.0f / clip->mTickPerSecond / desc.speed;
 					desc.runningTime += DELTA;
 
 					if (desc.time >= 1.0f)
 					{
-						desc.curFrame = (desc.curFrame + 1) % clip->frameCount;
-						desc.nextFrame = (desc.curFrame + 1) % clip->frameCount;
+						desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
+						desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
 						desc.runningTime = 0.0f;
 					}
 

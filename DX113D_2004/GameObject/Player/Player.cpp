@@ -14,11 +14,11 @@ Player::Player()
 
 	SetShader(L"ModelAnimation");
 
-	ReadClip("Player/TPose0.clip");
-	ReadClip("Player/Idle0.clip");
-	ReadClip("Player/Run0.clip");
-	ReadClip("Player/Attack0.clip");
-	ReadClip("Player/Die0.clip");
+	//ReadClip("Player/TPose0.clip");
+	//ReadClip("Player/Idle0.clip");
+	//ReadClip("Player/Run0.clip");
+	//ReadClip("Player/Attack0.clip");
+	//ReadClip("Player/Die0.clip");
 
 	SetEndEvent(RUN, bind(&Player::setIdle, this));
 	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));

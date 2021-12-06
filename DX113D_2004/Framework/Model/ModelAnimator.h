@@ -7,7 +7,7 @@ public:
 	ModelAnimator();
 	virtual ~ModelAnimator();
 
-	void ReadClip(string file);
+	void ReadClip(string modelName, string clipFileName);
 
 	virtual void Update();
 	virtual void Render();
@@ -15,13 +15,16 @@ public:
 
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
 	void SetEndEvent(UINT clip, CallBack Event) { mEndEvent[clip] = Event; }
-	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }	
+	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }
 	void SetParam(UINT clip, int value) { mParam[clip] = value; }
 
 	Matrix GetTransformByNode(int nodeIndex);
 	Matrix GetTransformByNode(UINT instance, int nodeIndex);
-	int GetModelClipsSize() { return mModelClips.size(); }
+	
+	const vector<string>& GetClipNames() { return mClipNames; }
+	const vector<ModelClip*>& GetClips() { return mClips; }
 
+	void CreateTexture();
 
 	// Model Function
 	void MakeBoneTransform();
@@ -32,9 +35,9 @@ protected:
 	// 본을 텍스쳐로 만듬 (Shader로 넘길 수 있는 최대 한계는 16바이트 * 5000.
 	// 본 하나 매프레임마다 수많은 키프레임이 있기 때문에 한계를 넘는다.
 	// 그래서 텍스쳐로 만들어서 대량의 데이터를 넘겨줘야함.
-	void CreateTexture();
+
 	void CreateClipTransform(UINT index);
-	
+
 
 
 
@@ -47,7 +50,8 @@ protected:
 	ID3D11Texture2D* mTexture;
 	ID3D11ShaderResourceView* mSRV;
 
-	vector<ModelClip*> mModelClips;
+	vector<ModelClip*> mClips;
+	vector<string> mClipNames;
 
 	map<UINT, CallBack> mEndEvent;
 	map<UINT, CallBackParam> mEndParamEvent;

@@ -20,7 +20,7 @@ public:
 	void SetName(string name) { mName = name; }
 	string GetName() { return mName; }
 
-	//void ReadClipFile
+	void SetClip(string modelName, string clipfileName);
 
 private:
 	int mClipIndex;

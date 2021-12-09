@@ -11,21 +11,20 @@ private:
 
 public:
 
-	Player* GetPlayer() { return player; }
-	vector<Monster*> GetMonsters() { return monsters; }
-	map<Monster*, bool> GetHitCheckMap() { return monstersHitCheck; }
-	void SetHitCheckMap(Monster* monster, bool hitCheck) { monstersHitCheck[monster] = hitCheck; }
+	Player* GetPlayer() { return mPlayer; }
+	vector<Monster*> GetMonsters() { return mMonsters; }
+	map<Monster*, bool> GetHitCheckMap() { return mMonstersHitCheck; }
+	void SetHitCheckMap(Monster* mMonster, bool hitCheck) { mMonstersHitCheck[mMonster] = hitCheck; }
 	void SetDraggedFileList(vector<wstring>& draggedFileList) { mDraggedFileList = draggedFileList; }
 	vector<wstring>& GetDraggedFileList() { return mDraggedFileList; }
 	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
 	void PlayDropEvents();
 
 private:
-	Player* player;
-	Monster* monster;
-	vector<Monster*> monsters;
-	map<Monster*, bool> monstersHitCheck;
+	Player* mPlayer;
+	Monster* mMonster;
+	vector<Monster*> mMonsters;
+	map<Monster*, bool> mMonstersHitCheck;
 	vector<wstring> mDraggedFileList;
 	vector<CallBack> mWindowDropEvents;
-
 };

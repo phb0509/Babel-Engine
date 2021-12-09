@@ -95,7 +95,7 @@ void Camera::targetMove()
 	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
 	Vector3 targetPosition = target->GetGlobalPosition() + tempOffset;
 
-	//cameraForward = (player->GlobalPos() - position).Normal();
+	//cameraForward = (mPlayer->GlobalPos() - position).Normal();
 	mCameraForward = forward.Normal();
 
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,

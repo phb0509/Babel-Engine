@@ -41,37 +41,38 @@ void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 
 	string filePath = "ModelData/" + modelName + "/" + clipFileName;
 
-	BinaryReader* r = new BinaryReader(filePath);
+	//BinaryReader* r = new BinaryReader(filePath);
+	BinaryReader binaryReader(filePath);
 
 	ModelClip* clip = new ModelClip();
 
-	clip->mName = r->String();
-	clip->mDuration = r->Float();
-	clip->mTickPerSecond = r->Float();
-	clip->mFrameCount = r->UInt();
+	clip->mName = binaryReader.String();
+	clip->mDuration = binaryReader.Float();
+	clip->mTickPerSecond = binaryReader.Float();
+	clip->mFrameCount = binaryReader.UInt();
 
-	UINT keyFrameCount = r->UInt();
+	UINT keyFrameCount = binaryReader.UInt();
 
 	for (UINT i = 0; i < keyFrameCount; i++)
 	{
 		KeyFrame* keyFrame = new KeyFrame();
-		keyFrame->boneName = r->String();
+		keyFrame->boneName = binaryReader.String();
 
-		UINT size = r->UInt();
+		UINT size = binaryReader.UInt();
 
 		if (size > 0)
 		{
 			keyFrame->transforms.resize(size);
 
 			void* ptr = (void*)keyFrame->transforms.data();
-			r->Byte(&ptr, sizeof(KeyTransform) * size);
+			binaryReader.Byte(&ptr, sizeof(KeyTransform) * size);
 		}
 		clip->mKeyFrames[keyFrame->boneName] = keyFrame;
 	}
 
 	mClips.emplace_back(clip);
 
-	delete r;
+	binaryReader.CloseReader();
 }
 
 void ModelAnimator::Update()

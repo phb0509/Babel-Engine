@@ -5,7 +5,7 @@ class Monster;
 class Transform
 {
 public:
-	Transform(string tag = "Untagged");
+	Transform(string mTag = "Untagged");
 	virtual ~Transform();
 
 	void UpdateWorld();
@@ -44,7 +44,7 @@ public:
 
 	bool isActive;
 
-	string tag;
+	string mTag;
 
 	Vector3 mPosition;
 	Vector3 mRotation;

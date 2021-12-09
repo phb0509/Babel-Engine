@@ -12,7 +12,7 @@ namespace states
 		Die,
 	};
 
-	enum class eStates
+	enum class eFSMstates
 	{
 		Patrol,
 		Stalk,

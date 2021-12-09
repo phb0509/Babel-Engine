@@ -2,37 +2,38 @@
 
 GameManager::GameManager()
 {
-	player = new Player();
+	mPlayer = new Player();
 
-	
-
-	/*for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		monster = new Mutant;
-		monsters.push_back(monster);
+		mMonster = new Mutant;
+		mMonsters.push_back(mMonster);
 	}
 
-	for (int i = 0; i < monsters.size(); i++)
+	for (int i = 0; i < mMonsters.size(); i++)
 	{
-		monstersHitCheck[monsters[i]] = false;
-	}*/
-
+		mMonsters[i]->mTag = to_string(i) + "번 몬스터";
+		mMonstersHitCheck[mMonsters[i]] = false;
+	}
 }
 
 GameManager::~GameManager()
 {
-	//delete player;
-	//delete monster;
+	delete mPlayer;
+	
+	for (int i = 0; i < mMonsters.size(); i++)
+	{
+		delete mMonsters[i];
+		mMonsters[i] = nullptr;
+	}
+
 }
-
-
 
 void GameManager::PlayDropEvents()
 {
 	for (int i = 0; i < mWindowDropEvents.size(); i++)
 	{
 		mWindowDropEvents[i]();
-		int a = 0;
 	}
 }
 

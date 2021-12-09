@@ -118,7 +118,7 @@ void ModelAnimators::PostRender()
 		rect.right = rect.left + size.x;
 		rect.bottom = rect.top + size.y;
 
-		DirectWrite::Get()->RenderText(ToWString(transform->tag), rect);
+		DirectWrite::Get()->RenderText(ToWString(transform->mTag), rect);
 	}
 }
 

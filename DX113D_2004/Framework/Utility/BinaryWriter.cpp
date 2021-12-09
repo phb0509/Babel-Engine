@@ -16,7 +16,7 @@ BinaryWriter::BinaryWriter(string filePath)
 
 BinaryWriter::~BinaryWriter()
 {
-	CloseHandle(file);
+	//CloseHandle(file);
 }
 
 void BinaryWriter::Int(int data)
@@ -50,4 +50,9 @@ void BinaryWriter::Float4x4(XMFLOAT4X4 data)
 void BinaryWriter::Byte(void* data, UINT dataSize)
 {
 	WriteFile(file, data, dataSize, &size, nullptr);
+}
+
+void BinaryWriter::CloseWriter()
+{
+	CloseHandle(file);
 }

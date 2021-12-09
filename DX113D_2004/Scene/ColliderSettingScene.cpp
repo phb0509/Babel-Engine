@@ -37,10 +37,10 @@ ColliderSettingScene::ColliderSettingScene() :
 	mRSState->FillMode(D3D11_FILL_WIREFRAME);
 
 	terrain = new Terrain();
-	monster = new Warrok();
+	mMonster = new Warrok();
 
-	monster->SetTerrain(terrain);
-	monster->mPosition = { 200,0,200 };
+	mMonster->SetTerrain(terrain);
+	mMonster->mPosition = { 200,0,200 };
 }
 
 ColliderSettingScene::~ColliderSettingScene()
@@ -57,7 +57,7 @@ ColliderSettingScene::~ColliderSettingScene()
 void ColliderSettingScene::Update()
 {
 	terrain->Update();
-	monster->Update();
+	mMonster->Update();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
@@ -78,16 +78,6 @@ void ColliderSettingScene::Update()
 			}
 		}
 	}
-
-
-	/*if (KEY_DOWN(VK_F6))
-	{
-		if (mCurrentModel->GetModelClipsSize() == 0)
-		{
-			mCurrentModel->ReadClip("Mutant/Run0.clip");
-			mCurrentModel->PlayClip(0);
-		}
-	}*/
 }
 
 
@@ -97,7 +87,7 @@ void ColliderSettingScene::PreRender()
 
 void ColliderSettingScene::Render()
 {
-	monster->Render();
+	mMonster->Render();
 	mRSState->SetState();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
@@ -163,10 +153,10 @@ void ColliderSettingScene::selectModel() // perFrame
 
 	static ImGuiComboFlags flags = 0;
 	const char* combo_label = mModelTypes[mCurrentModelIndex];
-	
+
 	if (ImGui::BeginCombo("Models", combo_label, flags))
 	{
-		int size = mModelList.size(); 
+		int size = mModelList.size();
 
 		for (int i = 0; i < size; i++)
 		{
@@ -191,14 +181,11 @@ void ColliderSettingScene::selectModel() // perFrame
 		ImGui::EndCombo();
 	}
 
-	
+
 	if (mCurrentModel != nullptr)
 	{
 		mCurrentModel = mModels[mCurrentModelIndex];
 	}
-
-
-
 
 	showCreateModelButton();
 	Spacing(3);
@@ -330,53 +317,6 @@ void ColliderSettingScene::showCreateModelButton()
 		ImGui::EndPopup();
 	}
 }
-
-
-
-void ColliderSettingScene::selectClip()
-{
-	//if (ImGui::Button("Select Clip"))
-	//	igfd::ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose Clip", ".clip", ".");
-
-	//// display
-	//if (igfd::ImGuiFileDialog::Instance()->FileDialog("TextureKey"))
-	//{
-	//	if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-	//	{
-	//		mPath = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
-	//		mPath = mPath.substr(mProjectPath.size() + 1, mPath.length());
-	//		Replace(&mPath, "\\", "/");
-	//		mPath = mPath.substr(17 + mCurrentModelName.size(), mPath.length());
-
-	//		mClipsMap[mCurrentModelName].push_back(mPath); // "SmashAttack0.clip" push_back
-
-	//		int t_currentClipIndex = mCurrentModel->currentClipIndex;
-
-	//		delete mModels[mCurrentModelIndex];
-	//		mModel = new ToolModel(mCurrentModelName);
-	//		mModel->currentClipIndex = t_currentClipIndex;
-
-	//		for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // 클립추가할때마다 새로 할당받은 후 현재모델의 클립을 전부 새로 리드클립.
-	//		{
-	//			string t = mCurrentModelName + "/" + mClipsMap[mCurrentModelName][i];
-	//			mModel->ReadClip(t); // 새로 할당받은 model에 씬에서 자체적으로 관리하는 클립리스트 내용대로 ReadClip
-	//		}
-
-	//		mModels[mCurrentModelIndex] = mModel; // 새로 할당받은 모델 다시 원래 인덱스에 넣어놓기.
-	//	}
-
-	//	// close
-	//	igfd::ImGuiFileDialog::Instance()->CloseDialog("TextureKey");
-	//}
-
-	//for (int i = 0; i < mClipsMap[mCurrentModelName].size(); i++) // imgui의 클립리스트를 clips의 내용물로 계속 갱신.
-	//{
-	//	mClipTypes[i] = mClipsMap[mCurrentModelName][i].c_str();
-	//}
-
-	//ImGui::Combo("Clips", (int*)&mCurrentModel->currentClipIndex, mClipTypes, mClipsMap[mCurrentModelName].size());
-}
-
 
 void ColliderSettingScene::showModelHierarchyWindow()
 {
@@ -512,92 +452,20 @@ void ColliderSettingScene::showColliderEditorWindow()
 				ImGui::InputFloat3(Position.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition);
 				ImGui::InputFloat3(Rotation.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation);
 				ImGui::InputFloat3(Scale.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale);
+
+				Spacing(2);
+				ImGui::Separator();
+				Spacing(2);
 			}
 		}
 
 		if (ImGui::Button("Save"))
 		{
-			save();
+			saveAsBinary();
 		}
 	}
 
 	ImGui::End();
-}
-
-void ColliderSettingScene::save()
-{
-	string path = "TextData/";
-	string name = mCurrentModel->GetName();
-
-	wstring t = ToWString(path + name + ".map");
-
-	BinaryWriter colliderWriter(t);
-
-	vector<ColliderDataForSave> colliderDatas;
-
-	int tSize = 0;
-
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
-	{
-		if (it->second)
-		{
-			tSize++;
-		}
-	}
-
-	colliderWriter.UInt(tSize); // 저장할 컬라이더개수.
-
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
-	{
-		if (it->second)
-		{
-			colliderWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]);
-			colliderWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName);
-
-			ColliderDataForSave data;
-			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
-			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
-			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
-			// 어떤종류의 컬라이더인지도 저장해야됨, 박스인지 스피어인지
-			colliderDatas.push_back(data);
-		}
-	}
-
-	colliderWriter.Byte(colliderDatas.data(), sizeof(ColliderDataForSave) * colliderDatas.size());
-
-	printToCSV(); // 보기쉽게 CSV로 저장도 해줌.
-}
-
-void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
-{
-	//string path = mProjectPath + "\\ModelData\\";
-	string path = mProjectPath;
-
-	path += folderName + "\\";
-	path += "*.*";
-
-	struct _finddata_t fd;
-	intptr_t handle;
-
-	int i = 0;
-
-	if ((handle = _findfirst(path.c_str(), &fd)) == -1L)
-	{
-		// 파일 없을때 발생시킬 이벤트.
-	}
-	do
-	{
-		if (i >= 2)
-		{
-			fd.name;
-			string temp(fd.name);
-			fileList.push_back(temp);
-		}
-
-		i++;
-	} while (_findnext(handle, &fd) == 0);
-
-	_findclose(handle);
 }
 
 void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 assets들.
@@ -657,13 +525,11 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Text(temp.c_str(), wrapWidth);
 		ImGui::PopTextWrapPos();
 
-		ImGui::Spacing();
-		ImGui::Spacing();
+		Spacing(2);
 
 		//string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath); // string to char*
 		//vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
 		//writable.push_back('\0');
-
 		//char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
 
 		static char inputText[128] = "";
@@ -682,11 +548,11 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 				i++;
 			}
 
-
-			thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModel->GetName()); }); // 람다식으로 파라미터넘기기.
+			exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModel->GetName());
+			//thread t1([&]() {exportFBX(mSelectedFilePath, fileNameToCreate, mCurrentModel->GetName()); }); // 람다식으로 파라미터넘기기.
 
 			ImGui::CloseCurrentPopup();
-			t1.join();
+			//t1.join();
 
 			mSelectedFilePath = "";
 			mbIsExportMesh = false;
@@ -854,7 +720,7 @@ void ColliderSettingScene::showModelInspector()
 		}
 
 		ImGui::ImageButton(meshImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-		
+
 		ImGui::SameLine();
 		ImVec2 meshTextPosition = ImGui::GetCursorPos();
 
@@ -872,7 +738,7 @@ void ColliderSettingScene::showModelInspector()
 				{
 					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
 					mModelDatas[mCurrentModelIndex].meshTextOnInspector = mDraggedFileName;
-					
+
 					// 메시변경이벤트구간.
 
 					mCurrentModel->SetMesh(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
@@ -882,7 +748,7 @@ void ColliderSettingScene::showModelInspector()
 					{
 						mModelDatas[mCurrentModelIndex].materialTextOnInspector = "";
 						materialImageButtonTexture = Texture::Add(L"ModelData/DefaultImage.png");
-					}					
+					}
 				}
 			}
 
@@ -911,7 +777,7 @@ void ColliderSettingScene::showModelInspector()
 		}
 
 		ImGui::ImageButton(materialImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-		
+
 		ImGui::SameLine();
 
 		ImVec2 materialTextPosition = ImGui::GetCursorPos();
@@ -927,7 +793,7 @@ void ColliderSettingScene::showModelInspector()
 				{
 					materialImageButtonTexture = mExtensionPreviewImages["mat"];
 					mModelDatas[mCurrentModelIndex].materialTextOnInspector = mDraggedFileName;
-				
+
 					mCurrentModel->SetMaterial(mCurrentModel->GetName(), mDraggedFileName); // 폴더이름,파일이름.
 				}
 			}
@@ -982,14 +848,15 @@ void ColliderSettingScene::showModelInspector()
 			{
 				if (GetExtension(mDraggedFileName) == "clip")
 				{
+					string t = mCurrentModel->GetName();
+					string b = mDraggedFileName;
+					int c = 0;
 					mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
 				}
 			}
 			ImGui::EndDragDropTarget();
 		}
 	}
-
-	
 
 	ImGui::SetCursorPos(wireFrameRadioButtonPosition);
 
@@ -1054,9 +921,6 @@ void ColliderSettingScene::showTestWindow()
 
 	}
 
-
-
-
 	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		ImGui::Text("Mouse Dragging");
@@ -1069,7 +933,52 @@ void ColliderSettingScene::showTestWindow()
 	ImGui::End();
 }
 
-void ColliderSettingScene::printToCSV()
+void ColliderSettingScene::saveAsBinary()
+{
+	string path = "TextData/";
+	string name = mCurrentModel->GetName();
+
+	wstring t = ToWString(path + name + ".map");
+
+	BinaryWriter binaryWriter(t);
+
+	vector<ColliderDataForSave> colliderDatas;
+
+	int createdColliderCount = 0;
+
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+	{
+		if (it->second)
+		{
+			createdColliderCount++; // 몇개 생성되었는지 체크.
+		}
+	}
+
+	binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
+
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+	{
+		if (it->second)
+		{
+			binaryWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
+			binaryWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
+
+			ColliderDataForSave data;
+			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
+			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
+			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
+			// 어떤종류의 컬라이더인지도 저장해야됨, 박스인지 스피어인지
+			colliderDatas.push_back(data);
+		}
+	}
+
+	binaryWriter.Byte(colliderDatas.data(), sizeof(ColliderDataForSave) * colliderDatas.size());
+	binaryWriter.CloseWriter();
+
+	saveAsCSV();
+}
+
+void ColliderSettingScene::saveAsCSV()
 {
 	FILE* file;
 
@@ -1097,15 +1006,15 @@ void ColliderSettingScene::printToCSV()
 	{
 		if (it->second)
 		{
-			ColliderDataForSave data;
+			ColliderDataForSave data; // 컬라이더 SRT값.
 			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
 			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
 			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
 
-			const char* modelName = mCurrentModel->GetName().c_str();
-
-			string colliderName = mModelDatas[mCurrentModelIndex].colliderNameMap[it->first];
-			string nodeName = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName;
+			string t = mModels[mCurrentModelIndex]->GetName();
+			const char* modelName = t.c_str();
+			string colliderName = mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]; // 직접 작성한 컬라이더 이름. 
+			string nodeName = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName; // 해당 컬라이더가 위치한 노드이름 ex) LeftArm
 
 			fprintf(
 				file,
@@ -1119,6 +1028,110 @@ void ColliderSettingScene::printToCSV()
 	}
 
 	fclose(file);
+}
+
+void ColliderSettingScene::allSaveAsBinary() // 현재 생성된 모든 모델의 컬라이더 개별로 저장.
+{
+	for (int i = 0; i < mModels.size(); i++)
+	{
+		string path = "TextData/";
+		string name = mModels[i]->GetName();
+
+		wstring t = ToWString(path + name + ".map");
+
+		BinaryWriter binaryWriter(t);
+
+		vector<ColliderDataForSave> colliderDatas;
+
+		int createdColliderCount = 0;
+
+		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		{
+			if (it->second)
+			{
+				createdColliderCount++; // 몇개 생성되었는지 체크.
+			}
+		}
+
+		binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
+
+		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		{
+			if (it->second)
+			{
+				binaryWriter.String(mModelDatas[i].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
+				binaryWriter.String(mModelDatas[i].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
+
+				ColliderDataForSave data;
+				data.position = mModelDatas[i].nodeCollidersMap[it->first].collider->mPosition;
+				data.rotation = mModelDatas[i].nodeCollidersMap[it->first].collider->mRotation;
+				data.scale = mModelDatas[i].nodeCollidersMap[it->first].collider->mScale;
+				// 어떤종류의 컬라이더인지도 저장해야됨, 박스인지 스피어인지
+				colliderDatas.push_back(data);
+			}
+		}
+
+		binaryWriter.Byte(colliderDatas.data(), sizeof(ColliderDataForSave) * colliderDatas.size());
+		binaryWriter.CloseWriter();
+	}
+
+	allSaveAsCSV(); // 보기쉽게 CSV로 저장도 해줌.
+}
+
+void ColliderSettingScene::allSaveAsCSV()
+{
+	for (int i = 0; i < mModels.size(); i++)
+	{
+		FILE* file;
+
+		string str = "TextData/Saved" + mModels[i]->GetName() + "Colliders.csv";
+		const char* fileName = str.c_str();
+
+		fopen_s(&file, fileName, "w");
+
+		fprintf( // 컬럼명
+			file,
+			"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+			"ColliderName", "",
+			"NodeName", "",
+			"Position.x", "Position.y", "Position.z", "",
+			"Rotation.x", "Rotation.y", "Rotation.z", "",
+			"Scale.x", "Scale.y", "Scale.z"
+		);
+
+		fprintf( // 줄바꿈용
+			file,
+			"\n"
+		);
+
+		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		{
+			if (it->second)
+			{
+				ColliderDataForSave data; // 컬라이더 SRT값.
+				data.position = mModelDatas[i].nodeCollidersMap[it->first].collider->mPosition;
+				data.rotation = mModelDatas[i].nodeCollidersMap[it->first].collider->mRotation;
+				data.scale = mModelDatas[i].nodeCollidersMap[it->first].collider->mScale;
+
+				string t = mModels[i]->GetName();
+				const char* modelName = t.c_str();
+				string colliderName = mModelDatas[i].colliderNameMap[it->first]; // 직접 작성한 컬라이더 이름. 
+				string nodeName = mModelDatas[i].nodeCollidersMap[it->first].nodeName; // 해당 컬라이더가 위치한 노드이름 ex) LeftArm
+
+				fprintf(
+					file,
+					"%s,%s,%s,%s,%.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f\n",
+					colliderName.c_str(), "", nodeName.c_str(), "",
+					data.position.x, data.position.y, data.position.z, "",
+					data.rotation.x, data.rotation.y, data.rotation.z, "",
+					data.scale.x, data.scale.y, data.scale.z
+				);
+			}
+		}
+
+		fclose(file);
+	}
+
 }
 
 void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToCreate, string parentFolderName)
@@ -1163,3 +1176,34 @@ void ColliderSettingScene::copyDraggedFile()
 	}
 }
 
+void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
+{
+	//string path = mProjectPath + "\\ModelData\\";
+	string path = mProjectPath;
+
+	path += folderName + "\\";
+	path += "*.*";
+
+	struct _finddata_t fd;
+	intptr_t handle;
+
+	int i = 0;
+
+	if ((handle = _findfirst(path.c_str(), &fd)) == -1L)
+	{
+		// 파일 없을때 발생시킬 이벤트.
+	}
+	do
+	{
+		if (i >= 2)
+		{
+			fd.name;
+			string temp(fd.name);
+			fileList.push_back(temp);
+		}
+
+		i++;
+	} while (_findnext(handle, &fd) == 0);
+
+	_findclose(handle);
+}

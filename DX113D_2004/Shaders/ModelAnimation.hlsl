@@ -36,6 +36,7 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 float4 PS(PixelInput input) : SV_Target
 {
     float4 albedo = float4(1, 1, 1, 1);
+    
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv);
     

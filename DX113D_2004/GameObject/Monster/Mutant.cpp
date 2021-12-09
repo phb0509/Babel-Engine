@@ -4,7 +4,7 @@
 Mutant::Mutant()
 	: ModelAnimator(),
 	mAnimation(eAnimationStates::Idle),
-	mFSM(eStates::Patrol),
+	mFSM(eFSMstates::Patrol),
 	mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -14,11 +14,11 @@ Mutant::Mutant()
 
 	SetShader(L"ModelAnimation");
 
-	/*ReadClip("Mutant/Idle0.clip");
-	ReadClip("Mutant/Run0.clip");
-	ReadClip("Mutant/SmashAttack0.clip");
-	ReadClip("Mutant/OnDamage0.clip");
-	ReadClip("Mutant/Die0.clip");*/
+	ReadClip("Mutant","Idle.clip");
+	ReadClip("Mutant","Run.clip");
+	ReadClip("Mutant","SmashAttack.clip");
+	ReadClip("Mutant","OnDamage.clip");
+	ReadClip("Mutant","Die.clip");
 
 	SetEndEvent(static_cast<int>(eAnimationStates::Run), bind(&Mutant::SetIdle, this));
 	SetEndEvent(static_cast<int>(eAnimationStates::OnDamage), bind(&Mutant::setOnDamageEnd, this));
@@ -26,9 +26,7 @@ Mutant::Mutant()
 	
 	PlayClip(0);
 
-	mBodyCollider = new BoxCollider();
-	mSmashAttackCollider = new BoxCollider();
-	loadCollider(); // 툴에서 셋팅한 컬라이더 불러오기.
+	loadBinaryFile(); // 툴에서 셋팅한 컬라이더 불러오기.
 
 	mRotation.y = XM_PI;
 	UpdateWorld();
@@ -40,18 +38,19 @@ Mutant::Mutant()
 
 Mutant::~Mutant()
 {
-	delete mBodyCollider;
-	delete mSmashAttackCollider;
+
 }
 
 void Mutant::Update()
 {
 	setColliders();
 
-	mPosition.y = mTerrain->GetHeight(mPosition);
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->Update();
+	}
 
-	mBodyCollider->Update();
-	mSmashAttackCollider->Update();
+	mPosition.y = mTerrain->GetHeight(mPosition);
 
 	mCurrentState->Execute(this);
 
@@ -61,8 +60,10 @@ void Mutant::Update()
 
 void Mutant::Render()
 {
-	mBodyCollider->Render();
-	mSmashAttackCollider->Render();
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->Render();
+	}
 
 	SetWorldBuffer();
 	ModelAnimator::Render();
@@ -70,14 +71,12 @@ void Mutant::Render()
 
 void Mutant::PostRender()
 {
-	//ImGui::SliderFloat3("Pos", (float*)&weapon->position, -30, 30);
-	//ImGui::SliderFloat3("Rot", (float*)&weapon->rotation, 0, XM_2PI);
-	//ImGui::SliderFloat3("Scale", (float*)&weapon->scale, -30, 30);
+
 }
 
 void Mutant::OnDamage(float damage)
 {
-	mFSM = eStates::OnDamage;
+	mFSM = eFSMstates::OnDamage;
 	mbOnHit = true;
 	GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;
@@ -87,17 +86,17 @@ void Mutant::CheckOnHit()
 {
 	if (!mbOnHit) return;
 
-	SetAnimation((eAnimationStates::OnDamage));
+	SetAnimation(eAnimationStates::OnDamage);
 }
 
-Collider* Mutant::GetColliderForAStar()
+Collider* Mutant::GetColliderForAStar() // 몸쪽 컬라이더 넘겨주자.
 {
-	return mBodyCollider;
+	return mCollidersMap["bodyCollider"];
 }
 
 void Mutant::setOnDamageEnd()
 {
-	SetAnimation((eAnimationStates::Idle));
+	SetAnimation(eAnimationStates::Idle);
 	GM->SetHitCheckMap(this, false);
 	mbOnHit = false;
 }
@@ -105,7 +104,7 @@ void Mutant::setOnDamageEnd()
 
 void Mutant::SetIdle()
 {
-	SetAnimation((eAnimationStates::Idle));
+	SetAnimation(eAnimationStates::Idle);
 }
 
 void Mutant::SetAnimation(eAnimationStates value)
@@ -125,66 +124,68 @@ void Mutant::setAttackEnd()
 	RotateToDestinationForModel(this, mPlayer->mPosition);
 }
 
-Collider* Mutant::GetHitCollider()
+Collider* Mutant::GetHitCollider() // 히트체크용 컬라이더
 {
-	return mBodyCollider;
+	return mCollidersMap["bodyCollider"];
 }
 
 
-void Mutant::loadCollider()
+void Mutant::loadBinaryFile()
 {
-	BinaryReader colliderReader(L"TextData/Mutant.map");
-	UINT colliderSize = colliderReader.UInt();
+	BinaryReader binaryReader(L"TextData/Mutant.map");
+	UINT colliderCount = binaryReader.UInt();
 
-	mTempColliderDatas.resize(colliderSize);
-	mColliderDatas.resize(colliderSize);
+	mColliderSRTdatas.resize(colliderCount);
+	mColliderDatas.resize(colliderCount);
 
+	void* ptr1 = (void*)mColliderSRTdatas.data();
 
-	void* ptr1 = (void*)mTempColliderDatas.data();
-
-	for (int i = 0; i < colliderSize; i++) // 툴에서 저장한 컬라이더이름.
+	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].colliderName = colliderReader.String();
-		mColliderDatas[i].nodeName = colliderReader.String();
+		mColliderDatas[i].colliderName = binaryReader.String();
+		mColliderDatas[i].nodeName = binaryReader.String();
 	}
 
-	colliderReader.Byte(&ptr1, sizeof(temp_colliderData) * colliderSize);
+	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
 
-	for (int i = 0; i < colliderSize; i++)
+	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].position = mTempColliderDatas[i].position;
-		mColliderDatas[i].rotation = mTempColliderDatas[i].rotation;
-		mColliderDatas[i].scale = mTempColliderDatas[i].scale;
+		mColliderDatas[i].position = mColliderSRTdatas[i].position;
+		mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
+		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
 	}
 
-
-	findCollider("smashAttackCollider", mSmashAttackCollider);
-	findCollider("BodyCollider", mBodyCollider); // BodyCollider의 SRT값을 mBodyCollider에.
-}
-
-void Mutant::findCollider(string name, Collider* collider)
-{
+	// Create Colliders;
 	for (int i = 0; i < mColliderDatas.size(); i++)
 	{
-		if (mColliderDatas[i].colliderName == name)
-		{
-			collider->mPosition = mColliderDatas[i].position;
-			collider->mRotation = mColliderDatas[i].rotation;
-			collider->mScale = mColliderDatas[i].scale;
-		}
-	}
-}
+		SettedCollider settedCollider;
+		Collider* collider = new BoxCollider(); // 일단 박스
 
+		collider->mTag = mColliderDatas[i].colliderName;
+		collider->mPosition = mColliderDatas[i].position;
+		collider->mRotation = mColliderDatas[i].rotation;
+		collider->mScale = mColliderDatas[i].scale;
+
+		settedCollider.colliderName = mColliderDatas[i].colliderName;
+		settedCollider.nodeName = mColliderDatas[i].nodeName;
+		settedCollider.collider = collider;
+
+		mColliders.push_back(settedCollider);
+		mCollidersMap[mColliderDatas[i].colliderName] = collider;
+	}
+
+	binaryReader.CloseReader();
+}
 
 void Mutant::setColliders()
 {
-	int bodyIndex = GetNodeByName("Mutant:Spine");
-	mBodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
-	mBodyCollider->SetParent(&mBodyMatrix);
-
-	int smashAttackIndex = GetNodeByName("Mutant:LeftHand");
-	mSmashAttackMatrix = GetTransformByNode(smashAttackIndex) * mWorldMatrix;
-	mSmashAttackCollider->SetParent(&mSmashAttackMatrix);
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		string nodeName = mColliders[i].nodeName;
+		int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
+		mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->mWorldMatrix;
+		mColliders[i].collider->SetParent(&mColliders[i].matrix);
+	}
 }
 
 

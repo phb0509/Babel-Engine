@@ -84,7 +84,6 @@ void ModelReader::ReadMaterial(string folderName,string fileName)
 			{
 				material->SetSpecularMap(folderPath + fileName);
 			}
-				
 		}
 
 		node = node->NextSiblingElement();
@@ -238,7 +237,7 @@ void ModelReader::SetNormalMap(wstring file)
 		material.second->SetNormalMap(file);
 }
 
-int ModelReader::GetNodeByName(string name)
+int ModelReader::GetNodeIndex(string name)
 {
 	for (NodeData* node : mNodes)
 	{
@@ -325,6 +324,5 @@ void ModelReader::SetMaterial(string folderName, string fileName)
 			mMeshes[i]->mMaterial = mMaterials[mMeshes[i]->mMaterialName];
 		}
 	}
-
 
 }

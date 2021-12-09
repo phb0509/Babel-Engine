@@ -12,8 +12,9 @@ Terrain::Terrain()
 
 	mFillMode[0] = new RasterizerState();
 	mFillMode[1] = new RasterizerState();
+	mFillMode[0]->FillMode(D3D11_FILL_SOLID);
 	mFillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
-
+	//D3D11_FILL_SOLID
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
 	mHeightMap = Texture::Add(L"Textures/HeightMaps/HeightMap.png"); // 100 & 100
@@ -61,7 +62,7 @@ void Terrain::Render()
 	mTypeBuffer->SetVSBuffer(5);
 
 	mMaterial->Set();
-	//fillMode[1]->SetState();
+	mFillMode[0]->SetState();
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 	//fillMode[0]->SetState();
 }

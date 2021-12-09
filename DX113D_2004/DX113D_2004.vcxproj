@@ -192,6 +192,7 @@
     <ClInclude Include="GameObject\Manager\GameManager.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\AttackState.h" />
+    <ClInclude Include="GameObject\Monster\MonsterStates\OnDamageState.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\PatrolState.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\StalkingState.h" />
     <ClInclude Include="GameObject\Monster\Mutant.h" />
@@ -355,6 +356,7 @@
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\AttackState.cpp" />
+    <ClCompile Include="GameObject\Monster\MonsterStates\OnDamageState.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\PatrolState.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\StalkingState.cpp" />
     <ClCompile Include="GameObject\Monster\Mutant.cpp" />

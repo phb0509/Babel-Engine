@@ -6,6 +6,9 @@ public:
 
 	struct ColliderDataForSave
 	{
+		string colliderName;
+		string nodeName;
+
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
@@ -42,7 +45,6 @@ public:
 
 
 private:
-	void selectClip();
 	void selectModel();
 	void showCreateModelButton();
 	void InitializeModelDatas();
@@ -53,19 +55,19 @@ private:
 	void showAssetsWindow();
 	void showModelInspector();
 	void showTestWindow();
-	void save();
-	void loadFileList(string folderName, vector<string>& fileList);
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
 
-	void printToCSV();
 	void exportFBX(string selectedFilePath, string fileNameToCreate, string parentFolderName);
 	void playAssetsWindowDropEvent();
 		
 	void copyDraggedFile();
-
-
+	void saveAsBinary();
+	void saveAsCSV();
+	void allSaveAsBinary();
+	void allSaveAsCSV();
+	void loadFileList(string folderName, vector<string>& fileList);
 
 private:
 	ToolModel* mModel;
@@ -123,7 +125,7 @@ private:
 
 	string mDroppedFileName;
 	
-	Monster* monster;
+	Monster* mMonster;
 	Terrain* terrain;
 
 	//string mMeshTextOnInspector;

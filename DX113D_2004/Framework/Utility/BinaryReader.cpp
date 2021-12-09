@@ -16,7 +16,7 @@ BinaryReader::BinaryReader(string filePath)
 
 BinaryReader::~BinaryReader()
 {
-    CloseHandle(file);
+   
 }
 
 int BinaryReader::Int()
@@ -62,4 +62,9 @@ XMFLOAT4X4 BinaryReader::Float4x4()
 void BinaryReader::Byte(void** data, UINT dataSize)
 {
     ReadFile(file, *data, dataSize, &size, nullptr);
+}
+
+void BinaryReader::CloseReader()
+{
+    CloseHandle(file);
 }

@@ -18,4 +18,6 @@ public:
 	void Float4x4(XMFLOAT4X4 data);
 
 	void Byte(void* data, UINT dataSize);
+
+	void CloseWriter();
 };

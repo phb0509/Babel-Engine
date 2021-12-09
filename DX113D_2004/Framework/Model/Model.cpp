@@ -63,7 +63,7 @@ void Model::SetBoneTransforms()
 		mBoneBuffer->Add(bone.second, bone.first);
 }
 
-int Model::GetNodeByName(string name)
+int Model::GetNodeIndex(string name)
 {
 	for (NodeData* node : mNodes)
 	{

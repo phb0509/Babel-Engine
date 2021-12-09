@@ -13,19 +13,29 @@ private:
 		DIE
 	}state;
 
-	struct colliderData
+	struct ColliderData
 	{
-		string name;
+		string colliderName;
+		string nodeName;
+
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
 	};
 
-	struct temp_colliderData
+	struct TempCollider
 	{
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
+	};
+
+	struct SettedCollider
+	{
+		string colliderName;
+		string nodeName;
+		Matrix matrix;
+		Collider* collider;
 	};
 
 public:
@@ -36,7 +46,7 @@ public:
 	void Render();
 	void PostRender();
 
-	void SetTerrain(Terrain* value) { terrain = value; }
+	void SetTerrain(Terrain* value) { mTerrain = value; }
 	void SetAStar(AStar* value) { aStar = value; }
 
 
@@ -48,37 +58,27 @@ private:
 	void moveInTargetCamera();
 	void moveInWorldCamera();
 	void setColliders();
-	void loadCollider();
-	void findCollider(string name, Collider* collider);
+	void loadBinaryFile();
 	void rotate();
 	void checkNormalAttackCollision();
-
-
 
 	void setAttackEnd();
 	void normalAttack();
 
 private:
-	bool isInitialize;
-	Terrain* terrain;
+	bool mbIsInitialize;
+	Terrain* mTerrain;
 	AStar* aStar;
 
-	vector<temp_colliderData> temp_colliderDatas;
-	vector<colliderData> colliderDatas;
+	vector<TempCollider> mColliderSRTdatas;
+	vector<ColliderData> mColliderDatas;
+	vector<SettedCollider> mColliders;
+	map<string, Collider*> mCollidersMap;
 
-	Matrix swordMatrix;
-	Collider* swordCollider;
-
-	Matrix bodyMatrix;
-	Collider* bodyCollider;
-	Vector3 oldPos;
-	vector<Monster*> monsters;
+	vector<Monster*> mMonsters;
 	
-
-	bool mIsNormalAttack;
-	bool mIsNormalAttackCollide;
-	float normalAttackDamage;
-
-	bool check1;
+	bool mbIsNormalAttack;
+	bool mbIsNormalAttackCollide;
+	float mNormalAttackDamage;
 
 };

@@ -5,20 +5,29 @@ class Mutant : public Monster, public ModelAnimator
 public:
 	friend class Player;
 
-	struct colliderData
+	struct ColliderData
 	{
 		string colliderName;
 		string nodeName;
+
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
 	};
 
-	struct temp_colliderData
+	struct TempCollider
 	{
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
+	};
+
+	struct SettedCollider
+	{
+		string colliderName;
+		string nodeName;
+		Matrix matrix;
+		Collider* collider;
 	};
 
 
@@ -43,23 +52,17 @@ private:
 	void setOnDamageEnd();
 	void setColliders();
 	void setAttackEnd();
-	void loadCollider();
-	void findCollider(string name, Collider* collider);
-
-
+	void loadBinaryFile();
 
 private:
 
-	Collider* mBodyCollider;
-	Matrix mBodyMatrix;
-	Collider* mSmashAttackCollider;
-	Matrix mSmashAttackMatrix;
-
-	vector<colliderData> mColliderDatas;
-	vector<temp_colliderData> mTempColliderDatas;
+	vector<TempCollider> mColliderSRTdatas;
+	vector<ColliderData> mColliderDatas;
+	vector<SettedCollider> mColliders;
+	map<string, Collider*> mCollidersMap;
 
 	bool mbOnHit;
 
 	eAnimationStates mAnimation;
-	eStates mFSM;
+	eFSMstates mFSM;
 };

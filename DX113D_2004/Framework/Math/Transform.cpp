@@ -2,8 +2,8 @@
 
 bool Transform::mbIsAxisDrawing = true;
 
-Transform::Transform(string tag): 
-	tag(tag),
+Transform::Transform(string mTag): 
+	mTag(mTag),
 	mPosition(0, 0, 0), 
 	mRotation(0, 0, 0), 
 	mScale(1, 1, 1),
@@ -275,7 +275,8 @@ void Transform::RenderAxis()
 	mMesh->IASet();
 	mMaterial->Set();
 
-	mRSState->FillMode(D3D11_FILL_WIREFRAME);
+	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
+	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
 	DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 }

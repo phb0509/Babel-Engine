@@ -2,23 +2,26 @@
 
 Player::Player()
 	: ModelAnimator(), 
-	isInitialize(false), 
+	mbIsInitialize(false), 
 	state(IDLE), 
-	mIsNormalAttack(false),
-	mIsNormalAttackCollide(false), 
-	normalAttackDamage(10.0f)
+	mbIsNormalAttack(false),
+	mbIsNormalAttackCollide(false), 
+	mNormalAttackDamage(10.0f)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
 	mMoveSpeed = 50.0f;
 	mRotationSpeed = 5.0f;
 
+	SetMesh("Player", "Player.mesh");
+	SetMaterial("Player", "Player.mat");
+
 	SetShader(L"ModelAnimation");
 
-	//ReadClip("Player/TPose0.clip");
-	//ReadClip("Player/Idle0.clip");
-	//ReadClip("Player/Run0.clip");
-	//ReadClip("Player/Attack0.clip");
-	//ReadClip("Player/Die0.clip");
+	ReadClip("Player","TPose.clip");
+	ReadClip("Player","Idle.clip");
+	ReadClip("Player","Run.clip");
+	ReadClip("Player","Attack.clip");
+	ReadClip("Player","Die.clip");
 
 	SetEndEvent(RUN, bind(&Player::setIdle, this));
 	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));
@@ -27,43 +30,33 @@ Player::Player()
 
 	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
-	bodyCollider = new BoxCollider();
-	swordCollider = new BoxCollider();
-
-	loadCollider();
+	loadBinaryFile();
+	UpdateWorld();
 }
 
 Player::~Player()
 {
-	delete bodyCollider;
-	delete swordCollider;
+
 }
 
 void Player::Update()
 {
-	if (!isInitialize)
+	if (!mbIsInitialize)
 	{
 		initialize();
-		isInitialize = true;
+		mbIsInitialize = true;
 	}
 
 	setColliders();
-
-	// 피격용 컬라이더
-	bodyCollider->Update();
-
-	// 칼날 컬라이더
-	swordCollider->Update();
+	
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->Update();
+	}
 
 	input();
 
 	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
-
-
-
-	SetDiffuseMap(L"Textures/Landscape/defaultImageButton.png");
-	
-
 
 	UpdateWorld();
 	ModelAnimator::Update();
@@ -71,8 +64,10 @@ void Player::Update()
 
 void Player::Render()
 {
-	bodyCollider->Render();
-	swordCollider->Render();
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->Render();
+	}
 
 	SetWorldBuffer();
 	ModelAnimator::Render();
@@ -100,9 +95,9 @@ void Player::input()
 
 void Player::moveInTargetCamera()
 {
-	if (mIsNormalAttack) return;
+	if (mbIsNormalAttack) return;
 
-	float terrainY = terrain->GetHeight(mPosition);
+	float terrainY = mTerrain->GetHeight(mPosition);
 
 	mPosition.y = terrainY;
 	
@@ -140,9 +135,9 @@ void Player::moveInTargetCamera()
 
 void Player::moveInWorldCamera()
 {
-	if (mIsNormalAttack) return;
+	if (mbIsNormalAttack) return;
 
-	float terrainY = terrain->GetHeight(mPosition);
+	float terrainY = mTerrain->GetHeight(mPosition);
 
 	mPosition.y = terrainY;
 
@@ -202,21 +197,19 @@ void Player::rotate()
 
 void Player::checkNormalAttackCollision()
 {
-	if (mIsNormalAttack) // 공격도중이면.
+	if (mbIsNormalAttack) // 공격도중이면.
 	{
-		monsters = GM->GetMonsters();
-		for (int i = 0; i < monsters.size(); i++)
-		{
-			if (!(GM->GetHitCheckMap()[monsters[i]])) // 공격받을수있는 상황이면(한프레임도 아직 공격받지 않았다면
-			{
-				if (swordCollider->Collision(monsters[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
-				{
-					monsters[i]->OnDamage(normalAttackDamage);
-					check1 = true; // 디버깅용.
+		mMonsters = GM->GetMonsters();
 
-					//char buff[100];
-					//sprintf_s(buff, "되냐\n");
-					//OutputDebugStringA(buff);
+		int a = 0;
+		for (int i = 0; i < mMonsters.size(); i++)
+		{
+			if (!(GM->GetHitCheckMap()[mMonsters[i]])) // 공격받을수있는 상황이면(한프레임도 아직 공격받지 않았다면
+			{
+				if (mCollidersMap["swordCollider"]->Collision(mMonsters[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
+				{
+					int a = 0;
+					mMonsters[i]->OnDamage(mNormalAttackDamage);
 				}
 			}
 		}
@@ -224,104 +217,80 @@ void Player::checkNormalAttackCollision()
 	
 }
 
-void Player::PostRender()
-{
-	ImGui::Text("isNormalAttack : %d\n ", mIsNormalAttack);
-	ImGui::Text("check1 : %d\n ",check1);
 
-	for (int i = 0; i < GM->GetMonsters().size(); i++)
-	{
-		ImGui::Text("monster %d : %d ", i, GM->GetHitCheckMap()[GM->GetMonsters()[i]]);
-	}
-
-}
 
 
 
 void Player::setAttackEnd()
 {
 	setAnimation(IDLE);
-	mIsNormalAttack = false;
-	check1 = false;
+	mbIsNormalAttack = false;
+
 }
 
 void Player::normalAttack()
 {
-	if (mIsNormalAttack) return;
+	if (mbIsNormalAttack) return;
 	setAnimation(ATTACK);
-	mIsNormalAttack = true;
+	mbIsNormalAttack = true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void Player::setColliders()
 {
-	int swordIndex = GetNodeByName("Sword_joint");
-	swordMatrix = GetTransformByNode(swordIndex) * mWorldMatrix;
-	swordCollider->SetParent(&swordMatrix);
-
-	int bodyIndex = GetNodeByName("Spine");
-	bodyMatrix = GetTransformByNode(bodyIndex) * mWorldMatrix;
-	bodyCollider->SetParent(&bodyMatrix);
-	
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		string nodeName = mColliders[i].nodeName;
+		int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
+		mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->mWorldMatrix;
+		mColliders[i].collider->SetParent(&mColliders[i].matrix);
+	}
 }
 
-void Player::loadCollider()
+void Player::loadBinaryFile()
 {
-	BinaryReader colliderReader(L"TextData/Player.map");
-	UINT colliderSize = colliderReader.UInt();
+	BinaryReader binaryReader(L"TextData/Player.map");
+	UINT colliderCount = binaryReader.UInt();
 
-	temp_colliderDatas.resize(colliderSize);
-	colliderDatas.resize(colliderSize);
-	
-	
-	void* ptr1 = (void*)temp_colliderDatas.data();
+	mColliderSRTdatas.resize(colliderCount);
+	mColliderDatas.resize(colliderCount);
 
-	for (int i = 0; i < colliderSize; i++)
+	void* ptr1 = (void*)mColliderSRTdatas.data();
+
+	for (int i = 0; i < colliderCount; i++)
 	{
-		colliderDatas[i].name = colliderReader.String();
+		mColliderDatas[i].colliderName = binaryReader.String();
+		mColliderDatas[i].nodeName = binaryReader.String();
 	}
 
+	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
 
-	colliderReader.Byte(&ptr1, sizeof(temp_colliderData) * colliderSize);
-
-	for (int i = 0; i < colliderSize; i++)
+	for (int i = 0; i < colliderCount; i++)
 	{
-		colliderDatas[i].position = temp_colliderDatas[i].position;
-		colliderDatas[i].rotation = temp_colliderDatas[i].rotation;
-		colliderDatas[i].scale = temp_colliderDatas[i].scale;
+		mColliderDatas[i].position = mColliderSRTdatas[i].position;
+		mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
+		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
 	}
 
-
-	findCollider("SwordCollider", swordCollider);
-	findCollider("BodyCollider", bodyCollider);
-}
-
-void Player::findCollider(string name, Collider* collider)
-{
-	for (int i = 0; i < colliderDatas.size(); i++)
+	// Create Colliders;
+	for (int i = 0; i < mColliderDatas.size(); i++)
 	{
-		if (colliderDatas[i].name == name)
-		{
-			collider->mPosition = colliderDatas[i].position;
-			collider->mRotation = colliderDatas[i].rotation;
-			collider->mScale = colliderDatas[i].scale;
-		}
+		SettedCollider settedCollider;
+		Collider* collider = new BoxCollider(); // 일단 박스
+
+		collider->mTag = mColliderDatas[i].colliderName;
+		collider->mPosition = mColliderDatas[i].position;
+		collider->mRotation = mColliderDatas[i].rotation;
+		collider->mScale = mColliderDatas[i].scale;
+
+		settedCollider.colliderName = mColliderDatas[i].colliderName;
+		settedCollider.nodeName = mColliderDatas[i].nodeName;
+		settedCollider.collider = collider;
+
+		mColliders.push_back(settedCollider);
+		mCollidersMap[mColliderDatas[i].colliderName] = collider;
 	}
+
+	binaryReader.CloseReader();
 }
 
 void Player::initialize()
@@ -341,4 +310,29 @@ void Player::setAnimation(State value)
 		state = value;
 		PlayClip(state);
 	}
+}
+
+void Player::PostRender()
+{
+	ImGui::Begin("Test");
+
+	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
+
+	for (int i = 0; i < GM->GetMonsters().size(); i++)
+	{
+		ImGui::Text("%d Monster is Attacked?  : %d ", i, GM->GetHitCheckMap()[GM->GetMonsters()[i]]);
+	}
+
+	ImGui::InputFloat3("Player Position", (float*)&this->mPosition);
+	Spacing(1);
+	ImGui::InputFloat3("Mutant Position", (float*)&GM->GetMonsters()[0]->mPosition);
+	Spacing(1);
+	ImGui::InputFloat3("PlayerSword Position", (float*)&mCollidersMap["swordCollider"]->mPosition);
+	Spacing(1);
+	ImGui::InputFloat3("MutantBody Position", (float*)&GM->GetMonsters()[0]->GetHitCollider()->mPosition);
+
+	//ImGui::InputFloat3("SwordRotation", (float*)&GM->GetMonsters()[i]->mRotation);
+	//ImGui::InputFloat3("SwordScale", (float*)&GM->GetMonsters()[i]->mScale);
+
+	ImGui::End();
 }

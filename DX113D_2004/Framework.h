@@ -308,6 +308,7 @@ using namespace states;
 #include "GameObject/Monster/MonsterStates/PatrolState.h"
 #include "GameObject/Monster/MonsterStates/StalkingState.h"
 #include "GameObject/Monster/MonsterStates/AttackState.h"
+#include "GameObject/Monster/MonsterStates/OnDamageState.h"
 
 
 //Managers

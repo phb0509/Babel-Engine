@@ -12,7 +12,7 @@ public:
 	void MakeBoneTransform();
 	void SetBoneTransforms();	
 
-	int GetNodeByName(string name);
+	int GetNodeIndex(string name);
 	UINT GetBoneSize() { return mBones.size(); }
 
 

@@ -43,7 +43,7 @@ private:
 	void setOnDamageEnd();
 	void setColliders();
 	void setAttackEnd();
-	void loadCollider();
+	void loadBinaryFile();
 	void findCollider(string name, Collider* collider);
 
 
@@ -61,5 +61,5 @@ private:
 	bool mbOnHit;
 
 	eAnimationStates mAnimation;
-	eStates mFSM;
+	eFSMstates mFSM;
 };

@@ -20,11 +20,15 @@ public:
 	void SetSpecularMap(wstring file);
 	void SetNormalMap(wstring file);
 
-	int GetNodeByName(string name);
+	int GetNodeIndex(string name);
 	bool GetHasMeshes();
 
 	void SetBox(Vector3* minBox, Vector3* maxBox);
 	vector<NodeData*> GetNodes() {return mNodes;}
+
+
+
+	vector<ModelMesh*> GetMeshes() { return mMeshes; }
 
 private:
 	void deleteDatas();

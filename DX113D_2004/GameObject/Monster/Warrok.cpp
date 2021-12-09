@@ -4,7 +4,7 @@
 Warrok::Warrok()
 	: ModelAnimator(),
 	mAnimation(eAnimationStates::Idle),
-	mFSM(eStates::Patrol),
+	mFSM(eFSMstates::Patrol),
 	mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -47,7 +47,7 @@ void Warrok::PostRender()
 
 void Warrok::OnDamage(float damage)
 {
-	mFSM = eStates::OnDamage;
+	mFSM = eFSMstates::OnDamage;
 	mbOnHit = true;
 	GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;

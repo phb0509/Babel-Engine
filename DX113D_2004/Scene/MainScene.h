@@ -22,7 +22,7 @@ private:
 	Player* mPlayer;
 	Monster* mMonster;
 	Terrain* mTerrain;
-	vector<Monster*> monsters;
+	vector<Monster*> mMonsters;
 
 	ModelObject* mObstacle1;
 	ModelObject* mObstacle2;

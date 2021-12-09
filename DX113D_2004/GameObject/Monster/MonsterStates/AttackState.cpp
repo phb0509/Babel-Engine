@@ -8,14 +8,14 @@ AttackState::~AttackState()
 {
 }
 
-void AttackState::Enter(Monster* monster)
+void AttackState::Enter(Monster* mMonster)
 {
 }
 
-void AttackState::Execute(Monster* monster)
+void AttackState::Execute(Monster* mMonster)
 {
 }
 
-void AttackState::Exit(Monster* monster)
+void AttackState::Exit(Monster* mMonster)
 {
 }

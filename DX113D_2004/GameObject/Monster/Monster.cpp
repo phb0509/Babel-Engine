@@ -26,11 +26,11 @@ Monster::Monster() :
 	mPatrolState = new PatrolState();
 	mStalkingState = new StalkingState();
 	mAttackState = new AttackState();
+	mOnDamageState = new OnDamageState();
 
 	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
 	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, this, placeholders::_1, placeholders::_2);
 
-	
 	mPathNodesCheck.assign(true, mPathNodesCheckSize);
 }
 
@@ -39,6 +39,7 @@ Monster::~Monster()
 	delete mPatrolState;
 	delete mStalkingState;
 	delete mAttackState;
+	delete mOnDamageState;
 }
 
 
@@ -100,8 +101,6 @@ void Monster::SetAStarPath(Vector3 destPos)
 	}
 
 }
-
-
 
 
 void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
@@ -231,7 +230,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 			mPathNodesCheck[mPath.size() - 1] = false; // 한번만 Rotation 시켜야하기 때문에 잠근다.
 		}
 
-		// monster->SetAStarPath는 시간이 경과되더라도 mIsAStarPathUpdate = true일때만 갱신.
+		// mMonster->SetAStarPath는 시간이 경과되더라도 mIsAStarPathUpdate = true일때만 갱신.
 
 		float length = (mTargetNode - mPosition).Length();
 

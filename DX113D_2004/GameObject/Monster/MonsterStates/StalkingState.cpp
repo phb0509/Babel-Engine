@@ -9,24 +9,24 @@ StalkingState::~StalkingState()
 {
 }
 
-void StalkingState::Enter(Monster* monster)
+void StalkingState::Enter(Monster* mMonster)
 {
 	mPlayer = GM->Get()->GetPlayer();
-	monster->GetPath().clear();
-	mPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, monster,placeholders::_1, placeholders::_2);
+	mMonster->GetPath().clear();
+	mPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, mMonster,placeholders::_1, placeholders::_2);
 }
 
-void StalkingState::Execute(Monster* monster)
+void StalkingState::Execute(Monster* mMonster)
 {
 	if (!mbIsAttack) // 계속 타겟 추적.
 	{
-		//monster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, monster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수... 로테이션필요없다.
+		//mMonster->ExecuteRotationPeriodFunction(mPeriodFuncPointer, mMonster, mPlayer->position, 0.5f); // 최적화를 위한 콜백함수... 로테이션필요없다.
 		//mutant->MoveToDestination(mutant, GM->Get()->GetPlayer()->position, mutant->GetMoveSpeed()); // 이동
 
-		monster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->mPosition); // AStar 타겟
-		monster->SetAnimation(eAnimationStates::Run);
+		mMonster->MoveToDestUsingAStar(GM->Get()->GetPlayer()->mPosition); // AStar 타겟
+		mMonster->SetAnimation(eAnimationStates::Run);
 
-		if (monster->GetDistanceToPlayer() <= monster->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.
+		if (mMonster->GetDistanceToPlayer() <= mMonster->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.
 		{
 			mbIsAttack = true;
 		}
@@ -34,9 +34,9 @@ void StalkingState::Execute(Monster* monster)
 
 	else // 공격 상태.
 	{
-		monster->SetAnimation(eAnimationStates::SmashAttack);
+		mMonster->SetAnimation(eAnimationStates::SmashAttack);
 
-		if (monster->GetDistanceToPlayer() > monster->GetDistanceToPlayerForAttack()) // 캐릭터가 멀어지면
+		if (mMonster->GetDistanceToPlayer() > mMonster->GetDistanceToPlayerForAttack()) // 캐릭터가 멀어지면
 		{
 			mbIsAttack = false;
 		}
@@ -45,7 +45,7 @@ void StalkingState::Execute(Monster* monster)
 	
 }
 
-void StalkingState::Exit(Monster* monster)
+void StalkingState::Exit(Monster* mMonster)
 {
 
 }

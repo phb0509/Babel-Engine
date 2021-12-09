@@ -75,6 +75,8 @@ protected:
 	PatrolState* mPatrolState;
 	StalkingState* mStalkingState;
 	AttackState* mAttackState;
+	OnDamageState* mOnDamageState;
+
 	ModelAnimator* mModelAnimator;
 
 

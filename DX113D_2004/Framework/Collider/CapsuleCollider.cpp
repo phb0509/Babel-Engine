@@ -3,7 +3,7 @@
 CapsuleCollider::CapsuleCollider(float radius, float height, UINT stackCount, UINT sliceCount)
     : radius(radius), height(height), stackCount(stackCount), sliceCount(sliceCount)
 {
-    mType = CAPSULE;
+    mType = eType::CAPSULE;
     CreateMesh();
 }
 

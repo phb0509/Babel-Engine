@@ -3,7 +3,7 @@
 BoxCollider::BoxCollider(Vector3 minBox, Vector3 maxBox)
     : minBox(minBox), maxBox(maxBox)
 {
-    mType = BOX;
+    mType = eType::BOX;
     CreateMesh();
 }
 

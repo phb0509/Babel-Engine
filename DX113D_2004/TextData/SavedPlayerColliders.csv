@@ -1,4 +1,4 @@
-ColliderName,,NodeName,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
+ColliderName,,NodeName,,ColliderType,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
 
-bodyCollider,,Spine,,0.000,15.000,0.000,, 0.000,0.000,0.000,, 40.000,70.000,30.000
-swordCollider,,Sword_joint,,-12.500,-3.000,-49.000,, -0.060,0.250,0.000,, 6.000,1.000,65.000
+bodyCollider,,Hips,,Capsule Collider,,0.000,5.000,0.000,, 0.000,0.000,0.000,, 20.000,20.000,20.000
+swordCollider,,Sword_joint,,Box Collider,,-12.500,-3.000,-49.000,, -0.060,0.250,0.000,, 6.000,1.000,65.000

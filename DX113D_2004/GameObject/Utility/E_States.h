@@ -21,5 +21,12 @@ namespace states
 		Die,
 	};
 
+	enum class eType
+	{
+		BOX,
+		SPHERE,
+		CAPSULE,
+		NONE
+	};
 	
 }

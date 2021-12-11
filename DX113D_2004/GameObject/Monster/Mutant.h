@@ -9,6 +9,7 @@ public:
 	{
 		string colliderName;
 		string nodeName;
+		int colliderType;
 
 		Vector3 position;
 		Vector3 rotation;

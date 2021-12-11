@@ -6,9 +6,6 @@ public:
 
 	struct ColliderDataForSave
 	{
-		string colliderName;
-		string nodeName;
-
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;

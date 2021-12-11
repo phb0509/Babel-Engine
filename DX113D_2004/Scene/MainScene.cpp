@@ -22,7 +22,6 @@ MainScene::MainScene() :
 	mObstacle2->UpdateWorld();
 	mObstacle2->GetCollider()->UpdateWorld();*/
 
-
 	mMonsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
 	//mMonsters[1]->position = { 45.0f, 0.0f, 50.0f };
 

@@ -962,12 +962,15 @@ void ColliderSettingScene::saveAsBinary()
 		{
 			binaryWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
 			binaryWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
+			
+			UINT colliderType = static_cast<int>(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->GetType());
+			binaryWriter.UInt(colliderType); // 컬라이더타입
 
 			ColliderDataForSave data;
 			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
 			data.rotation = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation;
 			data.scale = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale;
-			// 어떤종류의 컬라이더인지도 저장해야됨, 박스인지 스피어인지
+
 			colliderDatas.push_back(data);
 		}
 	}
@@ -989,9 +992,10 @@ void ColliderSettingScene::saveAsCSV()
 
 	fprintf( // 컬럼명
 		file,
-		"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+		"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 		"ColliderName", "",
 		"NodeName", "",
+		"ColliderType", "",
 		"Position.x", "Position.y", "Position.z", "",
 		"Rotation.x", "Rotation.y", "Rotation.z", "",
 		"Scale.x", "Scale.y", "Scale.z"
@@ -1015,11 +1019,26 @@ void ColliderSettingScene::saveAsCSV()
 			const char* modelName = t.c_str();
 			string colliderName = mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]; // 직접 작성한 컬라이더 이름. 
 			string nodeName = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName; // 해당 컬라이더가 위치한 노드이름 ex) LeftArm
+			string colliderType = "";
+
+			switch (mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->GetType())
+			{
+			case eType::BOX:
+				colliderType = "Box Collider";
+				break;
+			case eType::SPHERE:
+				colliderType = "Sphere Collider";
+				break;
+			case eType::CAPSULE:
+				colliderType = "Capsule Collider";
+				break;
+			}
+
 
 			fprintf(
 				file,
-				"%s,%s,%s,%s,%.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f\n",
-				colliderName.c_str(), "", nodeName.c_str(), "",
+				"%s,%s,%s,%s,%s,%s,%.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f\n",
+				colliderName.c_str(), "", nodeName.c_str(), "", colliderType.c_str(),"",
 				data.position.x, data.position.y, data.position.z, "",
 				data.rotation.x, data.rotation.y, data.rotation.z, "",
 				data.scale.x, data.scale.y, data.scale.z

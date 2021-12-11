@@ -1,11 +1,11 @@
 #include "Framework.h"
 
 Player::Player()
-	: ModelAnimator(), 
-	mbIsInitialize(false), 
-	state(IDLE), 
+	: ModelAnimator(),
+	mbIsInitialize(false),
+	state(IDLE),
 	mbIsNormalAttack(false),
-	mbIsNormalAttackCollide(false), 
+	mbIsNormalAttackCollide(false),
 	mNormalAttackDamage(10.0f)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -17,11 +17,11 @@ Player::Player()
 
 	SetShader(L"ModelAnimation");
 
-	ReadClip("Player","TPose.clip");
-	ReadClip("Player","Idle.clip");
-	ReadClip("Player","Run.clip");
-	ReadClip("Player","Attack.clip");
-	ReadClip("Player","Die.clip");
+	ReadClip("Player", "TPose.clip");
+	ReadClip("Player", "Idle.clip");
+	ReadClip("Player", "Run.clip");
+	ReadClip("Player", "Attack.clip");
+	ReadClip("Player", "Die.clip");
 
 	SetEndEvent(RUN, bind(&Player::setIdle, this));
 	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));
@@ -48,7 +48,7 @@ void Player::Update()
 	}
 
 	setColliders();
-	
+
 	for (int i = 0; i < mColliders.size(); i++)
 	{
 		mColliders[i].collider->Update();
@@ -85,7 +85,7 @@ void Player::input()
 	{
 		moveInWorldCamera();
 	}
-	
+
 
 	if (KEY_DOWN(VK_LBUTTON))
 	{
@@ -100,7 +100,7 @@ void Player::moveInTargetCamera()
 	float terrainY = mTerrain->GetHeight(mPosition);
 
 	mPosition.y = terrainY;
-	
+
 	if (KEY_PRESS('W'))
 	{
 		rotate();
@@ -176,18 +176,20 @@ void Player::rotate()
 	{
 		if (CompareFloat(TARGETCAMERA->mCameraForward.x, -Forward().x) &&
 			CompareFloat(TARGETCAMERA->mCameraForward.z, -Forward().z))
-		{	}
+		{
+		}
 		else
 		{
 			mRotation.y += 0.02f;
 		}
 	}
 
-	else if(temp.y >= 0.0f)// 왼쪽으로 회전해야 한다면.
+	else if (temp.y >= 0.0f)// 왼쪽으로 회전해야 한다면.
 	{
 		if (CompareFloat(TARGETCAMERA->mCameraForward.x, -Forward().x) &&
 			CompareFloat(TARGETCAMERA->mCameraForward.z, -Forward().z))
-		{	}
+		{
+		}
 		else
 		{
 			mRotation.y -= 0.02f;
@@ -208,24 +210,21 @@ void Player::checkNormalAttackCollision()
 			{
 				if (mCollidersMap["swordCollider"]->Collision(mMonsters[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
 				{
-					int a = 0;
+					//mCollidersMap["swordCollider"]->SetColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
 					mMonsters[i]->OnDamage(mNormalAttackDamage);
 				}
 			}
 		}
 	}
-	
+
 }
-
-
-
 
 
 void Player::setAttackEnd()
 {
 	setAnimation(IDLE);
 	mbIsNormalAttack = false;
-
+	//mCollidersMap["swordCollider"]->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void Player::normalAttack()
@@ -250,6 +249,7 @@ void Player::loadBinaryFile()
 {
 	BinaryReader binaryReader(L"TextData/Player.map");
 	UINT colliderCount = binaryReader.UInt();
+	int colliderType;
 
 	mColliderSRTdatas.resize(colliderCount);
 	mColliderDatas.resize(colliderCount);
@@ -260,6 +260,7 @@ void Player::loadBinaryFile()
 	{
 		mColliderDatas[i].colliderName = binaryReader.String();
 		mColliderDatas[i].nodeName = binaryReader.String();
+		mColliderDatas[i].colliderType = binaryReader.UInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
@@ -271,23 +272,39 @@ void Player::loadBinaryFile()
 		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
 	}
 
+
 	// Create Colliders;
 	for (int i = 0; i < mColliderDatas.size(); i++)
 	{
 		SettedCollider settedCollider;
-		Collider* collider = new BoxCollider(); // 일단 박스
+		Collider* collider = nullptr;
 
-		collider->mTag = mColliderDatas[i].colliderName;
-		collider->mPosition = mColliderDatas[i].position;
-		collider->mRotation = mColliderDatas[i].rotation;
-		collider->mScale = mColliderDatas[i].scale;
+		switch (mColliderDatas[i].colliderType)
+		{
+		case 0: collider = new BoxCollider();
+			break;
+		case 1: collider = new SphereCollider();
+			break;
+		case 2: collider = new CapsuleCollider();
+			break;
+		default:
+			break;
+		}
+		 
+		if (collider != nullptr)
+		{
+			collider->mTag = mColliderDatas[i].colliderName;
+			collider->mPosition = mColliderDatas[i].position;
+			collider->mRotation = mColliderDatas[i].rotation;
+			collider->mScale = mColliderDatas[i].scale;
 
-		settedCollider.colliderName = mColliderDatas[i].colliderName;
-		settedCollider.nodeName = mColliderDatas[i].nodeName;
-		settedCollider.collider = collider;
+			settedCollider.colliderName = mColliderDatas[i].colliderName;
+			settedCollider.nodeName = mColliderDatas[i].nodeName;
+			settedCollider.collider = collider;
 
-		mColliders.push_back(settedCollider);
-		mCollidersMap[mColliderDatas[i].colliderName] = collider;
+			mColliders.push_back(settedCollider);
+			mCollidersMap[mColliderDatas[i].colliderName] = collider;
+		}
 	}
 
 	binaryReader.CloseReader();
@@ -295,7 +312,7 @@ void Player::loadBinaryFile()
 
 void Player::initialize()
 {
-	
+
 }
 
 void Player::setIdle()

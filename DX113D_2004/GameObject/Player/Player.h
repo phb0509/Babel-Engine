@@ -17,6 +17,7 @@ private:
 	{
 		string colliderName;
 		string nodeName;
+		UINT colliderType;
 
 		Vector3 position;
 		Vector3 rotation;

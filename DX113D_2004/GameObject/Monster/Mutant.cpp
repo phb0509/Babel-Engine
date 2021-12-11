@@ -134,6 +134,7 @@ void Mutant::loadBinaryFile()
 {
 	BinaryReader binaryReader(L"TextData/Mutant.map");
 	UINT colliderCount = binaryReader.UInt();
+	int colliderType;
 
 	mColliderSRTdatas.resize(colliderCount);
 	mColliderDatas.resize(colliderCount);
@@ -144,6 +145,7 @@ void Mutant::loadBinaryFile()
 	{
 		mColliderDatas[i].colliderName = binaryReader.String();
 		mColliderDatas[i].nodeName = binaryReader.String();
+		mColliderDatas[i].colliderType = binaryReader.UInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
@@ -159,19 +161,34 @@ void Mutant::loadBinaryFile()
 	for (int i = 0; i < mColliderDatas.size(); i++)
 	{
 		SettedCollider settedCollider;
-		Collider* collider = new BoxCollider(); // 일단 박스
+		Collider* collider = nullptr;
 
-		collider->mTag = mColliderDatas[i].colliderName;
-		collider->mPosition = mColliderDatas[i].position;
-		collider->mRotation = mColliderDatas[i].rotation;
-		collider->mScale = mColliderDatas[i].scale;
+		switch (mColliderDatas[i].colliderType)
+		{
+		case 0: collider = new BoxCollider();
+			break;
+		case 1: collider = new SphereCollider();
+			break;
+		case 2: collider = new CapsuleCollider();
+			break;
+		default:
+			break;
+		}
 
-		settedCollider.colliderName = mColliderDatas[i].colliderName;
-		settedCollider.nodeName = mColliderDatas[i].nodeName;
-		settedCollider.collider = collider;
+		if (collider != nullptr)
+		{
+			collider->mTag = mColliderDatas[i].colliderName;
+			collider->mPosition = mColliderDatas[i].position;
+			collider->mRotation = mColliderDatas[i].rotation;
+			collider->mScale = mColliderDatas[i].scale;
 
-		mColliders.push_back(settedCollider);
-		mCollidersMap[mColliderDatas[i].colliderName] = collider;
+			settedCollider.colliderName = mColliderDatas[i].colliderName;
+			settedCollider.nodeName = mColliderDatas[i].nodeName;
+			settedCollider.collider = collider;
+
+			mColliders.push_back(settedCollider);
+			mCollidersMap[mColliderDatas[i].colliderName] = collider;
+		}
 	}
 
 	binaryReader.CloseReader();

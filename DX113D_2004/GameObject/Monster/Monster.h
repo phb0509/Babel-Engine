@@ -5,6 +5,7 @@ class State;
 class PatrolState;
 class StalkingState;
 class AttackState;
+class OnDamageState;
 
 class Monster : public Transform
 {

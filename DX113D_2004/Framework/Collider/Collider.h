@@ -18,14 +18,7 @@ class CapsuleCollider;
 
 class Collider : public Transform
 {
-public:
-	enum Type
-	{
-		BOX,
-		SPHERE,
-		CAPSULE,
-		NONE
-	};
+
 
 
 public:
@@ -44,12 +37,13 @@ public:
 	void Render();
 
 	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
+	eType GetType() { return mType; }
 
 protected:
 	Material* mMaterial;
 	Mesh* mMesh;
 
-	Type mType;
+	eType mType;
 
 	vector<Vertex> mVertices;
 	vector<UINT> mIndices;

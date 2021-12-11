@@ -124,6 +124,9 @@ private:
 	
 	Monster* mMonster;
 	Terrain* terrain;
+	
+	bool mbIsDropped;
+	int mSelectedIndexFromAssets = -1;
 
 	//string mMeshTextOnInspector;
 	//string mMaterialTextOnInspector;

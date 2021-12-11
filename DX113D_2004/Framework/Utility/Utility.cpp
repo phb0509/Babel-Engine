@@ -218,7 +218,7 @@ void utility::CreateFolders(string path)
 	}
 }
 
-void utility::Indent(int loopCount)
+void utility::IndentRepeatedly(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{
@@ -226,7 +226,7 @@ void utility::Indent(int loopCount)
 	}
 }
 
-void utility::UnIndent(int loopCount)
+void utility::UnIndentRepeatedly(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{
@@ -234,7 +234,7 @@ void utility::UnIndent(int loopCount)
 	}
 }
 
-void utility::Spacing(int loopCount)
+void utility::SpacingRepeatedly(int loopCount)
 {
 	for (int i = 0; i < loopCount; i++)
 	{

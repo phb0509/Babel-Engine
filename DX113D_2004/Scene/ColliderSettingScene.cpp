@@ -11,7 +11,8 @@ ColliderSettingScene::ColliderSettingScene() :
 	mbIsDropEvent(false),
 	mbIsWireFrame(true),
 	mDraggedFileName(""),
-	mDroppedFileName("")
+	mDroppedFileName(""),
+	mbIsDropped(true)
 {
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
@@ -188,7 +189,7 @@ void ColliderSettingScene::selectModel() // perFrame
 	}
 
 	showCreateModelButton();
-	Spacing(3);
+	SpacingRepeatedly(3);
 
 	if (mModels.size() != 0) // ToolModel 할당 되어야 실행. 하이어라키 렌더해야되니까...
 	{
@@ -268,9 +269,9 @@ void ColliderSettingScene::showCreateModelButton()
 		ImGui::RadioButton("StaticMesh", &mbIsSkinnedMesh, 0);
 		ImGui::SameLine();
 
-		Indent(6);
+		IndentRepeatedly(6);
 		ImGui::RadioButton("SkinnedMesh", &mbIsSkinnedMesh, 1);
-		UnIndent(6);
+		UnIndentRepeatedly(6);
 
 		if (ImGui::Button("OK", ImVec2(120, 0)))
 		{
@@ -453,9 +454,9 @@ void ColliderSettingScene::showColliderEditorWindow()
 				ImGui::InputFloat3(Rotation.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mRotation);
 				ImGui::InputFloat3(Scale.c_str(), (float*)&mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mScale);
 
-				Spacing(2);
+				SpacingRepeatedly(2);
 				ImGui::Separator();
-				Spacing(2);
+				SpacingRepeatedly(2);
 			}
 		}
 
@@ -500,17 +501,14 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Checkbox("Export Material", &mbIsExportMaterial);
 		ImGui::Checkbox("Export Animation", &mbIsExportAnimation);
 
-		ImGui::Spacing();
-		ImGui::Spacing();
-		ImGui::Spacing();
+		SpacingRepeatedly(3);
 
 		if (ImGui::Button("Select File..."))
 		{
 			mSelectedFilePath = OpenFileDialog();
 		}
 
-		ImGui::Spacing();
-		ImGui::Spacing();
+		SpacingRepeatedly(2);
 
 		string temp = "Selected File : " + mSelectedFilePath;
 		float wrapWidth = 130.0f;
@@ -525,12 +523,7 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 		ImGui::Text(temp.c_str(), wrapWidth);
 		ImGui::PopTextWrapPos();
 
-		Spacing(2);
-
-		//string fileNameToCreate = GetFileNameWithoutExtension(mSelectedFilePath); // string to char*
-		//vector<char> writable(fileNameToCreate.begin(), fileNameToCreate.end());
-		//writable.push_back('\0');
-		//char* inputText = &writable[0]; // fbx파일이름을 DefaultInputText로 설정.
+		SpacingRepeatedly(2);
 
 		static char inputText[128] = "";
 
@@ -641,7 +634,15 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-		if (ImGui::IsItemHovered())
+		
+
+
+		if (KEY_UP(VK_LBUTTON))
+		{
+			mbIsDropped = true;
+		}
+
+		if (ImGui::IsItemHovered() && mbIsDropped)
 		{
 			checkIndex = i;
 		}
@@ -653,6 +654,7 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 				ImGui::SetDragDropPayload("Assets", &i, sizeof(int));
 				ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor); // 드래그 할 경우, 마우스커서위치에 렌더될 미리보기이미지.
 				mDraggedFileName = fileList[i];
+				mbIsDropped = false;
 			}
 
 			ImGui::EndDragDropSource();
@@ -688,7 +690,7 @@ void ColliderSettingScene::showModelInspector()
 
 	ImGui::Begin("Inspector");
 
-	Spacing(2);
+	SpacingRepeatedly(2);
 
 	string meshType = "";
 
@@ -703,7 +705,7 @@ void ColliderSettingScene::showModelInspector()
 
 	ImGui::Text(meshType.c_str());
 
-	Spacing(2);
+	SpacingRepeatedly(2);
 
 	// Mesh ImageButton and Text Render.
 	{
@@ -724,7 +726,7 @@ void ColliderSettingScene::showModelInspector()
 		ImGui::SameLine();
 		ImVec2 meshTextPosition = ImGui::GetCursorPos();
 
-		Spacing(2);
+		SpacingRepeatedly(2);
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -733,7 +735,7 @@ void ColliderSettingScene::showModelInspector()
 				//IM_ASSERT(payload->DataSize == sizeof(int));
 				//int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
 				//mDraggedFileName = mModelAssetsFileList[payload_n];
-
+			
 				if (GetExtension(mDraggedFileName) == "mesh") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
@@ -759,7 +761,7 @@ void ColliderSettingScene::showModelInspector()
 		ImGui::Text(mModelDatas[mCurrentModelIndex].meshTextOnInspector.c_str()); // Text Render.
 	}
 
-	Spacing(2);
+	SpacingRepeatedly(2);
 
 	// Material ImageButton and Text Render.
 	{
@@ -788,7 +790,6 @@ void ColliderSettingScene::showModelInspector()
 			{
 				//IM_ASSERT(payload->DataSize == sizeof(int));
 				//int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
-
 				if (GetExtension(mDraggedFileName) == "mat") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					materialImageButtonTexture = mExtensionPreviewImages["mat"];
@@ -805,7 +806,7 @@ void ColliderSettingScene::showModelInspector()
 		ImGui::Text(mModelDatas[mCurrentModelIndex].materialTextOnInspector.c_str());
 	}
 
-	Spacing(2);
+	SpacingRepeatedly(2);
 
 
 
@@ -848,9 +849,6 @@ void ColliderSettingScene::showModelInspector()
 			{
 				if (GetExtension(mDraggedFileName) == "clip")
 				{
-					string t = mCurrentModel->GetName();
-					string b = mDraggedFileName;
-					int c = 0;
 					mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
 				}
 			}
@@ -860,12 +858,12 @@ void ColliderSettingScene::showModelInspector()
 
 	ImGui::SetCursorPos(wireFrameRadioButtonPosition);
 
-	Spacing(2);
+	SpacingRepeatedly(2);
 
 	ImGui::RadioButton("SolidFrame", &mbIsWireFrame, 0);
 	ImGui::SameLine();
 
-	Indent(6);
+	IndentRepeatedly(6);
 	ImGui::RadioButton("WireFrame", &mbIsWireFrame, 1);
 
 	if (mbIsWireFrame)
@@ -877,7 +875,7 @@ void ColliderSettingScene::showModelInspector()
 		mRSState->FillMode(D3D11_FILL_SOLID);
 	}
 
-	UnIndent(6);
+	UnIndentRepeatedly(6);
 
 	ImGui::End();
 }
@@ -917,6 +915,15 @@ void ColliderSettingScene::showTestWindow()
 			ImGui::Text(t.c_str());
 		}
 
+		{
+			string t = "IsDropped : " + to_string(mbIsDropped);
+			ImGui::Text(t.c_str());
+		}
+
+		{
+			string t = "SelectedIndex  : " + to_string(mSelectedIndexFromAssets);
+			ImGui::Text(t.c_str());
+		}
 
 
 	}

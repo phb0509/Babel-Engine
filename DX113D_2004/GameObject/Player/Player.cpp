@@ -219,7 +219,6 @@ void Player::checkNormalAttackCollision()
 
 }
 
-
 void Player::setAttackEnd()
 {
 	setAnimation(IDLE);
@@ -341,11 +340,11 @@ void Player::PostRender()
 	}
 
 	ImGui::InputFloat3("Player Position", (float*)&this->mPosition);
-	Spacing(1);
+	SpacingRepeatedly(1);
 	ImGui::InputFloat3("Mutant Position", (float*)&GM->GetMonsters()[0]->mPosition);
-	Spacing(1);
+	SpacingRepeatedly(1);
 	ImGui::InputFloat3("PlayerSword Position", (float*)&mCollidersMap["swordCollider"]->mPosition);
-	Spacing(1);
+	SpacingRepeatedly(1);
 	ImGui::InputFloat3("MutantBody Position", (float*)&GM->GetMonsters()[0]->GetHitCollider()->mPosition);
 
 	//ImGui::InputFloat3("SwordRotation", (float*)&GM->GetMonsters()[i]->mRotation);

@@ -58,13 +58,13 @@ void Environment::PostRender()
 	}
 
 	/*ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
-	ImGui::Spacing();
+	ImGui::SpacingRepeatedly();
 	ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
-	ImGui::Spacing();
+	ImGui::SpacingRepeatedly();
 	ImGui::Text("TargetCameraPosition : %.1f,  %.1f,  %.1f", mTargetCamera->mPosition.x, mTargetCamera->mPosition.y, mTargetCamera->mPosition.z);
-	ImGui::Spacing();
+	ImGui::SpacingRepeatedly();
 	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
-	ImGui::Spacing();
+	ImGui::SpacingRepeatedly();
 	ImGui::Text("WorldCameraForward : %.1f,  %.1f,  %.1f", mWorldCamera->Forward().x, mWorldCamera->Forward().y, mWorldCamera->Forward().z);*/
 
 	ImGui::Spacing();

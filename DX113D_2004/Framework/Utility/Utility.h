@@ -21,9 +21,9 @@ namespace utility
 	char* ToCharPointer(string string);
 
 	void CreateFolders(string path);
-	void Indent(int loopCount);
-	void UnIndent(int loopCount);
-	void Spacing(int loopCount);
+	void IndentRepeatedly(int loopCount);
+	void UnIndentRepeatedly(int loopCount);
+	void SpacingRepeatedly(int loopCount);
 
 
 	bool ExistDirectory(string path);

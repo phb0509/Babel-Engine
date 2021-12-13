@@ -12,7 +12,9 @@ ColliderSettingScene::ColliderSettingScene() :
 	mbIsWireFrame(true),
 	mDraggedFileName(""),
 	mDroppedFileName(""),
-	mbIsDropped(true)
+	mbIsDropped(true),
+	mCurrentClipSpeed(1.0f),
+	mCurrentClipTakeTime(0.2f)
 {
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
@@ -464,6 +466,8 @@ void ColliderSettingScene::showColliderEditorWindow()
 		{
 			saveAsBinary();
 		}
+
+		ImGui::SameLine();
 	}
 
 	ImGui::End();
@@ -634,9 +638,6 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		ImGui::ImageButton(mExtensionPreviewImages[fileExtension]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-		
-
-
 		if (KEY_UP(VK_LBUTTON))
 		{
 			mbIsDropped = true;
@@ -735,7 +736,7 @@ void ColliderSettingScene::showModelInspector()
 				//IM_ASSERT(payload->DataSize == sizeof(int));
 				//int payload_n = *(const int*)payload->Data; // source에서 드래그한 이미지의 index.
 				//mDraggedFileName = mModelAssetsFileList[payload_n];
-			
+
 				if (GetExtension(mDraggedFileName) == "mesh") // mesh파일을 드랍했는지 .mat을 드랍했는지 체크
 				{
 					meshImageButtonTexture = mExtensionPreviewImages["mesh"];
@@ -808,57 +809,84 @@ void ColliderSettingScene::showModelInspector()
 
 	SpacingRepeatedly(2);
 
-
-
-	ImVec2 clipTargetButtonPosition = ImGui::GetCursorPos();
-	ImVec2 wireFrameRadioButtonPosition;
-
-	if (ImGui::TreeNode("Clips"))
+	if (mCurrentModel->GetHasMeshes())
 	{
-		static int selected = -1;
-		for (int i = 0; i < mCurrentModel->GetClips().size(); i++)
+		ImVec2 clipTargetButtonPosition = ImGui::GetCursorPos();
+		ImVec2 wireFrameRadioButtonPosition;
+
+		if (ImGui::TreeNode("Clips"))
 		{
-			char buf[50];
-			string t = mCurrentModel->GetClipNames()[i];
-
-			sprintf_s(buf, "%s", t.c_str());
-
-			if (ImGui::Selectable(buf, selected == i))
+			static int selected = -1;
+			for (int i = 0; i < mCurrentModel->GetClips().size(); i++)
 			{
-				selected = i;
-				mCurrentModel->PlayClip(i);
-			}
-		}
-		ImGui::TreePop();
-	}
+				char buf[50];
+				string t = mCurrentModel->GetClipNames()[i];
 
-	wireFrameRadioButtonPosition = ImGui::GetCursorPos();
-	clipTargetButtonPosition.x += 100.0f;
+				sprintf_s(buf, "%s", t.c_str());
 
-	// Clip ImageButton Render.
-	{
-		ImGui::SetCursorPos(clipTargetButtonPosition);
-
-		clipImageButtonTexture = mExtensionPreviewImages["default"];
-
-		ImGui::ImageButton(clipImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
-			{
-				if (GetExtension(mDraggedFileName) == "clip")
+				if (ImGui::Selectable(buf, selected == i))
 				{
-					mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
+					selected = i;
+					//mCurrentModel->PlayClip(i, 1.0f, 0.2f);
+					mCurrentModel->PlayClip(i,mCurrentClipSpeed,mCurrentClipSpeed);
 				}
 			}
-			ImGui::EndDragDropTarget();
+			ImGui::TreePop();
 		}
+
+		wireFrameRadioButtonPosition = ImGui::GetCursorPos();
+		clipTargetButtonPosition.x += 100.0f;
+
+		// Clip ImageButton Render.
+		{
+			ImGui::SetCursorPos(clipTargetButtonPosition);
+
+			clipImageButtonTexture = mExtensionPreviewImages["default"];
+
+			ImGui::ImageButton(clipImageButtonTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets"))
+				{
+					if (GetExtension(mDraggedFileName) == "clip")
+					{
+						mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+
+		ImGui::SetCursorPos(wireFrameRadioButtonPosition);
+
+		SpacingRepeatedly(2);
+
+		static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+		static int slider_i = 50;
+
+		ImGui::SliderInt("Animation Frame", &slider_i, 0, 100, "%d", flags);
+
+		SpacingRepeatedly(2);
+
+		ImGui::SliderFloat("Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
+
+		SpacingRepeatedly(2);
+
+		ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
+
+		SpacingRepeatedly(2);
+
+
 	}
 
-	ImGui::SetCursorPos(wireFrameRadioButtonPosition);
+
+	
+
 
 	SpacingRepeatedly(2);
+
+	// WireFrame RadioButton Render.
 
 	ImGui::RadioButton("SolidFrame", &mbIsWireFrame, 0);
 	ImGui::SameLine();
@@ -969,7 +997,7 @@ void ColliderSettingScene::saveAsBinary()
 		{
 			binaryWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
 			binaryWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
-			
+
 			UINT colliderType = static_cast<int>(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->GetType());
 			binaryWriter.UInt(colliderType); // 컬라이더타입
 
@@ -1045,7 +1073,7 @@ void ColliderSettingScene::saveAsCSV()
 			fprintf(
 				file,
 				"%s,%s,%s,%s,%s,%s,%.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f,%s, %.3f,%.3f,%.3f\n",
-				colliderName.c_str(), "", nodeName.c_str(), "", colliderType.c_str(),"",
+				colliderName.c_str(), "", nodeName.c_str(), "", colliderType.c_str(), "",
 				data.position.x, data.position.y, data.position.z, "",
 				data.rotation.x, data.rotation.y, data.rotation.z, "",
 				data.scale.x, data.scale.y, data.scale.z
@@ -1159,6 +1187,9 @@ void ColliderSettingScene::allSaveAsCSV()
 	}
 
 }
+
+
+
 
 void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToCreate, string parentFolderName)
 {

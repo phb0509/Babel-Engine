@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 ModelClip::ModelClip()
-	: mDuration(0), mTickPerSecond(0), mFrameCount(0)
+	: mDuration(0), mFramePerSecond(0), mFrameCount(0)
 {
 }
 

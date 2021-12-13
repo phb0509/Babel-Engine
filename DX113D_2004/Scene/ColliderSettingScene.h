@@ -13,14 +13,14 @@ public:
 
 	struct TreeNodeData
 	{
-		Collider* collider;
 		string nodeName;
+		Collider* collider;
 	};
 
 	struct ModelData // 각 모델이 가지는 데이터..
 	{
-		map<int, vector<int>> preprocessedNodes;
-		map<int, bool> nodeCheck;
+		map<int, vector<int>> preprocessedNodes; // 각 노드가 가지고 있는 자식노드들 인덱스
+		map<int, bool> nodeCheck; // TreeNodeRecurs 방문흔적
 		map<int, bool> createdCollidersCheck;
 		map<int, TreeNodeData> nodeCollidersMap;
 		map<int, string> nodeNameMap;
@@ -64,7 +64,10 @@ private:
 	void saveAsCSV();
 	void allSaveAsBinary();
 	void allSaveAsCSV();
+	//void loadBinaryFile();
+
 	void loadFileList(string folderName, vector<string>& fileList);
+	
 
 private:
 	ToolModel* mModel;
@@ -128,6 +131,6 @@ private:
 	bool mbIsDropped;
 	int mSelectedIndexFromAssets = -1;
 
-	//string mMeshTextOnInspector;
-	//string mMaterialTextOnInspector;
+	float mCurrentClipSpeed;
+	float mCurrentClipTakeTime;
 };

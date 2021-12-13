@@ -47,18 +47,18 @@ void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	ModelClip* clip = new ModelClip();
 
 	clip->mName = binaryReader.String();
-	clip->mDuration = binaryReader.Float();
-	clip->mTickPerSecond = binaryReader.Float();
-	clip->mFrameCount = binaryReader.UInt();
+	clip->mDuration = binaryReader.Float(); // 총 프레임 개수. 믹사모랑 일치.
+	clip->mFramePerSecond = binaryReader.Float(); // FramesPerSecond // 초당 재생되는 프레임 개수.
+	clip->mFrameCount = binaryReader.UInt(); // 추출기에서 읽어들일 때 그냥 총프레임개수+1로 설정해버림.
 
-	UINT keyFrameCount = binaryReader.UInt();
+	UINT keyFrameCount = binaryReader.UInt(); // 모델 노드개수. 애초에 믹사모에서 다운받을 때 모델넣고 다운받으니까.
 
 	for (UINT i = 0; i < keyFrameCount; i++)
 	{
 		KeyFrame* keyFrame = new KeyFrame();
 		keyFrame->boneName = binaryReader.String();
 
-		UINT size = binaryReader.UInt();
+		UINT size = binaryReader.UInt(); // transforsm.size, 
 
 		if (size > 0)
 		{
@@ -79,23 +79,29 @@ void ModelAnimator::Update()
 {
 	if (mClips.size() != 0) // ModelAnimation
 	{
-		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0];
+		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
 
-		{ // 현재 애니메이션.
-			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
-			ModelClip* clip = mClips[desc.clip];
+		{ // 현재 클립.
+			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
+			ModelClip* clip = mClips[desc.clip]; // desc.clip == clipIndex
 
-			float time = 1.0f / clip->mTickPerSecond / desc.speed;
+			float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로다운받음.
 			desc.runningTime += DELTA;
 
 			if (desc.time >= 1.0f)
 			{
-				if (desc.curFrame + desc.time >= clip->mFrameCount)
+				if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
 				{
-					if (mEndEvent.count(desc.clip) > 0)
+					if (mEndEvent.count(desc.clip) > 0) // 엔드이벤트가 있으면
+					{
 						mEndEvent[desc.clip]();
+					}
+						
 					if (mEndParamEvent.count(desc.clip) > 0)
+					{
 						mEndParamEvent[desc.clip](mParam[desc.clip]);
+					}
+						
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
@@ -128,9 +134,10 @@ void ModelAnimator::Update()
 					desc.time = 0.0f;
 					desc.clip = -1;
 				}
+
 				else
 				{
-					float time = 1.0f / clip->mTickPerSecond / desc.speed;
+					float time = 1.0f / clip->mFramePerSecond / desc.speed;
 					desc.runningTime += DELTA;
 
 					if (desc.time >= 1.0f)
@@ -145,7 +152,6 @@ void ModelAnimator::Update()
 			}
 		}
 	}
-
 }
 
 
@@ -176,15 +182,16 @@ void ModelAnimator::Render()
 	MeshRender(); // 부모클래스(ModelReader)함수.
 }
 
+
 void ModelAnimator::PostRender()
 {
 }
 
 void ModelAnimator::PlayClip(UINT clip, float speed, float takeTime)
 {
-	mFrameBuffer->data.tweenDesc[0].takeTime = takeTime;
 	mFrameBuffer->data.tweenDesc[0].next.clip = clip;
 	mFrameBuffer->data.tweenDesc[0].next.speed = speed;
+	mFrameBuffer->data.tweenDesc[0].takeTime = takeTime;
 }
 
 Matrix ModelAnimator::GetTransformByNode(int nodeIndex)

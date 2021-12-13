@@ -30,7 +30,7 @@ void ModelAnimators::Update()
 			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur;
 			ModelClip* clip = mClips[desc.clip];
 
-			float time = 1.0f / clip->mTickPerSecond / desc.speed;
+			float time = 1.0f / clip->mFramePerSecond / desc.speed;
 			desc.runningTime += DELTA;
 
 			if (desc.time >= 1.0f)
@@ -73,7 +73,7 @@ void ModelAnimators::Update()
 				}
 				else
 				{
-					float time = 1.0f / clip->mTickPerSecond / desc.speed;
+					float time = 1.0f / clip->mFramePerSecond / desc.speed;
 					desc.runningTime += DELTA;
 
 					if (desc.time >= 1.0f)

@@ -19,8 +19,6 @@ class CapsuleCollider;
 class Collider : public Transform
 {
 
-
-
 public:
 	Collider();
 	virtual ~Collider();

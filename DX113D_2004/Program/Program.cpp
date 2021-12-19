@@ -10,7 +10,7 @@
 #include "Scene/MainScene.h"
 #include "Scene/ColliderSettingScene.h"
 #include "Scene/MapToolScene.h"
-#include "Scene/TestScene.h"
+#include "Scene/ColorPickingScene.h"
 
 
 Program::Program()
@@ -20,8 +20,8 @@ Program::Program()
 	//SceneManager::Get()->Add("export", new ModelExportScene());
 	//SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
-	SceneManager::Get()->Add("start", new ColliderSettingScene());
-	//SceneManager::Get()->Add("start", new TestScene());
+	//SceneManager::Get()->Add("start", new ColliderSettingScene());
+	SceneManager::Get()->Add("start", new ColorPickingScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
@@ -39,7 +39,7 @@ void Program::Update()
 {
 	if (KEY_DOWN(VK_F1))
 	{
-		Transform::mbIsAxisDrawing = !Transform::mbIsAxisDrawing;
+		Transform::mbIsRenderGizmos = !Transform::mbIsRenderGizmos;
 	}
 	
 

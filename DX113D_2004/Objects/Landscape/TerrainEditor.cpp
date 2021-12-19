@@ -35,7 +35,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mRenderTargets[0] = mDepthRenderTarget;
 
 	//mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
-	mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV();
+	mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV(); // mDepthRenderTarget->GetSRV()
 	mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
 
 	mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
@@ -111,8 +111,8 @@ void TerrainEditor::PreRender()
 	mWorldBuffer->SetVSBuffer(0);
 
 	// 여기다 DepthShader 관련.
-	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
-	mDepthMaterial->Set();
+	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // 깊이값이 mDepthStencil에 저장..
+	mDepthMaterial->Set(); 
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
@@ -879,8 +879,6 @@ void TerrainEditor::showTextureAsset()
 {
 	ImGui::Begin("Asset");
 	getFileNames("Textures/LandScape");
-
-
 
 	ImGui::End();
 }

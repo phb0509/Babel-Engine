@@ -2,7 +2,7 @@
 
 
 Mutant::Mutant()
-	: ModelAnimator(),
+	: 
 	mAnimation(eAnimationStates::Idle),
 	mFSM(eFSMstates::Patrol),
 	mbOnHit(false)
@@ -56,6 +56,11 @@ void Mutant::Update()
 
 	UpdateWorld();
 	ModelAnimator::Update();
+}
+
+void Mutant::PreRender()
+{
+	
 }
 
 void Mutant::Render()
@@ -115,6 +120,7 @@ void Mutant::SetAnimation(eAnimationStates value)
 		PlayClip(static_cast<int>(mAnimation));
 	}
 }
+
 
 
 

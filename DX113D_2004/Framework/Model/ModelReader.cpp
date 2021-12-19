@@ -1,6 +1,7 @@
 #include "Framework.h"
 
-ModelReader::ModelReader()
+ModelReader::ModelReader():
+	mbIsSetColorPickingShader(false)
 {
 	mDefaultMaterial = new Material();
 	mDefaultMaterial->SetDiffuseMap(L"ModelData/DefaultDiffuseMap.png");
@@ -276,6 +277,7 @@ void ModelReader::SetBox(Vector3* minBox, Vector3* maxBox)
 		maxBox->z = max(maxBox->z, maxPos.z);
 	}
 }
+
 
 void ModelReader::deleteDatas()
 {

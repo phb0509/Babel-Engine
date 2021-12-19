@@ -106,14 +106,14 @@ private:
 	UINT mWidth, mHeight;
 
 	Texture* mHeightMap;
+	RayBuffer* mRayBuffer;
 
 	ComputeShader* mComputeShader;
-	RayBuffer* mRayBuffer;
 	ComputeStructuredBuffer* mComputePickingStructuredBuffer;
 	InputDesc* mInput;
 	OutputDesc* mOutput; // GPU에서 읽어온 값
-	UINT mPolygonCount;
 
+	UINT mPolygonCount;
 	BrushBuffer* mBrushBuffer;
 
 	float mAdjustValue;

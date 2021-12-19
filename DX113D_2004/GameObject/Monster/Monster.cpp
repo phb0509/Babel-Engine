@@ -1,6 +1,7 @@
 #include "Framework.h"
 
 Monster::Monster() :
+	ModelAnimator(),
 	mDamage(100.0f),
 	mMaxHP(1000.0f),
 	mCurrentHP(0.0f),
@@ -20,7 +21,6 @@ Monster::Monster() :
 	mBeforeTargetPosition(0.0f,0.0f,0.0f),
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false)
-
 {
 	mCurrentHP = mMaxHP;
 	mPatrolState = new PatrolState();

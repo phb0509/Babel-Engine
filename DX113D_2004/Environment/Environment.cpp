@@ -41,6 +41,7 @@ void Environment::PostRender()
 		mSun->mPosition = lightBuffer->data.lights[0].position;
 	}*/
 	
+	ImGui::Begin("Camera Info");
 	ImGui::Text("SelectCamera");
 
 	if (ImGui::Button("TargetCamera"))
@@ -57,6 +58,12 @@ void Environment::PostRender()
 		mTargetCamera->SetIsMouseInputing(false); //// 월드카메라시점일 때 타겟카메라의 마우스이동량에 따른 회전을 막기위함.
 	}
 
+	SpacingRepeatedly(2);
+
+	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
+	ImGui::Text("WorldCameraRotation : %.1f,  %.1f,  %.1f", mWorldCamera->mRotation.x, mWorldCamera->mRotation.y, mWorldCamera->mRotation.z);
+
+
 	/*ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
 	ImGui::SpacingRepeatedly();
 	ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
@@ -69,6 +76,7 @@ void Environment::PostRender()
 
 	ImGui::Spacing();
 
+	ImGui::End();
 	//showLightInformation();
 
 	mTargetCamera->PostRender();

@@ -7,13 +7,14 @@ class StalkingState;
 class AttackState;
 class OnDamageState;
 
-class Monster : public Transform
+class Monster : public Transform , public ModelAnimator
 {
 public:
 	Monster();
 	~Monster();
 
 	virtual void Update() = 0;
+	virtual void PreRender() = 0;
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
 	virtual void OnDamage(float damage) = 0;
@@ -44,7 +45,6 @@ public:
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
-
 
 
 	// Test¿ë Getter

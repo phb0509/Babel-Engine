@@ -60,5 +60,5 @@ void Collider::Render()
   
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 
-    RenderAxis();
+    RenderGizmos();
 }

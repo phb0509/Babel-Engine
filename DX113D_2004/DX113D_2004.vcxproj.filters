@@ -330,7 +330,7 @@
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\TestScene.h">
+    <ClInclude Include="Scene\ColorPickingScene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Objects\Basic\EmptyObject.h">
@@ -650,7 +650,7 @@
     <ClCompile Include="Framework\Collider\TetrahedronCollider.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\TestScene.cpp">
+    <ClCompile Include="Scene\ColorPickingScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Basic\EmptyObject.cpp">
@@ -735,6 +735,8 @@
     <FxCompile Include="Shaders\PixelPicking.hlsl" />
     <FxCompile Include="Shaders\DepthShader.hlsl" />
     <FxCompile Include="Shaders\TestCS.hlsl" />
+    <FxCompile Include="Shaders\ColorPicking.hlsl" />
+    <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

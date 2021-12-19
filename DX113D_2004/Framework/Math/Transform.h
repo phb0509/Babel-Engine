@@ -1,6 +1,12 @@
 #pragma once
 
+
 class Monster;
+class Collider;
+class BoxCollider;
+class SphereCollider;
+class CapsuleCollider;
+
 
 class Transform
 {
@@ -9,7 +15,7 @@ public:
 	virtual ~Transform();
 
 	void UpdateWorld();
-	void RenderAxis();
+	void RenderGizmos();
 
 	void SetWorldBuffer(UINT slot = 0);
 
@@ -23,6 +29,7 @@ public:
 	Vector3 GetGlobalPosition() { return mGlobalPosition; }
 	Vector3 GetGlobalRotation() { return mGlobalRotation; }
 	Vector3 GetGlobalScale() { return mGlobalScale; }
+	Transform* GetTransform() { return this; }
 
 	void RotateToDestinationForModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
 	void RotateToDestinationForNotModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
@@ -33,14 +40,15 @@ public:
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
 
-	Transform* GetTransform() { return this; }
-
+	void SetColorBuffer();
+	void SetHashColor(int hashValue);
+	
 private:
-	void createAxis();
+	void CreateGizmos();
 
 
 public:
-	static bool mbIsAxisDrawing;
+	static bool mbIsRenderGizmos;
 
 	bool isActive;
 
@@ -70,13 +78,15 @@ protected:
 	bool mIsAStarPathUpdate;
 
 private:
-	Material* mMaterial;
-	Mesh* mMesh;
 
-	MatrixBuffer* mTransformBuffer;
+	Float4 mHashColor;
 
-	vector<VertexColor> mVertices;
-	vector<UINT> mIndices;
+	// Gizmos
+	Material* mGizmosMaterial;
+	Mesh* mGizmosMesh;
+	MatrixBuffer* mGizmosTransformBuffer;
+	vector<VertexColor> mGizmosVertices;
+	vector<UINT> mGizmosIndices;
 	RasterizerState* mRSState;
-
+	ColorBuffer* mColorBuffer;
 };

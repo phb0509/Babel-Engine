@@ -6,7 +6,8 @@ ModelAnimator::ModelAnimator() :
 	mSRV(nullptr),
 	mClipTransform(nullptr),
 	mNodeTransform(nullptr),
-	mNodeTransforms(nullptr)
+	mNodeTransforms(nullptr),
+	mbIsPlayedAnimation(true)
 {
 	mFrameBuffer = new FrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
@@ -75,82 +76,94 @@ void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	binaryReader.CloseReader();
 }
 
+void ModelAnimator::TestEvent()
+{
+	mFrameBuffer->data.tweenDesc[0].cur.curFrame = 10;
+	//mFrameBuffer->data.tweenDesc[0].cur.nextFrame = 11;
+}
+
 void ModelAnimator::Update()
 {
 	if (mClips.size() != 0) // ModelAnimation
 	{
-		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
+		if (mbIsPlayedAnimation)
+		{
+			FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
 
-		{ // 현재 클립.
-			FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
-			ModelClip* clip = mClips[desc.clip]; // desc.clip == clipIndex
+			{ // 현재 클립.
+				FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
+				ModelClip* clip = mClips[desc.clip]; // desc.clip == clipIndex
 
-			float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로다운받음.
-			desc.runningTime += DELTA;
+				float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로다운받음.
+				desc.runningTime += DELTA;
 
-			if (desc.time >= 1.0f)
-			{
-				if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
+				if (desc.time >= 1.0f)
 				{
-					if (mEndEvent.count(desc.clip) > 0) // 엔드이벤트가 있으면
+					if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
 					{
-						mEndEvent[desc.clip]();
+						if (mEndEvent.count(desc.clip) > 0) // 엔드이벤트가 있으면
+						{
+							mEndEvent[desc.clip]();
+						}
+
+						if (mEndParamEvent.count(desc.clip) > 0)
+						{
+							mEndParamEvent[desc.clip](mParam[desc.clip]);
+						}
+
 					}
-						
-					if (mEndParamEvent.count(desc.clip) > 0)
-					{
-						mEndParamEvent[desc.clip](mParam[desc.clip]);
-					}
-						
-				}
 
-				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
-				desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
-				desc.runningTime = 0.0f;
-			}
-
-			desc.time = desc.runningTime / time;
-		}
-
-		{ // 다음 애니메이션.
-			FrameBuffer::KeyFrameDesc& desc = tweenDesc.next;
-
-			if (desc.clip > -1)
-			{
-				ModelClip* clip = mClips[desc.clip];
-
-				tweenDesc.runningTime += DELTA;
-				tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
-
-				if (tweenDesc.tweenTime >= 1.0f)
-				{
-					tweenDesc.cur = desc;
-					tweenDesc.runningTime = 0.0f;
-					tweenDesc.tweenTime = 0.0f;
-
+					desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
+					desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
 					desc.runningTime = 0.0f;
-					desc.curFrame = 0;
-					desc.nextFrame = 0;
-					desc.time = 0.0f;
-					desc.clip = -1;
+
+					mCurrentClipFrame = desc.curFrame;
+					mCurrentClipFrameCount = clip->mFrameCount;
 				}
 
-				else
-				{
-					float time = 1.0f / clip->mFramePerSecond / desc.speed;
-					desc.runningTime += DELTA;
+				desc.time = desc.runningTime / time;
+			}
 
-					if (desc.time >= 1.0f)
+			{ // 다음 클립
+				FrameBuffer::KeyFrameDesc& desc = tweenDesc.next;
+
+				if (desc.clip > -1) // 다음클립이 있으면?
+				{
+					ModelClip* clip = mClips[desc.clip];
+
+					tweenDesc.runningTime += DELTA;
+					tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
+
+					if (tweenDesc.tweenTime >= 1.0f)
 					{
-						desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
-						desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
+						tweenDesc.cur = desc;
+						tweenDesc.runningTime = 0.0f;
+						tweenDesc.tweenTime = 0.0f;
+
 						desc.runningTime = 0.0f;
+						desc.curFrame = 0;
+						desc.nextFrame = 0;
+						desc.time = 0.0f;
+						desc.clip = -1;
 					}
 
-					desc.time = desc.runningTime / time;
+					else
+					{
+						float time = 1.0f / clip->mFramePerSecond / desc.speed;
+						desc.runningTime += DELTA;
+
+						if (desc.time >= 1.0f)
+						{
+							desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
+							desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
+							desc.runningTime = 0.0f;
+						}
+
+						desc.time = desc.runningTime / time;
+					}
 				}
 			}
-		}
+		} // end if isPlayedAnimation
 	}
 }
 

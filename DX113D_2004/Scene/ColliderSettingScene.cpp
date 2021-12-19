@@ -44,6 +44,20 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	mMonster->SetTerrain(terrain);
 	mMonster->mPosition = { 200,0,200 };
+
+
+	// 처음에 뮤턴트 치기귀찮아서 미리 넣어놓음.
+
+	string tempName = "Mutant";
+	mModelList.push_back(tempName);
+	mModels.push_back(new ToolModel(tempName));
+	mCurrentModelIndex = mModels.size() - 1;
+	mCurrentModel = mModels[mCurrentModelIndex];
+	mCurrentModel->SetName(tempName);
+	mCurrentModel->SetIsSkinnedMesh(true);
+
+	ModelData modelData;
+	mModelDatas.push_back(modelData);
 }
 
 ColliderSettingScene::~ColliderSettingScene()
@@ -184,7 +198,6 @@ void ColliderSettingScene::selectModel() // perFrame
 		ImGui::EndCombo();
 	}
 
-
 	if (mCurrentModel != nullptr)
 	{
 		mCurrentModel = mModels[mCurrentModelIndex];
@@ -296,7 +309,6 @@ void ColliderSettingScene::showCreateModelButton()
 			mCurrentModel = mModels[mCurrentModelIndex];
 			mCurrentModel->SetName(name);
 			mCurrentModel->SetIsSkinnedMesh(mbIsSkinnedMesh);
-			//mCurrentModel->SetHasTPoseClip(false);
 
 			ModelData modelData;
 			mModelDatas.push_back(modelData);
@@ -464,7 +476,7 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 		if (ImGui::Button("Save"))
 		{
-			saveAsBinary();
+			//saveAsBinary(); //실수로 누를까봐 잠시 주석처리.
 		}
 
 		ImGui::SameLine();
@@ -862,27 +874,43 @@ void ColliderSettingScene::showModelInspector()
 
 		SpacingRepeatedly(2);
 
+		if (ImGui::Button("Play"))
+		{
+			mCurrentModel->PlayAnimation();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Stop"))
+		{
+			mCurrentModel->StopAnimation();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Test"))
+		{
+			mCurrentModel->TestEvent();
+		}
+
+		SpacingRepeatedly(2);
+
 		static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
-		static int slider_i = 50;
+		//int frame = mCurrentModel->GetCurrentClipFrame();
+		//int t = mCurrentModel->GetFrameBuffer()->data.tweenDesc[0].cur.curFrame;
 
-		ImGui::SliderInt("Animation Frame", &slider_i, 0, 100, "%d", flags);
-
-		SpacingRepeatedly(2);
-
-		ImGui::SliderFloat("Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
+		ImGui::SliderInt("Animation Frame", &mCurrentModel->GetFrameBuffer()->data.tweenDesc[0].cur.curFrame, 0, mCurrentModel->GetCurrentClipFrameCount(), "%d", flags);
 
 		SpacingRepeatedly(2);
 
-		ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
+		//ImGui::SliderFloat("Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
 
-		SpacingRepeatedly(2);
+		//SpacingRepeatedly(2);
 
+		//ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
 
+		//SpacingRepeatedly(2);
 	}
-
-
-	
-
 
 	SpacingRepeatedly(2);
 

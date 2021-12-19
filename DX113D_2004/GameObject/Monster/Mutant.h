@@ -1,6 +1,6 @@
 #pragma once
 
-class Mutant : public Monster, public ModelAnimator
+class Mutant : public Monster
 {
 public:
 	friend class Player;
@@ -36,6 +36,7 @@ public:
 	~Mutant();
 
 	virtual void Update() override;
+	virtual void PreRender() override;
 	virtual void Render() override;
 	void PostRender();
 
@@ -46,7 +47,6 @@ public:
 
 	void SetIdle();
 	void SetAnimation(eAnimationStates value) override;
-	
 
 private:
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class Warrok : public Monster, public ModelAnimator
+class Warrok : public Monster
 {
 public:
 	friend class Player;
@@ -26,6 +26,7 @@ public:
 	~Warrok();
 
 	virtual void Update() override;
+	virtual void PreRender() override;
 	virtual void Render() override;
 	void PostRender();
 

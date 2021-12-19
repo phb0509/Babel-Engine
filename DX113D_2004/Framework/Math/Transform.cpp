@@ -1,6 +1,6 @@
 #include "Framework.h"
 
-bool Transform::mbIsAxisDrawing = true;
+bool Transform::mbIsRenderGizmos = true;
 
 Transform::Transform(string mTag): 
 	mTag(mTag),
@@ -15,28 +15,29 @@ Transform::Transform(string mTag):
 	isActive(false) ,
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
-	mRotationSpeed(10.0f)
+	mRotationSpeed(10.0f),
+	mHashColor(0.0f,0.0f,0.0f,1.0f)
 {
 	mWorldMatrix = XMMatrixIdentity();
 	mWorldBuffer = new MatrixBuffer();
+	mColorBuffer = new ColorBuffer();
 
-	mMaterial = new Material(L"Transform");
-	createAxis();
-	mTransformBuffer = new MatrixBuffer();
+
+	mGizmosMaterial = new Material(L"Transform");
+	CreateGizmos();
+	mGizmosTransformBuffer = new MatrixBuffer();
 
 	mIsUpdateStandTimes.assign(3, true);
 	mNextExecuteTimes.assign(3, -100.0f);
 
 	mRSState = new RasterizerState();
-	Collider* collider;
-	
 }
 
 Transform::~Transform()
 {
 	delete mWorldBuffer;
-	delete mTransformBuffer;
-	delete mMaterial;
+	delete mGizmosTransformBuffer;
+	delete mGizmosMaterial;
 }
 
 void Transform::UpdateWorld()
@@ -57,8 +58,6 @@ void Transform::UpdateWorld()
 
 	mWorldBuffer->Set(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
-
-
 
 void Transform::SetWorldBuffer(UINT slot)
 {
@@ -159,8 +158,6 @@ void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, 
 		mNextExecuteTimes[1] = Timer::Get()->GetRunTime() + periodTime;
 		mIsUpdateStandTimes[1] = false;
 	}
-
-
 }
 
 bool Transform::CheckTime(float periodTime)
@@ -180,103 +177,119 @@ bool Transform::CheckTime(float periodTime)
 }
 
 
+void Transform::SetColorBuffer()
+{
+	mColorBuffer->Set(mHashColor);
+}
 
+void Transform::SetHashColor(int hashValue)
+{
+	int a = (hashValue >> 24) & 0xff;
+	int b = (hashValue >> 16) & 0xff;
+	int g = (hashValue >> 8) & 0xff;
+	int r = hashValue & 0xff;
 
-void Transform::createAxis()
+	//mHashColor = Float4(r, g, b, a);
+	mHashColor = Float4(1, 0, 0, 1);
+}
+
+void Transform::CreateGizmos()
 {
 	float length = 3.0f;
 	float thickness = 0.5f;
 
+	Collider* collider;
+
 	//Axis X		
 	Float4 color = { 1, 0, 0, 1 };
-	mVertices.emplace_back(Float3(0, 0, 0), color);
-	mVertices.emplace_back(Float3(length, 0, 0), color);
-	mVertices.emplace_back(Float3(length, thickness, 0), color);
-	mVertices.emplace_back(Float3(length, 0, thickness), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
+	mGizmosVertices.emplace_back(Float3(length, 0, 0), color);
+	mGizmosVertices.emplace_back(Float3(length, thickness, 0), color);
+	mGizmosVertices.emplace_back(Float3(length, 0, thickness), color);
 
-	mIndices.emplace_back(0);
-	mIndices.emplace_back(2);
-	mIndices.emplace_back(1);
+	mGizmosIndices.emplace_back(0);
+	mGizmosIndices.emplace_back(2);
+	mGizmosIndices.emplace_back(1);
 
-	mIndices.emplace_back(0);
-	mIndices.emplace_back(1);
-	mIndices.emplace_back(3);
+	mGizmosIndices.emplace_back(0);
+	mGizmosIndices.emplace_back(1);
+	mGizmosIndices.emplace_back(3);
 
-	mIndices.emplace_back(0);
-	mIndices.emplace_back(3);
-	mIndices.emplace_back(2);
+	mGizmosIndices.emplace_back(0);
+	mGizmosIndices.emplace_back(3);
+	mGizmosIndices.emplace_back(2);
 
-	mIndices.emplace_back(1);
-	mIndices.emplace_back(2);
-	mIndices.emplace_back(3);
+	mGizmosIndices.emplace_back(1);
+	mGizmosIndices.emplace_back(2);
+	mGizmosIndices.emplace_back(3);
 
 	//Axis Y
 	color = { 0, 1, 0, 1 };
-	mVertices.emplace_back(Float3(0, 0, 0), color);
-	mVertices.emplace_back(Float3(0, length, 0), color);
-	mVertices.emplace_back(Float3(0, length, thickness), color);
-	mVertices.emplace_back(Float3(thickness, length, 0), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
+	mGizmosVertices.emplace_back(Float3(0, length, 0), color);
+	mGizmosVertices.emplace_back(Float3(0, length, thickness), color);
+	mGizmosVertices.emplace_back(Float3(thickness, length, 0), color);
 
-	mIndices.emplace_back(4);
-	mIndices.emplace_back(6);
-	mIndices.emplace_back(5);
+	mGizmosIndices.emplace_back(4);
+	mGizmosIndices.emplace_back(6);
+	mGizmosIndices.emplace_back(5);
 
-	mIndices.emplace_back(4);
-	mIndices.emplace_back(5);
-	mIndices.emplace_back(7);
+	mGizmosIndices.emplace_back(4);
+	mGizmosIndices.emplace_back(5);
+	mGizmosIndices.emplace_back(7);
 
-	mIndices.emplace_back(4);
-	mIndices.emplace_back(7);
-	mIndices.emplace_back(6);
+	mGizmosIndices.emplace_back(4);
+	mGizmosIndices.emplace_back(7);
+	mGizmosIndices.emplace_back(6);
 
-	mIndices.emplace_back(5);
-	mIndices.emplace_back(6);
-	mIndices.emplace_back(7);
+	mGizmosIndices.emplace_back(5);
+	mGizmosIndices.emplace_back(6);
+	mGizmosIndices.emplace_back(7);
 
 	//Axis Z
 	color = { 0, 0, 1, 1 };
-	mVertices.emplace_back(Float3(0, 0, 0), color);
-	mVertices.emplace_back(Float3(0, 0, length), color);
-	mVertices.emplace_back(Float3(thickness, 0, length), color);
-	mVertices.emplace_back(Float3(0, thickness, length), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, length), color);
+	mGizmosVertices.emplace_back(Float3(thickness, 0, length), color);
+	mGizmosVertices.emplace_back(Float3(0, thickness, length), color);
 
-	mIndices.emplace_back(8);
-	mIndices.emplace_back(10);
-	mIndices.emplace_back(9);
+	mGizmosIndices.emplace_back(8);
+	mGizmosIndices.emplace_back(10);
+	mGizmosIndices.emplace_back(9);
 
-	mIndices.emplace_back(8);
-	mIndices.emplace_back(9);
-	mIndices.emplace_back(11);
+	mGizmosIndices.emplace_back(8);
+	mGizmosIndices.emplace_back(9);
+	mGizmosIndices.emplace_back(11);
 
-	mIndices.emplace_back(8);
-	mIndices.emplace_back(11);
-	mIndices.emplace_back(10);
+	mGizmosIndices.emplace_back(8);
+	mGizmosIndices.emplace_back(11);
+	mGizmosIndices.emplace_back(10);
 
-	mIndices.emplace_back(9);
-	mIndices.emplace_back(10);
-	mIndices.emplace_back(11);
+	mGizmosIndices.emplace_back(9);
+	mGizmosIndices.emplace_back(10);
+	mGizmosIndices.emplace_back(11);
 
-	mMesh = new Mesh(mVertices.data(), sizeof(VertexColor), mVertices.size(),
-		mIndices.data(), mIndices.size());
+	mGizmosMesh = new Mesh(mGizmosVertices.data(), sizeof(VertexColor), mGizmosVertices.size(),
+		mGizmosIndices.data(), mGizmosIndices.size());
 }
 
-void Transform::RenderAxis()
+void Transform::RenderGizmos()
 {
-	if (!mbIsAxisDrawing)
+	if (!mbIsRenderGizmos)
 		return;
 
 	Vector3 scale(1, 1, 1);
 	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
 		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
 
-	mTransformBuffer->Set(matrix);
-	mTransformBuffer->SetVSBuffer(0);
+	mGizmosTransformBuffer->Set(matrix);
+	mGizmosTransformBuffer->SetVSBuffer(0);
 
-	mMesh->IASet();
-	mMaterial->Set();
+	mGizmosMesh->IASet();
+	mGizmosMaterial->Set();
 
 	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
-	DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
 }

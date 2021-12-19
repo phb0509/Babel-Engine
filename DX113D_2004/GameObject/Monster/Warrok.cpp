@@ -2,7 +2,7 @@
 
 
 Warrok::Warrok()
-	: ModelAnimator(),
+	: 
 	mAnimation(eAnimationStates::Idle),
 	mFSM(eFSMstates::Patrol),
 	mbOnHit(false)
@@ -32,6 +32,10 @@ void Warrok::Update()
 
 	UpdateWorld();
 	ModelAnimator::Update();
+}
+
+void Warrok::PreRender()
+{
 }
 
 void Warrok::Render()

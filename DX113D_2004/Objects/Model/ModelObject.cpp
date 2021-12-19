@@ -41,5 +41,5 @@ void ModelObject::Render()
 	mModel->Render();
 	/*if(collider != nullptr)
 		collider->Render();*/
-	RenderAxis();
+	RenderGizmos();
 }

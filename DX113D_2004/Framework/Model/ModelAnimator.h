@@ -10,6 +10,7 @@ public:
 	virtual void Update();
 	virtual void Render();
 	void PostRender();
+	void CreateTexture();
 
 	void ReadClip(string modelName, string clipFileName);
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
@@ -23,7 +24,14 @@ public:
 	const vector<string>& GetClipNames() { return mClipNames; }
 	const vector<ModelClip*>& GetClips() { return mClips; }
 
-	void CreateTexture();
+	int GetCurrentClipFrame() { return mCurrentClipFrame; }
+	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
+
+	void PlayAnimation() { mbIsPlayedAnimation = true; }
+	void StopAnimation() { mbIsPlayedAnimation = false; }
+	void TestEvent();
+	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
+
 
 	// Model Function
 	void MakeBoneTransform();
@@ -36,9 +44,6 @@ protected:
 	// 그래서 텍스쳐로 만들어서 대량의 데이터를 넘겨줘야함.
 
 	void CreateClipTransform(UINT index);
-
-
-
 
 
 protected:
@@ -55,6 +60,10 @@ protected:
 	map<UINT, CallBack> mEndEvent;
 	map<UINT, CallBackParam> mEndParamEvent;
 	map<UINT, int> mParam;
+	
+	int mCurrentClipFrame;
+	int mCurrentClipFrameCount;
+	bool mbIsPlayedAnimation;
 
 	//Model
 	BoneBuffer* mBoneBuffer;

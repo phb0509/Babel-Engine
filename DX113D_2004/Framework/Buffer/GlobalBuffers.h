@@ -165,6 +165,37 @@ public:
 	}
 };
 
+class ColorPickingInputBuffer : public ConstBuffer
+{
+public:
+	struct Data
+	{
+		Float2 mouseScreenPosition;
+		Float2 padding;
+	}data;
+
+	ColorPickingInputBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.mouseScreenPosition = { 0.0f,0.0f };
+		data.padding = { 0.0f,0.0f };
+	}
+};
+
+class ColorPickingOutputBuffer : public ConstBuffer
+{
+public:
+	struct Data
+	{
+		Float4 color;
+	}data;
+
+	ColorPickingOutputBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.color = { 0.0f,1.0f,0.0f,0.0f };
+	}
+};
+
+
 
 class BoneBuffer : public ConstBuffer
 {
@@ -192,8 +223,10 @@ public:
 	struct KeyFrameDesc
 	{
 		int clip = 0;
-		UINT curFrame = 0;
-		UINT nextFrame = 0;
+		//UINT curFrame = 0;
+		//UINT nextFrame = 0;
+		int curFrame = 0;
+		int nextFrame = 0;
 		float time = 0.0f;
 
 		float runningTime = 0.0f;
@@ -270,11 +303,16 @@ class ColorBuffer : public ConstBuffer
 public:
 	struct Data
 	{
-		Float4 color = Float4(1, 1, 1, 1);
+		Float4 color = Float4(1.0f, 1.0f, 1.0f, 1.0f);
 	}data;
 
 	ColorBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
+	}
+
+	void Set(Float4 color)
+	{
+		data.color = color;
 	}
 };
 

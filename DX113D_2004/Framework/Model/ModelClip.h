@@ -13,8 +13,8 @@ public:
 	~ModelClip();
 
 	KeyFrame* GetKeyFrame(string name);
-
 	string GetName() { return mName; }
+	UINT GetFrameCount() { return mFrameCount; }
 
 private:
 	string mName;

@@ -25,9 +25,6 @@ public:
 
 	void SetBox(Vector3* minBox, Vector3* maxBox);
 	vector<NodeData*> GetNodes() {return mNodes;}
-
-
-
 	vector<ModelMesh*> GetMeshes() { return mMeshes; }
 
 private:
@@ -43,4 +40,7 @@ protected:
 
 	TypeBuffer* mTypeBuffer;
 	Material* mDefaultMaterial;
+
+	bool mbIsSetColorPickingShader;
+
 };

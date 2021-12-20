@@ -14,6 +14,7 @@ ColorPickingScene::ColorPickingScene()
 
 	mTerrain = new Terrain();
 	mMonster = new Mutant();
+	mCube = new Cube();
 
 	mMonster->SetTerrain(mTerrain);
 
@@ -22,7 +23,8 @@ ColorPickingScene::ColorPickingScene()
 	mRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	mRenderTargets[0] = mRenderTarget;
 
-	mMonster->SetHashColor(1); // 이건 Transform에서 수행.
+	mMonster->SetHashColor(1); // 이건 Transform에서 수행. 
+	mCube->SetHashColor(1);
 
 
 	// Create ComputeShader
@@ -33,10 +35,6 @@ ColorPickingScene::ColorPickingScene()
 		mInputBuffer = new ColorPickingInputBuffer();
 
 	mOutputBuffer = new ColorPickingOutputBuffer[1];
-
-
-
-
 }
 
 ColorPickingScene::~ColorPickingScene()
@@ -47,13 +45,14 @@ void ColorPickingScene::Update()
 {
 	//collider->Update();
 	mTerrain->Update();
-	mMonster->Update();
+	//mMonster->Update();
+	mCube->Update();
 
 	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
 	mInputBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 
 	mComputeShader->Set(); // 디바이스에 Set..
-	mInputBuffer->SetCSBuffer(0);
+	mInputBuffer->SetCSBuffer(1);
 
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTarget->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
@@ -68,20 +67,26 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
-	mMonster->SetShader(L"ColorPicking");
-	mMonster->SetWorldBuffer();
-	mMonster->SetColorBuffer();
+	//mMonster->SetShader(L"ColorPicking");
+	//mMonster->SetWorldBuffer();
+	//mMonster->SetColorBuffer();
+	
+	mCube->SetShader(L"ColorPicking");
+	mCube->SetWorldBuffer();
+	mCube->SetColorBuffer();
 
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); 
 
-	mMonster->MeshRender();
+	//mMonster->MeshRender();
+	mCube->SetMesh();
 }
 
 void ColorPickingScene::Render()
 {
 	//collider->Render();
 	mTerrain->Render();
-	mMonster->Render();
+	mCube->Render();
+	//mMonster->Render();
 }
 
 void ColorPickingScene::PostRender()
@@ -93,26 +98,17 @@ void ColorPickingScene::PostRender()
 	ImGui::InputFloat3("Scale", (float*)&collider->mScale);*/
 
 	int frame_padding = 0;
-	ImVec2 imageButtonSize = ImVec2(100.0f, 100.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonSize = ImVec2(150.0f, 150.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
 	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	Float4 returnedColor = { mOutputBuffer->color.x,mOutputBuffer->color.y,mOutputBuffer->color.z,mOutputBuffer->color.w };
 
 	ImGui::ImageButton(mRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-	//ImGui::ImageButton(texture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-	ImGui::InputFloat2("MouseScreenPosition", (float*)&mInputBuffer->data.mouseScreenPosition);
-	ImGui::InputFloat4("returned Color", (float*)&mOutputBuffer->data.color);
-
-
-	char buff[100];
-	sprintf_s(buff, "color.r : %f color.g : %f color.b : %f\n", mOutputBuffer->data.color.x, mOutputBuffer->data.color.y, mOutputBuffer->data.color.z);
-	OutputDebugStringA(buff);
-
-
-
+	ImGui::InputFloat4("returned Color", (float*)&returnedColor);
 
 	ImGui::End();
 }

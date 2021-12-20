@@ -5,19 +5,25 @@ class Cube : public Transform
 private:
 	typedef VertexUVNormal VertexType;
 
-	Material* material;
-	Mesh* mesh;
 
-	vector<VertexType> vertices;
-	vector<UINT> indices;
 public:
 	Cube();	
 	~Cube();
 
 	void Update();
 	void Render();
+	void SetShader(wstring file);
+	void SetMesh();
 
 private:
-	void Create();
-	void CreateNormal();
+	void create();
+	void createNormal();
+
+
+private:
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	vector<VertexType> mVertices;
+	vector<UINT> mIndices;
 };

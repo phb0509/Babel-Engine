@@ -180,6 +180,7 @@ bool Transform::CheckTime(float periodTime)
 void Transform::SetColorBuffer()
 {
 	mColorBuffer->Set(mHashColor);
+	mColorBuffer->SetVSBuffer(10);
 }
 
 void Transform::SetHashColor(int hashValue)
@@ -190,7 +191,9 @@ void Transform::SetHashColor(int hashValue)
 	int r = hashValue & 0xff;
 
 	//mHashColor = Float4(r, g, b, a);
-	mHashColor = Float4(1, 0, 0, 1);
+	mHashColor = Float4(0.5f, 0.5f, 0.2f,1.0f);
+
+	
 }
 
 void Transform::CreateGizmos()

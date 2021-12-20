@@ -2,16 +2,16 @@
 
 Cube::Cube()
 {
-	material = new Material(L"Diffuse");
-	material->SetDiffuseMap(L"Textures/test.jpg");
+	mMaterial = new Material(L"Diffuse");
+	mMaterial->SetDiffuseMap(L"Textures/test.jpg");
 
-	Create();
+	create();
 }
 
 Cube::~Cube()
 {
-	delete material;
-	delete mesh;
+	delete mMaterial;
+	delete mMesh;
 
 }
 
@@ -22,141 +22,155 @@ void Cube::Update()
 
 void Cube::Render()
 {
-	mesh->IASet();
+	mMesh->IASet();
 
 	SetWorldBuffer();
 
-	material->Set();
+	mMaterial->Set();
 
-	DEVICECONTEXT->DrawIndexed((UINT)indices.size(), 0, 0);
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
-void Cube::Create()
+void Cube::SetShader(wstring file)
 {
-	vertices.resize(24);
+	mMaterial->SetShader(file);
+}
+
+void Cube::SetMesh()
+{
+	mMesh->IASet();
+
+	mMaterial->Set();
+
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+}
+
+void Cube::create()
+{
+	mVertices.resize(24);
 	//Front
-	vertices[0].position = { -1, -1, -1 };
-	vertices[1].position = { -1, +1, -1 };
-	vertices[2].position = { +1, +1, -1 };
-	vertices[3].position = { +1, -1, -1 };
+	mVertices[0].position = { -1, -1, -1 };
+	mVertices[1].position = { -1, +1, -1 };
+	mVertices[2].position = { +1, +1, -1 };
+	mVertices[3].position = { +1, -1, -1 };
 
 	//Back
-	vertices[4].position = { -1, -1, +1 };
-	vertices[5].position = { -1, +1, +1 };
-	vertices[6].position = { +1, +1, +1 };
-	vertices[7].position = { +1, -1, +1 };
+	mVertices[4].position = { -1, -1, +1 };
+	mVertices[5].position = { -1, +1, +1 };
+	mVertices[6].position = { +1, +1, +1 };
+	mVertices[7].position = { +1, -1, +1 };
 
 	//Right
-	vertices[8].position = { +1, -1, -1 };
-	vertices[9].position = { +1, +1, -1 };
-	vertices[10].position = { +1, +1, +1 };
-	vertices[11].position = { +1, -1, +1 };
+	mVertices[8].position = { +1, -1, -1 };
+	mVertices[9].position = { +1, +1, -1 };
+	mVertices[10].position = { +1, +1, +1 };
+	mVertices[11].position = { +1, -1, +1 };
 
 	//Left
-	vertices[12].position = { -1, -1, -1 };
-	vertices[13].position = { -1, +1, -1 };
-	vertices[14].position = { -1, +1, +1 };
-	vertices[15].position = { -1, -1, +1 };
+	mVertices[12].position = { -1, -1, -1 };
+	mVertices[13].position = { -1, +1, -1 };
+	mVertices[14].position = { -1, +1, +1 };
+	mVertices[15].position = { -1, -1, +1 };
 
 	//Up
-	vertices[16].position = { -1, +1, -1 };
-	vertices[17].position = { -1, +1, +1 };
-	vertices[18].position = { +1, +1, +1 };
-	vertices[19].position = { +1, +1, -1 };
+	mVertices[16].position = { -1, +1, -1 };
+	mVertices[17].position = { -1, +1, +1 };
+	mVertices[18].position = { +1, +1, +1 };
+	mVertices[19].position = { +1, +1, -1 };
 
 	//Down
-	vertices[20].position = { -1, -1, -1 };
-	vertices[21].position = { -1, -1, +1 };
-	vertices[22].position = { +1, -1, +1 };
-	vertices[23].position = { +1, -1, -1 };
+	mVertices[20].position = { -1, -1, -1 };
+	mVertices[21].position = { -1, -1, +1 };
+	mVertices[22].position = { +1, -1, +1 };
+	mVertices[23].position = { +1, -1, -1 };
 
 	for (UINT i = 0; i < 6; i++)
 	{
-		vertices[i * 4 + 0].uv = { 0, 1 };
-		vertices[i * 4 + 1].uv = { 0, 0 };
-		vertices[i * 4 + 2].uv = { 1, 0 };
-		vertices[i * 4 + 3].uv = { 1, 1 };
+		mVertices[i * 4 + 0].uv = { 0, 1 };
+		mVertices[i * 4 + 1].uv = { 0, 0 };
+		mVertices[i * 4 + 2].uv = { 1, 0 };
+		mVertices[i * 4 + 3].uv = { 1, 1 };
 	}	
 
 	//Front
-	indices.emplace_back(0);
-	indices.emplace_back(1);
-	indices.emplace_back(2);
+	mIndices.emplace_back(0);
+	mIndices.emplace_back(1);
+	mIndices.emplace_back(2);
 
-	indices.emplace_back(0);
-	indices.emplace_back(2);
-	indices.emplace_back(3);
+	mIndices.emplace_back(0);
+	mIndices.emplace_back(2);
+	mIndices.emplace_back(3);
 
 	//Back
-	indices.emplace_back(4);
-	indices.emplace_back(6);
-	indices.emplace_back(5);
+	mIndices.emplace_back(4);
+	mIndices.emplace_back(6);
+	mIndices.emplace_back(5);
 
-	indices.emplace_back(4);
-	indices.emplace_back(7);
-	indices.emplace_back(6);
+	mIndices.emplace_back(4);
+	mIndices.emplace_back(7);
+	mIndices.emplace_back(6);
 
 	//Right
-	indices.emplace_back(8);
-	indices.emplace_back(9);
-	indices.emplace_back(10);
+	mIndices.emplace_back(8);
+	mIndices.emplace_back(9);
+	mIndices.emplace_back(10);
 
-	indices.emplace_back(8);
-	indices.emplace_back(10);
-	indices.emplace_back(11);
+	mIndices.emplace_back(8);
+	mIndices.emplace_back(10);
+	mIndices.emplace_back(11);
 
 	//Left
-	indices.emplace_back(12);
-	indices.emplace_back(14);
-	indices.emplace_back(13);
+	mIndices.emplace_back(12);
+	mIndices.emplace_back(14);
+	mIndices.emplace_back(13);
 
-	indices.emplace_back(12);
-	indices.emplace_back(15);
-	indices.emplace_back(14);
+	mIndices.emplace_back(12);
+	mIndices.emplace_back(15);
+	mIndices.emplace_back(14);
 
 	//Up
-	indices.emplace_back(16);
-	indices.emplace_back(17);
-	indices.emplace_back(18);
+	mIndices.emplace_back(16);
+	mIndices.emplace_back(17);
+	mIndices.emplace_back(18);
 
-	indices.emplace_back(16);
-	indices.emplace_back(18);
-	indices.emplace_back(19);
+	mIndices.emplace_back(16);
+	mIndices.emplace_back(18);
+	mIndices.emplace_back(19);
 
 	//Down
-	indices.emplace_back(20);
-	indices.emplace_back(22);
-	indices.emplace_back(21);
+	mIndices.emplace_back(20);
+	mIndices.emplace_back(22);
+	mIndices.emplace_back(21);
 
-	indices.emplace_back(20);
-	indices.emplace_back(23);
-	indices.emplace_back(22);
+	mIndices.emplace_back(20);
+	mIndices.emplace_back(23);
+	mIndices.emplace_back(22);
 
-	CreateNormal();
+	createNormal();
 
-	mesh = new Mesh(vertices.data(), sizeof(VertexType), (UINT)vertices.size(),
-		indices.data(), (UINT)indices.size());
+	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
+		mIndices.data(), (UINT)mIndices.size());
 }
 
-void Cube::CreateNormal()
+void Cube::createNormal()
 {
-	for (UINT i = 0; i < indices.size() / 3; i++)
+	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
-		UINT index0 = indices[i * 3 + 0];
-		UINT index1 = indices[i * 3 + 1];
-		UINT index2 = indices[i * 3 + 2];
+		UINT index0 = mIndices[i * 3 + 0];
+		UINT index1 = mIndices[i * 3 + 1];
+		UINT index2 = mIndices[i * 3 + 2];
 
-		Vector3 v0 = vertices[index0].position;
-		Vector3 v1 = vertices[index1].position;
-		Vector3 v2 = vertices[index2].position;
+		Vector3 v0 = mVertices[index0].position;
+		Vector3 v1 = mVertices[index1].position;
+		Vector3 v2 = mVertices[index2].position;
 
 		Vector3 A = v1 - v0;
 		Vector3 B = v2 - v0;
 
 		Vector3 normal = Vector3::Cross(A, B).Normal();
 
-		vertices[index0].normal = normal;
-		vertices[index1].normal = normal;
-		vertices[index2].normal = normal;
+		mVertices[index0].normal = normal;
+		mVertices[index1].normal = normal;
+		mVertices[index2].normal = normal;
 	}
 }

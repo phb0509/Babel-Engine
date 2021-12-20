@@ -165,6 +165,7 @@ public:
 	}
 };
 
+
 class ColorPickingInputBuffer : public ConstBuffer
 {
 public:
@@ -180,22 +181,6 @@ public:
 		data.padding = { 0.0f,0.0f };
 	}
 };
-
-class ColorPickingOutputBuffer : public ConstBuffer
-{
-public:
-	struct Data
-	{
-		Float4 color;
-	}data;
-
-	ColorPickingOutputBuffer() : ConstBuffer(&data, sizeof(Data))
-	{
-		data.color = { 0.0f,1.0f,0.0f,0.0f };
-	}
-};
-
-
 
 class BoneBuffer : public ConstBuffer
 {

@@ -1,7 +1,9 @@
 #include "Framework.h"
 
 RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // Åø¾À¿¡¼± R8G8B8A8 UNORM (0~1·Î »ç»óµÇ´Â Å¸ÀÔ)
-	: width(width), height(height)
+	: 
+	mWidth(width), 
+	mHeight(height)
 {
 	{//RenderTargetView Texture
 		D3D11_TEXTURE2D_DESC desc = {};
@@ -15,7 +17,7 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // Åø¾À¿
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-		V(DEVICE->CreateTexture2D(&desc, nullptr, &rtvTexture));
+		V(DEVICE->CreateTexture2D(&desc, nullptr, &mRTVtexture));
 	}
 
 	
@@ -24,7 +26,7 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // Åø¾À¿
 		desc.Format = format;
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-		V(DEVICE->CreateRenderTargetView(rtvTexture, &desc, &rtv));
+		V(DEVICE->CreateRenderTargetView(mRTVtexture, &desc, &mRTV));
 	}
 
 	{// ShaderResourceView
@@ -33,27 +35,47 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // Åø¾À¿
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		desc.Texture2D.MipLevels = 1;
 
-		V(DEVICE->CreateShaderResourceView(rtvTexture, &desc, &srv));
+		V(DEVICE->CreateShaderResourceView(mRTVtexture, &desc, &mSRV));
+	}
+
+
+	// RTVtexture For Copy
+	{
+		{//RenderTargetView Texture For Copy
+			D3D11_TEXTURE2D_DESC desc = {};
+			desc.Width = width;
+			desc.Height = height;
+			desc.MipLevels = 1;
+			desc.ArraySize = 1;
+			desc.Format = format;
+			desc.SampleDesc.Count = 1;
+			desc.SampleDesc.Quality = 0;
+			desc.Usage = D3D11_USAGE_STAGING;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+			V(DEVICE->CreateTexture2D(&desc, nullptr, &mRTVtexture));
+		}
 	}
 }
 
 RenderTarget::~RenderTarget()
 {
-	rtvTexture->Release();
-
-	srv->Release();
-	rtv->Release();
+	mRTVtexture->Release();
+	mSRV->Release();
+	mRTV->Release();
+	mRTVtextureForCopy->Release();
 }
 
 void RenderTarget::SetDepthStencil(DepthStencil* depthStencil)
 {
-	DEVICECONTEXT->OMSetRenderTargets(1, &rtv, depthStencil->GetDSV());
+	DEVICECONTEXT->OMSetRenderTargets(1, &mRTV, depthStencil->GetDSV());
 	
 	Float4 color = { 0, 0, 0, 0 };
-	DEVICECONTEXT->ClearRenderTargetView(rtv, (float*)&color);
+	DEVICECONTEXT->ClearRenderTargetView(mRTV, (float*)&color);
 	depthStencil->Clear();
 
-	Environment::Get()->SetViewport(width, height);
+	Environment::Get()->SetViewport(mWidth, mHeight);
 }
 
 void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthStencil)
@@ -68,10 +90,8 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 		DEVICECONTEXT->ClearRenderTargetView(targets[i]->GetRTV(), color);
 	}
 
-
 	depthStencil->Clear();
 
 	//ÀüºÎ Å¬¸®¾î ÈÄ, SetÇÏ±â.
 	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
-	
 }

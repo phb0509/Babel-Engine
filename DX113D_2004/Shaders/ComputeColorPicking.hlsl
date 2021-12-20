@@ -1,5 +1,5 @@
 
-cbuffer MouseUV : register(b0)
+cbuffer MouseUV : register(b1)
 {
     float2 mouseScreenPosition;
     float2 padding;
@@ -27,8 +27,13 @@ SamplerState LinearSampler
 void CS(uint3 index : SV_DispatchThreadID)
 {
     // 마우스피킹지점 컬러값 얻기
-    //output[0].color = Texture.SampleLevel(LinearSampler, mouseScreenPosition, 0.0f); // 0~1로 정규화한 마우스좌표로 샘플링.
-    output[0].color = float4(2.0f, 2.0f, 1.0f, 1.0f);
+    float2 mousePosition;
+    mousePosition.x = mouseScreenPosition.x;
+    mousePosition.y = mouseScreenPosition.y;
+    
+    output[0].color = Texture.SampleLevel(LinearSampler, mousePosition, 0.0f); // 0~1로 정규화한 마우스좌표로 샘플링.
+
+   
     //return diffuseMap.Sample(samp, input.uv) * mDiffuse;
    
 }

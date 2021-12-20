@@ -20,8 +20,9 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     output.pos = mul(input.pos, world);
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
-    //output.color = color;
-    output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+    output.color = color;
+    //output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+   
     
     return output;
 }

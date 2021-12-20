@@ -42,6 +42,7 @@ public:
 
 	void SetColorBuffer();
 	void SetHashColor(int hashValue);
+	Float4 GetHashColor() { return mHashColor; }
 	
 private:
 	void CreateGizmos();

@@ -20,11 +20,11 @@ ColorPickingScene::ColorPickingScene()
 
 	
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
-	mRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
+	mRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); //
 	mRenderTargets[0] = mRenderTarget;
 
-	mMonster->SetHashColor(1); // 이건 Transform에서 수행. 
-	mCube->SetHashColor(1);
+	//mMonster->SetHashColor(5); // 이건 Transform에서 수행. 
+	mCube->SetHashColor(100);
 
 
 	// Create ComputeShader
@@ -61,7 +61,7 @@ void ColorPickingScene::Update()
 
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
 
-	DEVICECONTEXT->ClearState();
+	//DEVICECONTEXT->ClearState();
 	//Float4 color = mOutputBuffer->data.color;
 }
 
@@ -93,10 +93,6 @@ void ColorPickingScene::PostRender()
 {
 	ImGui::Begin("Test Window");
 
-	/*ImGui::InputFloat3("Position", (float*)&collider->mPosition);
-	ImGui::InputFloat3("Rotation", (float*)&collider->mRotation);
-	ImGui::InputFloat3("Scale", (float*)&collider->mScale);*/
-
 	int frame_padding = 0;
 	ImVec2 imageButtonSize = ImVec2(150.0f, 150.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
@@ -108,7 +104,9 @@ void ColorPickingScene::PostRender()
 
 	ImGui::ImageButton(mRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-	ImGui::InputFloat4("returned Color", (float*)&returnedColor);
+	Float4 t = mCube->GetHashColor();
+	ImGui::InputFloat4("CPU HashColorValue", (float*)&t,"%.3f");
+	ImGui::InputFloat4("returned ColorValue", (float*)&returnedColor,"%.3f");
 
 	ImGui::End();
 }

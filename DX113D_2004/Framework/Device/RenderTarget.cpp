@@ -39,24 +39,24 @@ RenderTarget::RenderTarget(UINT width, UINT height, DXGI_FORMAT format) // Åø¾À¿
 	}
 
 
-	// RTVtexture For Copy
-	{
-		{//RenderTargetView Texture For Copy
-			D3D11_TEXTURE2D_DESC desc = {};
-			desc.Width = width;
-			desc.Height = height;
-			desc.MipLevels = 1;
-			desc.ArraySize = 1;
-			desc.Format = format;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Usage = D3D11_USAGE_STAGING;
-			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	//// RTVtexture For Copy
+	//{
+	//	{//RenderTargetView Texture For Copy
+	//		D3D11_TEXTURE2D_DESC desc = {};
+	//		desc.Width = width;
+	//		desc.Height = height;
+	//		desc.MipLevels = 1;
+	//		desc.ArraySize = 1;
+	//		desc.Format = format;
+	//		desc.SampleDesc.Count = 1;
+	//		desc.SampleDesc.Quality = 0;
+	//		desc.Usage = D3D11_USAGE_STAGING;
+	//		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	//		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-			V(DEVICE->CreateTexture2D(&desc, nullptr, &mRTVtexture));
-		}
-	}
+	//		V(DEVICE->CreateTexture2D(&desc, nullptr, &mRTVtextureForCopy));
+	//	}
+	//}
 }
 
 RenderTarget::~RenderTarget()

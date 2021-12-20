@@ -12,6 +12,7 @@ public:
 	ID3D11ShaderResourceView*& GetSRV() { return mSRV; }
 	ID3D11RenderTargetView*& GetRTV() { return mRTV; }
 	ID3D11Texture2D* GetTexture() { return mRTVtexture; }
+	ID3D11Texture2D* GetTextureForCop() { return mRTVtextureForCopy; }
 
 private:
 	UINT mWidth;

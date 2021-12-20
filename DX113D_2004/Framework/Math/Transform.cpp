@@ -2,21 +2,21 @@
 
 bool Transform::mbIsRenderGizmos = true;
 
-Transform::Transform(string mTag): 
+Transform::Transform(string mTag) :
 	mTag(mTag),
-	mPosition(0, 0, 0), 
-	mRotation(0, 0, 0), 
+	mPosition(0, 0, 0),
+	mRotation(0, 0, 0),
 	mScale(1, 1, 1),
 	mGlobalPosition(0, 0, 0),
 	mGlobalRotation(0, 0, 0),
 	mGlobalScale(1, 1, 1),
-	mPivot(0, 0, 0), 
+	mPivot(0, 0, 0),
 	mParentMatrix(nullptr),
-	isActive(false) ,
+	isActive(false),
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
 	mRotationSpeed(10.0f),
-	mHashColor(0.0f,0.0f,0.0f,1.0f)
+	mHashColor(0.0f, 0.0f, 0.0f, 1.0f)
 {
 	mWorldMatrix = XMMatrixIdentity();
 	mWorldBuffer = new MatrixBuffer();
@@ -47,9 +47,9 @@ void Transform::UpdateWorld()
 		XMQuaternionIdentity(), // 배율의 방향을 설명하는 쿼터니언.
 		mScale.data, // x,y,z축에 대한 스케일링값 벡터.
 		mPivot.data, // 회전중심을 설명하는 3D 벡터.
-		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y,mRotation.z), mPosition.data);
-		// x,y,z축을 따라 변환을 설명하는 3D 벡터.
-	
+		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z), mPosition.data);
+	// x,y,z축을 따라 변환을 설명하는 3D 벡터.
+
 	if (mParentMatrix != nullptr)
 		mWorldMatrix *= *mParentMatrix;
 
@@ -104,7 +104,7 @@ void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 des
 {
 	dest = dest - transform->mPosition;
 	dest.Normalize();
-	Vector3 forward = transform->Forward(); 
+	Vector3 forward = transform->Forward();
 	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
 	temp = acos(temp);
 
@@ -185,15 +185,23 @@ void Transform::SetColorBuffer()
 
 void Transform::SetHashColor(int hashValue)
 {
-	int a = (hashValue >> 24) & 0xff;
-	int b = (hashValue >> 16) & 0xff;
-	int g = (hashValue >> 8) & 0xff;
-	int r = hashValue & 0xff;
+	//int count = hashValue;
+	int count = 10004234; // 10,004,234
 
-	//mHashColor = Float4(r, g, b, a);
-	mHashColor = Float4(0.5f, 0.5f, 0.2f,1.0f);
+	float b = count % 1000;
 
-	
+	count = count / 1000;
+
+	float g = count % 1000;
+
+	count = count / 1000;
+
+	float r = count;
+
+	float a = 1.0f;
+
+	mHashColor = Float4(r / 1000.0f, g / 1000.0f, b / 1000.0f, a);
+	//mHashColor = Float4( 0.002f, 0.3f, 0.25f, a);
 }
 
 void Transform::CreateGizmos()

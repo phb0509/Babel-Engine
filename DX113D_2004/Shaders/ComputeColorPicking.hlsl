@@ -32,22 +32,9 @@ void CS(uint3 index : SV_DispatchThreadID)
     mousePosition.x = mouseScreenPosition.x;
     mousePosition.y = mouseScreenPosition.y;
     
-    float4 color;
+    float4 color = Texture.SampleLevel(samp, mousePosition, 0.0f);
     
-    //float r = Texture.GatherRed(samp, mousePosition);
-    //float g = Texture.GatherGreen(samp, mousePosition);
-    //float b = Texture.GatherBlue(samp, mousePosition);
-    //float a = 1.0f;
-    
-    //color = float4(r, g, b, a);
-    
-    
-   output[0].color = Texture.SampleLevel(samp, mousePosition, 0.0f); // 0~1로 정규화한 마우스좌표로 샘플링.
-    //output[0].color = color;
-    
-
-   
-    //return diffuseMap.Sample(samp, input.uv) * mDiffuse;
-   
+    color.a = 1.0f; // 안해도 피킹하는데엔 상관없지만 영상으로 보여주기위해서..
+    output[0].color = color;
 }
 

@@ -42,7 +42,7 @@ public:
 
 	void SetColorBuffer();
 	void SetHashColor(int hashValue);
-	Float4 GetHashColor() { return mHashColor; }
+	Float4 GetHashColor() { return mHashColorForBuffer; }
 	
 private:
 	void CreateGizmos();
@@ -51,7 +51,7 @@ private:
 public:
 	static bool mbIsRenderGizmos;
 
-	bool isActive;
+	bool mbIsActive;
 
 	string mTag;
 
@@ -80,7 +80,7 @@ protected:
 
 private:
 
-	Float4 mHashColor;
+	
 
 	// Gizmos
 	Material* mGizmosMaterial;
@@ -90,4 +90,6 @@ private:
 	vector<UINT> mGizmosIndices;
 	RasterizerState* mRSState;
 	ColorBuffer* mColorBuffer;
+
+	Float4 mHashColorForBuffer;
 };

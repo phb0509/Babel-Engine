@@ -10,6 +10,11 @@ Vector3::Vector3(Float3 value)
     data = XMLoadFloat3(&value);
 }
 
+Vector3::Vector3(Float4 value)
+{
+    data = XMLoadFloat4(&value);
+}
+
 Vector3::Vector3(float x, float y, float z)
 {
     data = XMVectorSet(x, y, z, 0);
@@ -183,6 +188,19 @@ Vector3 Vector3::Normal() const
 void Vector3::Normalize()
 {
     data = XMVector3Normalize(data);
+}
+
+bool Vector3::IsEqual(Vector3& v)
+{
+    float v1 = this->x + this->y + this->z;
+    float v2 = v.x + v.y + v.z;
+
+    if (fabs(v1 - v2) <= 3.0f * FLT_EPSILON)
+    {
+        return true;
+    }
+    
+    return false;
 }
 
 Vector3 Vector3::Cross(const Vector3& vec1, const Vector3& vec2)

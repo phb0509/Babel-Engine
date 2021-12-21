@@ -36,7 +36,7 @@ void Spark::Create()
 
 void Spark::Update()
 {
-	if (!isActive)
+	if (!mbIsActive)
 		return;
 
 	sparkBuffer->data.time += DELTA;

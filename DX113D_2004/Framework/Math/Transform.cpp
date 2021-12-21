@@ -12,11 +12,11 @@ Transform::Transform(string mTag) :
 	mGlobalScale(1, 1, 1),
 	mPivot(0, 0, 0),
 	mParentMatrix(nullptr),
-	isActive(false),
+	mbIsActive(false),
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
-	mRotationSpeed(10.0f),
-	mHashColor(0.0f, 0.0f, 0.0f, 1.0f)
+	mRotationSpeed(10.0f)
+	//mHashColorForBuffer(0.0f, 0.0f, 0.0f)
 {
 	mWorldMatrix = XMMatrixIdentity();
 	mWorldBuffer = new MatrixBuffer();
@@ -179,29 +179,31 @@ bool Transform::CheckTime(float periodTime)
 
 void Transform::SetColorBuffer()
 {
-	mColorBuffer->Set(mHashColor);
+	mColorBuffer->Set(mHashColorForBuffer);
 	mColorBuffer->SetVSBuffer(10);
 }
 
 void Transform::SetHashColor(int hashValue)
 {
-	//int count = hashValue;
-	int count = 10004234; // 10,004,234
+	int a = (hashValue >> 24) & 0xff;
 
-	float b = count % 1000;
+	int b = (hashValue >> 16) & 0xff;
 
-	count = count / 1000;
+	int g = (hashValue >> 8) & 0xff;
 
-	float g = count % 1000;
+	int r = hashValue & 0xff;
 
-	count = count / 1000;
+	//int a = 100;
+	//int b = 255;
+	//int c = 0;
 
-	float r = count;
+	float fr = static_cast<float>(r);
+	float fg = static_cast<float>(g);
+	float fb = static_cast<float>(b);
 
-	float a = 1.0f;
+	Float4 t = { fr/255.0f,fg/255.0f,fb/255.0f,1.0f };
 
-	mHashColor = Float4(r / 1000.0f, g / 1000.0f, b / 1000.0f, a);
-	//mHashColor = Float4( 0.002f, 0.3f, 0.25f, a);
+	mHashColorForBuffer = t;
 }
 
 void Transform::CreateGizmos()

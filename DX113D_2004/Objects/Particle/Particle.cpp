@@ -3,7 +3,7 @@
 Particle::Particle(wstring diffuseFile)
 	: particleCount(MAX_COUNT)
 {
-	isActive = false;
+	mbIsActive = false;
 
 	material = new Material();
 	material->SetDiffuseMap(diffuseFile);
@@ -31,7 +31,7 @@ Particle::~Particle()
 
 void Particle::Render()
 {
-	if (!isActive)
+	if (!mbIsActive)
 		return;
 
 	blendState[1]->SetState();
@@ -57,11 +57,11 @@ void Particle::Render()
 
 void Particle::Play(Vector3 position)
 {
-	isActive = true;
+	mbIsActive = true;
 	this->mPosition = position;
 }
 
 void Particle::Stop()
 {
-	isActive = false;
+	mbIsActive = false;
 }

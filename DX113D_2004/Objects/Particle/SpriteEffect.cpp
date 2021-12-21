@@ -33,7 +33,7 @@ void SpriteEffect::Create()
 
 void SpriteEffect::Update()
 {
-	if (!isActive)
+	if (!mbIsActive)
 		return;
 
 	time += speed * DELTA;
@@ -67,7 +67,7 @@ void SpriteEffect::PostRender()
 
 void SpriteEffect::Play(Vector3 position)
 {
-	isActive = true;
+	mbIsActive = true;
 
 	time = 0.0f;
 	curFrameCount = 0;

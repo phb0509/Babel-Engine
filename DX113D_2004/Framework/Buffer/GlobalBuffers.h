@@ -288,7 +288,7 @@ class ColorBuffer : public ConstBuffer
 public:
 	struct Data
 	{
-		Float4 color = Float4(1.0f, 1.0f, 1.0f, 1.0f);
+		Float4 color = { 1.0f,1.0f,1.0f,1.0f };
 	}data;
 
 	ColorBuffer() : ConstBuffer(&data, sizeof(Data))

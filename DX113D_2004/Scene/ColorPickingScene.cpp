@@ -18,14 +18,13 @@ ColorPickingScene::ColorPickingScene()
 
 	mMonster->SetTerrain(mTerrain);
 
-	
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
+
 	mRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); //
 	mRenderTargets[0] = mRenderTarget;
 
 	//mMonster->SetHashColor(5); // 이건 Transform에서 수행. 
-	mCube->SetHashColor(100);
-
+	mCube->SetHashColor(30000);
 
 	// Create ComputeShader
 	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -61,8 +60,25 @@ void ColorPickingScene::Update()
 
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
 
-	//DEVICECONTEXT->ClearState();
-	//Float4 color = mOutputBuffer->data.color;
+
+	Vector3 cubeColor = mCube->GetHashColor();
+	Vector3 mousePositionColor = mOutputBuffer->color;
+
+	if (cubeColor.IsEqual(mousePositionColor))
+	{
+		if (KEY_DOWN(VK_LBUTTON))
+		{
+			mCube->GetMaterial()->SetDiffuseMap(Texture::Add(L"ModelData/Mesh_PreviewImage.png"));
+		}
+	}
+	else
+	{
+		if (KEY_DOWN(VK_LBUTTON))
+		{
+			mCube->GetMaterial()->SetDiffuseMap(Texture::Add(L"ModelData/DefaultImage.png"));
+		}
+	}
+
 }
 
 void ColorPickingScene::PreRender()
@@ -70,12 +86,12 @@ void ColorPickingScene::PreRender()
 	//mMonster->SetShader(L"ColorPicking");
 	//mMonster->SetWorldBuffer();
 	//mMonster->SetColorBuffer();
-	
+
 	mCube->SetShader(L"ColorPicking");
 	mCube->SetWorldBuffer();
 	mCube->SetColorBuffer();
 
-	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); 
+	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
 
 	//mMonster->MeshRender();
 	mCube->SetMesh();
@@ -85,6 +101,7 @@ void ColorPickingScene::Render()
 {
 	//collider->Render();
 	mTerrain->Render();
+	mCube->SetShader(L"Diffuse");
 	mCube->Render();
 	//mMonster->Render();
 }
@@ -97,16 +114,17 @@ void ColorPickingScene::PostRender()
 	ImVec2 imageButtonSize = ImVec2(150.0f, 150.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	Float4 returnedColor = { mOutputBuffer->color.x,mOutputBuffer->color.y,mOutputBuffer->color.z,mOutputBuffer->color.w };
 
 	ImGui::ImageButton(mRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-	Float4 t = mCube->GetHashColor();
-	ImGui::InputFloat4("CPU HashColorValue", (float*)&t,"%.3f");
-	ImGui::InputFloat4("returned ColorValue", (float*)&returnedColor,"%.3f");
+	Float4 cpuHashColor = mCube->GetHashColor();
+	Float4 returnedColor = mOutputBuffer->color;
+	
+	ImGui::InputFloat4("CPU HashColorValue", (float*)&cpuHashColor,"%.20f");
+	ImGui::InputFloat4("returned ColorValue", (float*)&returnedColor,"%.20f");
+
 
 	ImGui::End();
 }

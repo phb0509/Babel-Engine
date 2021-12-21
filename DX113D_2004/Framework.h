@@ -164,6 +164,8 @@ typedef XMFLOAT2 Float2;
 typedef XMVECTOR Vector4;
 typedef XMMATRIX Matrix;
 typedef XMFLOAT4X4 Float4x4;
+typedef XMINT3 Int3;
+typedef XMINT4 Int4;
 
 typedef function<void()> CallBack;
 typedef function<void(int)> CallBackParam;

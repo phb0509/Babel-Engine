@@ -14,6 +14,7 @@ public:
 	void Render();
 	void SetShader(wstring file);
 	void SetMesh();
+	Material* GetMaterial() { return mMaterial; }
 
 private:
 	void create();

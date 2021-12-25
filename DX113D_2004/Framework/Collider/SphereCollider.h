@@ -2,11 +2,7 @@
 
 class SphereCollider : public Collider
 {
-private:
-	float radius;
 
-	UINT stackCount;
-	UINT sliceCount;
 
 public:
 	SphereCollider(float radius = 1.0f, UINT stackCount = 15, UINT sliceCount = 30);
@@ -20,4 +16,11 @@ public:
 	float Radius() { return radius * max(GetGlobalScale().x, max(GetGlobalScale().y, GetGlobalScale().z)); }
 private:
 	virtual void CreateMesh() override;
+
+
+private:
+	float radius;
+
+	UINT stackCount;
+	UINT sliceCount;
 };

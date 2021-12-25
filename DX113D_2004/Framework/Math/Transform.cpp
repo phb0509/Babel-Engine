@@ -193,10 +193,6 @@ void Transform::SetHashColor(int hashValue)
 
 	int r = hashValue & 0xff;
 
-	//int a = 100;
-	//int b = 255;
-	//int c = 0;
-
 	float fr = static_cast<float>(r);
 	float fg = static_cast<float>(g);
 	float fb = static_cast<float>(b);

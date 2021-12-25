@@ -15,6 +15,9 @@ ColorPickingScene::ColorPickingScene()
 	mTerrain = new Terrain();
 	mMonster = new Mutant();
 	mCube = new Cube();
+	mCollider = new BoxCollider();
+	mCube->mPosition = { 20.0f,20.0f,0.0f };
+	//mCollider->mScale = { 10.0f,10.0f,10.0f };
 
 	mMonster->SetTerrain(mTerrain);
 
@@ -25,6 +28,7 @@ ColorPickingScene::ColorPickingScene()
 
 	//mMonster->SetHashColor(5); // 이건 Transform에서 수행. 
 	mCube->SetHashColor(30000);
+	mCollider->SetHashColor(30000);
 
 	// Create ComputeShader
 	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -43,9 +47,10 @@ ColorPickingScene::~ColorPickingScene()
 void ColorPickingScene::Update()
 {
 	//collider->Update();
-	mTerrain->Update();
-	//mMonster->Update();
+	//mTerrain->Update();
 	mCube->Update();
+	mCollider->Update();
+
 
 	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
 	mInputBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
@@ -61,14 +66,15 @@ void ColorPickingScene::Update()
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
 
 
-	Vector3 cubeColor = mCube->GetHashColor();
+	Vector3 colliderColor = mCollider->GetHashColor();
 	Vector3 mousePositionColor = mOutputBuffer->color;
 
-	if (cubeColor.IsEqual(mousePositionColor))
+	if (colliderColor.IsEqual(mousePositionColor))
 	{
 		if (KEY_DOWN(VK_LBUTTON))
 		{
 			mCube->GetMaterial()->SetDiffuseMap(Texture::Add(L"ModelData/Mesh_PreviewImage.png"));
+			mCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
 		}
 	}
 	else
@@ -76,6 +82,7 @@ void ColorPickingScene::Update()
 		if (KEY_DOWN(VK_LBUTTON))
 		{
 			mCube->GetMaterial()->SetDiffuseMap(Texture::Add(L"ModelData/DefaultImage.png"));
+			mCollider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
 		}
 	}
 
@@ -83,26 +90,31 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
-	//mMonster->SetShader(L"ColorPicking");
-	//mMonster->SetWorldBuffer();
-	//mMonster->SetColorBuffer();
+	mCube->SetShader(L"ColorPicking"); // 어떤것이든 mMaterial->SetShader(L"wstring");
+	mCube->SetWorldBuffer(); // Transform
+	mCube->SetColorBuffer(); // Transform
 
-	mCube->SetShader(L"ColorPicking");
-	mCube->SetWorldBuffer();
-	mCube->SetColorBuffer();
+	mCollider->GetMaterial()->SetShader(L"ColorPicking");
+	mCollider->SetWorldBuffer();
+	mCollider->SetColorBuffer();
 
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
 
-	//mMonster->MeshRender();
 	mCube->SetMesh();
+	mCollider->SetMeshAndDraw();
+	
 }
 
 void ColorPickingScene::Render()
 {
-	//collider->Render();
-	mTerrain->Render();
+
+	//mTerrain->Render();
+	mCollider->GetMaterial()->SetShader(L"Diffuse");
+	mCollider->Render();
+
 	mCube->SetShader(L"Diffuse");
 	mCube->Render();
+
 	//mMonster->Render();
 }
 
@@ -119,12 +131,13 @@ void ColorPickingScene::PostRender()
 
 	ImGui::ImageButton(mRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
-	Float4 cpuHashColor = mCube->GetHashColor();
+	Float4 colliderHashColor = mCollider->GetHashColor();
+	Float4 cubeHashColor = mCollider->GetHashColor();
 	Float4 returnedColor = mOutputBuffer->color;
 	
-	ImGui::InputFloat4("CPU HashColorValue", (float*)&cpuHashColor,"%.20f");
-	ImGui::InputFloat4("returned ColorValue", (float*)&returnedColor,"%.20f");
-
+	ImGui::InputFloat4("Collider HashColorValue", (float*)&colliderHashColor, "%.3f");
+	ImGui::InputFloat4("Cube HashColorValue", (float*)&cubeHashColor,"%.3f");
+	ImGui::InputFloat4("returned ColorValue", (float*)&returnedColor,"%.3f");
 
 	ImGui::End();
 }

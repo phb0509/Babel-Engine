@@ -21,7 +21,7 @@ public:
 	{
 		map<int, vector<int>> preprocessedNodes; // 각 노드가 가지고 있는 자식노드들 인덱스
 		map<int, bool> nodeCheck; // TreeNodeRecurs 방문흔적
-		map<int, bool> createdCollidersCheck;
+		map<int, bool> createdCollidersCheck; // 해당인덱스노드가 컬라이더 가지고있는지 체크만.
 		map<int, TreeNodeData> nodeCollidersMap;
 		map<int, string> nodeNameMap;
 		map<int, char[100]> colliderNameMap;
@@ -133,4 +133,18 @@ private:
 
 	float mCurrentClipSpeed;
 	float mCurrentClipTakeTime;
+
+	// ColorPicking
+	DepthStencil* mDepthStencil;
+	RenderTarget* mRenderTargets[1];
+	RenderTarget* mRenderTarget;
+
+	Vector3 mMouseScreenPosition;
+	ComputeShader* mComputeShader;
+	ComputeStructuredBuffer* mComputeStructuredBuffer;
+	ColorPickingInputBuffer* mInputBuffer;
+	ColorPickingOutputBuffer* mOutputBuffer;
+
+	Cube* mCube;
+
 };

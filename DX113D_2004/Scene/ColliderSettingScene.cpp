@@ -16,6 +16,11 @@ ColliderSettingScene::ColliderSettingScene() :
 	mCurrentClipSpeed(1.0f),
 	mCurrentClipTakeTime(0.2f)
 {
+	mCube = new Cube();
+
+	mCube->SetHashColor(100000);
+
+	srand(time(NULL));
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
 	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
@@ -58,6 +63,21 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	ModelData modelData;
 	mModelDatas.push_back(modelData);
+
+
+	// ColorPicking
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
+	mRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); //
+	mRenderTargets[0] = mRenderTarget;
+
+	// Create ComputeShader
+	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
+	mComputeStructuredBuffer = new ComputeStructuredBuffer(sizeof(ColorPickingOutputBuffer), 1);
+
+	if (mInputBuffer == nullptr)
+		mInputBuffer = new ColorPickingInputBuffer();
+
+	mOutputBuffer = new ColorPickingOutputBuffer[1];
 }
 
 ColliderSettingScene::~ColliderSettingScene()
@@ -75,6 +95,21 @@ void ColliderSettingScene::Update()
 {
 	terrain->Update();
 	mMonster->Update();
+
+	// ComputeShader For ColorPicking
+	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
+	mInputBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
+	mComputeShader->Set(); 
+	mInputBuffer->SetCSBuffer(1);
+
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTarget->GetSRV());
+	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
+
+	DEVICECONTEXT->Dispatch(1, 1, 1);
+
+	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
+
+
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
@@ -100,12 +135,36 @@ void ColliderSettingScene::Update()
 
 void ColliderSettingScene::PreRender()
 {
+	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
+
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+	{
+		it->second.collider->GetMaterial()->SetShader(L"ColorPicking"); // 어떤것이든 mMaterial->SetShader(L"wstring");
+		it->second.collider->SetWorldBuffer(); // Transform
+		it->second.collider->SetColorBuffer(); // Transform
+
+		//mMonster->MeshRender();
+		it->second.collider->SetMeshAndDraw();
+
+		int a = 0;
+	}
+
+	mCube->SetShader(L"ColorPicking");
+	mCube->SetWorldBuffer();
+	mCube->SetColorBuffer();
+
+	mCube->SetMesh();
+
+	
 }
 
 void ColliderSettingScene::Render()
 {
 	mMonster->Render();
 	mRSState->SetState();
+
+	mCube->SetShader(L"Diffuse");
+	mCube->Render();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
 	{
@@ -404,6 +463,7 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 					}
 
 					mNodeCollider->mScale = { 10.0f,10.0f,10.0f }; // 생성했을 때 너무 작으면 안보여서 10으로 세팅.
+					mNodeCollider->SetHashColor(rand() % 1000000000);
 
 					TreeNodeData treeNodeData;
 					treeNodeData.collider = mNodeCollider;
@@ -940,7 +1000,7 @@ void ColliderSettingScene::showTestWindow()
 {
 	ImGui::Begin("TestWindow");
 
-	if (mCurrentModel != nullptr)
+	/*if (mCurrentModel != nullptr)
 	{
 		string t = "CurrentModel : " + mCurrentModel->GetName();
 		ImGui::Text(t.c_str());
@@ -991,7 +1051,16 @@ void ColliderSettingScene::showTestWindow()
 	else
 	{
 		ImGui::Text("No Mouse Dragging");
-	}
+	}*/
+
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(150.0f, 150.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	ImGui::ImageButton(mRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
 	ImGui::End();
 }

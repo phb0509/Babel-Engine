@@ -182,6 +182,11 @@ public:
 	}
 };
 
+struct ColorPickingOutputBuffer
+{
+	Float4 color;
+};
+
 class BoneBuffer : public ConstBuffer
 {
 public:

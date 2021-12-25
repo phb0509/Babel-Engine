@@ -36,6 +36,8 @@ public:
 
 	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
 	eType GetType() { return mType; }
+	Material* GetMaterial() { return mMaterial; }
+	void SetMeshAndDraw();
 
 protected:
 	Material* mMaterial;

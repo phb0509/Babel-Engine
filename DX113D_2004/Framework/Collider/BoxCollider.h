@@ -10,11 +10,7 @@ struct Obb
 
 class BoxCollider : public Collider
 {
-private:
-	Vector3 minBox;
-	Vector3 maxBox;
 
-	Obb obb;
 public:
 	BoxCollider(Vector3 minBox = Vector3(-0.5f, -0.5f, -0.5f),
 		Vector3 maxBox = Vector3(0.5f, 0.5f, 0.5f));
@@ -31,8 +27,16 @@ public:
 	Vector3 MaxBox();
 
 	Obb GetObb();
+
 private:
 	virtual void CreateMesh() override;
 
 	bool SeperateAxis(Vector3 D, Vector3 axis, Obb box1, Obb box2);
+
+
+private:
+	Vector3 minBox;
+	Vector3 maxBox;
+
+	Obb obb;
 };

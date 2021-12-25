@@ -6,11 +6,6 @@ class ColorPickingScene : public Scene
 public:
 
 
-	struct ColorPickingOutputBuffer
-	{
-		Float4 color;
-	};
-
 	ColorPickingScene();
 	~ColorPickingScene();
 
@@ -42,5 +37,6 @@ private:
 	ColorPickingOutputBuffer* mOutputBuffer;
 
 	Cube* mCube;
+	Collider* mCollider;
 
 };

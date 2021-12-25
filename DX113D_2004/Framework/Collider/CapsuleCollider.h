@@ -2,12 +2,7 @@
 
 class CapsuleCollider : public Collider
 {
-private:
-	float radius;
-	float height;
 
-	UINT stackCount;
-	UINT sliceCount;
 public:
 	CapsuleCollider(float radius = 1.0f, float height = 2.0f,
 		UINT stackCount = 15, UINT sliceCount = 30);
@@ -23,4 +18,11 @@ public:
 
 private:
 	virtual void CreateMesh() override;
+
+private:
+	float radius;
+	float height;
+
+	UINT stackCount;
+	UINT sliceCount;
 };

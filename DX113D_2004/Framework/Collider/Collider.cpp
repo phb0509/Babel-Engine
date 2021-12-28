@@ -55,6 +55,8 @@ void Collider::Render()
     SetWorldBuffer();
     
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    //mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    
     mMaterial->Set();
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 

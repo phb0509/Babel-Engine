@@ -171,14 +171,14 @@ class ColorPickingInputBuffer : public ConstBuffer
 public:
 	struct Data
 	{
-		Float2 mouseScreenPosition;
-		Float2 padding;
+		Float2 mouseScreenUVPosition;
+		Int2 mouseScreenPosition;
 	}data;
 
 	ColorPickingInputBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
-		data.mouseScreenPosition = { 0.0f,0.0f };
-		data.padding = { 0.0f,0.0f };
+		data.mouseScreenUVPosition = { 0.0f,0.0f };
+		data.mouseScreenPosition = { 0,0 };
 	}
 };
 

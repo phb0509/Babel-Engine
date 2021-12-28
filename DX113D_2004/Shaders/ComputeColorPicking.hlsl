@@ -1,8 +1,8 @@
 
 cbuffer MouseUV : register(b1)
 {
-    float2 mouseScreenPosition;
-    float2 padding;
+    float2 mouseScreenUVPosition;
+    int2 mouseScreenPosition;
 }
 
 
@@ -22,17 +22,26 @@ SamplerState LinearSampler
     AddressU = Clamp;
     AddressV = Clamp;
 };
+
 SamplerState samp : register(s0);
 
 [numthreads(1, 1, 1)]
 void CS(uint3 index : SV_DispatchThreadID)
 {
     // 마우스피킹지점 컬러값 얻기
-    float2 mousePosition;
+    float2 mouseUVPosition;
+    mouseUVPosition.x = mouseScreenUVPosition.x;
+    mouseUVPosition.y = mouseScreenUVPosition.y;
+    
+    int2 mousePosition;
     mousePosition.x = mouseScreenPosition.x;
     mousePosition.y = mouseScreenPosition.y;
     
-    float4 color = Texture.SampleLevel(samp, mousePosition, 0.0f);
+    //float4 color = Texture.SampleLevel(samp, mouseUVPosition, 0.0f);
+    
+    float4 color = Texture.Load(int3(mousePosition.xy, 0));
+    
+    
     
     color.a = 1.0f; // 안해도 피킹하는데엔 상관없지만 영상으로 보여주기위해서..
     output[0].color = color;

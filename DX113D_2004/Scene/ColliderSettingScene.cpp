@@ -98,7 +98,7 @@ void ColliderSettingScene::Update()
 
 	// ComputeShader For ColorPicking
 	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
-	mInputBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
+	mInputBuffer->data.mouseScreenUVPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mComputeShader->Set(); 
 	mInputBuffer->SetCSBuffer(1);
 

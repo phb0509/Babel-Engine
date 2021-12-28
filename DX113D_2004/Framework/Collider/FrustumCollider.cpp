@@ -10,7 +10,7 @@ FrustumCollider::FrustumCollider(float nearRectWidth, float nearRectHeight, floa
     mDistanceToNearRect(distanceToNearRect),
     mDistanceToFarRect(distanceToFarRect)
 {
-    CreateMesh();
+    createMesh();
 }
 
 FrustumCollider::~FrustumCollider()
@@ -38,7 +38,11 @@ bool FrustumCollider::CapsuleCollision(CapsuleCollider* collider)
     return false;
 }
 
-void FrustumCollider::CreateMesh()
+void FrustumCollider::createMeshForColorPicking()
+{
+}
+
+void FrustumCollider::createMesh()
 {
     mVertices.emplace_back(0.0f, 0.0f, 0.0f); // ¿øÁ¡
 

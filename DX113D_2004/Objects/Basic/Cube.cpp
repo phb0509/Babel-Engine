@@ -5,7 +5,7 @@ Cube::Cube()
 	mMaterial = new Material(L"Diffuse");
 	mMaterial->SetDiffuseMap(L"Textures/test.jpg");
 
-	create();
+	createMesh();
 }
 
 Cube::~Cube()
@@ -45,7 +45,7 @@ void Cube::SetMesh()
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
-void Cube::create()
+void Cube::createMesh()
 {
 	mVertices.resize(24);
 	//Front

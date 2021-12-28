@@ -12,15 +12,16 @@ public:
 	virtual bool BoxCollision(BoxCollider* collider) override;
 	virtual bool SphereCollision(SphereCollider* collider) override;
 	virtual bool CapsuleCollision(CapsuleCollider* collider) override;
-
-	float Radius() { return radius * max(GetGlobalScale().x, max(GetGlobalScale().y, GetGlobalScale().z)); }
-private:
-	virtual void CreateMesh() override;
-
+	
+	float Radius() { return mRadius * max(GetGlobalScale().x, max(GetGlobalScale().y, GetGlobalScale().z)); }
 
 private:
-	float radius;
+	virtual void createMesh() override;
+	virtual void createMeshForColorPicking() override;
 
-	UINT stackCount;
-	UINT sliceCount;
+private:
+	float mRadius;
+
+	UINT mStackCount;
+	UINT mSliceCount;
 };

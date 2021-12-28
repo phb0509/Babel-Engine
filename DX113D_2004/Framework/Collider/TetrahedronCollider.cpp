@@ -5,14 +5,14 @@ TetrahedronCollider::TetrahedronCollider(float rectWidth, float rectHeight, floa
 	mRectHeight(rectHeight),
 	mDistanceToRect(distanceToRect)
 {
-	CreateMesh();
+	createMesh();
 }
 
 TetrahedronCollider::~TetrahedronCollider()
 {
 }
 
-void TetrahedronCollider::CreateMesh()
+void TetrahedronCollider::createMesh()
 {
 	mVertices.emplace_back(0.0f, 0.0f, 0.0f);
 	mVertices.emplace_back(-mRectWidth / 2.0f, -mRectHeight / 2.0f, mDistanceToRect);
@@ -47,6 +47,10 @@ bool TetrahedronCollider::SphereCollision(SphereCollider* collider)
 bool TetrahedronCollider::CapsuleCollision(CapsuleCollider* collider)
 {
 	return false;
+}
+
+void TetrahedronCollider::createMeshForColorPicking()
+{
 }
 
 

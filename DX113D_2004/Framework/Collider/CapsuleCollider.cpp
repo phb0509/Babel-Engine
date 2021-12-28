@@ -1,10 +1,11 @@
 #include "Framework.h"
 
 CapsuleCollider::CapsuleCollider(float radius, float height, UINT stackCount, UINT sliceCount)
-    : radius(radius), height(height), stackCount(stackCount), sliceCount(sliceCount)
+    : mRadius(radius), mHeight(height), mStackCount(stackCount), mSliceCount(sliceCount)
 {
     mType = eType::CAPSULE;
-    CreateMesh();
+    createMesh();
+	createMeshForColorPicking();
 }
 
 CapsuleCollider::~CapsuleCollider()
@@ -141,46 +142,94 @@ bool CapsuleCollider::CapsuleCollision(CapsuleCollider* collider)
     return distance <= (Radius() + collider->Radius());
 }
 
-void CapsuleCollider::CreateMesh()
-{
-	float phiStep = XM_PI / stackCount;
-	float thetaStep = XM_2PI / sliceCount;
 
-	for (UINT i = 0; i <= stackCount; i++)
+
+void CapsuleCollider::createMesh()
+{
+	float phiStep = XM_PI / mStackCount;
+	float thetaStep = XM_2PI / mSliceCount;
+
+	for (UINT i = 0; i <= mStackCount; i++)
 	{
 		float phi = i * phiStep;
 
-		for (UINT j = 0; j <= sliceCount; j++)
+		for (UINT j = 0; j <= mSliceCount; j++)
 		{
 			float theta = j * thetaStep;
 
 			Vertex vertex;
 
-			vertex.position.x = sin(phi) * cos(theta) * radius;
-			vertex.position.y = cos(phi) * radius;
-			vertex.position.z = sin(phi) * sin(theta) * radius;
+			vertex.position.x = sin(phi) * cos(theta) * mRadius;
+			vertex.position.y = cos(phi) * mRadius;
+			vertex.position.z = sin(phi) * sin(theta) * mRadius;
 
 			if (vertex.position.y > 0)
-				vertex.position.y += height * 0.5f;
+				vertex.position.y += mHeight * 0.5f;
 			else
-				vertex.position.y -= height * 0.5f;
+				vertex.position.y -= mHeight * 0.5f;
 
 			mVertices.emplace_back(vertex);
 		}
 	}
 
-	for (UINT i = 0; i < stackCount; i++)
+	for (UINT i = 0; i < mStackCount; i++)
 	{
-		for (UINT j = 0; j < sliceCount; j++)
+		for (UINT j = 0; j < mSliceCount; j++)
 		{
-			mIndices.emplace_back((sliceCount + 1) * i + j);//0
-			mIndices.emplace_back((sliceCount + 1) * i + j + 1);//1			
+			mIndices.emplace_back((mSliceCount + 1) * i + j);//0
+			mIndices.emplace_back((mSliceCount + 1) * i + j + 1);//1			
 
-			mIndices.emplace_back((sliceCount + 1) * i + j);//0
-			mIndices.emplace_back((sliceCount + 1) * (i + 1) + j);//2
+			mIndices.emplace_back((mSliceCount + 1) * i + j);//0
+			mIndices.emplace_back((mSliceCount + 1) * (i + 1) + j);//2
 		}
 	}
 
 	mMesh = new Mesh(mVertices.data(), sizeof(Vertex), mVertices.size(),
 		mIndices.data(), mIndices.size());
+}
+
+void CapsuleCollider::createMeshForColorPicking()
+{
+	float phiStep = XM_PI / mStackCount;
+	float thetaStep = XM_2PI / mSliceCount;
+
+	for (UINT i = 0; i <= mStackCount; i++)
+	{
+		float phi = i * phiStep;
+
+		for (UINT j = 0; j <= mSliceCount; j++)
+		{
+			float theta = j * thetaStep;
+
+			Vertex vertex;
+
+			vertex.position.x = sin(phi) * cos(theta) * mRadius;
+			vertex.position.y = cos(phi) * mRadius;
+			vertex.position.z = sin(phi) * sin(theta) * mRadius;
+
+			if (vertex.position.y > 0)
+				vertex.position.y += mHeight * 0.5f;
+			else
+				vertex.position.y -= mHeight * 0.5f;
+
+			mVerticesForColorPicking.emplace_back(vertex);
+		}
+	}
+
+	for (UINT i = 0; i < mStackCount; i++)
+	{
+		for (UINT j = 0; j < mSliceCount; j++)
+		{
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * i + j);
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * i + j + 1);
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * (i + 1) + j);
+
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * (i + 1) + j);
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * i + j + 1);
+			mIndicesForColorPicking.emplace_back((mSliceCount + 1) * (i + 1) + j + 1);
+		}
+	}
+
+	mMeshForColorPicking = new Mesh(mVerticesForColorPicking.data(), sizeof(Vertex), mVerticesForColorPicking.size(),
+		mIndicesForColorPicking.data(), mIndicesForColorPicking.size());
 }

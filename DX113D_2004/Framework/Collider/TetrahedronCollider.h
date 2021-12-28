@@ -10,8 +10,11 @@ public:
 	virtual bool BoxCollision(BoxCollider* collider) override;
 	virtual bool SphereCollision(SphereCollider* collider) override;
 	virtual bool CapsuleCollision(CapsuleCollider* collider) override;
+	
+
 private:
-	virtual void CreateMesh() override;
+	virtual void createMesh() override;
+	virtual void createMeshForColorPicking() override;
 
 private:
 	float mRectWidth;

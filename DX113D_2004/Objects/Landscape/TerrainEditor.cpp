@@ -159,41 +159,16 @@ void TerrainEditor::PostRender()
 
 	ImGui::Separator();
 
-	ImGui::Spacing();
-	ImGui::Spacing();
-	ImGui::Spacing();
+	SpacingRepeatedly(3);
 
 	addTexture(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
 	showAddedTextures(); // 추가한 텍스쳐들 렌더.
 
-	ImGui::Spacing();
-	ImGui::Spacing();
-	ImGui::Spacing();
+	SpacingRepeatedly(3);
 
 	ImGui::Separator();
 
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-
-	//ImGui::ShowDemoWindow();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
-	ImGui::Unindent();
+	UnIndentRepeatedly(20);
 
 	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
 	mMouseNDCPosition = { ((2 * MOUSEPOS.x) / WIN_WIDTH) - 1.0f,

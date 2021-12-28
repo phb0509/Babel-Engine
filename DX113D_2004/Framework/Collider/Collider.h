@@ -29,7 +29,9 @@ public:
 	virtual bool SphereCollision(SphereCollider* collider) = 0;
 	virtual bool CapsuleCollision(CapsuleCollider* collider) = 0;
 
-	virtual void CreateMesh() = 0;
+	virtual void createMesh() = 0;
+	virtual void createMeshForColorPicking() = 0;
+	virtual void RenderForColorPicking();
 
 	void Update();
 	void Render();
@@ -37,16 +39,20 @@ public:
 	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
 	eType GetType() { return mType; }
 	Material* GetMaterial() { return mMaterial; }
-	void SetMeshAndDraw();
+
 
 protected:
 	Material* mMaterial;
 	Mesh* mMesh;
+	Mesh* mMeshForColorPicking;
 
 	eType mType;
 
 	vector<Vertex> mVertices;
 	vector<UINT> mIndices;
+
+	vector<Vertex> mVerticesForColorPicking;
+	vector<UINT> mIndicesForColorPicking;
 
 	bool mbIsRender;
 };

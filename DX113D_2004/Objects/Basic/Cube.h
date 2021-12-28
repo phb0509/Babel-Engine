@@ -17,7 +17,7 @@ public:
 	Material* GetMaterial() { return mMaterial; }
 
 private:
-	void create();
+	void createMesh();
 	void createNormal();
 
 

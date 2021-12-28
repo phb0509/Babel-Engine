@@ -30,7 +30,18 @@ bool Collider::Collision(Collider* collider)
     return false;
 }
 
-void Collider::Update() 
+void Collider::RenderForColorPicking()
+{
+    mMaterial->SetShader(L"ColorPicking");
+    SetWorldBuffer();
+    SetColorBuffer();
+
+    mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mMaterial->Set();
+    DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
+}
+
+void Collider::Update()
 {
     if (KEY_DOWN(VK_F3))
     {
@@ -54,18 +65,11 @@ void Collider::Render()
 {
     SetWorldBuffer();
     
-    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-    //mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    
+    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
     mMaterial->Set();
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 
     RenderGizmos();
 }
 
-void Collider::SetMeshAndDraw()
-{
-    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-    mMaterial->Set();
-    DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
-}
+

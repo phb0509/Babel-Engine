@@ -1,10 +1,11 @@
 #include "Framework.h"
 
 BoxCollider::BoxCollider(Vector3 minBox, Vector3 maxBox)
-    : minBox(minBox), maxBox(maxBox)
+    : mMinBox(minBox), mMaxBox(maxBox)
 {
     mType = eType::BOX;
-    CreateMesh();
+    createMesh();
+    createMeshForColorPicking();
 }
 
 BoxCollider::~BoxCollider()
@@ -79,8 +80,8 @@ bool BoxCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 
 bool BoxCollider::BoxCollision(BoxCollider* collider)
 {
-    Obb box1 = GetObb();
-    Obb box2 = collider->GetObb();
+    OBB box1 = GetObb();
+    OBB box2 = collider->GetObb();
 
     Vector3 D = box2.position - box1.position;
 
@@ -119,8 +120,8 @@ bool BoxCollider::SphereCollision(SphereCollider* collider)
 
     Vector3 spherePos = XMVector3TransformCoord(collider->GetGlobalPosition().data, invWorld);
 
-    Vector3 tempMin = minBox * GetGlobalScale();
-    Vector3 tempMax = maxBox * GetGlobalScale();
+    Vector3 tempMin = mMinBox * GetGlobalScale();
+    Vector3 tempMax = mMaxBox * GetGlobalScale();
 
     Vector3 temp;
     temp.x = max(tempMin.x, min(spherePos.x, tempMax.x));
@@ -138,6 +139,113 @@ bool BoxCollider::CapsuleCollision(CapsuleCollider* collider)
     return collider->BoxCollision(this);
 }
 
+void BoxCollider::createMeshForColorPicking()
+{
+    mVerticesForColorPicking.resize(24);
+    //Front
+    mVerticesForColorPicking[0].position = { mMinBox.x, mMinBox.y, mMinBox.z };
+    mVerticesForColorPicking[1].position = { mMinBox.x, mMaxBox.y, mMinBox.z };
+    mVerticesForColorPicking[2].position = { mMaxBox.x, mMaxBox.y, mMinBox.z };
+    mVerticesForColorPicking[3].position = { mMaxBox.x, mMinBox.y , mMinBox.z };
+
+    //Back
+    mVerticesForColorPicking[4].position = { mMinBox.x, mMinBox.y, mMaxBox.z };
+    mVerticesForColorPicking[5].position = { mMinBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[6].position = { mMaxBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[7].position = { mMaxBox.x, mMinBox.y, mMaxBox.z };
+
+    //Right
+    mVerticesForColorPicking[8].position = { mMaxBox.x, mMinBox.y, mMinBox.z };
+    mVerticesForColorPicking[9].position = { mMaxBox.x, mMaxBox.y, mMinBox.z };
+    mVerticesForColorPicking[10].position = { mMaxBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[11].position = { mMaxBox.x, mMinBox.y, mMaxBox.z };
+
+    //Left
+    mVerticesForColorPicking[12].position = { mMinBox.x, mMinBox.y, mMinBox.z };
+    mVerticesForColorPicking[13].position = { mMinBox.x, mMaxBox.y, mMinBox.z };
+    mVerticesForColorPicking[14].position = { mMinBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[15].position = { mMinBox.x, mMinBox.y, mMaxBox.z };
+
+    //Up
+    mVerticesForColorPicking[16].position = { mMinBox.x, mMaxBox.y, mMinBox.z };
+    mVerticesForColorPicking[17].position = { mMinBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[18].position = { mMaxBox.x, mMaxBox.y, mMaxBox.z };
+    mVerticesForColorPicking[19].position = { mMaxBox.x, mMaxBox.y, mMinBox.z };
+
+    //Down
+    mVerticesForColorPicking[20].position = { mMinBox.x, mMinBox.y, mMinBox.z };
+    mVerticesForColorPicking[21].position = { mMinBox.x, mMinBox.y, mMaxBox.z };
+    mVerticesForColorPicking[22].position = { mMaxBox.x, mMinBox.y, mMaxBox.z };
+    mVerticesForColorPicking[23].position = { mMaxBox.x, mMinBox.y, mMinBox.z };
+
+    /*for (UINT i = 0; i < 6; i++) // uv값이 필요....하지않을거다 아마. 텍스쳐를 바를건 아니니까.
+    {
+        mVertices[i * 4 + 0].uv = { 0, 1 };
+        mVertices[i * 4 + 1].uv = { 0, 0 };
+        mVertices[i * 4 + 2].uv = { 1, 0 };
+        mVertices[i * 4 + 3].uv = { 1, 1 };
+    }*/
+
+    //Front
+    mIndicesForColorPicking.emplace_back(0);
+    mIndicesForColorPicking.emplace_back(1);
+    mIndicesForColorPicking.emplace_back(2);
+
+    mIndicesForColorPicking.emplace_back(0);
+    mIndicesForColorPicking.emplace_back(2);
+    mIndicesForColorPicking.emplace_back(3);
+
+    //Back
+    mIndicesForColorPicking.emplace_back(4);
+    mIndicesForColorPicking.emplace_back(6);
+    mIndicesForColorPicking.emplace_back(5);
+
+    mIndicesForColorPicking.emplace_back(4);
+    mIndicesForColorPicking.emplace_back(7);
+    mIndicesForColorPicking.emplace_back(6);
+
+    //Right
+    mIndicesForColorPicking.emplace_back(8);
+    mIndicesForColorPicking.emplace_back(9);
+    mIndicesForColorPicking.emplace_back(10);
+
+    mIndicesForColorPicking.emplace_back(8);
+    mIndicesForColorPicking.emplace_back(10);
+    mIndicesForColorPicking.emplace_back(11);
+
+    //Left
+    mIndicesForColorPicking.emplace_back(12);
+    mIndicesForColorPicking.emplace_back(14);
+    mIndicesForColorPicking.emplace_back(13);
+
+    mIndicesForColorPicking.emplace_back(12);
+    mIndicesForColorPicking.emplace_back(15);
+    mIndicesForColorPicking.emplace_back(14);
+
+    //Up
+    mIndicesForColorPicking.emplace_back(16);
+    mIndicesForColorPicking.emplace_back(17);
+    mIndicesForColorPicking.emplace_back(18);
+
+    mIndicesForColorPicking.emplace_back(16);
+    mIndicesForColorPicking.emplace_back(18);
+    mIndicesForColorPicking.emplace_back(19);
+
+    //Down
+    mIndicesForColorPicking.emplace_back(20);
+    mIndicesForColorPicking.emplace_back(22);
+    mIndicesForColorPicking.emplace_back(21);
+
+    mIndicesForColorPicking.emplace_back(20);
+    mIndicesForColorPicking.emplace_back(23);
+    mIndicesForColorPicking.emplace_back(22);
+
+
+
+    mMeshForColorPicking = new Mesh(mVerticesForColorPicking.data(), sizeof(Vertex), (UINT)mVerticesForColorPicking.size(),
+        mIndicesForColorPicking.data(), (UINT)mIndicesForColorPicking.size());
+}
+
 bool BoxCollider::SphereCollision(Vector3 center, float radius)
 {
     Matrix T = XMMatrixTranslation(GetGlobalPosition().x, GetGlobalPosition().y, GetGlobalPosition().z);
@@ -147,8 +255,8 @@ bool BoxCollider::SphereCollision(Vector3 center, float radius)
 
     Vector3 spherePos = XMVector3TransformCoord(center.data, invWorld);
 
-    Vector3 tempMin = minBox * GetGlobalScale();
-    Vector3 tempMax = maxBox * GetGlobalScale();
+    Vector3 tempMin = mMinBox * GetGlobalScale();
+    Vector3 tempMax = mMaxBox * GetGlobalScale();
 
     Vector3 temp;
     temp.x = max(tempMin.x, min(spherePos.x, tempMax.x));
@@ -162,38 +270,38 @@ bool BoxCollider::SphereCollision(Vector3 center, float radius)
 
 Vector3 BoxCollider::MinBox()
 {
-    return XMVector3TransformCoord(minBox.data, mWorldMatrix);
+    return XMVector3TransformCoord(mMinBox.data, mWorldMatrix);
 }
 
 Vector3 BoxCollider::MaxBox()
 {
-    return XMVector3TransformCoord(maxBox.data, mWorldMatrix);
+    return XMVector3TransformCoord(mMaxBox.data, mWorldMatrix);
 }
 
-Obb BoxCollider::GetObb()
+OBB BoxCollider::GetObb()
 {
-    obb.position = GetGlobalPosition();
+    mOBB.position = GetGlobalPosition();
 
-    obb.axis[0] = Right();
-    obb.axis[1] = Up();
-    obb.axis[2] = Forward();
+    mOBB.axis[0] = Right();
+    mOBB.axis[1] = Up();
+    mOBB.axis[2] = Forward();
 
-    obb.halfSize = (minBox - maxBox) * 0.5f * GetGlobalScale();
+    mOBB.halfSize = (mMinBox - mMaxBox) * 0.5f * GetGlobalScale();
 
-    return obb;
+    return mOBB;
 }
 
-void BoxCollider::CreateMesh()
+void BoxCollider::createMesh()
 {
-    mVertices.emplace_back(minBox.x, minBox.y, minBox.z);
-    mVertices.emplace_back(minBox.x, maxBox.y, minBox.z);
-    mVertices.emplace_back(maxBox.x, maxBox.y, minBox.z);
-    mVertices.emplace_back(maxBox.x, minBox.y, minBox.z);
+    mVertices.emplace_back(mMinBox.x, mMinBox.y, mMinBox.z);
+    mVertices.emplace_back(mMinBox.x, mMaxBox.y, mMinBox.z);
+    mVertices.emplace_back(mMaxBox.x, mMaxBox.y, mMinBox.z);
+    mVertices.emplace_back(mMaxBox.x, mMinBox.y, mMinBox.z);
 
-    mVertices.emplace_back(minBox.x, minBox.y, maxBox.z);
-    mVertices.emplace_back(minBox.x, maxBox.y, maxBox.z);
-    mVertices.emplace_back(maxBox.x, maxBox.y, maxBox.z);
-    mVertices.emplace_back(maxBox.x, minBox.y, maxBox.z);
+    mVertices.emplace_back(mMinBox.x, mMinBox.y, mMaxBox.z);
+    mVertices.emplace_back(mMinBox.x, mMaxBox.y, mMaxBox.z);
+    mVertices.emplace_back(mMaxBox.x, mMaxBox.y, mMaxBox.z);
+    mVertices.emplace_back(mMaxBox.x, mMinBox.y, mMaxBox.z);
 
     mIndices = {
         0, 1, 1, 2, 2, 3, 3, 0,
@@ -205,7 +313,7 @@ void BoxCollider::CreateMesh()
         mIndices.data(), mIndices.size());
 }
 
-bool BoxCollider::SeperateAxis(Vector3 D, Vector3 axis, Obb box1, Obb box2)
+bool BoxCollider::SeperateAxis(Vector3 D, Vector3 axis, OBB box1, OBB box2)
 {
     float distance = abs(Vector3::Dot(D, axis));
 

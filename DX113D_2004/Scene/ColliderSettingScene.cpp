@@ -97,9 +97,15 @@ void ColliderSettingScene::Update()
 	mMonster->Update();
 
 	// ComputeShader For ColorPicking
-	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
-	mInputBuffer->data.mouseScreenUVPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
-	mComputeShader->Set(); 
+	int32_t mousePositionX = static_cast<int32_t>(MOUSEPOS.x);
+	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
+
+	Int2 mousePosition = { mousePositionX,mousePositionY };
+	mMouseScreenUVPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
+	mInputBuffer->data.mouseScreenUVPosition = { mMouseScreenUVPosition.x,mMouseScreenUVPosition.y }; // 마우스좌표 uv값
+	mInputBuffer->data.mouseScreenPosition = mousePosition; // 마우스좌표 uv값
+
+	mComputeShader->Set(); // 디바이스에 Set..
 	mInputBuffer->SetCSBuffer(1);
 
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTarget->GetSRV());
@@ -108,6 +114,22 @@ void ColliderSettingScene::Update()
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
+	
+	Vector3 mousePositionColor = mOutputBuffer->color;
+
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+	{
+		Vector3 colliderHashColor = it->second.collider->GetHashColor();
+
+		if (mousePositionColor.IsEqual(colliderHashColor))
+		{
+			it->second.collider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
+		}
+		else
+		{
+			it->second.collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
+		}
+	}
 
 
 
@@ -139,32 +161,16 @@ void ColliderSettingScene::PreRender()
 
 	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
 	{
-		it->second.collider->GetMaterial()->SetShader(L"ColorPicking"); // 어떤것이든 mMaterial->SetShader(L"wstring");
-		it->second.collider->SetWorldBuffer(); // Transform
-		it->second.collider->SetColorBuffer(); // Transform
-
-		//mMonster->MeshRender();
-		it->second.collider->SetMeshAndDraw();
-
-		int a = 0;
+		it->second.collider->RenderForColorPicking();
 	}
 
-	mCube->SetShader(L"ColorPicking");
-	mCube->SetWorldBuffer();
-	mCube->SetColorBuffer();
 
-	mCube->SetMesh();
-
-	
 }
 
 void ColliderSettingScene::Render()
 {
 	mMonster->Render();
 	mRSState->SetState();
-
-	mCube->SetShader(L"Diffuse");
-	mCube->Render();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
 	{
@@ -174,8 +180,8 @@ void ColliderSettingScene::Render()
 
 			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
 			{
+				it->second.collider->GetMaterial()->SetShader(L"Collider");
 				it->second.collider->Render();
-				//it->second->RenderAxis();
 			}
 		}
 	}

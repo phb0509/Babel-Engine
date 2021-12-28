@@ -37,6 +37,8 @@ private:
 	ColorPickingOutputBuffer* mOutputBuffer;
 
 	Cube* mCube;
-	Collider* mCollider;
+	Collider* mBoxCollider;
+	Collider* mSphereCollider;
+	Collider* mCapsuleCollider;
 
 };

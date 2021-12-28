@@ -6,60 +6,60 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager()
 {
-    for (auto scene : scenes)
+    for (auto scene : mScenes)
         delete scene.second;
 }
 
 void SceneManager::Update()
 {
-    for (Scene* scene : playScene)
+    for (Scene* scene : mPlayedScenes)
         scene->Update();
 }
 
 void SceneManager::PreRender()
 {
-    for (Scene* scene : playScene)
+    for (Scene* scene : mPlayedScenes)
         scene->PreRender();
 }
 
 void SceneManager::Render()
 {
-    for (Scene* scene : playScene)
+    for (Scene* scene : mPlayedScenes)
         scene->Render();
 }
 
 void SceneManager::PostRender()
 {
-    for (Scene* scene : playScene)
+    for (Scene* scene : mPlayedScenes)
         scene->PostRender();
 }
 
 Scene* SceneManager::Add(string key, Scene* scene)
 {
-    if (scenes.count(key) > 0)
-        return scenes[key];
+    if (mScenes.count(key) > 0)
+        return mScenes[key];
 
-    scenes[key] = scene;
+    mScenes[key] = scene;
 
     return scene;
 }
 
 Scene* SceneManager::AddScene(string key)
 {
-    playScene.emplace_back(scenes[key]);
+    mPlayedScenes.emplace_back(mScenes[key]);
 
-    return scenes[key];
+    return mScenes[key];
 }
 
 void SceneManager::DeleteScene(string key)
 {
-    vector<Scene*>::iterator iter = playScene.begin();
+    vector<Scene*>::iterator iter = mPlayedScenes.begin();
 
-    while (iter != playScene.end())
+    while (iter != mPlayedScenes.end())
     {
-        if ((*iter) == scenes[key])
+        if ((*iter) == mScenes[key])
         {
-            iter = playScene.erase(iter);
+            iter = mPlayedScenes.erase(iter);
         }
         else
         {

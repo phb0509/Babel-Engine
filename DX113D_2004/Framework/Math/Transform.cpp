@@ -300,5 +300,6 @@ void Transform::RenderGizmos()
 	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
+
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
 }

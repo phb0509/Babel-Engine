@@ -14,12 +14,9 @@ ColliderSettingScene::ColliderSettingScene() :
 	mDroppedFileName(""),
 	mbIsDropped(true),
 	mCurrentClipSpeed(1.0f),
-	mCurrentClipTakeTime(0.2f)
+	mCurrentClipTakeTime(0.2f),
+	mPickedCollider(nullptr)
 {
-	mCube = new Cube();
-
-	mCube->SetHashColor(100000);
-
 	srand(time(NULL));
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
@@ -43,6 +40,9 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	mRSState = new RasterizerState();
 	mRSState->FillMode(D3D11_FILL_WIREFRAME);
+
+	mRSStateForColorPicking = new RasterizerState();
+	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
 
 	terrain = new Terrain();
 	mMonster = new Warrok();
@@ -124,6 +124,11 @@ void ColliderSettingScene::Update()
 		if (mousePositionColor.IsEqual(colliderHashColor))
 		{
 			it->second.collider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
+
+			if (KEY_DOWN(VK_LBUTTON))
+			{
+				mPickedCollider = it->second.collider;
+			}
 		}
 		else
 		{
@@ -131,7 +136,12 @@ void ColliderSettingScene::Update()
 		}
 	}
 
-
+	if (mPickedCollider != nullptr)
+	{
+		mPickedCollider->SetColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+	
+	
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
 	{
@@ -159,12 +169,13 @@ void ColliderSettingScene::PreRender()
 {
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
 
+	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
+	mRSStateForColorPicking->SetState();
+
 	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
 	{
 		it->second.collider->RenderForColorPicking();
 	}
-
-
 }
 
 void ColliderSettingScene::Render()
@@ -180,10 +191,14 @@ void ColliderSettingScene::Render()
 
 			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
 			{
-				it->second.collider->GetMaterial()->SetShader(L"Collider");
 				it->second.collider->Render();
 			}
 		}
+	}
+
+	if (mPickedCollider != nullptr)
+	{
+		mPickedCollider->RenderGizmos();
 	}
 }
 
@@ -211,9 +226,6 @@ void ColliderSettingScene::PostRender()
 	}
 }
 
-
-
-
 void ColliderSettingScene::showModelSelectWindow()
 {
 	ImGui::Begin("Select Model");
@@ -224,7 +236,6 @@ void ColliderSettingScene::showModelSelectWindow()
 
 	ImGui::End();
 }
-
 
 void ColliderSettingScene::selectModel() // perFrame
 {
@@ -518,10 +529,11 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 				ImGui::Text(labelName.c_str());
 
-				if (ImGui::Button(deleteName.c_str()))
+				if (ImGui::Button(deleteName.c_str())) // DeleteButton
 				{
 					it->second = false;
 					delete mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider;
+					mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider = nullptr;
 					mModelDatas[mCurrentModelIndex].nodeCollidersMap.erase(it->first);
 					continue;
 				}
@@ -991,10 +1003,12 @@ void ColliderSettingScene::showModelInspector()
 	if (mbIsWireFrame)
 	{
 		mRSState->FillMode(D3D11_FILL_WIREFRAME);
+		mRSState->SetState();
 	}
 	else
 	{
 		mRSState->FillMode(D3D11_FILL_SOLID);
+		mRSState->SetState();
 	}
 
 	UnIndentRepeatedly(6);
@@ -1290,9 +1304,6 @@ void ColliderSettingScene::allSaveAsCSV()
 	}
 
 }
-
-
-
 
 void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToCreate, string parentFolderName)
 {

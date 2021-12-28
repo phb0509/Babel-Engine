@@ -57,19 +57,18 @@ void Collider::Update()
         }
     }
 
-
     UpdateWorld();
 }
 
 void Collider::Render()
 {
+    mMaterial->SetShader(L"Collider");
     SetWorldBuffer();
-    
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
     mMaterial->Set();
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 
-    RenderGizmos();
+    //RenderGizmos();
 }
 
 

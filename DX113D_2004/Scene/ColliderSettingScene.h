@@ -118,6 +118,7 @@ private:
 
 	int mbIsSkinnedMesh;
 	RasterizerState* mRSState;
+	RasterizerState* mRSStateForColorPicking;
 	int mbIsWireFrame;
 
 	vector<ModelData> mModelDatas;
@@ -146,6 +147,7 @@ private:
 	ColorPickingInputBuffer* mInputBuffer;
 	ColorPickingOutputBuffer* mOutputBuffer;
 
-	Cube* mCube;
+	Collider* mPickedCollider;
+
 
 };

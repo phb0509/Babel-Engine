@@ -4,7 +4,17 @@ class ColorPickingScene : public Scene
 {
 
 public:
+	struct InputDesc
+	{
+		UINT index;
+		Float3 v0, v1, v2;
+	};
 
+	struct OutputDesc
+	{
+		int picked;
+		float u, v, distance;
+	};
 
 	ColorPickingScene();
 	~ColorPickingScene();
@@ -40,5 +50,6 @@ private:
 	Collider* mBoxCollider;
 	Collider* mSphereCollider;
 	Collider* mCapsuleCollider;
+
 
 };

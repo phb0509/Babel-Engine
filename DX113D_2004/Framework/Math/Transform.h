@@ -10,13 +10,20 @@ class CapsuleCollider;
 
 class Transform
 {
+	struct GizmosHashColor
+	{
+		Float4 x;
+		Float4 y;
+		Float4 z;
+	};
+
 public:
 	Transform(string mTag = "Untagged");
 	virtual ~Transform();
 
 	void UpdateWorld();
 	void RenderGizmos();
-
+	void RenderGizmosForColorPicking();
 	void SetWorldBuffer(UINT slot = 0);
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
@@ -41,12 +48,14 @@ public:
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
 
 	void SetColorBuffer();
-	void SetHashColor(int hashValue);
+
 	Float4 GetHashColor() { return mHashColorForBuffer; }
 	
+	
 private:
-	void CreateGizmos();
-
+	void createHashColor();
+	void createGizmos();
+	void createGizmoseHashColor();
 
 public:
 	static bool mbIsRenderGizmos;
@@ -78,18 +87,17 @@ protected:
 	vector<float> mNextExecuteTimes;
 	bool mIsAStarPathUpdate;
 
-private:
 
-	
+private:
 
 	// Gizmos
 	Material* mGizmosMaterial;
 	Mesh* mGizmosMesh;
-	MatrixBuffer* mGizmosTransformBuffer;
+	MatrixBuffer* mGizmosWorldBuffer;
 	vector<VertexColor> mGizmosVertices;
 	vector<UINT> mGizmosIndices;
 	RasterizerState* mRSState;
 	ColorBuffer* mColorBuffer;
-
 	Float4 mHashColorForBuffer;
+	GizmosHashColor mGizmosHashColor;
 };

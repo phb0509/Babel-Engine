@@ -53,22 +53,22 @@ void Vector3::SetW(float value)
     data = XMVectorSetW(data, value);
 }
 
-float Vector3::GetX()
+float Vector3::GetX() const
 {
     return XMVectorGetX(data);
 }
 
-float Vector3::GetY()
+float Vector3::GetY() const
 {
     return XMVectorGetY(data);
 }
 
-float Vector3::GetZ()
+float Vector3::GetZ() const
 {
     return XMVectorGetZ(data);
 }
 
-float Vector3::GetW()
+float Vector3::GetW() const
 {
     return XMVectorGetW(data);
 }
@@ -190,10 +190,11 @@ void Vector3::Normalize()
     data = XMVector3Normalize(data);
 }
 
-bool Vector3::IsEqual(Vector3& v)
+bool Vector3::IsEqual(const Vector3& v)
 {
     float v1 = this->x + this->y + this->z;
     float v2 = v.x + v.y + v.z;
+    //float v2 = v.x;
 
     if (fabs(v1 - v2) <= 3.0f * FLT_EPSILON)
     {

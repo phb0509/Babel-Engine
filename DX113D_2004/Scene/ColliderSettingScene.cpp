@@ -110,7 +110,6 @@ void ColliderSettingScene::Update()
 
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTarget->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
-
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
@@ -130,6 +129,7 @@ void ColliderSettingScene::Update()
 				mPickedCollider = it->second.collider;
 			}
 		}
+
 		else
 		{
 			it->second.collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -140,7 +140,6 @@ void ColliderSettingScene::Update()
 	{
 		mPickedCollider->SetColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
-	
 	
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
@@ -480,7 +479,6 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 					}
 
 					mNodeCollider->mScale = { 10.0f,10.0f,10.0f }; // 생성했을 때 너무 작으면 안보여서 10으로 세팅.
-					mNodeCollider->SetHashColor(rand() % 1000000000);
 
 					TreeNodeData treeNodeData;
 					treeNodeData.collider = mNodeCollider;

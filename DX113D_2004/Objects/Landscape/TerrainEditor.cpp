@@ -463,6 +463,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 		}
 	}
 	break;
+
 	default:
 		break;
 	}

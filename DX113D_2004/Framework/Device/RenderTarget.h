@@ -3,7 +3,8 @@
 class RenderTarget
 {
 public:
-	RenderTarget(UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT);
+	RenderTarget( UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT,DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT);
+
 	~RenderTarget();
 
 	void SetDepthStencil(DepthStencil* depthStencil);

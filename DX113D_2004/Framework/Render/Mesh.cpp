@@ -27,5 +27,5 @@ void Mesh::UpdateVertex(void* data, UINT count) // 벡터주소,원소개수
 
 void Mesh::UpdateVertexUsingMap(void* data, UINT dataSize)
 {
-	vertexBuffer->Map(data, dataSize); // map , unmap  (DYNAMIC)
+	vertexBuffer->Map(data, dataSize); // map , unmap  (DYNAMIC) // vector.data, sizeof(Data) * DataCount
 }

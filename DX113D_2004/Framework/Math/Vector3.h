@@ -17,10 +17,10 @@ public:
 	void SetY(float value);
 	void SetZ(float value);
 	void SetW(float value);
-	float GetX();
-	float GetY();
-	float GetZ();
-	float GetW();
+	float GetX() const;
+	float GetY() const;
+	float GetZ() const;
+	float GetW() const;
 
 	_declspec(property(get = GetX, put = SetX)) float x;
 	_declspec(property(get = GetY, put = SetY)) float y;
@@ -65,7 +65,7 @@ public:
 
 	Vector3 Normal() const;
 	void Normalize();
-	bool IsEqual(Vector3& v);
+	bool IsEqual(const Vector3& v);
 
 	static Vector3 Cross(const Vector3& vec1, const Vector3& vec2);
 	static float Dot(const Vector3& vec1, const Vector3& vec2);

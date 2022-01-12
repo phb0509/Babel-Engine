@@ -360,6 +360,9 @@
     <ClInclude Include="GameObject\Monster\MonsterStates\OnDamageState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\TestScene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX113D_2004.cpp">
@@ -680,6 +683,9 @@
     <ClCompile Include="GameObject\Monster\MonsterStates\OnDamageState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\TestScene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX113D_2004.rc">
@@ -710,7 +716,7 @@
     <FxCompile Include="Shaders\Collider.hlsl" />
     <FxCompile Include="Shaders\Outline.hlsl" />
     <FxCompile Include="Shaders\Lighting.hlsl" />
-    <FxCompile Include="Shaders\Transform.hlsl" />
+    <FxCompile Include="Shaders\Gizmos.hlsl" />
     <FxCompile Include="Shaders\Models.hlsl" />
     <FxCompile Include="Shaders\ModelsMultiTexture.hlsl" />
     <FxCompile Include="Shaders\TSTriangle.hlsl" />
@@ -737,6 +743,7 @@
     <FxCompile Include="Shaders\TestCS.hlsl" />
     <FxCompile Include="Shaders\ColorPicking.hlsl" />
     <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
+    <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

@@ -8,7 +8,7 @@ private:
 	void* data;
 	UINT dataSize;
 
-	D3D11_MAPPED_SUBRESOURCE subResource;
+	D3D11_MAPPED_SUBRESOURCE mMappedData;
 protected:
 	ConstBuffer(void* data, UINT dataSize);
 	virtual ~ConstBuffer();

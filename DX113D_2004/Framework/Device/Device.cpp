@@ -10,7 +10,7 @@ Device::Device() :
 
 Device::~Device()
 {
-	device->Release();
+	mDevice->Release();
 	deviceContext->Release();
 
 	swapChain->Release();
@@ -48,7 +48,7 @@ void Device::CreateDeviceAndSwapchain()
 		D3D11_SDK_VERSION,
 		&desc,
 		&swapChain,
-		&device,
+		&mDevice,
 		nullptr,
 		&deviceContext
 	));		
@@ -59,7 +59,7 @@ void Device::CreateBackBuffer()
 	ID3D11Texture2D* backBuffer; // 임시 버퍼.
 
 	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
-	V(device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
+	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
 	backBuffer->Release();	// 필요없으니 해제.
 
 
@@ -78,7 +78,7 @@ void Device::CreateBackBuffer()
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-		V(device->CreateTexture2D(&desc, nullptr, &mDSVtexture));
+		V(mDevice->CreateTexture2D(&desc, nullptr, &mDSVtexture));
 	}
 
 	{ // DSV
@@ -86,7 +86,7 @@ void Device::CreateBackBuffer()
 		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-		V(device->CreateDepthStencilView(mDSVtexture, &desc, &depthStencilView));
+		V(mDevice->CreateDepthStencilView(mDSVtexture, &desc, &depthStencilView));
 		mDSVtexture->Release();
 	}
 

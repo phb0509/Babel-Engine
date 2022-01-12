@@ -27,14 +27,17 @@ struct VertexColor
 {
 	Float3 position;
 	Float4 color;
+	Float4 colorForPicking;
 
-	VertexColor() : position(0, 0, 0), color(1, 1, 1, 1)
+	VertexColor() : position(0, 0, 0), color(1, 1, 1, 1), colorForPicking(1, 1, 1, 1)
 	{
 	}
-	VertexColor(Float3 position, Float4 color)
-		: position(position), color(color)
+
+	VertexColor(Float3 _position, Float4 _color, Float4 _colorForPicking)
+		: position(_position), color(_color), colorForPicking(_colorForPicking)
 	{
 	}
+
 };
 
 struct VertexUV

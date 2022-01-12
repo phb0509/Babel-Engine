@@ -38,9 +38,9 @@ ComputeStructuredBuffer::~ComputeStructuredBuffer()
 		srv->Release();
 	}
 	
-	output->Release();
-	uav->Release();
-	result->Release();
+	mUAVbuffer->Release();
+	mUAV->Release();
+	mReturnedDataFromGPU->Release();
 }
 
 
@@ -93,12 +93,12 @@ void ComputeStructuredBuffer::CreateOutput() // 계산셰이더에서 계산된 값을 CPU에
 
 	V(DEVICE->CreateBuffer(&desc, nullptr, &buffer)); // buffer에 desc설정 담기.
 
-	output = (ID3D11Resource*)buffer;
+	mUAVbuffer = (ID3D11Resource*)buffer;
 }
 
 void ComputeStructuredBuffer::CreateUAV() // gpu에서 계산한 데이터를 다시 담아서 cpu로 가져오기위한 view / output버퍼 uav로 변환.
 {
-	ID3D11Buffer* buffer = (ID3D11Buffer*)output;
+	ID3D11Buffer* buffer = (ID3D11Buffer*)mUAVbuffer;
 
 	D3D11_BUFFER_DESC desc;
 	buffer->GetDesc(&desc);
@@ -109,7 +109,7 @@ void ComputeStructuredBuffer::CreateUAV() // gpu에서 계산한 데이터를 다시 담아서
 	uavDesc.Buffer.FirstElement = 0;
 	uavDesc.Buffer.NumElements = outputCount;
 
-	V(DEVICE->CreateUnorderedAccessView(buffer, &uavDesc, &uav));
+	V(DEVICE->CreateUnorderedAccessView(buffer, &uavDesc, &mUAV));
 }
 
 void ComputeStructuredBuffer::CreateResult() // 데이터카피하기위한 버퍼생성.
@@ -117,25 +117,28 @@ void ComputeStructuredBuffer::CreateResult() // 데이터카피하기위한 버퍼생성.
 	ID3D11Buffer* buffer;
 
 	D3D11_BUFFER_DESC desc = {};
-	((ID3D11Buffer*)output)->GetDesc(&desc); //아웃풋버퍼설정 desc로 복사. 당연히 같아야하니까..
+	((ID3D11Buffer*)mUAVbuffer)->GetDesc(&desc); // UAVbuffer 세팅 그대로. 당연히 같아야하니까
 
-	desc.Usage = D3D11_USAGE_STAGING;	// 값을 복사받기 위해 Staging
+	desc.Usage = D3D11_USAGE_STAGING;	// CPU에서 읽기위해 STAGING으로 설정. 
 	desc.BindFlags = 0;
 	desc.MiscFlags = 0;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ; // 계산셰이더에서 넘어온 값을 CPU가 읽을 수 있도록.
 
-	V(DEVICE->CreateBuffer(&desc, nullptr, &buffer));
+	V(DEVICE->CreateBuffer(&desc, nullptr, &buffer)); // desc세팅에 의한 buffer 생성.
 
-	result = (ID3D11Resource*)buffer;
+	mReturnedDataFromGPU = (ID3D11Resource*)buffer;
 }
 
-void ComputeStructuredBuffer::Copy(void* data, UINT size) // 구조체, 받아와야할 전체 크기 (구조체크기 * 개수) , 실제데이터 복사하는 과정.
+void ComputeStructuredBuffer::Copy(void* data, UINT size) // 아웃풋버퍼구조체, 받아와야할 전체 크기 (구조체크기 * 개수) , 실제데이터 복사하는 과정.
 {
-	DEVICECONTEXT->CopyResource(result, output); //output에서 result로 카피.
+	// 출력버퍼를 cpu메모리에 복사.
+	DEVICECONTEXT->CopyResource(mReturnedDataFromGPU, mUAVbuffer); 
 
-	D3D11_MAPPED_SUBRESOURCE subResource;
-
-	DEVICECONTEXT->Map(result, 0, D3D11_MAP_READ, 0, &subResource); // subresource에 컴퓨트셰이더에서 나온 결과값들메모리의 주소 따와서 저장.
-	memcpy(data, subResource.pData, size); // subResource.pData부터 size만큼의 크기를 data로 복사.
-	DEVICECONTEXT->Unmap(result, 0);
+	// 자료를 매핑해서 읽어들인다.
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	DEVICECONTEXT->Map(mReturnedDataFromGPU, 0, D3D11_MAP_READ, 0, &mappedData); // subresource에 컴퓨트셰이더에서 나온 결과값들메모리의 주소 따와서 저장.
+	// mappedData에 리턴된값이 담겨있다.
+	
+	memcpy(data, mappedData.pData, size); // subResource.pData부터 size만큼의 크기를 data로 복사.
+	DEVICECONTEXT->Unmap(mReturnedDataFromGPU, 0);
 }

@@ -49,6 +49,7 @@ void VertexBuffer::Map(void* data, UINT dataSize) // subResource.pData, data, da
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	mappedResource.pData = data;
+
 	DEVICECONTEXT->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	memcpy(mappedResource.pData, data, dataSize);
 	DEVICECONTEXT->Unmap(buffer, 0);

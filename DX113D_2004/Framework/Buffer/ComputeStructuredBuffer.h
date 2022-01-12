@@ -6,10 +6,10 @@ private:
 	ID3D11Resource* input;
 	ID3D11ShaderResourceView* srv;
 
-	ID3D11Resource* output;
-	ID3D11UnorderedAccessView* uav;
+	ID3D11Resource* mUAVbuffer;
+	ID3D11UnorderedAccessView* mUAV;
 
-	ID3D11Resource* result;
+	ID3D11Resource* mReturnedDataFromGPU;
 
 	void* inputData;
 
@@ -27,7 +27,7 @@ public:
 
 	void Copy(void* data, UINT size);
 
-	ID3D11UnorderedAccessView*& GetUAV() { return uav; }
+	ID3D11UnorderedAccessView*& GetUAV() { return mUAV; }
 	ID3D11ShaderResourceView*& GetSRV() { return srv; }
 
 private:

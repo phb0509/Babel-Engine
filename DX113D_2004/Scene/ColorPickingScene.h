@@ -25,17 +25,17 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
+private:
+	void colorPicking();
 
 private:
 	Monster* mMonster;
 	Player* mPlayer;
 	Terrain* mTerrain;
 
-	Collider* collider;
-	
 	DepthStencil* mDepthStencil;
 	RenderTarget* mRenderTargets[1];
-	RenderTarget* mRenderTarget;
+	RenderTarget* mRenderTargetTexture;
 	Texture* texture;
 
 
@@ -51,5 +51,8 @@ private:
 	Collider* mSphereCollider;
 	Collider* mCapsuleCollider;
 
-
+	vector<Collider*> mColliders;
+	Vector3 mMousePositionColor;
+	
+	Collider* mPickedCollider;
 };

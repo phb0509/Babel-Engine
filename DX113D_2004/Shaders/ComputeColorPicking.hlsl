@@ -15,15 +15,15 @@ struct OutputDesc
 RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
 Texture2D<float4> Texture : register(t0);
 
-SamplerState LinearSampler
-{
-    Filter = MIN_MAG_MIP_LINEAR;
+//SamplerState LinearSampler
+//{
+//    Filter = MIN_MAG_MIP_LINEAR;
 
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
+//    AddressU = Clamp;
+//    AddressV = Clamp;
+//};
 
-SamplerState samp : register(s0);
+//SamplerState samp : register(s0);
 
 [numthreads(1, 1, 1)]
 void CS(uint3 index : SV_DispatchThreadID)

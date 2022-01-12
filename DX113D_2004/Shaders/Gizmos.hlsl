@@ -4,6 +4,7 @@ struct PixelInput
 {
     float4 pos : SV_Position;
     float4 color : Color;
+    float4 colorForPicking : ColorForPicking;
 };
 
 PixelInput VS(VertexColor input)
@@ -15,6 +16,7 @@ PixelInput VS(VertexColor input)
     output.pos = mul(output.pos, projection);
     
     output.color = input.color;
+    output.colorForPicking = input.colorForPicking;
     
     return output;
 }

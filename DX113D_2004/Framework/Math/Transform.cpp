@@ -16,16 +16,18 @@ Transform::Transform(string mTag) :
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
 	mRotationSpeed(10.0f)
-	//mHashColorForBuffer(0.0f, 0.0f, 0.0f)
 {
+	createHashColor();
 	mWorldMatrix = XMMatrixIdentity();
 	mWorldBuffer = new MatrixBuffer();
 	mColorBuffer = new ColorBuffer();
 
+	 
+	mGizmosMaterial = new Material(L"Gizmos");
 
-	mGizmosMaterial = new Material(L"Transform");
-	CreateGizmos();
-	mGizmosTransformBuffer = new MatrixBuffer();
+	createGizmos();
+	createGizmoseHashColor();
+	mGizmosWorldBuffer = new MatrixBuffer();
 
 	mIsUpdateStandTimes.assign(3, true);
 	mNextExecuteTimes.assign(3, -100.0f);
@@ -36,7 +38,7 @@ Transform::Transform(string mTag) :
 Transform::~Transform()
 {
 	delete mWorldBuffer;
-	delete mGizmosTransformBuffer;
+	delete mGizmosWorldBuffer;
 	delete mGizmosMaterial;
 }
 
@@ -183,8 +185,10 @@ void Transform::SetColorBuffer()
 	mColorBuffer->SetVSBuffer(10);
 }
 
-void Transform::SetHashColor(int hashValue)
+void Transform::createHashColor()
 {
+	int hashValue = rand() % 1000000;
+
 	int a = (hashValue >> 24) & 0xff;
 
 	int b = (hashValue >> 16) & 0xff;
@@ -197,12 +201,12 @@ void Transform::SetHashColor(int hashValue)
 	float fg = static_cast<float>(g);
 	float fb = static_cast<float>(b);
 
-	Float4 t = { fr/255.0f,fg/255.0f,fb/255.0f,1.0f };
+	Float4 tempColor = { fr/255.0f,fg/255.0f,fb/255.0f,1.0f };
 
-	mHashColorForBuffer = t;
+	mHashColorForBuffer = tempColor;
 }
 
-void Transform::CreateGizmos()
+void Transform::createGizmos()
 {
 	float length = 3.0f;
 	float thickness = 0.5f;
@@ -210,11 +214,12 @@ void Transform::CreateGizmos()
 	Collider* collider;
 
 	//Axis X		
+
 	Float4 color = { 1, 0, 0, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
-	mGizmosVertices.emplace_back(Float3(length, 0, 0), color);
-	mGizmosVertices.emplace_back(Float3(length, thickness, 0), color);
-	mGizmosVertices.emplace_back(Float3(length, 0, thickness), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.x);
+	mGizmosVertices.emplace_back(Float3(length, 0, 0), color,mGizmosHashColor.x);
+	mGizmosVertices.emplace_back(Float3(length, thickness, 0), color, mGizmosHashColor.x);
+	mGizmosVertices.emplace_back(Float3(length, 0, thickness), color, mGizmosHashColor.x);
 
 	mGizmosIndices.emplace_back(0);
 	mGizmosIndices.emplace_back(2);
@@ -234,10 +239,10 @@ void Transform::CreateGizmos()
 
 	//Axis Y
 	color = { 0, 1, 0, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
-	mGizmosVertices.emplace_back(Float3(0, length, 0), color);
-	mGizmosVertices.emplace_back(Float3(0, length, thickness), color);
-	mGizmosVertices.emplace_back(Float3(thickness, length, 0), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.y);
+	mGizmosVertices.emplace_back(Float3(0, length, 0), color, mGizmosHashColor.y);
+	mGizmosVertices.emplace_back(Float3(0, length, thickness), color, mGizmosHashColor.y);
+	mGizmosVertices.emplace_back(Float3(thickness, length, 0), color, mGizmosHashColor.y);
 
 	mGizmosIndices.emplace_back(4);
 	mGizmosIndices.emplace_back(6);
@@ -257,10 +262,10 @@ void Transform::CreateGizmos()
 
 	//Axis Z
 	color = { 0, 0, 1, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color);
-	mGizmosVertices.emplace_back(Float3(0, 0, length), color);
-	mGizmosVertices.emplace_back(Float3(thickness, 0, length), color);
-	mGizmosVertices.emplace_back(Float3(0, thickness, length), color);
+	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.z);
+	mGizmosVertices.emplace_back(Float3(0, 0, length), color, mGizmosHashColor.z);
+	mGizmosVertices.emplace_back(Float3(thickness, 0, length), color, mGizmosHashColor.z);
+	mGizmosVertices.emplace_back(Float3(0, thickness, length), color, mGizmosHashColor.z);
 
 	mGizmosIndices.emplace_back(8);
 	mGizmosIndices.emplace_back(10);
@@ -282,17 +287,37 @@ void Transform::CreateGizmos()
 		mGizmosIndices.data(), mGizmosIndices.size());
 }
 
+void Transform::createGizmoseHashColor()
+{
+	int hashValue = rand() % 1000000;
+
+	int a = (hashValue >> 24) & 0xff;
+
+	int b = (hashValue >> 16) & 0xff;
+
+	int g = (hashValue >> 8) & 0xff;
+
+	int r = hashValue & 0xff;
+
+	float fr = static_cast<float>(r);
+	float fg = static_cast<float>(g);
+	float fb = static_cast<float>(b);
+
+	Float4 tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
+
+	//mGizmosHashColor = tempColor;
+}
+
 void Transform::RenderGizmos()
 {
-	if (!mbIsRenderGizmos)
-		return;
+	mGizmosMaterial->SetShader(L"Gizmos");
 
 	Vector3 scale(1, 1, 1);
 	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
 		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
 
-	mGizmosTransformBuffer->Set(matrix);
-	mGizmosTransformBuffer->SetVSBuffer(0);
+	mGizmosWorldBuffer->Set(matrix);
+	mGizmosWorldBuffer->SetVSBuffer(0);
 
 	mGizmosMesh->IASet();
 	mGizmosMaterial->Set();
@@ -300,6 +325,23 @@ void Transform::RenderGizmos()
 	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
+
+	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+}
+
+void Transform::RenderGizmosForColorPicking()
+{
+	mGizmosMaterial->SetShader(L"ColorPicking");
+
+	Vector3 scale(1, 1, 1);
+	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
+		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
+
+	mGizmosWorldBuffer->Set(matrix);
+	mGizmosWorldBuffer->SetVSBuffer(0);
+
+	mGizmosMesh->IASet();
+	mGizmosMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
 }

@@ -20,13 +20,13 @@ ColorPickingScene::ColorPickingScene()
 	mSphereCollider = new SphereCollider();
 	mCapsuleCollider = new CapsuleCollider();
 	
-	mBoxCollider->mScale = { 5.0f,5.0f,5.0f };
-	mSphereCollider->mScale = { 5.0f,5.0f,5.0f };
-	mCapsuleCollider->mScale = { 5.0f,5.0f,5.0f };
+	mBoxCollider->mScale = { 2.0f,2.0f,2.0f };
+	mSphereCollider->mScale = { 2.0f,2.0f,2.0f };
+	mCapsuleCollider->mScale = { 2.0f,2.0f,2.0f };
 
 	mColliders.push_back(mBoxCollider);
-	mColliders.push_back(mSphereCollider);
-	mColliders.push_back(mCapsuleCollider);
+	//mColliders.push_back(mSphereCollider);
+	//mColliders.push_back(mCapsuleCollider);
 
 	//Monster->SetTerrain(mTerrain);
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // ±íÀÌ°ª
@@ -84,6 +84,7 @@ void ColorPickingScene::Update()
 				if (KEY_DOWN(VK_LBUTTON))
 				{
 					collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
+					mPickedCollider = nullptr;
 				}
 			}
 		}
@@ -143,8 +144,25 @@ void ColorPickingScene::PostRender()
 	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
 	Int2 mousePosition = { mousePositionX,mousePositionY };
 
-	ImGui::InputInt2("Mouse Position", (int*)&mousePosition); 
+
+	ImGui::InputFloat3("BoxCollider Color", (float*)&mBoxCollider->GetHashColor());
 	SpacingRepeatedly(2);
+
+	ImGui::InputFloat3("Gizmos X HashColor", (float*)&mBoxCollider->GetGizmosHashColorX());
+	SpacingRepeatedly(2);
+
+	ImGui::InputFloat3("Gizmos Y HashColor Color", (float*)&mBoxCollider->GetGizmosHashColorY());
+	SpacingRepeatedly(2);
+
+	ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&mBoxCollider->GetGizmosHashColorZ());
+	SpacingRepeatedly(2);
+
+
+	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
+	SpacingRepeatedly(2);
+
+	//ImGui::InputInt2("Mouse Position", (int*)&mousePosition);
+	//SpacingRepeatedly(2);
 
 	ImGui::End();
 }

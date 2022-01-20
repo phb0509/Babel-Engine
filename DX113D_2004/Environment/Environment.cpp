@@ -6,7 +6,8 @@ Environment::Environment() :
 	mbIsEnabledTargetCamera(true),
 	mbIsEnabledWorldCamera(true)
 {
-	createPerspective();
+	createPerspectiveBuffer();
+	createOrthographicBuffer();
 
 	mSamplerState = new SamplerState();
 	mSamplerState->SetState();
@@ -25,7 +26,8 @@ Environment::Environment() :
 
 Environment::~Environment()
 {
-	delete mProjectionBuffer;
+	delete mPerspectiveProjectionBuffer;
+	delete mOrthographicProjectionBuffer;
 	delete mLightBuffer;
 	delete mSamplerState;
 	//delete mSun;
@@ -120,7 +122,7 @@ void Environment::showLightInformation()
 void Environment::Set()
 {
 	SetViewport();
-	SetProjection();
+	SetPerspectiveProjectionBuffer();
 
 	if (mbIsTargetCamera)
 	{
@@ -153,18 +155,32 @@ void Environment::SetTargetToCamera(Transform* target)
 	mTargetCamera->SetTarget(target);
 }
 
-void Environment::SetProjection()
+void Environment::SetPerspectiveProjectionBuffer()
 {
-	mProjectionBuffer->SetVSBuffer(2);
+	mPerspectiveProjectionBuffer->SetVSBuffer(2);
 }
 
-void Environment::createPerspective()
+void Environment::SetOrthographicProjectionBuffer()
 {
-	mProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
+	mOrthographicProjectionBuffer->SetVSBuffer(2);
+}
+
+void Environment::createPerspectiveBuffer()
+{
+	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, 
 		WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f); // 시야각( pie/4니까 90도?,
 
-	mProjectionBuffer = new ProjectionBuffer();
-	mProjectionBuffer->Set(mProjectionMatrix);
+	mPerspectiveProjectionBuffer = new ProjectionBuffer();
+	mPerspectiveProjectionBuffer->Set(mPerspectiveProjectionMatrix);
+
+}
+
+void Environment::createOrthographicBuffer()
+{
+	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 0, 100000);
+
+	mOrthographicProjectionBuffer = new ProjectionBuffer();
+	mOrthographicProjectionBuffer->Set(mOrthographicProjectionMatrix);
 }
 
 

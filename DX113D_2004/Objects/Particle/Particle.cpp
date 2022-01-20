@@ -42,7 +42,7 @@ void Particle::Render()
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	TARGETCAMERA->GetViewBuffer()->SetGSBuffer(1);
-	Environment::Get()->GetProjectionBuffer()->SetGSBuffer(2);
+	Environment::Get()->GetPerspectiveProjectionBuffer()->SetGSBuffer(2);
 
 	material->Set();
 	geometryShader->Set();

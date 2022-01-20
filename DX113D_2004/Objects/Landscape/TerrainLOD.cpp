@@ -57,7 +57,7 @@ void TerrainLOD::Render()
     TARGETCAMERA->GetViewBuffer()->SetHSBuffer(1);
     TARGETCAMERA->GetViewBuffer()->SetDSBuffer(1);
 
-    Environment::Get()->GetProjectionBuffer()->SetDSBuffer(2);
+    Environment::Get()->GetPerspectiveProjectionBuffer()->SetDSBuffer(2);
 
     mTerrainBuffer->SetHSBuffer(10);
     mTerrainBuffer->SetDSBuffer(10);

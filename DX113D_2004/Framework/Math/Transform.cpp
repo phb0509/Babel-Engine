@@ -22,11 +22,11 @@ Transform::Transform(string mTag) :
 	mWorldBuffer = new MatrixBuffer();
 	mColorBuffer = new ColorBuffer();
 
-	 
+
 	mGizmosMaterial = new Material(L"Gizmos");
 
-	createGizmos();
 	createGizmoseHashColor();
+	createGizmos();
 	mGizmosWorldBuffer = new MatrixBuffer();
 
 	mIsUpdateStandTimes.assign(3, true);
@@ -201,7 +201,7 @@ void Transform::createHashColor()
 	float fg = static_cast<float>(g);
 	float fb = static_cast<float>(b);
 
-	Float4 tempColor = { fr/255.0f,fg/255.0f,fb/255.0f,1.0f };
+	Float4 tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
 
 	mHashColorForBuffer = tempColor;
 }
@@ -217,7 +217,7 @@ void Transform::createGizmos()
 
 	Float4 color = { 1, 0, 0, 1 };
 	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.x);
-	mGizmosVertices.emplace_back(Float3(length, 0, 0), color,mGizmosHashColor.x);
+	mGizmosVertices.emplace_back(Float3(length, 0, 0), color, mGizmosHashColor.x);
 	mGizmosVertices.emplace_back(Float3(length, thickness, 0), color, mGizmosHashColor.x);
 	mGizmosVertices.emplace_back(Float3(length, 0, thickness), color, mGizmosHashColor.x);
 
@@ -289,15 +289,11 @@ void Transform::createGizmos()
 
 void Transform::createGizmoseHashColor()
 {
-	int hashValue = rand() % 1000000;
-
-	int a = (hashValue >> 24) & 0xff;
-
-	int b = (hashValue >> 16) & 0xff;
-
-	int g = (hashValue >> 8) & 0xff;
-
-	int r = hashValue & 0xff;
+	int hashValueX = rand() % 1000000;
+	int a = (hashValueX >> 24) & 0xff;
+	int b = (hashValueX >> 16) & 0xff;
+	int g = (hashValueX >> 8) & 0xff;
+	int r = hashValueX & 0xff;
 
 	float fr = static_cast<float>(r);
 	float fg = static_cast<float>(g);
@@ -305,7 +301,43 @@ void Transform::createGizmoseHashColor()
 
 	Float4 tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
 
-	//mGizmosHashColor = tempColor;
+	mGizmosHashColor.x = tempColor;
+
+
+
+	int hashValueY = rand() % 1000000;
+	a = (hashValueY >> 24) & 0xff;
+	b = (hashValueY >> 16) & 0xff;
+	g = (hashValueY >> 8) & 0xff;
+	r = hashValueY & 0xff;
+
+	fr = static_cast<float>(r);
+	fg = static_cast<float>(g);
+	fb = static_cast<float>(b);
+
+	tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
+
+	mGizmosHashColor.y = tempColor;
+
+
+
+	int hashValueZ = rand() % 1000000;
+	a = (hashValueZ >> 24) & 0xff;
+	b = (hashValueZ >> 16) & 0xff;
+	g = (hashValueZ >> 8) & 0xff;
+	r = hashValueZ & 0xff;
+
+	fr = static_cast<float>(r);
+	fg = static_cast<float>(g);
+	fb = static_cast<float>(b);
+
+	tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
+
+	mGizmosHashColor.z = tempColor;
+
+	mGizmosHashColor;
+
+	int wer = 0;
 }
 
 void Transform::RenderGizmos()
@@ -326,12 +358,14 @@ void Transform::RenderGizmos()
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
 
+	Environment::Get()->SetOrthographicProjectionBuffer();
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void Transform::RenderGizmosForColorPicking()
 {
-	mGizmosMaterial->SetShader(L"ColorPicking");
+	mGizmosMaterial->SetShader(L"GizmosColorPicking");
 
 	Vector3 scale(1, 1, 1);
 	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
@@ -343,5 +377,8 @@ void Transform::RenderGizmosForColorPicking()
 	mGizmosMesh->IASet();
 	mGizmosMaterial->Set();
 
+	Environment::Get()->SetOrthographicProjectionBuffer();
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 }

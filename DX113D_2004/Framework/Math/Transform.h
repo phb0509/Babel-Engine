@@ -50,6 +50,10 @@ public:
 	void SetColorBuffer();
 
 	Float4 GetHashColor() { return mHashColorForBuffer; }
+
+	Float4 GetGizmosHashColorX() { return mGizmosHashColor.x; }
+	Float4 GetGizmosHashColorY() { return mGizmosHashColor.y; }
+	Float4 GetGizmosHashColorZ() { return mGizmosHashColor.z; }
 	
 	
 private:

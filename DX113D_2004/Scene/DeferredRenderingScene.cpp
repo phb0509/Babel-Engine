@@ -57,7 +57,7 @@ void DeferredRenderingScene::Render()
 	// Device::SetRenderTarget
 
 	TARGETCAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
-	Environment::Get()->GetProjectionBuffer()->SetPSBuffer(2);
+	Environment::Get()->GetPerspectiveProjectionBuffer()->SetPSBuffer(2);
 
 	gBuffer->Render(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 

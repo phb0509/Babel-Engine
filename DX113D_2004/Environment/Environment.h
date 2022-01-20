@@ -12,19 +12,21 @@ public:
 
 	void Set();
 
-	void SetProjection();
+	void SetPerspectiveProjectionBuffer();
+	void SetOrthographicProjectionBuffer();
 	void SetViewport(UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT);
 	void SetTargetToCamera(Transform* target);
 
 
 	Camera* GetTargetCamera() { return mTargetCamera; }
 	Camera* GetWorldCamera() { return mWorldCamera; }
-	Matrix GetProjection() { return mProjectionMatrix; }
+	Matrix GetProjection() { return mPerspectiveProjectionMatrix; }
 	LightBuffer* GetLight() { return mLightBuffer; }
-	ProjectionBuffer* GetProjectionBuffer() { return mProjectionBuffer; }
+	ProjectionBuffer* GetPerspectiveProjectionBuffer() { return mPerspectiveProjectionBuffer; }
+	ProjectionBuffer* GetOrthographicProjectionBuffer() { return mOrthographicProjectionBuffer; }
 	Vector3 GetLightPosition();
-	bool GetIsTargetCamera() { return mbIsTargetCamera; }
 
+	bool GetIsTargetCamera() { return mbIsTargetCamera; }
 	bool GetIsEnabledTargetCamera() { return mbIsEnabledTargetCamera; }
 	void SetIsEnabledTargetCamera(bool value) { mbIsEnabledTargetCamera = value; }
 
@@ -32,14 +34,17 @@ private:
 	Environment();
 	~Environment();
 
-	void createPerspective();
+	void createPerspectiveBuffer();
+	void createOrthographicBuffer();
 	void showLightInformation();
 
 private:
 
-	Matrix mProjectionMatrix;
+	Matrix mPerspectiveProjectionMatrix;
+	Matrix mOrthographicProjectionMatrix;
 
-	ProjectionBuffer* mProjectionBuffer;
+	ProjectionBuffer* mPerspectiveProjectionBuffer;
+	ProjectionBuffer* mOrthographicProjectionBuffer;
 	LightBuffer* mLightBuffer;
 
 	D3D11_VIEWPORT mViewPort;

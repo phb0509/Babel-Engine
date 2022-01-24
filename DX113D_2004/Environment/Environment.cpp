@@ -172,12 +172,11 @@ void Environment::createPerspectiveBuffer()
 
 	mPerspectiveProjectionBuffer = new ProjectionBuffer();
 	mPerspectiveProjectionBuffer->Set(mPerspectiveProjectionMatrix);
-
 }
 
 void Environment::createOrthographicBuffer()
 {
-	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 0, 100000);
+	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 0.1f, 1000.0f);
 
 	mOrthographicProjectionBuffer = new ProjectionBuffer();
 	mOrthographicProjectionBuffer->Set(mOrthographicProjectionMatrix);

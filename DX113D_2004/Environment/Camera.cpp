@@ -259,8 +259,7 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 
 	Float2 point;
 	point.x = ((2 * pos.x) / screenSize.x) - 1.0f; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
-	point.y = (((2 * pos.y) / screenSize.y) - 1.0f) * -1.0f;
-
+	point.y = (((2 * pos.y) / screenSize.y) - 1.0f) * -1.0f;                        
 	Matrix projection = Environment::Get()->GetProjection();
 
 	Float4x4 temp;

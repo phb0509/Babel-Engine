@@ -23,7 +23,7 @@ public:
 
 	void UpdateWorld();
 	void RenderGizmos();
-	void RenderGizmosForColorPicking();
+	void PreRenderGizmosForColorPicking();
 	void SetWorldBuffer(UINT slot = 0);
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
@@ -104,4 +104,5 @@ private:
 	ColorBuffer* mColorBuffer;
 	Float4 mHashColorForBuffer;
 	GizmosHashColor mGizmosHashColor;
+	
 };

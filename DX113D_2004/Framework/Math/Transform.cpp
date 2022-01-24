@@ -61,6 +61,69 @@ void Transform::UpdateWorld()
 	mWorldBuffer->Set(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
+void Transform::RenderGizmos()
+{
+	mGizmosMaterial->SetShader(L"Gizmos");
+
+	//mPosition = { 500.0f,0.0f,0.0f };
+
+	Vector3 scale(30, 30, 30);
+	Matrix worldMatrix =
+		XMMatrixTransformation(
+			mPivot.data,
+			XMQuaternionIdentity(),
+			scale.data,
+			mPivot.data,
+			mGlobalRotation.data,
+			mGlobalPosition.data
+		);
+
+	// Set OrthographicProjectionBuffer
+	Environment::Get()->SetOrthographicProjectionBuffer();
+
+	mGizmosWorldBuffer->Set(worldMatrix);
+	mGizmosWorldBuffer->SetVSBuffer(0);
+
+	mGizmosMesh->IASet();
+	mGizmosMaterial->Set();
+
+	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
+	mRSState->FillMode(D3D11_FILL_SOLID);
+	mRSState->SetState();
+
+	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
+	//mPosition = { 20.0f,0.0f,0.0f };
+}
+
+void Transform::PreRenderGizmosForColorPicking()
+{
+	mGizmosMaterial->SetShader(L"GizmosColorPicking");
+
+	Vector3 scale(30, 30, 30);
+	Matrix matrix = XMMatrixTransformation(
+		mPivot.data,
+		XMQuaternionIdentity(),
+		scale.data,
+		mPivot.data,
+		mGlobalRotation.data,
+		mGlobalPosition.data);
+
+	mGizmosWorldBuffer->Set(matrix); // Set WorldBuffer
+	mGizmosWorldBuffer->SetVSBuffer(0);
+
+	mGizmosMesh->IASet();
+	mGizmosMaterial->Set();
+
+	Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
+	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0); // Draw Gizmos
+
+	Environment::Get()->SetPerspectiveProjectionBuffer(); // Perspective로 다시 돌려놓기.
+}
+
+
+
 void Transform::SetWorldBuffer(UINT slot)
 {
 	mWorldBuffer->SetVSBuffer(slot);
@@ -303,8 +366,6 @@ void Transform::createGizmoseHashColor()
 
 	mGizmosHashColor.x = tempColor;
 
-
-
 	int hashValueY = rand() % 1000000;
 	a = (hashValueY >> 24) & 0xff;
 	b = (hashValueY >> 16) & 0xff;
@@ -319,8 +380,6 @@ void Transform::createGizmoseHashColor()
 
 	mGizmosHashColor.y = tempColor;
 
-
-
 	int hashValueZ = rand() % 1000000;
 	a = (hashValueZ >> 24) & 0xff;
 	b = (hashValueZ >> 16) & 0xff;
@@ -334,51 +393,6 @@ void Transform::createGizmoseHashColor()
 	tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
 
 	mGizmosHashColor.z = tempColor;
-
-	mGizmosHashColor;
-
-	int wer = 0;
 }
 
-void Transform::RenderGizmos()
-{
-	mGizmosMaterial->SetShader(L"Gizmos");
 
-	Vector3 scale(1, 1, 1);
-	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
-		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
-
-	mGizmosWorldBuffer->Set(matrix);
-	mGizmosWorldBuffer->SetVSBuffer(0);
-
-	mGizmosMesh->IASet();
-	mGizmosMaterial->Set();
-
-	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
-	mRSState->FillMode(D3D11_FILL_SOLID);
-	mRSState->SetState();
-
-	Environment::Get()->SetOrthographicProjectionBuffer();
-	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-}
-
-void Transform::RenderGizmosForColorPicking()
-{
-	mGizmosMaterial->SetShader(L"GizmosColorPicking");
-
-	Vector3 scale(1, 1, 1);
-	Matrix matrix = XMMatrixTransformation(mPivot.data, XMQuaternionIdentity(),
-		scale.data, mPivot.data, mGlobalRotation.data, mGlobalPosition.data);
-
-	mGizmosWorldBuffer->Set(matrix);
-	mGizmosWorldBuffer->SetVSBuffer(0);
-
-	mGizmosMesh->IASet();
-	mGizmosMaterial->Set();
-
-	Environment::Get()->SetOrthographicProjectionBuffer();
-	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-
-}

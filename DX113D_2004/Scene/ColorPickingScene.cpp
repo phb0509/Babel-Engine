@@ -105,7 +105,7 @@ void ColorPickingScene::PreRender()
 
 	if (mPickedCollider != nullptr)
 	{
-		mPickedCollider->RenderGizmosForColorPicking();
+		mPickedCollider->PreRenderGizmosForColorPicking();
 	}
 }
 
@@ -145,18 +145,30 @@ void ColorPickingScene::PostRender()
 	Int2 mousePosition = { mousePositionX,mousePositionY };
 
 
-	ImGui::InputFloat3("BoxCollider Color", (float*)&mBoxCollider->GetHashColor());
+	Vector3 temp = mBoxCollider->GetHashColor();
+
+	ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
 	SpacingRepeatedly(2);
 
-	ImGui::InputFloat3("Gizmos X HashColor", (float*)&mBoxCollider->GetGizmosHashColorX());
+	temp = mBoxCollider->GetGizmosHashColorX();
+	ImGui::InputFloat3("Gizmos X HashColor", (float*)&temp);
 	SpacingRepeatedly(2);
 
-	ImGui::InputFloat3("Gizmos Y HashColor Color", (float*)&mBoxCollider->GetGizmosHashColorY());
+	temp = mBoxCollider->GetGizmosHashColorY();
+	ImGui::InputFloat3("Gizmos Y HashColor Color", (float*)&temp);
 	SpacingRepeatedly(2);
 
-	ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&mBoxCollider->GetGizmosHashColorZ());
+	temp = mBoxCollider->GetGizmosHashColorZ();
+	ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&temp);
+	SpacingRepeatedly(3);
+
+	temp = mBoxCollider->mPosition;
+	ImGui::InputFloat3("BoxCollider Position", (float*)&temp);
 	SpacingRepeatedly(2);
 
+	temp = mBoxCollider->mRotation;
+	ImGui::InputFloat3("BoxCollider Rotation", (float*)&temp);
+	SpacingRepeatedly(2);
 
 	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
 	SpacingRepeatedly(2);

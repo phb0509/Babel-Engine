@@ -62,6 +62,9 @@ void Collider::Update()
 
 void Collider::Render()
 {
+   /* this->mScale = { 30.0f,30.0f,30.0f };
+    Environment::Get()->SetOrthographicProjectionBuffer();*/
+
     mMaterial->SetShader(L"Collider");
     SetWorldBuffer();
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    

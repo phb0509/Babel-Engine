@@ -9,8 +9,8 @@ ColorPickingScene::ColorPickingScene()
 	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
 
 	// 카메라 설정.
-	WORLDCAMERA->mPosition = { 5.5, 12.6, -15.7 };
-	WORLDCAMERA->mRotation = { 0.7, 0.0, 0.0 };
+	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -15.7f };
+	WORLDCAMERA->mRotation = { 0.0, 0.0, 0.0 };
 	WORLDCAMERA->mMoveSpeed = 50.0f;
 
 	mTerrain = new Terrain();
@@ -36,11 +36,12 @@ ColorPickingScene::ColorPickingScene()
 
 	mCube->mPosition = { 0.0f,0.0f,0.0f };
 
-	//int n = rand%1000000;
 
-	mBoxCollider->mPosition = { 10.0f,0.0f,0.0f };
+	mBoxCollider->mPosition = { 0.0f,0.0f,0.0f };
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
+
+	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
 
 	// Create ComputeShader
 	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -89,6 +90,36 @@ void ColorPickingScene::Update()
 			}
 		}
 	}
+
+
+
+	//if (KEY_PRESS(VK_RBUTTON))
+	//{
+	//	Vector3 value = MOUSEPOS - oldPos;
+
+	//	mRotation.x += value.y * mRotationSpeed * DELTA;
+	//	mRotation.y += value.x * mRotationSpeed * DELTA;
+	//}
+
+	if (KEY_PRESS('W'))
+	{
+		mBoxCollider->mPosition.y += 5.0f * DELTA;
+	}
+
+	if (KEY_PRESS('S'))
+	{
+		mBoxCollider->mPosition.y -= 5.0f * DELTA;
+	}
+
+	if (KEY_PRESS('A'))
+	{
+		mBoxCollider->mPosition.x -= 5.0f * DELTA;
+	}
+
+	if (KEY_PRESS('D'))
+	{
+		mBoxCollider->mPosition.x += 5.0f * DELTA;
+	}
 }
 
 void ColorPickingScene::PreRender()
@@ -123,7 +154,6 @@ void ColorPickingScene::Render()
 	{
 		mPickedCollider->RenderGizmos();
 	}
-	
 }
 
 void ColorPickingScene::PostRender()

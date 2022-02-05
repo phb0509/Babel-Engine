@@ -18,10 +18,6 @@ Environment::Environment() :
 
 	mLightBuffer = new LightBuffer();
 	mLightBuffer->Add();
-
-	
-	/*mSun = new Cube();
-	mSun->mScale = { 5.0f,5.0f,5.0f };*/
 }
 
 Environment::~Environment()
@@ -63,20 +59,19 @@ void Environment::PostRender()
 	SpacingRepeatedly(2);
 
 	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
+	SpacingRepeatedly(1);
 	ImGui::Text("WorldCameraRotation : %.1f,  %.1f,  %.1f", mWorldCamera->mRotation.x, mWorldCamera->mRotation.y, mWorldCamera->mRotation.z);
+	SpacingRepeatedly(1);
+	ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
+	SpacingRepeatedly(2);
 
-
-	/*ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
-	ImGui::SpacingRepeatedly();
-	ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
-	ImGui::SpacingRepeatedly();
+	/*ImGui::Text("PlayerPosition : %.1f, %.1f, %.1f", GM->GetPlayer()->mPosition.x, GM->GetPlayer()->mPosition.y, GM->GetPlayer()->mPosition.z);
+	SpacingRepeatedly();
 	ImGui::Text("TargetCameraPosition : %.1f,  %.1f,  %.1f", mTargetCamera->mPosition.x, mTargetCamera->mPosition.y, mTargetCamera->mPosition.z);
-	ImGui::SpacingRepeatedly();
+	SpacingRepeatedly();
 	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
-	ImGui::SpacingRepeatedly();
+	SpacingRepeatedly();
 	ImGui::Text("WorldCameraForward : %.1f,  %.1f,  %.1f", mWorldCamera->Forward().x, mWorldCamera->Forward().y, mWorldCamera->Forward().z);*/
-
-	ImGui::Spacing();
 
 	ImGui::End();
 	//showLightInformation();
@@ -119,6 +114,7 @@ void Environment::showLightInformation()
 
 	ImGui::End();
 }
+
 void Environment::Set()
 {
 	SetViewport();
@@ -135,7 +131,6 @@ void Environment::Set()
 
 	mLightBuffer->SetPSBuffer(0);
 }
-
 
 void Environment::SetViewport(UINT width, UINT height)
 {

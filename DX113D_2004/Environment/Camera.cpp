@@ -245,9 +245,6 @@ void Camera::SetViewMatrixToBuffer()
 	mViewBuffer->Set(mViewMatrix);
 }
 
-
-
-
 void Camera::SetVS(UINT slot)
 {
 	mViewBuffer->SetVSBuffer(slot);

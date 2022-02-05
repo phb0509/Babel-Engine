@@ -38,7 +38,10 @@ void Collider::RenderForColorPicking()
 
     mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mMaterial->Set();
+
+    Environment::Get()->SetOrthographicProjectionBuffer();
     DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
+    Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void Collider::Update()
@@ -69,7 +72,10 @@ void Collider::Render()
     SetWorldBuffer();
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
     mMaterial->Set();
+
+    Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+    Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 

@@ -22,7 +22,6 @@ Transform::Transform(string mTag) :
 	mWorldBuffer = new MatrixBuffer();
 	mColorBuffer = new ColorBuffer();
 
-
 	mGizmosMaterial = new Material(L"Gizmos");
 
 	createGizmoseHashColor();
@@ -61,13 +60,42 @@ void Transform::UpdateWorld()
 	mWorldBuffer->Set(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
+void Transform::PreRenderGizmosForColorPicking()
+{
+	mGizmosMaterial->SetShader(L"GizmosColorPicking");
+
+	Vector3 tempPosition = { 400.0f,0.0f,0.0f };
+	Vector3 scale(30, 30, 30);
+
+	Matrix worldMatrix = XMMatrixTransformation(
+		mPivot.data,
+		XMQuaternionIdentity(),
+		scale.data,
+		mPivot.data,
+		mGlobalRotation.data,
+		//tempPosition.data,
+		mPosition.data
+	);
+
+	mGizmosWorldBuffer->Set(worldMatrix); // Set WorldBuffer
+	mGizmosWorldBuffer->SetVSBuffer(0);
+
+	mGizmosMesh->IASet();
+	mGizmosMaterial->Set();
+
+	//Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
+	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0); // Draw Gizmos
+
+	Environment::Get()->SetPerspectiveProjectionBuffer(); // Perspective로 다시 돌려놓기.
+}
+
 void Transform::RenderGizmos()
 {
 	mGizmosMaterial->SetShader(L"Gizmos");
 
-	//mPosition = { 500.0f,0.0f,0.0f };
-
+	Vector3 tempPosition = { 400.0f,0.0f,0.0f };
 	Vector3 scale(30, 30, 30);
+
 	Matrix worldMatrix =
 		XMMatrixTransformation(
 			mPivot.data,
@@ -75,11 +103,9 @@ void Transform::RenderGizmos()
 			scale.data,
 			mPivot.data,
 			mGlobalRotation.data,
-			mGlobalPosition.data
+			//tempPosition.data,
+			mPosition.data
 		);
-
-	// Set OrthographicProjectionBuffer
-	Environment::Get()->SetOrthographicProjectionBuffer();
 
 	mGizmosWorldBuffer->Set(worldMatrix);
 	mGizmosWorldBuffer->SetVSBuffer(0);
@@ -91,38 +117,11 @@ void Transform::RenderGizmos()
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
 
+	//Environment::Get()->SetOrthographicProjectionBuffer();
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-
-	//mPosition = { 20.0f,0.0f,0.0f };
 }
-
-void Transform::PreRenderGizmosForColorPicking()
-{
-	mGizmosMaterial->SetShader(L"GizmosColorPicking");
-
-	Vector3 scale(30, 30, 30);
-	Matrix matrix = XMMatrixTransformation(
-		mPivot.data,
-		XMQuaternionIdentity(),
-		scale.data,
-		mPivot.data,
-		mGlobalRotation.data,
-		mGlobalPosition.data);
-
-	mGizmosWorldBuffer->Set(matrix); // Set WorldBuffer
-	mGizmosWorldBuffer->SetVSBuffer(0);
-
-	mGizmosMesh->IASet();
-	mGizmosMaterial->Set();
-
-	Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
-	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0); // Draw Gizmos
-
-	Environment::Get()->SetPerspectiveProjectionBuffer(); // Perspective로 다시 돌려놓기.
-}
-
-
 
 void Transform::SetWorldBuffer(UINT slot)
 {

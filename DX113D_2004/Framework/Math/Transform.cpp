@@ -72,8 +72,7 @@ void Transform::PreRenderGizmosForColorPicking()
 		XMQuaternionIdentity(),
 		scale.data,
 		mPivot.data,
-		mGlobalRotation.data,
-		//tempPosition.data,
+		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
 		mPosition.data
 	);
 
@@ -83,9 +82,8 @@ void Transform::PreRenderGizmosForColorPicking()
 	mGizmosMesh->IASet();
 	mGizmosMaterial->Set();
 
-	//Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
+	Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0); // Draw Gizmos
-
 	Environment::Get()->SetPerspectiveProjectionBuffer(); // Perspective로 다시 돌려놓기.
 }
 
@@ -102,7 +100,7 @@ void Transform::RenderGizmos()
 			XMQuaternionIdentity(),
 			scale.data,
 			mPivot.data,
-			mGlobalRotation.data,
+			XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
 			//tempPosition.data,
 			mPosition.data
 		);
@@ -117,9 +115,8 @@ void Transform::RenderGizmos()
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
 
-	//Environment::Get()->SetOrthographicProjectionBuffer();
+	Environment::Get()->SetOrthographicProjectionBuffer();
 	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
-
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 

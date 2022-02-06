@@ -9,7 +9,7 @@ ColorPickingScene::ColorPickingScene()
 	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
 
 	// 카메라 설정.
-	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -15.7f };
+	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -40.0f };
 	WORLDCAMERA->mRotation = { 0.0, 0.0, 0.0 };
 	WORLDCAMERA->mMoveSpeed = 50.0f;
 
@@ -34,8 +34,8 @@ ColorPickingScene::ColorPickingScene()
 	mRenderTargetTexture = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	mRenderTargets[0] = mRenderTargetTexture;
 
-	mCube->mPosition = { 0.0f,0.0f,0.0f };
-
+	//mCube->mPosition = { 40.0f,0.0f,0.0f };
+	//mCube->mScale = { 10.0f,10.0f,10.0f };
 
 	mBoxCollider->mPosition = { 0.0f,0.0f,0.0f };
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
@@ -80,6 +80,7 @@ void ColorPickingScene::Update()
 					mPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
 				}
 			}
+
 			else
 			{
 				if (KEY_DOWN(VK_LBUTTON))
@@ -91,15 +92,6 @@ void ColorPickingScene::Update()
 		}
 	}
 
-
-
-	//if (KEY_PRESS(VK_RBUTTON))
-	//{
-	//	Vector3 value = MOUSEPOS - oldPos;
-
-	//	mRotation.x += value.y * mRotationSpeed * DELTA;
-	//	mRotation.y += value.x * mRotationSpeed * DELTA;
-	//}
 
 	if (KEY_PRESS('W'))
 	{
@@ -128,7 +120,6 @@ void ColorPickingScene::PreRender()
 
 	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
 
-
 	for (Collider* collider : mColliders)
 	{
 		collider->RenderForColorPicking();
@@ -142,8 +133,6 @@ void ColorPickingScene::PreRender()
 
 void ColorPickingScene::Render()
 {
-	//mTerrain->Render();
-
 	for (Collider* collider : mColliders)
 	{
 		collider->GetMaterial()->SetShader(L"Collider");

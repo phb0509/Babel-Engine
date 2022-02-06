@@ -28,7 +28,9 @@ void Cube::Render()
 
 	mMaterial->Set();
 
+	//Environment::Get()->SetOrthographicProjectionBuffer();
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+	//Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void Cube::SetShader(wstring file)

@@ -30,20 +30,6 @@ bool Collider::Collision(Collider* collider)
     return false;
 }
 
-void Collider::RenderForColorPicking()
-{
-    mMaterial->SetShader(L"ColorPicking");
-    SetWorldBuffer();
-    SetColorBuffer();
-
-    mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mMaterial->Set();
-
-    Environment::Get()->SetOrthographicProjectionBuffer();
-    DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
-    Environment::Get()->SetPerspectiveProjectionBuffer();
-}
-
 void Collider::Update()
 {
     if (KEY_DOWN(VK_F3))
@@ -65,17 +51,26 @@ void Collider::Update()
 
 void Collider::Render()
 {
-   /* this->mScale = { 30.0f,30.0f,30.0f };
-    Environment::Get()->SetOrthographicProjectionBuffer();*/
-
     mMaterial->SetShader(L"Collider");
     SetWorldBuffer();
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
     mMaterial->Set();
 
-    Environment::Get()->SetOrthographicProjectionBuffer(); // Set ProjectionBuffer
+    Environment::Get()->SetOrthographicProjectionBuffer();
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
     Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
+void Collider::RenderForColorPicking()
+{
+    mMaterial->SetShader(L"ColorPicking");
+    SetWorldBuffer();
+    SetColorBuffer();
 
+    mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mMaterial->Set();
+
+    Environment::Get()->SetOrthographicProjectionBuffer();
+    DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
+    Environment::Get()->SetPerspectiveProjectionBuffer();
+}

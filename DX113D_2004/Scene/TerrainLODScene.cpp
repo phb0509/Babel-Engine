@@ -21,15 +21,20 @@ void TerrainLODScene::Update()
 
 void TerrainLODScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void TerrainLODScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	rsState->SetState();
 	terrain->Render();
 }
 
 void TerrainLODScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	terrain->PostRender();
 }

@@ -31,7 +31,7 @@ public:
 
 	virtual void createMesh() = 0;
 	virtual void createMeshForColorPicking() = 0;
-	virtual void RenderForColorPicking();
+	virtual void PreRenderForColorPicking();
 
 	void Update();
 	void Render();

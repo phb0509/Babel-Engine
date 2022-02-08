@@ -34,6 +34,8 @@ void DeferredRenderingScene::Update()
 
 void DeferredRenderingScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	gBuffer->PreRender(); // 여기서 OM에 Set. (rtv 3개, dev 1개)
 
 	bunny->GetModel()->SetShader(L"GBuffer");
@@ -54,6 +56,8 @@ void DeferredRenderingScene::PreRender()
 
 void DeferredRenderingScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	// Device::SetRenderTarget
 
 	TARGETCAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
@@ -73,6 +77,8 @@ void DeferredRenderingScene::Render()
 
 void DeferredRenderingScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	gBuffer->PostRender(); // UIImage들 렌더.
 }
 

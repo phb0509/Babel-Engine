@@ -31,20 +31,24 @@ void MapToolScene::Update()
 
 void MapToolScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	terrainEditor->PreRender();
 }
 
 void MapToolScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	//skyBox->Render();
 	//mRasterizerState->SetState();
 	terrainEditor->Render();
-
-
 }
 
 void MapToolScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	terrainEditor->PostRender();
 	//ImGui::ShowDemoWindow();
 	//ImGui::ShowMetricsWindow();

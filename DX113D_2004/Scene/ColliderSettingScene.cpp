@@ -166,6 +166,7 @@ void ColliderSettingScene::Update()
 
 void ColliderSettingScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
 
 	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
@@ -173,12 +174,14 @@ void ColliderSettingScene::PreRender()
 
 	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
 	{
-		it->second.collider->RenderForColorPicking();
+		it->second.collider->PreRenderForColorPicking();
 	}
 }
 
 void ColliderSettingScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	mMonster->Render();
 	mRSState->SetState();
 
@@ -203,6 +206,8 @@ void ColliderSettingScene::Render()
 
 void ColliderSettingScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	showModelSelectWindow();
 
 	if (mModels.size() != 0) // ToolModel 생성이후.

@@ -172,15 +172,18 @@ void TestScene::Update()
 
 void TestScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void TestScene::Render()
 {
-
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void TestScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	Vector3 temp = { Read[0],Read[1],Read[2] };
 	ImGui::InputFloat3("Read 0 1 2 Value", (float*)&temp, "%.3f");
 }

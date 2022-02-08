@@ -45,10 +45,13 @@ void TessellationScene::Update()
 
 void TessellationScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void TessellationScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	rsState->SetState();
 
 	vertexBuffer->IASet();
@@ -66,6 +69,8 @@ void TessellationScene::Render()
 
 void TessellationScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	ImGui::SliderInt("Edge0", &edgeBuffer->data.values[0], 0, 100);
 	ImGui::SliderInt("Edge1", &edgeBuffer->data.values[1], 0, 100);
 	ImGui::SliderInt("Edge2", &edgeBuffer->data.values[2], 0, 100);

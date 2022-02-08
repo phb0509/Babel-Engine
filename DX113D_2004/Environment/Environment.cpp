@@ -118,7 +118,7 @@ void Environment::showLightInformation()
 void Environment::Set()
 {
 	SetViewport();
-	SetPerspectiveProjectionBuffer();
+	//SetPerspectiveProjectionBuffer();
 
 	if (mbIsTargetCamera)
 	{

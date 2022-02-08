@@ -92,37 +92,38 @@ void ColorPickingScene::Update()
 		}
 	}
 
-
 	if (KEY_PRESS('W'))
 	{
-		mBoxCollider->mPosition.y += 5.0f * DELTA;
+		mBoxCollider->mPosition.y += 20.0f * DELTA;
 	}
 
 	if (KEY_PRESS('S'))
 	{
-		mBoxCollider->mPosition.y -= 5.0f * DELTA;
+		mBoxCollider->mPosition.y -= 20.0f * DELTA;
 	}
 
 	if (KEY_PRESS('A'))
 	{
-		mBoxCollider->mPosition.x -= 5.0f * DELTA;
+		mBoxCollider->mRotation.y -= 10.0f * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
-		mBoxCollider->mPosition.x += 5.0f * DELTA;
+		mBoxCollider->mRotation.y += 10.0f * DELTA;
 	}
 }
 
 void ColorPickingScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
 
 	// ÄÃ·¯ÇÇÅ·¿ë ·»´õÅ¸°ÙÅØ½ºÃÄ¿¡ ·»´õ.
 
 	for (Collider* collider : mColliders)
 	{
-		collider->RenderForColorPicking();
+		collider->PreRenderForColorPicking();
 	}
 
 	if (mPickedCollider != nullptr)
@@ -133,6 +134,8 @@ void ColorPickingScene::PreRender()
 
 void ColorPickingScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	for (Collider* collider : mColliders)
 	{
 		collider->GetMaterial()->SetShader(L"Collider");
@@ -147,6 +150,8 @@ void ColorPickingScene::Render()
 
 void ColorPickingScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	ImGui::Begin("Test Window");
 
 	int frame_padding = 0;

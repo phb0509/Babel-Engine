@@ -86,10 +86,14 @@ void MainScene::Update()
 
 void MainScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 }
 
 void MainScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	mTerrain->Render();
 	mPlayer->Render();
 
@@ -103,6 +107,8 @@ void MainScene::Render()
 
 void MainScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	mPlayer->PostRender();
 }
 

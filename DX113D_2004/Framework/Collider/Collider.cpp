@@ -52,7 +52,7 @@ void Collider::Update()
 void Collider::Render()
 {
     mMaterial->SetShader(L"Collider");
-    SetWorldBuffer();
+    Transform::SetWorldBuffer();
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
     mMaterial->Set();
 
@@ -61,11 +61,11 @@ void Collider::Render()
     Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
-void Collider::RenderForColorPicking()
+void Collider::PreRenderForColorPicking()
 {
     mMaterial->SetShader(L"ColorPicking");
-    SetWorldBuffer();
-    SetColorBuffer();
+    Transform::SetWorldBuffer();
+    Transform::SetColorBuffer();
 
     mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mMaterial->Set();

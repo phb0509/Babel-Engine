@@ -45,12 +45,15 @@ void ModelExportScene::Update()
 
 void ModelExportScene::PreRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void ModelExportScene::Render()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void ModelExportScene::PostRender()
 {
+	Environment::Get()->SetPerspectiveProjectionBuffer();
 }

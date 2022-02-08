@@ -284,7 +284,6 @@
     <ClInclude Include="Scene\ModelExportScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
-    <ClInclude Include="Scene\TerrainEditorScene.h" />
     <ClInclude Include="Scene\TerrainLODScene.h" />
     <ClInclude Include="Scene\TessellationScene.h" />
     <ClInclude Include="Scene\ColorPickingScene.h" />
@@ -397,7 +396,6 @@
     <ClCompile Include="Scene\MapToolScene.cpp" />
     <ClCompile Include="Scene\ModelExportScene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
-    <ClCompile Include="Scene\TerrainEditorScene.cpp" />
     <ClCompile Include="Scene\TerrainLODScene.cpp" />
     <ClCompile Include="Scene\TessellationScene.cpp" />
     <ClCompile Include="Scene\ColorPickingScene.cpp" />

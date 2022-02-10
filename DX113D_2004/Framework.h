@@ -223,6 +223,8 @@ using namespace utility;
 #include "Framework/Math/Vector3.h"
 #include "Framework/Math/Transform.h"
 #include "Framework/Math/Math.h"
+#include "Framework/Math/Gizmos.h"
+
 #include "GameObject/Utility/E_States.h"
 
 using namespace GameMath;
@@ -294,12 +296,7 @@ using namespace states;
 #include "Objects/Particle/ParticleManager.h"
 #include "Objects/Particle/EffectData.h"
 #include "Objects/Particle/Effect.h"
-
 #include "Objects/Deferred/GBuffer.h"
-
-
-
-
 
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"

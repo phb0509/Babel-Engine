@@ -41,7 +41,7 @@ ColorPickingScene::ColorPickingScene()
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
 
-	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
+	//mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
 
 	// Create ComputeShader
 	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -94,20 +94,31 @@ void ColorPickingScene::Update()
 
 	if (KEY_PRESS('W'))
 	{
-		mBoxCollider->mPosition.y += 20.0f * DELTA;
+		//mBoxCollider->mPosition.z += 50.0f * DELTA;
+		mBoxCollider->mPosition += mBoxCollider->Forward() * 100.0f * DELTA;
 	}
 
 	if (KEY_PRESS('S'))
 	{
-		mBoxCollider->mPosition.y -= 20.0f * DELTA;
+		mBoxCollider->mPosition += mBoxCollider->Forward() * 100.0f * -1.0f * DELTA;
 	}
 
 	if (KEY_PRESS('A'))
 	{
-		mBoxCollider->mRotation.y -= 10.0f * DELTA;
+		mBoxCollider->mPosition += mBoxCollider->Right() * 100.0f * -1.0f * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
+	{
+		mBoxCollider->mPosition += mBoxCollider->Right() * 100.0f * DELTA;
+	}
+
+	if (KEY_PRESS('Q'))
+	{
+		mBoxCollider->mRotation.y -= 10.0f * DELTA;
+	}
+
+	if (KEY_PRESS('E'))
 	{
 		mBoxCollider->mRotation.y += 10.0f * DELTA;
 	}
@@ -128,7 +139,7 @@ void ColorPickingScene::PreRender()
 
 	if (mPickedCollider != nullptr)
 	{
-		mPickedCollider->PreRenderGizmosForColorPicking();
+		mPickedCollider->Transform::PreRenderGizmosForColorPicking();
 	}
 }
 

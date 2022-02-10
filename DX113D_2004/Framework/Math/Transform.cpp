@@ -89,6 +89,7 @@ void Transform::PreRenderGizmosForColorPicking()
 
 void Transform::RenderGizmos()
 {
+	UpdateWorld();
 	mGizmosMaterial->SetShader(L"Gizmos");
 
 	Vector3 tempPosition = { 400.0f,0.0f,0.0f };

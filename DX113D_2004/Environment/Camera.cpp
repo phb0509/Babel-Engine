@@ -18,7 +18,6 @@ Camera::Camera()
 	mbIsMouseInputing(true),
 	mbHasInitalized(false),
 	mFrustum(nullptr)
-
 {
 	mViewBuffer = new ViewBuffer();
 
@@ -51,7 +50,6 @@ void Camera::Update()
 	
 		mFrustum->Update();
 	}
-
 	else
 	{
 		freeMode();

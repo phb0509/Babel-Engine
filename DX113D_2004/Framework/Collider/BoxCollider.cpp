@@ -240,8 +240,6 @@ void BoxCollider::createMeshForColorPicking()
     mIndicesForColorPicking.emplace_back(23);
     mIndicesForColorPicking.emplace_back(22);
 
-
-
     mMeshForColorPicking = new Mesh(mVerticesForColorPicking.data(), sizeof(Vertex), (UINT)mVerticesForColorPicking.size(),
         mIndicesForColorPicking.data(), (UINT)mIndicesForColorPicking.size());
 }

@@ -67,6 +67,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			Device::Get()->Clear();
 
 			program->Render();
+
+			//Device::Get()->Clear();
 			program->PostRender();
 
 			Device::Get()->Present();

@@ -41,7 +41,7 @@ private:
 
 
 	Vector3 mMouseScreenUVPosition;
-	ComputeShader* mComputeShader;
+	ComputeShader* mColorPickingComputeShader;
 	ComputeStructuredBuffer* mComputeStructuredBuffer;
 	ColorPickingInputBuffer* mInputBuffer;
 	ColorPickingOutputBuffer* mOutputBuffer;

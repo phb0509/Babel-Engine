@@ -74,6 +74,9 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 
 	depthStencil->Clear();
 
+	//ID3D11RenderTargetView* pNullRTV = NULL;
+	//DEVICECONTEXT->OMSetRenderTargets(1, &pNullRTV, NULL);//<--- 텍스처를 바인딩하고 렌더 대상으로 바인딩할 수 없기 때문에 이것이 필요합니다. 먼저 출시해야
+	
 	//전부 클리어 후, Set하기.
 	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
 }

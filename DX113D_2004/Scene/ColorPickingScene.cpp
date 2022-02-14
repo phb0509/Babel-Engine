@@ -44,7 +44,7 @@ ColorPickingScene::ColorPickingScene()
 	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
 
 	// Create ComputeShader
-	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
+	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
 	mComputeStructuredBuffer = new ComputeStructuredBuffer(sizeof(ColorPickingOutputBuffer), 1);
 
 	if (mInputBuffer == nullptr)
@@ -55,6 +55,7 @@ ColorPickingScene::ColorPickingScene()
 
 ColorPickingScene::~ColorPickingScene()
 {
+
 }
 
 void ColorPickingScene::Update()
@@ -133,9 +134,8 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
-	Environment::Get()->Set();
+	Environment::Get()->Set(); // 뷰버퍼 Set VS
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
 
 	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
@@ -153,6 +153,7 @@ void ColorPickingScene::PreRender()
 
 void ColorPickingScene::Render()
 {
+	Device::Get()->Clear();
 	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
@@ -190,7 +191,7 @@ void ColorPickingScene::PostRender()
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Render to RenderTargetTexture
-	ImGui::ImageButton(mRenderTargetTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+    ImGui::ImageButton(mRenderTargetTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
 	int32_t mousePositionX = static_cast<int32_t>(MOUSEPOS.x);
 	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
@@ -240,16 +241,18 @@ void ColorPickingScene::colorPicking()
 	mInputBuffer->data.mouseScreenUVPosition = { mMouseScreenUVPosition.x,mMouseScreenUVPosition.y }; // 마우스좌표 uv값
 	mInputBuffer->data.mouseScreenPosition = mousePosition; // 마우스좌표 uv값
 
-	mComputeShader->Set(); // 디바이스에 Set..
-	mInputBuffer->SetCSBuffer(1);
+	mColorPickingComputeShader->Set(); // 디바이스에 Set..
+	mInputBuffer->SetCSBuffer(1); // CS 1번 레지스터에 Set.
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargetTexture->GetSRV());
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargetTexture->GetSRV()); // CS 0번 레지스터에 바인딩. <-- 여기가 문제.
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
-
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
+	ID3D11ShaderResourceView* pSRV = NULL;
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &pSRV);
+
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
-	
+
 	mMousePositionColor = mOutputBuffer->color;
 }
 

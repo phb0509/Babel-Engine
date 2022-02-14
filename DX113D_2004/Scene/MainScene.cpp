@@ -73,6 +73,13 @@ MainScene::~MainScene()
 
 void MainScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
+
 	mTerrain->Update();
 	mPlayer->Update();
 
@@ -86,12 +93,21 @@ void MainScene::Update()
 
 void MainScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-
 }
 
 void MainScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	mTerrain->Render();

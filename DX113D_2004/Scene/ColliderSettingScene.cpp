@@ -93,6 +93,13 @@ ColliderSettingScene::~ColliderSettingScene()
 
 void ColliderSettingScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
+
 	terrain->Update();
 	mMonster->Update();
 
@@ -166,6 +173,7 @@ void ColliderSettingScene::Update()
 
 void ColliderSettingScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
 
@@ -180,6 +188,15 @@ void ColliderSettingScene::PreRender()
 
 void ColliderSettingScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	mMonster->Render();

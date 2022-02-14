@@ -41,8 +41,6 @@ void CS(uint3 index : SV_DispatchThreadID)
     
     float4 color = Texture.Load(int3(mousePosition.xy, 0));
     
-    
-    
     color.a = 1.0f; // 안해도 피킹하는데엔 상관없지만 영상으로 보여주기위해서..
     output[0].color = color;
 }

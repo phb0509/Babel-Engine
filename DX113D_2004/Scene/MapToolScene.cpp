@@ -23,14 +23,19 @@ MapToolScene::~MapToolScene()
 
 void MapToolScene::Update()
 {
-	terrainEditor->Update();
-	//cube->Update();
-	//cube->mPosition = Environment::Get()->GetLightPosition();
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
 
+	Environment::Get()->GetWorldCamera()->Update();
+
+	terrainEditor->Update();
 }
 
 void MapToolScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	terrainEditor->PreRender();
@@ -38,6 +43,15 @@ void MapToolScene::PreRender()
 
 void MapToolScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	//skyBox->Render();

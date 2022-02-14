@@ -120,6 +120,13 @@ TestScene::~TestScene()
 
 void TestScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
+
 	DEVICECONTEXT->CopyResource(Staging, Texture);
 
 	D3D11_MAPPED_SUBRESOURCE ResourceDesc = {};
@@ -172,11 +179,21 @@ void TestScene::Update()
 
 void TestScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void TestScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 

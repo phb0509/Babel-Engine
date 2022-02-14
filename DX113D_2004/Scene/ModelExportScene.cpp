@@ -41,15 +41,31 @@ ModelExportScene::~ModelExportScene()
 
 void ModelExportScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
 }
 
 void ModelExportScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void ModelExportScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 

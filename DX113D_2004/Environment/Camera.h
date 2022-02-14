@@ -42,7 +42,7 @@ public:
 	void CreateFrustum();
 
 
-	void SetVS(UINT slot = 1);
+	void SetVertexShader(UINT slot = 1);
 	void SetTarget(Transform* value) { target = value; }
 	void SetIsMouseInputing(bool cameraInput) { mbIsMouseInputing = cameraInput; }
 	void SetViewMatrixToBuffer();

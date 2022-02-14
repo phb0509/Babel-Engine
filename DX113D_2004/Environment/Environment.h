@@ -17,7 +17,6 @@ public:
 	void SetViewport(UINT width = WIN_WIDTH, UINT height = WIN_HEIGHT);
 	void SetTargetToCamera(Transform* target);
 
-
 	Camera* GetTargetCamera() { return mTargetCamera; }
 	Camera* GetWorldCamera() { return mWorldCamera; }
 	Matrix GetProjection() { return mPerspectiveProjectionMatrix; }
@@ -39,7 +38,6 @@ private:
 	void showLightInformation();
 
 private:
-
 	Matrix mPerspectiveProjectionMatrix;
 	Matrix mOrthographicProjectionMatrix;
 

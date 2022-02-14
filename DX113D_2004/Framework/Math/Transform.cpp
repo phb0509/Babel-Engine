@@ -48,12 +48,16 @@ void Transform::UpdateWorld()
 		XMQuaternionIdentity(), // 배율의 방향을 설명하는 쿼터니언.
 		mScale.data, // x,y,z축에 대한 스케일링값 벡터.
 		mPivot.data, // 회전중심을 설명하는 3D 벡터.
-		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z), mPosition.data);
+		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z), 
+		mPosition.data
+	);
 	// x,y,z축을 따라 변환을 설명하는 3D 벡터.
 
 	if (mParentMatrix != nullptr)
+	{
 		mWorldMatrix *= *mParentMatrix;
-
+	}
+		
 	XMMatrixDecompose(&mGlobalScale.data, &mGlobalRotation.data,
 		&mGlobalPosition.data, mWorldMatrix);
 
@@ -62,6 +66,7 @@ void Transform::UpdateWorld()
 
 void Transform::PreRenderGizmosForColorPicking()
 {
+	//UpdateWorld();
 	mGizmosMaterial->SetShader(L"GizmosColorPicking");
 
 	Vector3 tempPosition = { 400.0f,0.0f,0.0f };
@@ -70,7 +75,7 @@ void Transform::PreRenderGizmosForColorPicking()
 	Matrix worldMatrix = XMMatrixTransformation(
 		mPivot.data,
 		XMQuaternionIdentity(),
-		scale.data,
+		mScale.data,
 		mPivot.data,
 		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
 		mPosition.data
@@ -89,20 +94,18 @@ void Transform::PreRenderGizmosForColorPicking()
 
 void Transform::RenderGizmos()
 {
-	UpdateWorld();
+	//UpdateWorld();
 	mGizmosMaterial->SetShader(L"Gizmos");
 
 	Vector3 tempPosition = { 400.0f,0.0f,0.0f };
 	Vector3 scale(30, 30, 30);
 
-	Matrix worldMatrix =
-		XMMatrixTransformation(
+	Matrix worldMatrix = XMMatrixTransformation(
 			mPivot.data,
 			XMQuaternionIdentity(),
-			scale.data,
+			mScale.data,
 			mPivot.data,
 			XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
-			//tempPosition.data,
 			mPosition.data
 		);
 

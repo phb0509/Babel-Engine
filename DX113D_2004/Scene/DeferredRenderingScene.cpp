@@ -28,12 +28,20 @@ DeferredRenderingScene::~DeferredRenderingScene()
 
 void DeferredRenderingScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
+
 	groot->Update();
 	sphere->Update();
 }
 
 void DeferredRenderingScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	gBuffer->PreRender(); // 여기서 OM에 Set. (rtv 3개, dev 1개)
@@ -56,6 +64,15 @@ void DeferredRenderingScene::PreRender()
 
 void DeferredRenderingScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	// Device::SetRenderTarget

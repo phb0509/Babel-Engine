@@ -49,26 +49,31 @@ void Collider::Update()
     UpdateWorld();
 }
 
-void Collider::Render()
-{
-    mMaterial->SetShader(L"Collider");
-    Transform::SetWorldBuffer();
-    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
-    mMaterial->Set();
-
-    //Environment::Get()->SetOrthographicProjectionBuffer();
-    DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
-    //Environment::Get()->SetPerspectiveProjectionBuffer();
-}
-
 void Collider::PreRenderForColorPicking()
 {
     mMaterial->SetShader(L"ColorPicking");
     Transform::SetWorldBuffer();
     Transform::SetColorBuffer();
 
+    WORLDCAMERA->SetVertexShader();
+
     mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mMaterial->Set();
 
+    //Environment::Get()->SetOrthographicProjectionBuffer();
     DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
+    //Environment::Get()->SetPerspectiveProjectionBuffer();
+}
+
+void Collider::Render()
+{
+    mMaterial->SetShader(L"Collider");
+    Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
+    WORLDCAMERA->SetVertexShader();
+    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
+    mMaterial->Set();
+
+    //Environment::Get()->SetOrthographicProjectionBuffer();
+    DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+    //Environment::Get()->SetPerspectiveProjectionBuffer();
 }

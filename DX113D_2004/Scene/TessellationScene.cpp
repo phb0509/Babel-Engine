@@ -41,6 +41,13 @@ TessellationScene::~TessellationScene()
 
 void TessellationScene::Update()
 {
+	Environment::Get()->Set();
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
 }
 
 void TessellationScene::PreRender()
@@ -50,6 +57,15 @@ void TessellationScene::PreRender()
 
 void TessellationScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	rsState->SetState();

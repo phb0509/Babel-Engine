@@ -26,7 +26,6 @@ Environment::~Environment()
 	delete mOrthographicProjectionBuffer;
 	delete mLightBuffer;
 	delete mSamplerState;
-	//delete mSun;
 }
 
 void Environment::PostRender()
@@ -118,15 +117,14 @@ void Environment::showLightInformation()
 void Environment::Set()
 {
 	SetViewport();
-	//SetPerspectiveProjectionBuffer();
 
 	if (mbIsTargetCamera)
 	{
-		mTargetCamera->SetVS(1);
+		mTargetCamera->SetVertexShader(1);
 	}
 	else
 	{
-		mWorldCamera->SetVS(1);
+		mWorldCamera->SetVertexShader(1);
 	}
 
 	mLightBuffer->SetPSBuffer(0);

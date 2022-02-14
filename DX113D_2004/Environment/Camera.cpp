@@ -243,7 +243,7 @@ void Camera::SetViewMatrixToBuffer()
 	mViewBuffer->Set(mViewMatrix);
 }
 
-void Camera::SetVS(UINT slot)
+void Camera::SetVertexShader(UINT slot)
 {
 	mViewBuffer->SetVSBuffer(slot);
 }

@@ -41,7 +41,7 @@ ColorPickingScene::ColorPickingScene()
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
 
-	//mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
+	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
 
 	// Create ComputeShader
 	mComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -59,6 +59,13 @@ ColorPickingScene::~ColorPickingScene()
 
 void ColorPickingScene::Update()
 {
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Update();
+	}
+
+	Environment::Get()->GetWorldCamera()->Update();
+
 	for (Collider* collider : mColliders)
 	{
 		collider->Update();
@@ -126,6 +133,7 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
@@ -145,6 +153,15 @@ void ColorPickingScene::PreRender()
 
 void ColorPickingScene::Render()
 {
+	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render();
+	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	for (Collider* collider : mColliders)
@@ -178,7 +195,6 @@ void ColorPickingScene::PostRender()
 	int32_t mousePositionX = static_cast<int32_t>(MOUSEPOS.x);
 	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
 	Int2 mousePosition = { mousePositionX,mousePositionY };
-
 
 	Vector3 temp = mBoxCollider->GetHashColor();
 

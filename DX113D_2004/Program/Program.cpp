@@ -41,41 +41,20 @@ void Program::Update()
 	{
 		Transform::mbIsRenderGizmos = !Transform::mbIsRenderGizmos;
 	}
-	
 
-	Control::Get()->Update();
 	Timer::Get()->Update();
-
+	Control::Get()->Update();
 	SceneManager::Get()->Update();
-
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
-	
-	Environment::Get()->GetWorldCamera()->Update();
-	
 	Control::Get()->SetWheel(0.0f);
 }
 
 void Program::PreRender()
 {
-	Environment::Get()->Set();
 	SceneManager::Get()->PreRender();
 }
 
 void Program::Render()
 {
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
-
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-	
-	Environment::Get()->GetWorldCamera()->Render();
-	Environment::Get()->Set();
-
 	SceneManager::Get()->Render();
 }
 

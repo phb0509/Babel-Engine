@@ -228,7 +228,7 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 {
 	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
-	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvView();
+	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvViewMatrix();
 	mMouseUVBuffer->data.invProjectionMatrix = Environment::Get()->GetPerspectiveProjectionBuffer()->GetInvProjectionMatrix();
 
 	mComputeShader->Set(); // 디바이스에 Set..

@@ -20,6 +20,32 @@ public:
 	}
 };
 
+class ViewBuffer : public ConstBuffer
+{
+private:
+	struct Data
+	{
+		Matrix matrix;
+		Matrix invMatrix;
+	}data;
+
+public:
+	ViewBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.matrix = XMMatrixIdentity();
+		data.invMatrix = XMMatrixIdentity();
+	}
+
+	void Set(Matrix value)
+	{
+		data.matrix = XMMatrixTranspose(value); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
+		Matrix temp = XMMatrixInverse(nullptr, value);
+		data.invMatrix = XMMatrixTranspose(temp);
+	}
+
+	Matrix GetInvViewMatrix() { return data.invMatrix; }
+};
+
 class ProjectionBuffer : public ConstBuffer
 {
 private:

@@ -1,8 +1,8 @@
 #pragma once
 
-class Gizmos
+class Gizmos : public Transform
 {
-	struct GizmosHashColor
+	struct HashColor
 	{
 		Float4 x;
 		Float4 y;
@@ -14,10 +14,15 @@ public:
 	Gizmos();
 	~Gizmos();
 
-	void SetParent(Transform* parent);
+	void Update();
+	void PreRender();
+	void Render();
+	 
 private:
-
-
+	void createMesh();
+	void createGizmosHashColor();
+	void createMeshForColorPicking();
+	
 
 
 private:
@@ -26,11 +31,11 @@ private:
 	Mesh* mMesh;
 	Material* mMaterial;
 
-	MatrixBuffer* mWorldBuffer;
 	vector<VertexColor> mVertices;
 	vector<UINT> mIndices;
 
-	ColorBuffer* mColorBuffer;
-	Float4 mHashColorForBuffer;
-	GizmosHashColor mHashColor;
+	//..GizmosHashColor mHashColor;
+	ColorBuffer* mHashColorBuffer;
+	HashColor mHashColor;
+
 };

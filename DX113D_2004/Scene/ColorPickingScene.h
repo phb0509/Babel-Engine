@@ -55,4 +55,5 @@ private:
 	Vector3 mMousePositionColor;
 	
 	Collider* mPickedCollider;
+	Gizmos* mGizmos;
 };

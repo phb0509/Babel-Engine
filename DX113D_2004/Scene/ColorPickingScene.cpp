@@ -34,14 +34,13 @@ ColorPickingScene::ColorPickingScene()
 	mRenderTargetTexture = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	mRenderTargets[0] = mRenderTargetTexture;
 
-	//mCube->mPosition = { 40.0f,0.0f,0.0f };
-	//mCube->mScale = { 10.0f,10.0f,10.0f };
-
 	mBoxCollider->mPosition = { 0.0f,0.0f,0.0f };
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
 
 	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
+	mGizmos = new Gizmos();
+	mGizmos->mScale = { 30.0f,30.0f,30.0f };
 
 	// Create ComputeShader
 	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -130,6 +129,8 @@ void ColorPickingScene::Update()
 	{
 		mBoxCollider->mRotation.y += 10.0f * DELTA;
 	}
+
+	//mGizmos->Update();
 }
 
 void ColorPickingScene::PreRender()
@@ -145,10 +146,12 @@ void ColorPickingScene::PreRender()
 		collider->PreRenderForColorPicking();
 	}
 
-	if (mPickedCollider != nullptr)
+	/*if (mPickedCollider != nullptr)
 	{
 		mPickedCollider->Transform::PreRenderGizmosForColorPicking();
-	}
+	}*/
+
+	//mGizmos->PreRender();
 }
 
 void ColorPickingScene::Render()
@@ -161,20 +164,22 @@ void ColorPickingScene::Render()
 		Environment::Get()->GetTargetCamera()->Render();
 	}
 
-	Environment::Get()->GetWorldCamera()->Render();
-	Environment::Get()->Set();
+	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender 외엔 뭐 업승ㅁ.
+	Environment::Get()->Set(); // SetViewPort
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	for (Collider* collider : mColliders)
 	{
-		collider->GetMaterial()->SetShader(L"Collider");
+		Environment::Get()->SetOrthographicProjectionBuffer();
 		collider->Render();
 	}
 
-	if (mPickedCollider != nullptr)
+	/*if (mPickedCollider != nullptr)
 	{
 		mPickedCollider->RenderGizmos();
-	}
+	}*/
+
+	//mGizmos->Render();
 }
 
 void ColorPickingScene::PostRender()
@@ -199,7 +204,7 @@ void ColorPickingScene::PostRender()
 
 	Vector3 temp = mBoxCollider->GetHashColor();
 
-	ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
+	/*ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
 	SpacingRepeatedly(2);
 
 	temp = mBoxCollider->GetGizmosHashColorX();
@@ -212,7 +217,7 @@ void ColorPickingScene::PostRender()
 
 	temp = mBoxCollider->GetGizmosHashColorZ();
 	ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&temp);
-	SpacingRepeatedly(3);
+	SpacingRepeatedly(3);*/
 
 	temp = mBoxCollider->mPosition;
 	ImGui::InputFloat3("BoxCollider Position", (float*)&temp);
@@ -220,6 +225,14 @@ void ColorPickingScene::PostRender()
 
 	temp = mBoxCollider->mRotation;
 	ImGui::InputFloat3("BoxCollider Rotation", (float*)&temp);
+	SpacingRepeatedly(2);
+
+	temp = mGizmos->mPosition;
+	ImGui::InputFloat3("mGizmos Position", (float*)&temp);
+	SpacingRepeatedly(2);
+
+	temp = mGizmos->mRotation;
+	ImGui::InputFloat3("mGizmos Rotation", (float*)&temp);
 	SpacingRepeatedly(2);
 
 	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
@@ -244,12 +257,12 @@ void ColorPickingScene::colorPicking()
 	mColorPickingComputeShader->Set(); // 디바이스에 Set..
 	mInputBuffer->SetCSBuffer(1); // CS 1번 레지스터에 Set.
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargetTexture->GetSRV()); // CS 0번 레지스터에 바인딩. <-- 여기가 문제.
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargetTexture->GetSRV()); // CS 0번 레지스터에 바인딩.
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
 	ID3D11ShaderResourceView* pSRV = NULL;
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &pSRV);
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &pSRV); // CS 0번 레지스터에 NULL값 세팅. 안하면 경고 뜬다
 
 	mComputeStructuredBuffer->Copy(mOutputBuffer, sizeof(ColorPickingOutputBuffer)); // GPU에서 계산한거 받아옴. 
 

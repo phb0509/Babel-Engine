@@ -22,6 +22,8 @@ Transform::Transform(string mTag) :
 	mWorldBuffer = new MatrixBuffer();
 	mColorBuffer = new ColorBuffer();
 
+
+	// Gizmos
 	mGizmosMaterial = new Material(L"Gizmos");
 
 	createGizmoseHashColor();
@@ -94,11 +96,12 @@ void Transform::PreRenderGizmosForColorPicking()
 
 void Transform::RenderGizmos()
 {
-	//UpdateWorld();
 	mGizmosMaterial->SetShader(L"Gizmos");
 
 	Vector3 tempPosition = { 400.0f,0.0f,0.0f };
 	Vector3 scale(30, 30, 30);
+
+	//Set WolrdBuffer to VertexShader
 
 	Matrix worldMatrix = XMMatrixTransformation(
 			mPivot.data,
@@ -111,6 +114,19 @@ void Transform::RenderGizmos()
 
 	mGizmosWorldBuffer->Set(worldMatrix);
 	mGizmosWorldBuffer->SetVSBuffer(0);
+
+	// Set ViewBuffer to VertexShader
+	WORLDCAMERA->UpdateWorld();
+
+	Vector3 focus = WORLDCAMERA->mPosition + WORLDCAMERA->Forward();
+	Matrix viewMatrix;
+	Matrix invMatrix;
+	ViewBuffer* viewBuffer = new ViewBuffer;
+	viewMatrix = XMMatrixLookAtLH(WORLDCAMERA->mPosition.data, focus.data, WORLDCAMERA->Up().data); // Ä«¸Þ¶óÀ§Ä¡, Å¸°ÙÀ§Ä¡, Ä«¸Þ¶ó À­º¤ÅÍ
+
+	viewBuffer->Set(viewMatrix);
+	viewBuffer->SetVSBuffer(1);
+
 
 	mGizmosMesh->IASet();
 	mGizmosMaterial->Set();
@@ -214,7 +230,6 @@ void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, 
 	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
 	{
 		funcPointer(param1);
-
 		mIsUpdateStandTimes[1] = true;
 	}
 
@@ -273,8 +288,6 @@ void Transform::createGizmos()
 {
 	float length = 3.0f;
 	float thickness = 0.5f;
-
-	Collider* collider;
 
 	//Axis X		
 

@@ -169,10 +169,29 @@ void Environment::createPerspectiveBuffer()
 
 void Environment::createOrthographicBuffer()
 {
-	mOrthographicProjectionMatrix = XMMatrixOrthographicLH((float)WIN_WIDTH, (float)WIN_HEIGHT, 0.1f, 1000.0f);
+	float w = 2.0f / WIN_WIDTH;
+	float h = 2.0f / WIN_HEIGHT;
+	float a = 0.001f;
+	float b = -a * 0.001f;
+
+	//float a = 1.0f;
+	//float b = 0.0f;
+
+
+	Matrix orthographicMatrix = XMMatrixIdentity();
+
+	orthographicMatrix.r[0].m128_f32[0] = w;
+	orthographicMatrix.r[1].m128_f32[1] = h;
+	orthographicMatrix.r[2].m128_f32[2] = a;
+	orthographicMatrix.r[3].m128_f32[2] = b;
+	orthographicMatrix.r[3].m128_f32[3] = 1;
 
 	mOrthographicProjectionBuffer = new ProjectionBuffer();
-	mOrthographicProjectionBuffer->Set(mOrthographicProjectionMatrix);
+	mOrthographicProjectionBuffer->Set(orthographicMatrix);
+
+	//mOrthographicProjectionMatrix = XMMatrixOrthographicLH(1280.0f, 720.0f, 0.01f, 1000.0f);
+	//mOrthographicProjectionBuffer = new ProjectionBuffer();
+	//mOrthographicProjectionBuffer->Set(mOrthographicProjectionMatrix);
 }
 
 

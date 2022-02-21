@@ -46,7 +46,7 @@ void Collider::Update()
         }
     }
 
-    UpdateWorld();
+    Transform::UpdateWorld();
 }
 
 void Collider::PreRenderForColorPicking()
@@ -69,16 +69,21 @@ void Collider::Render()
 {
     mMaterial->SetShader(L"Collider");
     Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
-   // WORLDCAMERA->SetVertexShader();
 
+    //WORLDCAMERA->SetVertexShader();
     //WORLDCAMERA->UpdateWorld();
-
     //Vector3 focus = WORLDCAMERA->mPosition + WORLDCAMERA->Forward();
     //Matrix viewMatrix;
     //Matrix invMatrix;
     //ViewBuffer* viewBuffer = new ViewBuffer;
     //viewMatrix = XMMatrixLookAtLH(WORLDCAMERA->mPosition.data, focus.data, WORLDCAMERA->Up().data); // Ä«¸Þ¶óÀ§Ä¡, Å¸°ÙÀ§Ä¡, Ä«¸Þ¶ó À­º¤ÅÍ
     //viewMatrix = XMMatrixIdentity();
+
+    //Matrix invWorldMatrix =  XMMatrixInverse(nullptr, WORLDCAMERA->GetWorldMatrixTemp());
+
+    //viewMatrix.r[0].m128_f32[0] = 30.0f;
+    //viewMatrix.r[1].m128_f32[1] = 30.0f;
+    //viewMatrix.r[2].m128_f32[2] = 30.0f;
 
     //viewBuffer->Set(viewMatrix);
     //viewBuffer->SetVSBuffer(1);
@@ -89,5 +94,5 @@ void Collider::Render()
 
     //Environment::Get()->SetOrthographicProjectionBuffer();
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
-   // Environment::Get()->SetPerspectiveProjectionBuffer();
+    //Environment::Get()->SetPerspectiveProjectionBuffer();
 }

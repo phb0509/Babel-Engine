@@ -27,6 +27,7 @@ public:
 	void SetWorldBuffer(UINT slot = 0);
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
+	Matrix GetWorldMatrixTemp() { return mWorldMatrix; }
 	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 	Vector3 Forward();

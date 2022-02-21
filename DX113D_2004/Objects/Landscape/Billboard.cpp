@@ -19,7 +19,7 @@ void Billboard::Update()
 	//rotation.y = CAMERA->rotation.y;
 	//rotation = CAMERA->rotation;
 
-	Vector3 dir = mPosition - TARGETCAMERA->mPosition;
+	Vector3 dir = mPosition - TARGETCAMERA->mPosition; // 오브젝트가 카메라를 바라보는 방향벡터.
 	mRotation.y = atan2(dir.x, dir.z);
 }
 

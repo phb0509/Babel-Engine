@@ -23,8 +23,6 @@ private:
 	void createGizmosHashColor();
 	void createMeshForColorPicking();
 	
-
-
 private:
 	RasterizerState* mRSState;
 

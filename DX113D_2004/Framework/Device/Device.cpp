@@ -11,11 +11,11 @@ Device::Device() :
 Device::~Device()
 {
 	mDevice->Release();
-	deviceContext->Release();
+	mDeviceContext->Release();
 
 	swapChain->Release();
 
-	renderTargetView->Release();
+	mRenderTargetView->Release();
 	//mDSVtexture->Release();
 	
 }
@@ -50,7 +50,7 @@ void Device::CreateDeviceAndSwapchain()
 		&swapChain,
 		&mDevice,
 		nullptr,
-		&deviceContext
+		&mDeviceContext
 	));		
 }
 
@@ -59,7 +59,7 @@ void Device::CreateBackBuffer()
 	ID3D11Texture2D* backBuffer; // 임시 버퍼.
 
 	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
-	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
+	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &mRenderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
 	backBuffer->Release();	// 필요없으니 해제.
 
 
@@ -86,7 +86,7 @@ void Device::CreateBackBuffer()
 		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-		V(mDevice->CreateDepthStencilView(mDSVtexture, &desc, &depthStencilView));
+		V(mDevice->CreateDepthStencilView(mDSVtexture, &desc, &mDepthStencilView));
 		mDSVtexture->Release();
 	}
 
@@ -104,14 +104,26 @@ void Device::CreateBackBuffer()
 
 void Device::SetRenderTarget()
 {
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
 }
 
-void Device::Clear(Float4 color)
+void Device::SetRenderTargetNullDSV()
 {
-	deviceContext->ClearRenderTargetView(renderTargetView, (float*)&color);
-	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
 }
+
+void Device::ClearRenderTargetView(Float4 color)
+{
+	mDeviceContext->ClearRenderTargetView(mRenderTargetView, (float*)&color);
+}
+
+void Device::ClearDepthStencilView()
+{
+	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+
 
 void Device::Present()
 {

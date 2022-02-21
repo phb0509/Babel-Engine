@@ -38,9 +38,8 @@ ColorPickingScene::ColorPickingScene()
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
 
-	mBoxCollider->mScale = { 30.0f,30.0f,30.0f };
-	mGizmos = new Gizmos();
-	mGizmos->mScale = { 30.0f,30.0f,30.0f };
+	mBoxCollider->mScale = { 10.0f,10.0f,10.0f };
+
 
 	// Create ComputeShader
 	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -50,6 +49,7 @@ ColorPickingScene::ColorPickingScene()
 		mInputBuffer = new ColorPickingInputBuffer();
 
 	mOutputBuffer = new ColorPickingOutputBuffer[1];
+
 }
 
 ColorPickingScene::~ColorPickingScene()
@@ -87,7 +87,6 @@ void ColorPickingScene::Update()
 					mPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
 				}
 			}
-
 			else
 			{
 				if (KEY_DOWN(VK_LBUTTON))
@@ -99,45 +98,35 @@ void ColorPickingScene::Update()
 		}
 	}
 
+
 	if (KEY_PRESS('W'))
 	{
-		//mBoxCollider->mPosition.z += 50.0f * DELTA;
-		mBoxCollider->mPosition += mBoxCollider->Forward() * 100.0f * DELTA;
+		mBoxCollider->mPosition.z += 100.0f * DELTA;
 	}
-
+	
 	if (KEY_PRESS('S'))
 	{
-		mBoxCollider->mPosition += mBoxCollider->Forward() * 100.0f * -1.0f * DELTA;
+		mBoxCollider->mPosition.z -= 100.0f * DELTA;
 	}
 
 	if (KEY_PRESS('A'))
 	{
-		mBoxCollider->mPosition += mBoxCollider->Right() * 100.0f * -1.0f * DELTA;
+		mBoxCollider->mPosition.x -= 100.0f * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
-		mBoxCollider->mPosition += mBoxCollider->Right() * 100.0f * DELTA;
+		mBoxCollider->mPosition.x += 100.0f * DELTA;
 	}
-
-	if (KEY_PRESS('Q'))
-	{
-		mBoxCollider->mRotation.y -= 10.0f * DELTA;
-	}
-
-	if (KEY_PRESS('E'))
-	{
-		mBoxCollider->mRotation.y += 10.0f * DELTA;
-	}
-
-	//mGizmos->Update();
 }
 
 void ColorPickingScene::PreRender()
 {
 	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil);
+	//RenderTarget::SetWithDSV(mRenderTargets, 1, nullptr);
+	RenderTarget::SetWithoutDSV(mRenderTargets, 1);
+	//RenderTarget::Sets(mRenderTargets, 1, nullptr);
 
 	// ÄÃ·¯ÇÇÅ·¿ë ·»´õÅ¸°ÙÅØ½ºÃÄ¿¡ ·»´õ.
 
@@ -146,18 +135,19 @@ void ColorPickingScene::PreRender()
 		collider->PreRenderForColorPicking();
 	}
 
-	/*if (mPickedCollider != nullptr)
+	if (mPickedCollider != nullptr)
 	{
 		mPickedCollider->Transform::PreRenderGizmosForColorPicking();
-	}*/
-
-	//mGizmos->PreRender();
+	}
 }
 
 void ColorPickingScene::Render()
 {
-	Device::Get()->Clear();
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	// ¸ÞÀÎ·»´õÅ¸°Ù Clear ÈÄ¿¡ Set.
+	Device::Get()->ClearRenderTargetView();
+	Device::Get()->ClearDepthStencilView();
+	//Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	Device::Get()->SetRenderTargetNullDSV();
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{
@@ -170,16 +160,14 @@ void ColorPickingScene::Render()
 
 	for (Collider* collider : mColliders)
 	{
-		Environment::Get()->SetOrthographicProjectionBuffer();
+		//Environment::Get()->SetOrthographicProjectionBuffer();
 		collider->Render();
 	}
 
-	/*if (mPickedCollider != nullptr)
+	if (mPickedCollider != nullptr)
 	{
 		mPickedCollider->RenderGizmos();
-	}*/
-
-	//mGizmos->Render();
+	}
 }
 
 void ColorPickingScene::PostRender()
@@ -204,7 +192,7 @@ void ColorPickingScene::PostRender()
 
 	Vector3 temp = mBoxCollider->GetHashColor();
 
-	/*ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
+	ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
 	SpacingRepeatedly(2);
 
 	temp = mBoxCollider->GetGizmosHashColorX();
@@ -217,9 +205,9 @@ void ColorPickingScene::PostRender()
 
 	temp = mBoxCollider->GetGizmosHashColorZ();
 	ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&temp);
-	SpacingRepeatedly(3);*/
+	SpacingRepeatedly(3);
 
-	temp = mBoxCollider->mPosition;
+	/*temp = mBoxCollider->mPosition;
 	ImGui::InputFloat3("BoxCollider Position", (float*)&temp);
 	SpacingRepeatedly(2);
 
@@ -233,7 +221,7 @@ void ColorPickingScene::PostRender()
 
 	temp = mGizmos->mRotation;
 	ImGui::InputFloat3("mGizmos Rotation", (float*)&temp);
-	SpacingRepeatedly(2);
+	SpacingRepeatedly(2);*/
 
 	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
 	SpacingRepeatedly(2);

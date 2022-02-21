@@ -60,7 +60,7 @@ void RenderTarget::SetDepthStencil(DepthStencil* depthStencil)
 	Environment::Get()->SetViewport(mWidth, mHeight);
 }
 
-void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthStencil)
+void RenderTarget::SetWithDSV(RenderTarget** targets, UINT count, DepthStencil* depthStencil)
 {
 	vector<ID3D11RenderTargetView*> rtvs;
 
@@ -79,4 +79,20 @@ void RenderTarget::Sets(RenderTarget** targets, UINT count, DepthStencil* depthS
 	
 	//전부 클리어 후, Set하기.
 	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), depthStencil->GetDSV());
+}
+
+void RenderTarget::SetWithoutDSV(RenderTarget** targets, UINT count)
+{
+	vector<ID3D11RenderTargetView*> rtvs;
+
+	float color[4] = { 0, 0, 0, 0 };
+
+	for (UINT i = 0; i < count; i++)
+	{
+		rtvs.emplace_back(targets[i]->GetRTV());
+		DEVICECONTEXT->ClearRenderTargetView(targets[i]->GetRTV(), color);
+	}
+
+	//전부 클리어 후, Set하기.
+	DEVICECONTEXT->OMSetRenderTargets(rtvs.size(), rtvs.data(), nullptr);
 }

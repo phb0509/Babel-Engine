@@ -111,7 +111,7 @@ void TerrainEditor::PreRender()
 	mWorldBuffer->SetVSBuffer(0);
 
 	// 여기다 DepthShader 관련.
-	RenderTarget::Sets(mRenderTargets, 1, mDepthStencil); // 깊이값이 mDepthStencil에 저장..
+	RenderTarget::SetWithDSV(mRenderTargets, 1, mDepthStencil); // 깊이값이 mDepthStencil에 저장..
 	mDepthMaterial->Set(); 
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);

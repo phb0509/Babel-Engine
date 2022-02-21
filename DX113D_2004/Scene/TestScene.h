@@ -15,12 +15,7 @@ public:
 
 
 private:
-	ID3D11Texture2D* Texture = nullptr;
-	ID3D11Texture2D* Staging = nullptr;
-	
-	float* Read;
-	float* Data;
-
-	int const Width = 100;
-	int const Height = 100;
+	Collider* mBoxCollider;
+	Collider* mTestCollider;
+	Cube* mCube;
 };

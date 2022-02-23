@@ -48,13 +48,18 @@ public:
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
 
-	void SetColorBuffer();
+	void SetHashColorBuffer();
+	void SetGizmosColorBuffer(Float4 gizmoColor);
 
-	Float4 GetHashColor() { return mHashColorForBuffer; }
+	Float4 GetHashColor() { return mHashColor; }
 
 	Float4 GetGizmosHashColorX() { return mGizmosHashColor.x; }
 	Float4 GetGizmosHashColorY() { return mGizmosHashColor.y; }
 	Float4 GetGizmosHashColorZ() { return mGizmosHashColor.z; }
+
+	void SetGizmoXColor(Float4 color) { mGizmoXColor = color; }
+	void SetGizmoYColor(Float4 color) { mGizmoYColor = color; }
+	void SetGizmoZColor(Float4 color) { mGizmoZColor = color; }
 	
 	
 private:
@@ -96,14 +101,27 @@ protected:
 private:
 
 	// Gizmos
-	Material* mGizmosMaterial;
-	Mesh* mGizmosMesh;
+	Material* mMaterial;
 	MatrixBuffer* mGizmosWorldBuffer;
-	vector<VertexColor> mGizmosVertices;
-	vector<UINT> mGizmosIndices;
 	RasterizerState* mRSState;
-	ColorBuffer* mColorBuffer;
-	Float4 mHashColorForBuffer;
+	ColorBuffer* mHashColorBuffer;
+	ColorBuffer* mGizmosColorBuffer;
+	Float4 mHashColor;
 	GizmosHashColor mGizmosHashColor;
-	
+
+	Mesh* mGizmoXMesh;
+	Mesh* mGizmoYMesh;
+	Mesh* mGizmoZMesh;
+
+	vector<VertexColor> mGizmoXVertices;
+	vector<VertexColor> mGizmoYVertices;
+	vector<VertexColor> mGizmoZVertices;
+
+	vector<UINT> mGizmoXIndices;
+	vector<UINT> mGizmoYIndices;
+	vector<UINT> mGizmoZIndices;
+
+	Float4 mGizmoXColor;
+	Float4 mGizmoYColor;
+	Float4 mGizmoZColor;
 };

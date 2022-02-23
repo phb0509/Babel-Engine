@@ -1,5 +1,11 @@
 #include "Header.hlsli"
 
+
+cbuffer Color : register(b9)
+{
+    float4 gizmoColor;
+}
+
 struct PixelInput
 {
     float4 pos : SV_Position;
@@ -15,7 +21,7 @@ PixelInput VS(VertexColor input)
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
     
-    output.color = input.color;
+    output.color = gizmoColor;
     output.colorForPicking = input.colorForPicking;
     
     return output;

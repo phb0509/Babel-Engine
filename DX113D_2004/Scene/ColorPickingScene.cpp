@@ -84,22 +84,21 @@ void ColorPickingScene::Update()
 				if (KEY_DOWN(VK_LBUTTON))
 				{
 					mPickedCollider = collider;
-					mPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
+					mPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f)); // 피킹된 컬라이더는 노랗게
 				}
 			}
 			else
 			{
 				if (KEY_DOWN(VK_LBUTTON))
 				{
-					collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
+					collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f)); // 피킹안됐으면 다시 초록색.
 					mPickedCollider = nullptr;
 				}
 			}
 		}
 	}
 
-
-	if (KEY_PRESS('W'))
+	/*if (KEY_PRESS('W'))
 	{
 		mBoxCollider->mPosition.z += 100.0f * DELTA;
 	}
@@ -117,6 +116,27 @@ void ColorPickingScene::Update()
 	if (KEY_PRESS('D'))
 	{
 		mBoxCollider->mPosition.x += 100.0f * DELTA;
+	}*/
+
+	if (mPickedCollider != nullptr) // 피킹된 컬라이더가 있다면, 그러면 무조건 기즈모는 렌더중.
+	{
+		if(KEY_PRESS(VK_LBUTTON))
+		{
+			if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorX()))
+			{
+
+			}
+
+			if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorY()))
+			{
+
+			}
+
+			if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorZ()))
+			{
+
+			}
+		}
 	}
 }
 

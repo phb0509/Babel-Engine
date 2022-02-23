@@ -134,10 +134,16 @@ struct Vertex
     float4 pos : Position;    
 };
 
-struct VertexColor 
+//struct VertexColor 
+//{
+//    float4 pos : Position;
+//    float4 color : Color;
+//    float4 colorForPicking : ColorForPicking;
+//};
+
+struct VertexColor
 {
     float4 pos : Position;
-    float4 color : Color;
     float4 colorForPicking : ColorForPicking;
 };
 

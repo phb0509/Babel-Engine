@@ -20,11 +20,16 @@ Transform::Transform(string mTag) :
 	createHashColor();
 	mWorldMatrix = XMMatrixIdentity();
 	mWorldBuffer = new MatrixBuffer();
-	mColorBuffer = new ColorBuffer();
-
+	mHashColorBuffer = new ColorBuffer();
+	mGizmosColorBuffer = new ColorBuffer();
+	
 	// Gizmos
-	mGizmosMaterial = new Material(L"Gizmos");
 
+	mGizmoXColor = { 1.0f,0.0f,0.0f,1.0f };
+	mGizmoYColor = { 0.0f,1.0f,0.0f,1.0f };
+	mGizmoZColor = { 0.0f,0.0f,1.0f,1.0f };
+
+	mMaterial = new Material(L"Gizmos");
 	createGizmoseHashColor();
 	createGizmos();
 	mGizmosWorldBuffer = new MatrixBuffer();
@@ -39,7 +44,7 @@ Transform::~Transform()
 {
 	delete mWorldBuffer;
 	delete mGizmosWorldBuffer;
-	delete mGizmosMaterial;
+	delete mMaterial;
 }
 
 void Transform::UpdateWorld()
@@ -68,7 +73,8 @@ void Transform::UpdateWorld()
 void Transform::PreRenderGizmosForColorPicking()
 {
 	//UpdateWorld();
-	mGizmosMaterial->SetShader(L"GizmosColorPicking");
+	mMaterial->SetShader(L"GizmosColorPicking");
+	mMaterial->Set();
 
 	Matrix worldMatrix = XMMatrixTransformation(
 		mPivot.data,
@@ -82,15 +88,19 @@ void Transform::PreRenderGizmosForColorPicking()
 	mGizmosWorldBuffer->Set(worldMatrix); // Set WorldBuffer
 	mGizmosWorldBuffer->SetVSBuffer(0);
 
-	mGizmosMesh->IASet();
-	mGizmosMaterial->Set();
+	mGizmoXMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoXIndices.size(), 0, 0); // Draw Gizmos
 
-	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0); // Draw Gizmos
+	mGizmoYMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoYIndices.size(), 0, 0); // Draw Gizmos
+
+	mGizmoZMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoZIndices.size(), 0, 0); // Draw Gizmos
 }
 
 void Transform::RenderGizmos()
 {
-	mGizmosMaterial->SetShader(L"Gizmos");
+	mMaterial->SetShader(L"Gizmos");
 
 	//Set WolrdBuffer to VertexShader
 
@@ -103,17 +113,28 @@ void Transform::RenderGizmos()
 			mPosition.data
 		);
 
+	mRSState->FillMode(D3D11_FILL_SOLID);
+	mRSState->SetState();
+	mMaterial->Set();
+
 	mGizmosWorldBuffer->Set(worldMatrix);
 	mGizmosWorldBuffer->SetVSBuffer(0);
 
-	mGizmosMesh->IASet();
-	mGizmosMaterial->Set(); 
 
-	//mRSState->FillMode(D3D11_FILL_WIREFRAME);
-	mRSState->FillMode(D3D11_FILL_SOLID);
-	mRSState->SetState();
+	mGizmosColorBuffer->Set(mGizmoXColor);
+	mGizmosColorBuffer->SetVSBuffer(9);
+	mGizmoXMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoXIndices.size(), 0, 0);
 
-	DEVICECONTEXT->DrawIndexed(mGizmosIndices.size(), 0, 0);
+	mGizmosColorBuffer->Set(mGizmoYColor);
+	mGizmosColorBuffer->SetVSBuffer(9);
+	mGizmoYMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoYIndices.size(), 0, 0);
+
+	mGizmosColorBuffer->Set(mGizmoZColor);
+	mGizmosColorBuffer->SetVSBuffer(9);
+	mGizmoZMesh->IASet();
+	DEVICECONTEXT->DrawIndexed(mGizmoZIndices.size(), 0, 0);
 }
 
 void Transform::SetWorldBuffer(UINT slot)
@@ -233,10 +254,16 @@ bool Transform::CheckTime(float periodTime)
 }
 
 
-void Transform::SetColorBuffer()
+void Transform::SetHashColorBuffer()
 {
-	mColorBuffer->Set(mHashColorForBuffer);
-	mColorBuffer->SetVSBuffer(10);
+	mHashColorBuffer->Set(mHashColor); // 별도의 렌더타겟에 그릴 오브젝트의 해쉬컬러.
+	mHashColorBuffer->SetVSBuffer(10);
+}
+
+void Transform::SetGizmosColorBuffer(Float4 gizmoColor)
+{
+	mGizmosColorBuffer->Set(gizmoColor);
+	mGizmosColorBuffer->SetVSBuffer(9);
 }
 
 void Transform::createHashColor()
@@ -257,7 +284,7 @@ void Transform::createHashColor()
 
 	Float4 tempColor = { fr / 255.0f,fg / 255.0f,fb / 255.0f,1.0f };
 
-	mHashColorForBuffer = tempColor;
+	mHashColor = tempColor;
 }
 
 void Transform::createGizmos()
@@ -267,76 +294,81 @@ void Transform::createGizmos()
 
 	//Axis X		
 
-	Float4 color = { 1, 0, 0, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.x);
-	mGizmosVertices.emplace_back(Float3(length, 0, 0), color, mGizmosHashColor.x);
-	mGizmosVertices.emplace_back(Float3(length, thickness, 0), color, mGizmosHashColor.x);
-	mGizmosVertices.emplace_back(Float3(length, 0, thickness), color, mGizmosHashColor.x);
+	mGizmoXVertices.emplace_back(Float3(0, 0, 0), mGizmosHashColor.x);
+	mGizmoXVertices.emplace_back(Float3(length, 0, 0), mGizmosHashColor.x);
+	mGizmoXVertices.emplace_back(Float3(length, thickness, 0), mGizmosHashColor.x);
+	mGizmoXVertices.emplace_back(Float3(length, 0, thickness), mGizmosHashColor.x);
+		  
+	mGizmoXIndices.emplace_back(0);
+	mGizmoXIndices.emplace_back(2);
+	mGizmoXIndices.emplace_back(1);
+		  
+	mGizmoXIndices.emplace_back(0);
+	mGizmoXIndices.emplace_back(1);
+	mGizmoXIndices.emplace_back(3);
+		  
+	mGizmoXIndices.emplace_back(0);
+	mGizmoXIndices.emplace_back(3);
+	mGizmoXIndices.emplace_back(2);
+		  
+	mGizmoXIndices.emplace_back(1);
+	mGizmoXIndices.emplace_back(2);
+	mGizmoXIndices.emplace_back(3);
 
-	mGizmosIndices.emplace_back(0);
-	mGizmosIndices.emplace_back(2);
-	mGizmosIndices.emplace_back(1);
-
-	mGizmosIndices.emplace_back(0);
-	mGizmosIndices.emplace_back(1);
-	mGizmosIndices.emplace_back(3);
-
-	mGizmosIndices.emplace_back(0);
-	mGizmosIndices.emplace_back(3);
-	mGizmosIndices.emplace_back(2);
-
-	mGizmosIndices.emplace_back(1);
-	mGizmosIndices.emplace_back(2);
-	mGizmosIndices.emplace_back(3);
+	mGizmoXMesh = new Mesh(mGizmoXVertices.data(), sizeof(VertexColor), mGizmoXVertices.size(),
+		mGizmoXIndices.data(), mGizmoXIndices.size());
 
 	//Axis Y
-	color = { 0, 1, 0, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.y);
-	mGizmosVertices.emplace_back(Float3(0, length, 0), color, mGizmosHashColor.y);
-	mGizmosVertices.emplace_back(Float3(0, length, thickness), color, mGizmosHashColor.y);
-	mGizmosVertices.emplace_back(Float3(thickness, length, 0), color, mGizmosHashColor.y);
 
-	mGizmosIndices.emplace_back(4);
-	mGizmosIndices.emplace_back(6);
-	mGizmosIndices.emplace_back(5);
+	mGizmoYVertices.emplace_back(Float3(0, 0, 0), mGizmosHashColor.y);
+	mGizmoYVertices.emplace_back(Float3(0, length, 0), mGizmosHashColor.y);
+	mGizmoYVertices.emplace_back(Float3(0, length, thickness), mGizmosHashColor.y);
+	mGizmoYVertices.emplace_back(Float3(thickness, length, 0), mGizmosHashColor.y);
+		  
+	mGizmoYIndices.emplace_back(0);
+	mGizmoYIndices.emplace_back(2);
+	mGizmoYIndices.emplace_back(1);
+		  
+	mGizmoYIndices.emplace_back(0);
+	mGizmoYIndices.emplace_back(1);
+	mGizmoYIndices.emplace_back(3);
+		  
+	mGizmoYIndices.emplace_back(0);
+	mGizmoYIndices.emplace_back(3);
+	mGizmoYIndices.emplace_back(2);
+		  
+	mGizmoYIndices.emplace_back(1);
+	mGizmoYIndices.emplace_back(2);
+	mGizmoYIndices.emplace_back(3);
 
-	mGizmosIndices.emplace_back(4);
-	mGizmosIndices.emplace_back(5);
-	mGizmosIndices.emplace_back(7);
-
-	mGizmosIndices.emplace_back(4);
-	mGizmosIndices.emplace_back(7);
-	mGizmosIndices.emplace_back(6);
-
-	mGizmosIndices.emplace_back(5);
-	mGizmosIndices.emplace_back(6);
-	mGizmosIndices.emplace_back(7);
+	mGizmoYMesh = new Mesh(mGizmoYVertices.data(), sizeof(VertexColor), mGizmoYVertices.size(),
+		mGizmoYIndices.data(), mGizmoYIndices.size());
 
 	//Axis Z
-	color = { 0, 0, 1, 1 };
-	mGizmosVertices.emplace_back(Float3(0, 0, 0), color, mGizmosHashColor.z);
-	mGizmosVertices.emplace_back(Float3(0, 0, length), color, mGizmosHashColor.z);
-	mGizmosVertices.emplace_back(Float3(thickness, 0, length), color, mGizmosHashColor.z);
-	mGizmosVertices.emplace_back(Float3(0, thickness, length), color, mGizmosHashColor.z);
 
-	mGizmosIndices.emplace_back(8);
-	mGizmosIndices.emplace_back(10);
-	mGizmosIndices.emplace_back(9);
+	mGizmoZVertices.emplace_back(Float3(0, 0, 0), mGizmosHashColor.z);
+	mGizmoZVertices.emplace_back(Float3(0, 0, length), mGizmosHashColor.z);
+	mGizmoZVertices.emplace_back(Float3(thickness, 0, length), mGizmosHashColor.z);
+	mGizmoZVertices.emplace_back(Float3(0, thickness, length), mGizmosHashColor.z);
+		  
+	mGizmoZIndices.emplace_back(0);
+	mGizmoZIndices.emplace_back(2);
+	mGizmoZIndices.emplace_back(1);
+		  
+	mGizmoZIndices.emplace_back(0);
+	mGizmoZIndices.emplace_back(1);
+	mGizmoZIndices.emplace_back(3);
+		  
+	mGizmoZIndices.emplace_back(0);
+	mGizmoZIndices.emplace_back(3);
+	mGizmoZIndices.emplace_back(2);
+		  
+	mGizmoZIndices.emplace_back(1);
+	mGizmoZIndices.emplace_back(2);
+	mGizmoZIndices.emplace_back(3);
 
-	mGizmosIndices.emplace_back(8);
-	mGizmosIndices.emplace_back(9);
-	mGizmosIndices.emplace_back(11);
-
-	mGizmosIndices.emplace_back(8);
-	mGizmosIndices.emplace_back(11);
-	mGizmosIndices.emplace_back(10);
-
-	mGizmosIndices.emplace_back(9);
-	mGizmosIndices.emplace_back(10);
-	mGizmosIndices.emplace_back(11);
-
-	mGizmosMesh = new Mesh(mGizmosVertices.data(), sizeof(VertexColor), mGizmosVertices.size(),
-		mGizmosIndices.data(), mGizmosIndices.size());
+	mGizmoZMesh = new Mesh(mGizmoZVertices.data(), sizeof(VertexColor), mGizmoZVertices.size(),
+		mGizmoZIndices.data(), mGizmoZIndices.size());
 }
 
 void Transform::createGizmoseHashColor()

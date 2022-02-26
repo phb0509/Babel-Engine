@@ -114,14 +114,9 @@
 #include <d3dcompiler.h>
 #include <DirectXCollision.h>
 
-
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
-
-
-
-
 
 
 //DirectWrite
@@ -238,9 +233,6 @@ using namespace states;
 #include "Framework/Collider/CapsuleCollider.h"
 #include "Framework/Collider/TetrahedronCollider.h"
 #include "Framework/Collider/FrustumCollider.h"
-
-
-
 
 #include "Framework/ModelExport/ModelType.h"
 #include "Framework/ModelExport/ModelExporter.h"

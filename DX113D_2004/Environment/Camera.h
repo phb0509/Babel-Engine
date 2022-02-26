@@ -62,11 +62,7 @@ private:
 	void freeMove();
 	void rotation();
 	void initialize();
-
 	void setViewToFrustum(Matrix view);
-
-
-
 
 public:
 	float mMoveSpeed;

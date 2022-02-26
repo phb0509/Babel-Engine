@@ -93,21 +93,25 @@ void MainScene::Update()
 
 void MainScene::PreRender()
 {
-	Environment::Get()->Set();
+	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void MainScene::Render()
 {
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	// ¸ŞÀÎ·»´õÅ¸°Ù Clear ÈÄ¿¡ Set.
+	Device::Get()->ClearRenderTargetView();
+	Device::Get()->ClearDepthStencilView();
+	//Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	Device::Get()->SetRenderTarget();
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{
 		Environment::Get()->GetTargetCamera()->Render();
 	}
 
-	Environment::Get()->GetWorldCamera()->Render();
-	Environment::Get()->Set();
+	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender ¿Ü¿£ ¹¹ ¾÷½Â¤±.
+	Environment::Get()->Set(); // SetViewPort
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	mTerrain->Render();

@@ -39,7 +39,6 @@ private:
 	Texture* texture;
 
 
-
 	Vector3 mMouseScreenUVPosition;
 	ComputeShader* mColorPickingComputeShader;
 	ComputeStructuredBuffer* mComputeStructuredBuffer;
@@ -56,4 +55,8 @@ private:
 	
 	Collider* mPickedCollider;
 	Gizmos* mGizmos;
+
+	bool mbIsGizmosRender = false;
+	int mPickedGizmo = 0;
+	Vector3 mPreviousMousePosition;
 };

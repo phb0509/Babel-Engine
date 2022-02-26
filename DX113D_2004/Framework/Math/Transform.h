@@ -124,4 +124,6 @@ private:
 	Float4 mGizmoXColor;
 	Float4 mGizmoYColor;
 	Float4 mGizmoZColor;
+
+	Vector3 mGizmosScale;
 };

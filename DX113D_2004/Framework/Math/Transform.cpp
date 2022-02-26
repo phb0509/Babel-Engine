@@ -28,6 +28,7 @@ Transform::Transform(string mTag) :
 	mGizmoXColor = { 1.0f,0.0f,0.0f,1.0f };
 	mGizmoYColor = { 0.0f,1.0f,0.0f,1.0f };
 	mGizmoZColor = { 0.0f,0.0f,1.0f,1.0f };
+	mGizmosScale = { 5.0f, 5.0f, 5.0f };
 
 	mMaterial = new Material(L"Gizmos");
 	createGizmoseHashColor();
@@ -79,7 +80,7 @@ void Transform::PreRenderGizmosForColorPicking()
 	Matrix worldMatrix = XMMatrixTransformation(
 		mPivot.data,
 		XMQuaternionIdentity(),
-		mScale.data,
+		mGizmosScale.data,
 		mPivot.data,
 		XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
 		mPosition.data
@@ -107,7 +108,7 @@ void Transform::RenderGizmos()
 	Matrix worldMatrix = XMMatrixTransformation(
 			mPivot.data,
 			XMQuaternionIdentity(),
-			mScale.data,
+			mGizmosScale.data,
 			mPivot.data,
 			XMQuaternionRotationRollPitchYaw(mRotation.x, mRotation.y, mRotation.z),
 			mPosition.data

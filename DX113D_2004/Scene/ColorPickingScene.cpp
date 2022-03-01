@@ -158,19 +158,31 @@ void ColorPickingScene::Update()
 	if (mPickedCollider != nullptr)
 	{
 		// 피킹오브젝트의 x축기저벡터
-		Vector3 gizmoXVector = { mPickedCollider->Right().x,0.0f,mPickedCollider->Right().z };
+		Vector3 gizmoXVector = { mPickedCollider->Right().x,mPickedCollider->Right().y,mPickedCollider->Right().z };
+		Vector3 gizmoYVector = { mPickedCollider->Up().x, mPickedCollider->Up().y,mPickedCollider->Up().z };
+		Vector3 gizmoZVector = { mPickedCollider->Forward().x, mPickedCollider->Up().y,mPickedCollider->Up().z };
+
+
+		// X축 기저벡터
 
 		// 카메라포워드벡터와 x축기저벡터 외적
-		Vector3 cameraForward = { WORLDCAMERA->Forward().x,0.0f,WORLDCAMERA->Forward().z };
+		Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
 		Vector3 forwardCrossResult = Vector3::Cross(cameraForward, gizmoXVector);
 
 		// 카메라라이트벡터와 x축기저벡터 외적
-		Vector3 cameraRight = { WORLDCAMERA->Right().x,0.0f,WORLDCAMERA->Right().z };
+		Vector3 cameraRight = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
 		Vector3 rightCrossResult = Vector3::Cross(cameraRight, gizmoXVector);
+
+		
+		// Y축 기저벡터
+
+		
+		
+
 
 
 		Vector3 mouseValueDifference = MOUSEPOS - mPreviousMousePosition; // 이전 프레임의 마우스커서값과 현재 프레임의 마우스커서값의 차이.
-		float gizmoMoveSpeed = 30.0f;
+		float gizmoMoveSpeed = 40.0f;
 
 		if (KEY_PRESS(VK_LBUTTON))
 		{
@@ -219,6 +231,7 @@ void ColorPickingScene::Update()
 						{
 							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
 						}
+
 						else if (mouseValueDifference.y < 0) // 위쪽으로 드래그 할 경우. +값 더한다.
 						{
 							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
@@ -271,7 +284,10 @@ void ColorPickingScene::Update()
 			}
 
 			break;
-			case 2:
+			case 2: // y축 기즈모가 피킹되어있는 상태.
+			{
+
+			}
 				break;
 			case 3:
 				break;
@@ -422,23 +438,41 @@ void ColorPickingScene::PostRender()
 	ImGui::InputFloat3("WorldCamera Forward", (float*)&temp);
 	SpacingRepeatedly(2);
 
-	Vector3 cameraForward = { WORLDCAMERA->Forward().x,0.0f,WORLDCAMERA->Forward().z };
-	Vector3 colliderRight = { mBoxCollider->Right().x,0.0f,mBoxCollider->Right().z };
-	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderRight);
-	ImGui::InputFloat3("Forward Corss Result", (float*)&tempForwardCrossResult);
-	SpacingRepeatedly(2);
-
-	Vector3 cameraRight = { WORLDCAMERA->Right().x,0.0f,WORLDCAMERA->Right().z };
-	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
-	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
-	SpacingRepeatedly(2);
-
 	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
 	SpacingRepeatedly(2);
 
 	ImGui::InputInt2("Mouse Position", (int*)&mousePosition);
 	SpacingRepeatedly(2);
 
+	ImGui::End();
+
+
+	ImGui::Begin("Gizmo X");
+	Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
+	Vector3 colliderRight = { mBoxCollider->Right().x,mBoxCollider->Right().y,mBoxCollider->Right().z };
+	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderRight);
+	ImGui::InputFloat3("Forward Corss Result", (float*)&tempForwardCrossResult);
+	SpacingRepeatedly(2);
+
+	Vector3 cameraRight = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
+	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
+	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
+	SpacingRepeatedly(2);
+	ImGui::End();
+
+
+
+	ImGui::Begin("Gizmo Y");
+	Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
+	Vector3 colliderUp = { mBoxCollider->Up().x,mBoxCollider->Up().y,mBoxCollider->Up().z };
+	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderUp);
+	ImGui::InputFloat3("Forward Corss Result", (float*)&tempForwardCrossResult);
+	SpacingRepeatedly(2);
+
+	Vector3 cameraUp = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
+	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
+	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
+	SpacingRepeatedly(2);
 	ImGui::End();
 }
 

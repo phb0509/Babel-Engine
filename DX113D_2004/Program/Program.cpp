@@ -20,12 +20,12 @@ Program::Program()
 	//SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
 	//SceneManager::Get()->Add("start", new ColliderSettingScene());
-	//SceneManager::Get()->Add("start", new ColorPickingScene());
+	SceneManager::Get()->Add("start", new ColorPickingScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
 	//SceneManager::Get()->Add("start", new DeferredRenderingScene());
-	SceneManager::Get()->Add("start", new TestScene());
+	//SceneManager::Get()->Add("start", new TestScene());
 	//SceneManager::Get()->AddScene("export");
 	SceneManager::Get()->AddScene("start");
 }
@@ -62,9 +62,9 @@ void Program::PostRender()
 {
 	DirectWrite::Get()->GetDC()->BeginDraw();
 
-	//ImGui_ImplDX11_NewFrame();
-	//ImGui_ImplWin32_NewFrame();
-	//ImGui::NewFrame();
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	{ // 좌측상단 FPS,현재 시간(초) 출력
 		wstring fps = L"FPS : " + to_wstring((int)Timer::Get()->GetFPS());

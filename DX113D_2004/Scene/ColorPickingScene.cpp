@@ -7,6 +7,7 @@ ColorPickingScene::ColorPickingScene()
 {
 	srand(static_cast<unsigned int>(time(NULL)));
 	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
+	
 
 	// 카메라 설정.
 	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -40.0f };
@@ -31,16 +32,19 @@ ColorPickingScene::ColorPickingScene()
 	//mColliders.push_back(mCapsuleCollider);
 
 	//Monster->SetTerrain(mTerrain);
+
+	mRenderTargets[0] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	mRenderTargets[1] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
 
-	mRenderTargetTexture = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	mRenderTargets[0] = mRenderTargetTexture;
 
 	mBoxCollider->mPosition = { 0.0f,0.0f,0.0f };
 	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
 	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
 
 	mBoxCollider->mScale = { 10.0f,10.0f,10.0f };
+
+	//Device::Get()->ChangeBackBuffer(mRenderTarget->GetRTV());
 
 	// Create ComputeShader
 	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -51,33 +55,6 @@ ColorPickingScene::ColorPickingScene()
 
 	mOutputBuffer = new ColorPickingOutputBuffer[1];
 
-
-	/*Vector3 cameraForward = { 0,0,1 };
-	Vector3 gizmoX = { 1,0,0 };
-
-	float dotResult = Vector3::Dot(cameraForward, gizmoX);
-	float accosResult = acos(dotResult);
-
-	int a = 0;
-
-	cameraForward = { 0,0,-1 };
-
-	dotResult = Vector3::Dot(cameraForward, gizmoX);
-	accosResult = acos(dotResult);
-
-	int b = 0;*/
-
-	Vector3 cameraForward = { 0,0,1 };
-	Vector3 gizmoX = { 1,0,0 };
-	Vector3 crossResult = Vector3::Cross(cameraForward, gizmoX);
-
-	int a = 0;
-
-	cameraForward = { 0,0,-1 };
-	gizmoX = { 1,0,0 };
-	crossResult = Vector3::Cross(cameraForward, gizmoX);
-
-	int b = 0;
 }
 
 ColorPickingScene::~ColorPickingScene()
@@ -94,7 +71,7 @@ void ColorPickingScene::Update()
 
 	Environment::Get()->GetWorldCamera()->Update();
 
-	mTerrain->Update();
+	//mTerrain->Update();
 
 	for (Collider* collider : mColliders)
 	{
@@ -293,7 +270,6 @@ void ColorPickingScene::Update()
 		}
 	}
 
-
 	mPreviousMousePosition = MOUSEPOS;
 
 	if (mPickedCollider != nullptr)
@@ -331,32 +307,38 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
-	Environment::Get()->Set(); // 뷰버퍼 Set VS
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-	//RenderTarget::SetWithDSV(mRenderTargets, 1, nullptr);
-	RenderTarget::SetWithoutDSV(mRenderTargets, 1);
-	//RenderTarget::Sets(mRenderTargets, 1, nullptr);
+	//Environment::Get()->Set(); // 뷰버퍼 Set VS
+	//Environment::Get()->SetPerspectiveProjectionBuffer();
+	////RenderTarget::SetWithDSV(mRenderTargets, 1, nullptr);
+	//RenderTarget::ClearAndSetWithoutDSV(mRenderTargets, 2);
+	////RenderTarget::Sets(mRenderTargets, 1, nullptr);
 
-	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
+	//// 컬러피킹용 렌더타겟텍스쳐에 렌더.
 
-	for (Collider* collider : mColliders)
-	{
-		collider->PreRenderForColorPicking();
-	}
+	//for (Collider* collider : mColliders)
+	//{
+	//	collider->PreRenderForColorPicking();
+	//}
 
-	if (mPickedCollider != nullptr)
-	{
-		mPickedCollider->Transform::PreRenderGizmosForColorPicking();
-	}
+	//if (mPickedCollider != nullptr)
+	//{
+	//	mPickedCollider->Transform::PreRenderGizmosForColorPicking();
+	//}
 }
 
 void ColorPickingScene::Render()
 {
-	// 메인렌더타겟 Clear 후에 Set.
+	/*ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();*/
+
+	// 백버퍼와 연결된 렌더타겟.
 	Device::Get()->ClearRenderTargetView();
 	Device::Get()->ClearDepthStencilView();
-	//Device::Get()->SetRenderTarget(); // SetMainRenderTarget
-	Device::Get()->SetRenderTargetNullDSV();
+	Device::Get()->SetRenderTarget();
+
+	RenderTarget::ClearAndSetWithoutDSV(mRenderTargets, 2); // ImGui에 띄울 렌더타겟.
+
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{
@@ -367,7 +349,7 @@ void ColorPickingScene::Render()
 	Environment::Get()->Set(); // SetViewPort
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
-	mTerrain->Render();
+	//mTerrain->Render();
 
 	for (Collider* collider : mColliders)
 	{
@@ -375,10 +357,10 @@ void ColorPickingScene::Render()
 		collider->Render();
 	}
 
-	if (mPickedCollider != nullptr)
+	/*if (mPickedCollider != nullptr)
 	{
 		mPickedCollider->RenderGizmos();
-	}
+	}*/
 }
 
 void ColorPickingScene::PostRender()
@@ -395,28 +377,16 @@ void ColorPickingScene::PostRender()
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Render to RenderTargetTexture
-	ImGui::ImageButton(mRenderTargetTexture->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	ImGui::ImageButton(mRenderTargets[0]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	ImGui::ImageButton(mRenderTargets[1]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+	//ImGui::Image(mRenderTarget->GetSRV());
 
 	int32_t mousePositionX = static_cast<int32_t>(MOUSEPOS.x);
 	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
 	Int2 mousePosition = { mousePositionX,mousePositionY };
 
 	Vector3 temp = mBoxCollider->GetHashColor();
-
-	//ImGui::InputFloat3("BoxCollider Color", (float*)&temp);
-	//SpacingRepeatedly(2);
-
-	//temp = mBoxCollider->GetGizmosHashColorX();
-	//ImGui::InputFloat3("Gizmos X HashColor", (float*)&temp);
-	//SpacingRepeatedly(2);
-
-	//temp = mBoxCollider->GetGizmosHashColorY();
-	//ImGui::InputFloat3("Gizmos Y HashColor Color", (float*)&temp);
-	//SpacingRepeatedly(2);
-
-	//temp = mBoxCollider->GetGizmosHashColorZ();
-	//ImGui::InputFloat3("Gizmos Z HashColor Color", (float*)&temp);
-	//SpacingRepeatedly(3);
 
 	temp = mBoxCollider->Forward();
 	ImGui::InputFloat3("BoxCollider Forward", (float*)&temp);
@@ -485,7 +455,7 @@ void ColorPickingScene::colorPicking()
 	mColorPickingComputeShader->Set(); // 디바이스에 Set..
 	mInputBuffer->SetCSBuffer(1); // CS 1번 레지스터에 Set.
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargetTexture->GetSRV()); // CS 0번 레지스터에 바인딩.
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargets[0]->GetSRV()); // CS 0번 레지스터에 바인딩.
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 

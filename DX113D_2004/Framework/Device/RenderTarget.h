@@ -8,8 +8,8 @@ public:
 	~RenderTarget();
 
 	void SetDepthStencil(DepthStencil* depthStencil);
-	static void SetWithDSV(RenderTarget** targets, UINT count, DepthStencil* depthStencil);
-	static void SetWithoutDSV(RenderTarget** targets, UINT count);
+	static void ClearAndSetWithDSV(RenderTarget** targets, UINT count, DepthStencil* depthStencil);
+	static void ClearAndSetWithoutDSV(RenderTarget** targets, UINT count);
 
 	ID3D11ShaderResourceView*& GetSRV() { return mSRV; }
 	ID3D11RenderTargetView*& GetRTV() { return mRTV; }

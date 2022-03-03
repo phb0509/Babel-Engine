@@ -46,9 +46,9 @@ void TestScene::PreRender()
 
 void TestScene::Render()
 {
-	ImGui_ImplDX11_NewFrame();
+	/*ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	ImGui::NewFrame();*/
 
 	Device::Get()->ClearRenderTargetView();
 	Device::Get()->ClearDepthStencilView();

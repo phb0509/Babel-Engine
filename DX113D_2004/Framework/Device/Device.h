@@ -11,6 +11,7 @@ public:
 	void ClearRenderTargetView(Float4 color = Float4(0.0f, 0.125f, 0.3f, 1.0f));
 	void ClearDepthStencilView();
 	void SetRenderTargetNullDSV();
+	void ChangeBackBuffer(ID3D11RenderTargetView* renderTargetView);
 	void Present();
 
 	ID3D11Device* GetDevice() { return mDevice; }
@@ -31,8 +32,12 @@ private:
 
 	IDXGISwapChain* swapChain;
 	ID3D11RenderTargetView* mRenderTargetView;
+	ID3D11ShaderResourceView* mRTVsrv;
+	ID3D11Texture2D* mRTVtexture;
+
 	ID3D11DepthStencilView* mDepthStencilView;
 	ID3D11Texture2D* mDSVtexture;
 	ID3D11ShaderResourceView* mDSVsrv;
+
 	bool mbIsStencil;
 };

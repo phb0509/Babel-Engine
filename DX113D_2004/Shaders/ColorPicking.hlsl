@@ -29,7 +29,7 @@ struct PixelOutput
     float4 color : SV_Target0; 
 };
 
-PixelOutput PS(PixelInput input) : SV_Target
+PixelOutput PS(PixelInput input) : SV_Target 
 {
     PixelOutput output;
   

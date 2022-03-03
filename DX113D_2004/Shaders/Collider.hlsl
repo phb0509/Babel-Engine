@@ -16,7 +16,7 @@ PixelInput VS(Vertex input)
     return output;
 }
 
-float4 PS(PixelInput input) : SV_Target
+float4 PS(PixelInput input) : SV_Target1
 {
     return mDiffuse;
 }

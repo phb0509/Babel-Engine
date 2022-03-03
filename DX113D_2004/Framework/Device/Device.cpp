@@ -17,7 +17,6 @@ Device::~Device()
 
 	mRenderTargetView->Release();
 	//mDSVtexture->Release();
-	
 }
 
 void Device::CreateDeviceAndSwapchain()
@@ -62,6 +61,29 @@ void Device::CreateBackBuffer()
 	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &mRenderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
 	backBuffer->Release();	// 필요없으니 해제.
 
+	//{//RenderTargetView Texture
+	//	D3D11_TEXTURE2D_DESC desc = {};
+	//	desc.Width = WIN_WIDTH;
+	//	desc.Height = WIN_HEIGHT;
+	//	desc.MipLevels = 1;
+	//	desc.ArraySize = 1;
+	//	desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//	desc.SampleDesc.Count = 1;
+	//	desc.SampleDesc.Quality = 0;
+	//	desc.Usage = D3D11_USAGE_DEFAULT;
+	//	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+	//	V(mDevice->CreateTexture2D(&desc, nullptr, &mRTVtexture));
+	//}
+
+	//{// ShaderResourceView
+	//	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+	//	desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;;
+	//	desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//	desc.Texture2D.MipLevels = 1;
+
+	//	V(mDevice->CreateShaderResourceView(mRTVtexture, &desc, &mRTVsrv));
+	//}
 
 	// DepthStencilView 설정.
 
@@ -90,16 +112,7 @@ void Device::CreateBackBuffer()
 		mDSVtexture->Release();
 	}
 
-	//{//SRV
-	//	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-	//	desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	//	//desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	//	desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	//	desc.Texture2D.MipLevels = 1;
-	//	//V(device->CreateShaderResourceView(mDSVtexture, &desc, &mDSVsrv));
-	//	device->CreateShaderResourceView(mDSVtexture, &desc, &mDSVsrv);
-
-	//}
+	
 }
 
 void Device::SetRenderTarget()
@@ -111,6 +124,15 @@ void Device::SetRenderTargetNullDSV()
 {
 	//mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
+}
+
+void Device::ChangeBackBuffer(ID3D11RenderTargetView* renderTargetView)
+{
+	//ID3D11Texture2D* backBuffer; // 임시 버퍼.
+
+	//V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
+	//V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
+	//backBuffer->Release();	// 필요없으니 해제.
 }
 
 void Device::ClearRenderTargetView(Float4 color)

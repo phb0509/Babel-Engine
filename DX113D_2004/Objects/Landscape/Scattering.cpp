@@ -64,7 +64,7 @@ void Scattering::Update()
 
 void Scattering::PreRender()
 {
-	RenderTarget::SetWithDSV(targets, 2, depthStencil);
+	RenderTarget::ClearAndSetWithDSV(targets, 2, depthStencil);
 
 	quadBuffer->IASet();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

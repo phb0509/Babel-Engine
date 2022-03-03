@@ -41,7 +41,7 @@ GBuffer::~GBuffer()
 
 void GBuffer::PreRender()
 {
-	RenderTarget::SetWithDSV(rtvs, 3, depthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget
+	RenderTarget::ClearAndSetWithDSV(rtvs, 3, depthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget
 											   // OM에 MRT(MultiRenderTarget) Set.
 }
 

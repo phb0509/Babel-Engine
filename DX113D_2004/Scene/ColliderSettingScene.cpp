@@ -175,7 +175,7 @@ void ColliderSettingScene::PreRender()
 {
 	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-	RenderTarget::SetWithDSV(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
+	RenderTarget::ClearAndSetWithDSV(mRenderTargets, 1, mDepthStencil); // RenderTarget Setting.
 
 	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
 	mRSStateForColorPicking->SetState();

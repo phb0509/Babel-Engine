@@ -34,8 +34,7 @@ private:
 	Terrain* mTerrain;
 
 	DepthStencil* mDepthStencil;
-	RenderTarget* mRenderTargets[1];
-	RenderTarget* mRenderTargetTexture;
+	RenderTarget* mRenderTargets[2];
 	Texture* texture;
 
 

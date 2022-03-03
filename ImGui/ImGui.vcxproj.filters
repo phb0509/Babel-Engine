@@ -39,6 +39,21 @@
     <ClCompile Include="imgui_tables.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="GraphEditor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ImCurveEdit.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGradient.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ImSequencer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui.h">
@@ -72,6 +87,24 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="imstb_truetype.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphEditor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImCurveEdit.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGradient.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImSequencer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ImZoomSlider.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

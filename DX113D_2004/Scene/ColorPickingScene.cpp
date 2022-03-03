@@ -176,11 +176,7 @@ void ColorPickingScene::Update()
 		
 		// Y축 기저벡터
 
-		
-		
-
-
-
+	
 		Vector3 mouseValueDifference = MOUSEPOS - mPreviousMousePosition; // 이전 프레임의 마우스커서값과 현재 프레임의 마우스커서값의 차이.
 		float gizmoMoveSpeed = 40.0f;
 
@@ -462,7 +458,7 @@ void ColorPickingScene::PostRender()
 
 
 
-	ImGui::Begin("Gizmo Y");
+	/*ImGui::Begin("Gizmo Y");
 	Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
 	Vector3 colliderUp = { mBoxCollider->Up().x,mBoxCollider->Up().y,mBoxCollider->Up().z };
 	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderUp);
@@ -473,7 +469,7 @@ void ColorPickingScene::PostRender()
 	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
 	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
 	SpacingRepeatedly(2);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void ColorPickingScene::colorPicking()

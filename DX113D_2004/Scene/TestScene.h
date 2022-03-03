@@ -16,6 +16,5 @@ public:
 
 private:
 	Collider* mBoxCollider;
-	Collider* mTestCollider;
-	Cube* mCube;
+
 };

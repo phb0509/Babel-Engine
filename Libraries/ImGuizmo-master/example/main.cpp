@@ -201,7 +201,7 @@ inline void rotationY(const float angle, float* m16)
    m16[15] = 1.0f;
 }
 
-void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
+void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition) // 뷰행렬, 투영행렬, 오브젝트 트랜스폼행렬,
 {
    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
    static bool useSnap = false;
@@ -213,24 +213,35 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
 
    if (editTransformDecomposition)
    {
-      if (ImGui::IsKeyPressed(90))
+      // SRT중에 어떤걸로 기즈모렌더할지 선택하는거.
+      if (ImGui::IsKeyPressed(90)) // z 키
          mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-      if (ImGui::IsKeyPressed(69))
+      if (ImGui::IsKeyPressed(69)) // e 키
          mCurrentGizmoOperation = ImGuizmo::ROTATE;
-      if (ImGui::IsKeyPressed(82)) // r Key
+      if (ImGui::IsKeyPressed(82)) // r 키
          mCurrentGizmoOperation = ImGuizmo::SCALE;
+
       if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
          mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
       ImGui::SameLine();
+
       if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
          mCurrentGizmoOperation = ImGuizmo::ROTATE;
+
       ImGui::SameLine();
+
       if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
          mCurrentGizmoOperation = ImGuizmo::SCALE;
       if (ImGui::RadioButton("Universal", mCurrentGizmoOperation == ImGuizmo::UNIVERSAL))
          mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
+
+
+
+
+
       float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-      ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+      ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale); // 첫번째 매개변수는 조절하고자하는 오브젝트 트랜스폼행렬.
       ImGui::InputFloat3("Tr", matrixTranslation);
       ImGui::InputFloat3("Rt", matrixRotation);
       ImGui::InputFloat3("Sc", matrixScale);
@@ -276,6 +287,7 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
    float viewManipulateRight = io.DisplaySize.x;
    float viewManipulateTop = 0;
    static ImGuiWindowFlags gizmoWindowFlags = 0;
+
    if (useWindow)
    {
       ImGui::SetNextWindowSize(ImVec2(800, 400), ImGuiCond_Appearing);
@@ -741,20 +753,23 @@ int main(int, char**)
 
    bool firstFrame = true;
 
+
    // Main loop
    while (!imApp.Done())
    {
       imApp.NewFrame();
 
       ImGuiIO& io = ImGui::GetIO();
+
+      // 투영행렬 셋팅.
       if (isPerspective)
       {
-         Perspective(fov, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection);
+         Perspective(fov, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection); // 원근투영행렬에 값넣기. 다렉이랑 매개변수동일.
       }
       else
       {
-         float viewHeight = viewWidth * io.DisplaySize.y / io.DisplaySize.x;
-         OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, 1000.f, -1000.f, cameraProjection);
+         float viewHeight = viewWidth * io.DisplaySize.y / io.DisplaySize.x; // 5.625
+         OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, 1000.f, -1000.f, cameraProjection); // 직교투영행렬에 값넣기.
       }
       ImGuizmo::SetOrthographic(!isPerspective);
       ImGuizmo::BeginFrame();
@@ -811,6 +826,7 @@ int main(int, char**)
          ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
       }
       ImGui::Separator();
+
       for (int matId = 0; matId < gizmoCount; matId++)
       {
          ImGuizmo::SetID(matId);
@@ -824,90 +840,92 @@ int main(int, char**)
 
       ImGui::End();
 
-      ImGui::SetNextWindowPos(ImVec2(10, 350), ImGuiCond_Appearing);
+      //ImGui::SetNextWindowPos(ImVec2(10, 350), ImGuiCond_Appearing);
 
-      ImGui::SetNextWindowSize(ImVec2(940, 480), ImGuiCond_Appearing);
-      ImGui::Begin("Other controls");
-      if (ImGui::CollapsingHeader("Zoom Slider"))
-      {
-         static float uMin = 0.4f, uMax = 0.6f;
-         static float vMin = 0.4f, vMax = 0.6f;
-         ImGui::Image((ImTextureID)(uint64_t)procTexture, ImVec2(900,300), ImVec2(uMin, vMin), ImVec2(uMax, vMax));
-         {
-            ImGui::SameLine();
-            ImGui::PushID(18);
-            ImZoomSlider::ImZoomSlider(0.f, 1.f, vMin, vMax, 0.01f, ImZoomSlider::ImGuiZoomSliderFlags_Vertical);
-            ImGui::PopID();
-         }
-      
-         {
-            ImGui::PushID(19);
-            ImZoomSlider::ImZoomSlider(0.f, 1.f, uMin, uMax);
-            ImGui::PopID();
-         }
-      }
-      if (ImGui::CollapsingHeader("Sequencer"))
-      {
-         // let's create the sequencer
-         static int selectedEntry = -1;
-         static int firstFrame = 0;
-         static bool expanded = true;
-         static int currentFrame = 100;
+      //ImGui::SetNextWindowSize(ImVec2(940, 480), ImGuiCond_Appearing);
 
-         ImGui::PushItemWidth(130);
-         ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
-         ImGui::SameLine();
-         ImGui::InputInt("Frame ", &currentFrame);
-         ImGui::SameLine();
-         ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
-         ImGui::PopItemWidth();
-         Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
-         // add a UI to edit that particular item
-         if (selectedEntry != -1)
-         {
-           const MySequence::MySequenceItem &item = mySequence.myItems[selectedEntry];
-           ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
-           // switch (type) ....
-         }
-      }
 
-      // Graph Editor
-      static GraphEditor::Options options;
-      static GraphEditorDelegate delegate;
-      static GraphEditor::ViewState viewState;
-      static GraphEditor::FitOnScreen fit = GraphEditor::Fit_None;
-      static bool showGraphEditor = true;
+      //ImGui::Begin("Other controls");
+      //if (ImGui::CollapsingHeader("Zoom Slider"))
+      //{
+      //   static float uMin = 0.4f, uMax = 0.6f;
+      //   static float vMin = 0.4f, vMax = 0.6f;
+      //   ImGui::Image((ImTextureID)(uint64_t)procTexture, ImVec2(900,300), ImVec2(uMin, vMin), ImVec2(uMax, vMax));
+      //   {
+      //      ImGui::SameLine();
+      //      ImGui::PushID(18);
+      //      ImZoomSlider::ImZoomSlider(0.f, 1.f, vMin, vMax, 0.01f, ImZoomSlider::ImGuiZoomSliderFlags_Vertical);
+      //      ImGui::PopID();
+      //   }
+      //
+      //   {
+      //      ImGui::PushID(19);
+      //      ImZoomSlider::ImZoomSlider(0.f, 1.f, uMin, uMax);
+      //      ImGui::PopID();
+      //   }
+      //}
+      //if (ImGui::CollapsingHeader("Sequencer"))
+      //{
+      //   // let's create the sequencer
+      //   static int selectedEntry = -1;
+      //   static int firstFrame = 0;
+      //   static bool expanded = true;
+      //   static int currentFrame = 100;
 
-      if (ImGui::CollapsingHeader("Graph Editor"))
-      {
-         ImGui::Checkbox("Show GraphEditor", &showGraphEditor);
-         GraphEditor::EditOptions(options);
-      }
+      //   ImGui::PushItemWidth(130);
+      //   ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
+      //   ImGui::SameLine();
+      //   ImGui::InputInt("Frame ", &currentFrame);
+      //   ImGui::SameLine();
+      //   ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
+      //   ImGui::PopItemWidth();
+      //   Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
+      //   // add a UI to edit that particular item
+      //   if (selectedEntry != -1)
+      //   {
+      //     const MySequence::MySequenceItem &item = mySequence.myItems[selectedEntry];
+      //     ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
+      //     // switch (type) ....
+      //   }
+      //}
 
-      ImGui::End();
+      //// Graph Editor
+      //static GraphEditor::Options options;
+      //static GraphEditorDelegate delegate;
+      //static GraphEditor::ViewState viewState;
+      //static GraphEditor::FitOnScreen fit = GraphEditor::Fit_None;
+      //static bool showGraphEditor = true;
 
-      if (showGraphEditor)
-      {
-         ImGui::Begin("Graph Editor", NULL, 0);
-         if (ImGui::Button("Fit all nodes"))
-         {
-            fit = GraphEditor::Fit_AllNodes;
-         }
-         ImGui::SameLine();
-         if (ImGui::Button("Fit selected nodes"))
-         {
-            fit = GraphEditor::Fit_SelectedNodes;
-         }
-         GraphEditor::Show(delegate, options, viewState, true, &fit);
+      //if (ImGui::CollapsingHeader("Graph Editor"))
+      //{
+      //   ImGui::Checkbox("Show GraphEditor", &showGraphEditor);
+      //   GraphEditor::EditOptions(options);
+      //}
 
-         ImGui::End();
-      }
+      //ImGui::End();
+
+      //if (showGraphEditor)
+      //{
+      //   ImGui::Begin("Graph Editor", NULL, 0);
+      //   if (ImGui::Button("Fit all nodes"))
+      //   {
+      //      fit = GraphEditor::Fit_AllNodes;
+      //   }
+      //   ImGui::SameLine();
+      //   if (ImGui::Button("Fit selected nodes"))
+      //   {
+      //      fit = GraphEditor::Fit_SelectedNodes;
+      //   }
+      //   GraphEditor::Show(delegate, options, viewState, true, &fit);
+
+      //   ImGui::End();
+      //}
 
       // render everything
       glClearColor(0.45f, 0.4f, 0.4f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
       imApp.EndFrame();
-   }
+   } // 렌더링 끝.
 
    imApp.Finish();
 

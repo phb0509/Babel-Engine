@@ -19,7 +19,7 @@ public:
 
 	Camera* GetTargetCamera() { return mTargetCamera; }
 	Camera* GetWorldCamera() { return mWorldCamera; }
-	Matrix GetProjection() { return mPerspectiveProjectionMatrix; }
+	Matrix GetProjectionMatrix() { return mPerspectiveProjectionMatrix; }
 	LightBuffer* GetLight() { return mLightBuffer; }
 	ProjectionBuffer* GetPerspectiveProjectionBuffer() { return mPerspectiveProjectionBuffer; }
 	ProjectionBuffer* GetOrthographicProjectionBuffer() { return mOrthographicProjectionBuffer; }

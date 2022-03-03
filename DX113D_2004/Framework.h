@@ -130,9 +130,29 @@
 #include "../DirectXTex/DirectXTex.h"
 
 //ImGui
+
 #include <imgui.h>
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui_internal.h>
+#define IMAPP_IMPL
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
+#include <ImApp.h>
+
+#include <ImGuizmo.h>
+#include <ImSequencer.h>
+#include <ImZoomSlider.h>
+#include <ImCurveEdit.h>
+#include <GraphEditor.h>
+//#include <ImGuizmo-master/ImGuizmo.h>
+//#include <ImGuizmo-master/ImSequencer.h>
+//#include <ImGuizmo-master/ImZoomSlider.h>
+//#include <ImGuizmo-master/ImCurveEdit.h>
+//#include <ImGuizmo-master/GraphEditor.h>
+
+
+
+//#include <ImGuizmo-master/ImGuizmo.cpp>
 
 //Dialog
 #include <dirent.h>

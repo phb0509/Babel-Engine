@@ -61,6 +61,10 @@ void Device::CreateBackBuffer()
 	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &mRenderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
 	backBuffer->Release();	// 필요없으니 해제.
 
+	mRenderTargets.emplace_back(mRenderTargetView);
+	
+
+
 	//{//RenderTargetView Texture
 	//	D3D11_TEXTURE2D_DESC desc = {};
 	//	desc.Width = WIN_WIDTH;
@@ -126,14 +130,55 @@ void Device::SetRenderTargetNullDSV()
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
 }
 
-void Device::ChangeBackBuffer(ID3D11RenderTargetView* renderTargetView)
-{
-	//ID3D11Texture2D* backBuffer; // 임시 버퍼.
 
-	//V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
-	//V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
-	//backBuffer->Release();	// 필요없으니 해제.
+
+void Device::InitRenderTargets(RenderTarget** renderTargets, int count)
+{
+	for (UINT i = 0; i < count; i++)
+	{
+		mRenderTargets.push_back(renderTargets[i]->GetRTV());
+	}
 }
+
+void Device::SetRenderTargets()
+{
+	float color[4] = { 0, 0, 0, 0 };
+
+	if (mRenderTargets.size() != 0)
+	{
+		// All Clear
+
+		for (UINT i = 0; i < mRenderTargets.size(); i++)
+		{
+			mDeviceContext->ClearRenderTargetView(mRenderTargets[i], color);
+		}
+
+		if (mDepthStencilView != nullptr)
+		{
+			mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		}
+
+
+		// All Set
+
+		if (mDepthStencilView == nullptr)
+		{
+			mDeviceContext->OMSetRenderTargets(mRenderTargets.size(), mRenderTargets.data(), nullptr);
+		}
+		else
+		{
+			mDeviceContext->OMSetRenderTargets(mRenderTargets.size(), mRenderTargets.data(), mDepthStencilView);
+		}
+	}
+	else
+	{
+		MessageBox(hWnd, L"There must be at least one render target.", L"Device.cpp", MB_ICONQUESTION | MB_OKCANCEL);
+	}
+	
+}
+
+
+
 
 void Device::ClearRenderTargetView(Float4 color)
 {
@@ -145,9 +190,8 @@ void Device::ClearDepthStencilView()
 	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-
-
 void Device::Present()
 {
 	swapChain->Present(0, 0);
 }
+

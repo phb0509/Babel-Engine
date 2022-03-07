@@ -27,7 +27,15 @@ PixelInput VS(VertexColor input)
     return output;
 }
 
-float4 PS(PixelInput input) : SV_Target
+
+struct PixelOutput
 {
-    return input.color;
+    float4 color;
+};
+
+PixelOutput PS(PixelInput input) : SV_Target
+{
+    PixelOutput output;
+    output.color = input.color;
+    return output;
 }

@@ -33,8 +33,17 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     return output;
 }
 
-float4 PS(PixelInput input) : SV_Target
+
+struct PixelOutput
 {
+    float4 color : SV_Target0;
+};
+
+
+PixelOutput PS(PixelInput input) : SV_Target
+{
+    PixelOutput output;
+    
     float4 albedo = float4(1, 1, 1, 1);
     
     if (hasDiffuseMap)
@@ -79,5 +88,7 @@ float4 PS(PixelInput input) : SV_Target
     specular *= mSpecular;
     float4 ambient = albedo * mAmbient;
     
-    return diffuse + specular + ambient;
+    output.color = diffuse + specular + ambient;
+    return output;
+    //return diffuse + specular + ambient;
 }

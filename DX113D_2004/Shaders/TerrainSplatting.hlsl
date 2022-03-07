@@ -83,8 +83,17 @@ Texture2D Layers[4] : register(t11);
 //Texture2D third : register(t13);
 //Texture2D fourth : register(t14);
 
+
+struct PixelOutput
+{
+    float4 color : SV_Target0;
+};
+
+
 float4 PS(PixelInput input) : SV_Target
 {
+    PixelOutput output;
+    
     float4 albedo = float4(1, 1, 1, 1);
     
     if (hasDiffuseMap)
@@ -146,6 +155,8 @@ float4 PS(PixelInput input) : SV_Target
     float4 ambient = albedo * mAmbient;
     
     float4 brushColor = float4(BrushColor(input.worldPos), 1.0f);
+    
+    //output.color = diffuse + specular + ambient + brushColor;
     
     return diffuse + specular + ambient + brushColor;
 }

@@ -16,7 +16,15 @@ PixelInput VS(Vertex input)
     return output;
 }
 
-float4 PS(PixelInput input) : SV_Target1
+struct PixelOutput
 {
-    return mDiffuse;
+    float4 color;
+};
+
+
+PixelOutput PS(PixelInput input) : SV_Target0
+{
+    PixelOutput output;
+    output.color = mDiffuse;    
+    return output;
 }

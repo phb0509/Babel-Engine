@@ -52,11 +52,12 @@ void Collider::Update()
 void Collider::PreRenderForColorPicking()
 {
     mMaterial->SetShader(L"ColorPicking");
+    mMaterial->Set();
+
     Transform::SetWorldBuffer();
     Transform::SetHashColorBuffer();
 
     mMeshForColorPicking->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mMaterial->Set();
 
     DEVICECONTEXT->DrawIndexed(mIndicesForColorPicking.size(), 0, 0);
 }
@@ -64,10 +65,13 @@ void Collider::PreRenderForColorPicking()
 void Collider::Render()
 {
     mMaterial->SetShader(L"Collider");
+    mMaterial->Set();
+
     Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
 
-    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);    
-    mMaterial->Set();
+    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    //mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 }

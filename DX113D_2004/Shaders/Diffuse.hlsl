@@ -56,11 +56,19 @@ PixelInput VS(VertexInput input)
 Texture2D map : register(t0);
 SamplerState samp : register(s0);
 
-float4 PS(PixelInput input) : SV_Target
+struct PixelOutput
 {
+    float4 color : SV_Target0;
+};
+
+
+PixelOutput PS(PixelInput input) : SV_Target
+{
+    PixelOutput output;
     float4 color = map.Sample(samp, input.uv);
-    
     float4 ambient = color * 0.1f;
-    
-    return color * input.diffuse + ambient; // difuse값이 1이면 색깔 그대로. 낮아질수록 어두워질것.
+    output.color = color * input.diffuse + ambient;
+   // output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return output;
+    //return color * input.diffuse + ambient; // difuse값이 1이면 색깔 그대로. 낮아질수록 어두워질것.
 }

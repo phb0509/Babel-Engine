@@ -1,5 +1,8 @@
 #pragma once
 
+class RenderTarget;
+class DepthStencil;
+
 class Device : public Singleton<Device>
 {
 	
@@ -8,11 +11,18 @@ public:
 	void CreateBackBuffer();
 
 	void SetRenderTarget();
+	void SetRenderTargetNullDSV();
+
+
+	void InitRenderTargets(RenderTarget** renderTargets, int count);
+	void SetRenderTargets();
+
+
 	void ClearRenderTargetView(Float4 color = Float4(0.0f, 0.125f, 0.3f, 1.0f));
 	void ClearDepthStencilView();
-	void SetRenderTargetNullDSV();
-	void ChangeBackBuffer(ID3D11RenderTargetView* renderTargetView);
+
 	void Present();
+
 
 	ID3D11Device* GetDevice() { return mDevice; }
 	ID3D11DeviceContext* GetDeviceContext() { return mDeviceContext; }
@@ -21,6 +31,7 @@ public:
 
 
 private:
+
 	Device();
 	~Device();
 
@@ -31,6 +42,8 @@ private:
 	ID3D11DeviceContext* mDeviceContext;
 
 	IDXGISwapChain* swapChain;
+	vector<ID3D11RenderTargetView*> mRenderTargets;
+
 	ID3D11RenderTargetView* mRenderTargetView;
 	ID3D11ShaderResourceView* mRTVsrv;
 	ID3D11Texture2D* mRTVtexture;
@@ -38,6 +51,8 @@ private:
 	ID3D11DepthStencilView* mDepthStencilView;
 	ID3D11Texture2D* mDSVtexture;
 	ID3D11ShaderResourceView* mDSVsrv;
-
 	bool mbIsStencil;
+
+
+
 };

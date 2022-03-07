@@ -247,6 +247,9 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       ImGui::InputFloat3("Sc", matrixScale);
       ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
+
+
+
       if (mCurrentGizmoOperation != ImGuizmo::SCALE)
       {
          if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
@@ -255,8 +258,13 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
          if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
             mCurrentGizmoMode = ImGuizmo::WORLD;
       }
-      if (ImGui::IsKeyPressed(83))
+
+      if (ImGui::IsKeyPressed(83)) //s 키
+      {
          useSnap = !useSnap;
+      }
+
+
       ImGui::Checkbox("", &useSnap);
       ImGui::SameLine();
 
@@ -273,6 +281,7 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
          break;
       }
       ImGui::Checkbox("Bound Sizing", &boundSizing);
+
       if (boundSizing)
       {
          ImGui::PushID(3);
@@ -288,12 +297,14 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
    float viewManipulateTop = 0;
    static ImGuiWindowFlags gizmoWindowFlags = 0;
 
-   if (useWindow)
+   if (useWindow) // 특정 ImGui 윈도우에 렌더하고싶을 경우.
    {
       ImGui::SetNextWindowSize(ImVec2(800, 400), ImGuiCond_Appearing);
-      ImGui::SetNextWindowPos(ImVec2(400,20), ImGuiCond_Appearing);
+      ImGui::SetNextWindowPos(ImVec2(400, 20), ImGuiCond_Appearing);
       ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.35f, 0.3f, 0.3f));
+
       ImGui::Begin("Gizmo", 0, gizmoWindowFlags);
+
       ImGuizmo::SetDrawlist();
       float windowWidth = (float)ImGui::GetWindowWidth();
       float windowHeight = (float)ImGui::GetWindowHeight();
@@ -303,12 +314,12 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       ImGuiWindow* window = ImGui::GetCurrentWindow();
       gizmoWindowFlags = ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window->InnerRect.Min, window->InnerRect.Max) ? ImGuiWindowFlags_NoMove : 0;
    }
-   else
+   else // 메인 백버퍼에 렌더하고싶을 경우
    {
       ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
    }
 
-   ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
+   ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f); // 바닥에 격자무늬 까는거.
    ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
    ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing ? bounds : NULL, boundSizingSnap ? boundsSnap : NULL);
 
@@ -320,6 +331,10 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       ImGui::PopStyleColor(1);
    }
 }
+
+
+
+
 
 //
 //
@@ -723,16 +738,16 @@ int main(int, char**)
          float dv = sinf(x * 0.02f) + sinf(0.03f * (x + y)) + sinf(sqrtf(0.4f * (dx * dx + dy * dy) + 1.f));
 
          tempBitmap[index] = 0xFF000000 +
-         (int(255 * fabsf(sinf(dv * 3.141592f))) << 16) +
-         (int(255 * fabsf(sinf(dv * 3.141592f + 2 * 3.141592f / 3))) << 8) + 
-         (int(255 * fabs(sin(dv * 3.141592f + 4.f * 3.141592f / 3.f))));
+            (int(255 * fabsf(sinf(dv * 3.141592f))) << 16) +
+            (int(255 * fabsf(sinf(dv * 3.141592f + 2 * 3.141592f / 3))) << 8) +
+            (int(255 * fabs(sin(dv * 3.141592f + 4.f * 3.141592f / 3.f))));
 
          index++;
       }
    }
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tempBitmap);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   delete [] tempBitmap;
+   delete[] tempBitmap;
 
    // sequence with default values
    MySequence mySequence;
@@ -755,6 +770,7 @@ int main(int, char**)
 
 
    // Main loop
+
    while (!imApp.Done())
    {
       imApp.NewFrame();
@@ -780,9 +796,13 @@ int main(int, char**)
       // create a window and insert the inspector
       ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Appearing);
       ImGui::SetNextWindowSize(ImVec2(320, 340), ImGuiCond_Appearing);
+
       ImGui::Begin("Editor");
+
       if (ImGui::RadioButton("Full view", !useWindow)) useWindow = false;
+
       ImGui::SameLine();
+
       if (ImGui::RadioButton("Window", useWindow)) useWindow = true;
 
       ImGui::Text("Camera");
@@ -790,6 +810,7 @@ int main(int, char**)
       if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
       ImGui::SameLine();
       if (ImGui::RadioButton("Orthographic", !isPerspective)) isPerspective = false;
+
       if (isPerspective)
       {
          ImGui::SliderFloat("Fov", &fov, 20.f, 110.f);
@@ -798,6 +819,7 @@ int main(int, char**)
       {
          ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
       }
+
       viewDirty |= ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
       ImGui::SliderInt("Gizmo count", &gizmoCount, 1, 4);
 
@@ -811,13 +833,14 @@ int main(int, char**)
       }
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
-      if (ImGuizmo::IsUsing())
+
+      if (ImGuizmo::IsUsing()) // 기즈모 드래그중일 때
       {
          ImGui::Text("Using gizmo");
       }
-      else
+      else // 그냥 Hover만 했을 때
       {
-         ImGui::Text(ImGuizmo::IsOver()?"Over gizmo":"");
+         ImGui::Text(ImGuizmo::IsOver() ? "Over gizmo" : "");
          ImGui::SameLine();
          ImGui::Text(ImGuizmo::IsOver(ImGuizmo::TRANSLATE) ? "Over translate gizmo" : "");
          ImGui::SameLine();
@@ -825,13 +848,18 @@ int main(int, char**)
          ImGui::SameLine();
          ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
       }
+
       ImGui::Separator();
 
       for (int matId = 0; matId < gizmoCount; matId++)
       {
          ImGuizmo::SetID(matId);
 
+         //////////////////////////////////////////////////////////////////////////////////////////
+         //////////////////////////////////////////////////////////////////////////////////////////
          EditTransform(cameraView, cameraProjection, objectMatrix[matId], lastUsing == matId);
+         //////////////////////////////////////////////////////////////////////////////////////////
+         //////////////////////////////////////////////////////////////////////////////////////////
          if (ImGuizmo::IsUsing())
          {
             lastUsing = matId;
@@ -839,6 +867,10 @@ int main(int, char**)
       }
 
       ImGui::End();
+
+
+
+
 
       //ImGui::SetNextWindowPos(ImVec2(10, 350), ImGuiCond_Appearing);
 
@@ -864,6 +896,7 @@ int main(int, char**)
       //      ImGui::PopID();
       //   }
       //}
+
       //if (ImGui::CollapsingHeader("Sequencer"))
       //{
       //   // let's create the sequencer
@@ -919,7 +952,7 @@ int main(int, char**)
       //   GraphEditor::Show(delegate, options, viewState, true, &fit);
 
       //   ImGui::End();
-      //}
+      }
 
       // render everything
       glClearColor(0.45f, 0.4f, 0.4f, 1.f);

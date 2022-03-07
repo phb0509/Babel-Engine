@@ -1,6 +1,5 @@
 #include "Header.hlsli"
 
-
 cbuffer ColorBuffer : register(b10)
 {
     float4 color;
@@ -26,14 +25,13 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 
 struct PixelOutput
 {
-    float4 color : SV_Target0; 
+    float4 color;
 };
 
-PixelOutput PS(PixelInput input) : SV_Target 
+PixelOutput PS(PixelInput input) : SV_Target1
 {
     PixelOutput output;
-  
     output.color = input.color;
-    
+
     return output;
 }

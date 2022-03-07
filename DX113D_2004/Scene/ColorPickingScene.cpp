@@ -7,44 +7,46 @@ ColorPickingScene::ColorPickingScene()
 {
 	srand(static_cast<unsigned int>(time(NULL)));
 	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
-	
 
 	// 카메라 설정.
 	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -40.0f };
 	WORLDCAMERA->mRotation = { 0.0, 0.0, 0.0 };
+
 	WORLDCAMERA->mMoveSpeed = 50.0f;
 	mPreviousMousePosition = MOUSEPOS;
-
 	mTerrain = new Terrain();
+	mPlayer = GM->GetPlayer();
+	mPlayer->SetTerrain(mTerrain);
+
+
 	mMonster = new Mutant();
 	mCube = new Cube();
+	//mCube->mPosition = { 20.0f,0.0f,0.0f };
 	mBoxCollider = new BoxCollider();
 	mSphereCollider = new SphereCollider();
 	mCapsuleCollider = new CapsuleCollider();
 
-	mBoxCollider->mScale = { 2.0f,2.0f,2.0f };
-	mSphereCollider->mScale = { 2.0f,2.0f,2.0f };
-	mCapsuleCollider->mScale = { 2.0f,2.0f,2.0f };
-
-
 	mColliders.push_back(mBoxCollider);
-	//mColliders.push_back(mSphereCollider);
-	//mColliders.push_back(mCapsuleCollider);
+	mColliders.push_back(mSphereCollider);
+	mColliders.push_back(mCapsuleCollider);
 
 	//Monster->SetTerrain(mTerrain);
 
-	mRenderTargets[0] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	mRenderTargets[1] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 깊이값
+	mPreRenderTargets[0] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); // 메인렌더.
+	mPreRenderTargets[1] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); // 컬러피킹용.
+	mPreRenderTargetDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 
 
+	//Device::Get()->InitRenderTargets(mRenderTargets, 1);
 
-	mBoxCollider->mPosition = { 0.0f,0.0f,0.0f };
-	mSphereCollider->mPosition = { 20.0f,0.0f,0.0f };
-	mCapsuleCollider->mPosition = { 0.0f,0.0f,0.0f };
+	mBoxCollider->mPosition = { 0.0f,20.0f,0.0f };
+	mBoxCollider->mScale = { 5.0f,5.0f,5.0f };
 
-	mBoxCollider->mScale = { 10.0f,10.0f,10.0f };
+	mSphereCollider->mPosition = { 20.0f,20.0f,0.0f };
+	mSphereCollider->mScale = { 5.0f,5.0f,5.0f };
 
-	//Device::Get()->ChangeBackBuffer(mRenderTarget->GetRTV());
+	mCapsuleCollider->mPosition = { 40.0f,20.0f,0.0f };
+	mCapsuleCollider->mScale = { 5.0f,5.0f,5.0f };
+
 
 	// Create ComputeShader
 	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
@@ -71,8 +73,6 @@ void ColorPickingScene::Update()
 
 	Environment::Get()->GetWorldCamera()->Update();
 
-	//mTerrain->Update();
-
 	for (Collider* collider : mColliders)
 	{
 		collider->Update();
@@ -88,257 +88,84 @@ void ColorPickingScene::Update()
 
 			if (mMousePositionColor.IsEqual(colliderColor)) // 컬라이더를 피킹했다면
 			{
-				mPickedGizmo = 0;
-				mPickedCollider = collider;
-				mPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f)); // 피킹된 컬라이더는 노랗게
-			}
-			else // 컬라이더 외의 것을 피킹했다면
-			{
-				if (mPickedCollider != nullptr)
+				if (mCurrentPickedCollider != nullptr)
 				{
-					if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorX())) // X축 기즈모를 클릭했다면
-					{
-						mPickedGizmo = 1;
-						mPickedCollider->SetGizmoXColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
-						mPickedCollider->SetGizmoYColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-						mPickedCollider->SetGizmoZColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-					}
-					else if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorY())) // Y출 기즈모를 클릭했다면
-					{
-						mPickedGizmo = 2;
-						mPickedCollider->SetGizmoXColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-						mPickedCollider->SetGizmoYColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
-						mPickedCollider->SetGizmoZColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-					}
-					else if (mMousePositionColor.IsEqual(mPickedCollider->GetGizmosHashColorZ())) // Z축 기즈모를 클릭했다면
-					{
-						mPickedGizmo = 3;
-						mPickedCollider->SetGizmoXColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-						mPickedCollider->SetGizmoYColor(Float4(0.5f, 0.5f, 0.5f, 1.0f));
-						mPickedCollider->SetGizmoZColor(Float4(1.0f, 1.0f, 0.0f, 1.0f));
-					}
-					else // 허공에 클릭했다면,
-					{
-						mPickedGizmo = 0;
-						collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f)); // 피킹안됐으면 다시 초록색.
-						mPickedCollider->SetGizmoXColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
-						mPickedCollider->SetGizmoYColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
-						mPickedCollider->SetGizmoZColor(Float4(0.0f, 0.0f, 1.0f, 1.0f));
-						mPickedCollider = nullptr;
-					}
+					mPreviousPickedCollider = mCurrentPickedCollider;
+					mPreviousPickedCollider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
 				}
+			
+				mCurrentPickedCollider = collider;
+				mCurrentPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f)); // 피킹된 컬라이더는 노랗게
+			}
+			else
+			{
+				collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
 			}
 		}
 	}
 
-
-	if (mPickedCollider != nullptr)
-	{
-		// 피킹오브젝트의 x축기저벡터
-		Vector3 gizmoXVector = { mPickedCollider->Right().x,mPickedCollider->Right().y,mPickedCollider->Right().z };
-		Vector3 gizmoYVector = { mPickedCollider->Up().x, mPickedCollider->Up().y,mPickedCollider->Up().z };
-		Vector3 gizmoZVector = { mPickedCollider->Forward().x, mPickedCollider->Up().y,mPickedCollider->Up().z };
-
-
-		// X축 기저벡터
-
-		// 카메라포워드벡터와 x축기저벡터 외적
-		Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
-		Vector3 forwardCrossResult = Vector3::Cross(cameraForward, gizmoXVector);
-
-		// 카메라라이트벡터와 x축기저벡터 외적
-		Vector3 cameraRight = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
-		Vector3 rightCrossResult = Vector3::Cross(cameraRight, gizmoXVector);
-
-		
-		// Y축 기저벡터
-
-	
-		Vector3 mouseValueDifference = MOUSEPOS - mPreviousMousePosition; // 이전 프레임의 마우스커서값과 현재 프레임의 마우스커서값의 차이.
-		float gizmoMoveSpeed = 40.0f;
-
-		if (KEY_PRESS(VK_LBUTTON))
-		{
-			switch (mPickedGizmo)
-			{
-			case 0: // 기즈모가 클릭이 안돼어있는 경우.
-				break;
-			case 1: // x축 기즈모가 피킹되어있는 상태.
-			{
-				// 왼쪽 오른쪽 나누기.
-				if (forwardCrossResult.y >= 0)
-				{
-					if (rightCrossResult.y >= 0) // 4사분면
-					{
-						if (mouseValueDifference.x >= 0) // 오른쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * DELTA;
-						}
-						else if(mouseValueDifference.x < 0)// 왼쪽으로 드래그 할 경우
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * DELTA;
-						}
-
-						if (mouseValueDifference.y >= 0) // 아래쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * DELTA;
-						}
-						else if(mouseValueDifference.y < 0) // 위쪽으로 드래그 할 경우
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * DELTA;
-						}
-					}
-
-					if (rightCrossResult.y < 0) // 1사분면
-					{
-						if (mouseValueDifference.x >= 0) // 오른쪽으로 드래그 할 경우.+값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * DELTA;
-						}
-						else if (mouseValueDifference.x < 0)// 왼쪽으로 드래그 할 경우. 
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * DELTA;
-						}
-
-						if (mouseValueDifference.y >= 0) // 아래쪽으로 드래그 할 경우. 
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-
-						else if (mouseValueDifference.y < 0) // 위쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-					}
-				}
-				else if (forwardCrossResult.y < 0)
-				{
-					if (rightCrossResult.y >= 0) // 3사분면
-					{
-						if (mouseValueDifference.x >= 0) // 오른쪽으로 드래그 할 경우. 
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-						else if (mouseValueDifference.x < 0)// 왼쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-
-						if (mouseValueDifference.y >= 0) // 아래쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * DELTA;
-						}
-						else if (mouseValueDifference.y < 0) // 위쪽으로 드래그 할 경우
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * DELTA;
-						}
-					}
-					if (rightCrossResult.y < 0) // 2사분면
-					{
-						if (mouseValueDifference.x >= 0) // 오른쪽으로 드래그 할 경우. 
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-						else if (mouseValueDifference.x < 0)// 왼쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.x * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-
-						if (mouseValueDifference.y >= 0) // 아래쪽으로 드래그 할 경우. 
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-						else if (mouseValueDifference.y < 0) // 위쪽으로 드래그 할 경우. +값 더한다.
-						{
-							mPickedCollider->mPosition += mPickedCollider->Right() * mouseValueDifference.y * gizmoMoveSpeed * -1.0f * DELTA;
-						}
-					}
-				}
-			}
-
-			break;
-			case 2: // y축 기즈모가 피킹되어있는 상태.
-			{
-
-			}
-				break;
-			case 3:
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	mPreviousMousePosition = MOUSEPOS;
-
-	if (mPickedCollider != nullptr)
+	if (mCurrentPickedCollider != nullptr)
 	{
 		if (KEY_PRESS('W'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Forward() * 50.0F * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Forward() * 50.0F * DELTA;
 		}
 		if (KEY_PRESS('S'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Forward() * 50.0F * -1.0f * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Forward() * 50.0F * -1.0f * DELTA;
 		}
 		if (KEY_PRESS('A'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Right() * 50.0F * -1.0f * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Right() * 50.0F * -1.0f * DELTA;
 		}
 		if (KEY_PRESS('D'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Right() * 50.0F * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Right() * 50.0F * DELTA;
 		}
 		if (KEY_PRESS('Q'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Up() * 50.0F * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Up() * 50.0F * DELTA;
 		}
 		if (KEY_PRESS('E'))
 		{
-			mPickedCollider->mPosition += mPickedCollider->Up() * 50.0F * -1.0f * DELTA;
+			mCurrentPickedCollider->mPosition += mCurrentPickedCollider->Up() * 50.0F * -1.0f * DELTA;
 		}
 		if (KEY_PRESS('F'))
 		{
-			mPickedCollider->mRotation.y += 10.0f * DELTA;
+			mCurrentPickedCollider->mRotation.y += 10.0f * DELTA;
 		}
 	}
 }
 
 void ColorPickingScene::PreRender()
 {
-	//Environment::Get()->Set(); // 뷰버퍼 Set VS
-	//Environment::Get()->SetPerspectiveProjectionBuffer();
-	////RenderTarget::SetWithDSV(mRenderTargets, 1, nullptr);
-	//RenderTarget::ClearAndSetWithoutDSV(mRenderTargets, 2);
-	////RenderTarget::Sets(mRenderTargets, 1, nullptr);
+	Environment::Get()->SetPerspectiveProjectionBuffer();
+	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 2, mPreRenderTargetDSV);
+	Environment::Get()->Set(); // 뷰버퍼 Set VS
 
-	//// 컬러피킹용 렌더타겟텍스쳐에 렌더.
 
-	//for (Collider* collider : mColliders)
-	//{
-	//	collider->PreRenderForColorPicking();
-	//}
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
 
-	//if (mPickedCollider != nullptr)
-	//{
-	//	mPickedCollider->Transform::PreRenderGizmosForColorPicking();
-	//}
+	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender 외엔 뭐 업승ㅁ.
+
+	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
+
+	for (Collider* collider : mColliders)
+	{
+		collider->PreRenderForColorPicking();
+		collider->Render();
+	}
 }
 
 void ColorPickingScene::Render()
 {
-	/*ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();*/
-
-	// 백버퍼와 연결된 렌더타겟.
+	// 백버퍼와 연결된 렌더타겟. 렌더안할거임.
 	Device::Get()->ClearRenderTargetView();
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
-
-	RenderTarget::ClearAndSetWithoutDSV(mRenderTargets, 2); // ImGui에 띄울 렌더타겟.
-
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{
@@ -349,18 +176,10 @@ void ColorPickingScene::Render()
 	Environment::Get()->Set(); // SetViewPort
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
-	//mTerrain->Render();
-
 	for (Collider* collider : mColliders)
 	{
-		//Environment::Get()->SetOrthographicProjectionBuffer();
 		collider->Render();
 	}
-
-	/*if (mPickedCollider != nullptr)
-	{
-		mPickedCollider->RenderGizmos();
-	}*/
 }
 
 void ColorPickingScene::PostRender()
@@ -373,39 +192,15 @@ void ColorPickingScene::PostRender()
 	ImVec2 imageButtonSize = ImVec2(400.0f, 400.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	ImVec4 imageButtonBackGroundColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.f, 0.0f, 0.0f, 1.0f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Render to RenderTargetTexture
-	ImGui::ImageButton(mRenderTargets[0]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-	ImGui::ImageButton(mRenderTargets[1]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-
-	//ImGui::Image(mRenderTarget->GetSRV());
+	ImGui::ImageButton(mPreRenderTargets[1]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
 	int32_t mousePositionX = static_cast<int32_t>(MOUSEPOS.x);
 	int32_t mousePositionY = static_cast<int32_t>(MOUSEPOS.y);
 	Int2 mousePosition = { mousePositionX,mousePositionY };
-
-	Vector3 temp = mBoxCollider->GetHashColor();
-
-	temp = mBoxCollider->Forward();
-	ImGui::InputFloat3("BoxCollider Forward", (float*)&temp);
-	SpacingRepeatedly(2);
-
-	temp = mBoxCollider->Right();
-	ImGui::InputFloat3("BoxCollider Right", (float*)&temp);
-	SpacingRepeatedly(2);
-
-	temp = mBoxCollider->Up();
-	ImGui::InputFloat3("BoxCollider Up", (float*)&temp);
-	SpacingRepeatedly(2);
-
-	temp = WORLDCAMERA->Forward();
-	ImGui::InputFloat3("WorldCamera Forward", (float*)&temp);
-	SpacingRepeatedly(2);
-
-	ImGui::InputFloat3("MousePosition Color", (float*)&mMousePositionColor);
-	SpacingRepeatedly(2);
 
 	ImGui::InputInt2("Mouse Position", (int*)&mousePosition);
 	SpacingRepeatedly(2);
@@ -413,34 +208,137 @@ void ColorPickingScene::PostRender()
 	ImGui::End();
 
 
-	ImGui::Begin("Gizmo X");
-	Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
-	Vector3 colliderRight = { mBoxCollider->Right().x,mBoxCollider->Right().y,mBoxCollider->Right().z };
-	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderRight);
-	ImGui::InputFloat3("Forward Corss Result", (float*)&tempForwardCrossResult);
-	SpacingRepeatedly(2);
+	Matrix viewMatrix;
+	Matrix projectionMatrix;
+	Matrix* worldMatrix;
+	
+	
 
-	Vector3 cameraRight = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
-	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
-	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
-	SpacingRepeatedly(2);
+	/*if (mCurrentPickedCollider != nullptr)
+	{
+		viewMatrix = WORLDCAMERA->GetViewMatrix();
+		projectionMatrix = Environment::Get()->GetProjectionMatrix();
+		worldMatrix = mCurrentPickedCollider->GetWorldMatrixTemp();
+	}
+	else
+	{
+		viewMatrix = XMMatrixIdentity();
+		projectionMatrix = XMMatrixIdentity();
+		worldMatrix = XMMatrixIdentity();
+	}*/
+	
+
+	viewMatrix = WORLDCAMERA->GetViewMatrix();
+	projectionMatrix = Environment::Get()->GetProjectionMatrix();
+	//worldMatrix = mBoxCollider->GetWorldMatrixTemp();
+	worldMatrix = mBoxCollider->GetWorldMatrix();
+	
+
+	float cameraView[16] =
+	{
+		viewMatrix.r[0].m128_f32[0], viewMatrix.r[0].m128_f32[1], viewMatrix.r[0].m128_f32[2], viewMatrix.r[0].m128_f32[3],
+		viewMatrix.r[1].m128_f32[0], viewMatrix.r[1].m128_f32[1], viewMatrix.r[1].m128_f32[2], viewMatrix.r[1].m128_f32[3],
+		viewMatrix.r[2].m128_f32[0], viewMatrix.r[2].m128_f32[1], viewMatrix.r[2].m128_f32[2], viewMatrix.r[2].m128_f32[3],
+		viewMatrix.r[3].m128_f32[0], viewMatrix.r[3].m128_f32[1], viewMatrix.r[3].m128_f32[2], viewMatrix.r[3].m128_f32[3]
+	};
+
+	float cameraProjection[16] =
+	{
+		projectionMatrix.r[0].m128_f32[0], projectionMatrix.r[0].m128_f32[1], projectionMatrix.r[0].m128_f32[2], projectionMatrix.r[0].m128_f32[3],
+		projectionMatrix.r[1].m128_f32[0], projectionMatrix.r[1].m128_f32[1], projectionMatrix.r[1].m128_f32[2], projectionMatrix.r[1].m128_f32[3],
+		projectionMatrix.r[2].m128_f32[0], projectionMatrix.r[2].m128_f32[1], projectionMatrix.r[2].m128_f32[2], projectionMatrix.r[2].m128_f32[3],
+		projectionMatrix.r[3].m128_f32[0], projectionMatrix.r[3].m128_f32[1], projectionMatrix.r[3].m128_f32[2], projectionMatrix.r[3].m128_f32[3]
+	};
+
+
+
+
+	float identityMatrix[16] =
+	{ 1.f, 0.f, 0.f, 0.f,
+		0.f, 1.f, 0.f, 0.f,
+		0.f, 0.f, 1.f, 0.f,
+		0.f, 0.f, 0.f, 1.f };
+
+	//float windowWidth = (float)ImGui::GetWindowWidth();
+	//float windowHeight = (float)ImGui::GetWindowHeight();
+
+	
+	int gizmoCount = 1;
+	float camDistance = 8.f;
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+
+	ImGuiIO& io = ImGui::GetIO(); // 특정 imgui 윈도우가 아니라, 메인백버퍼렌더되는 윈도우에 대한 핸들러?같은거같다.
+	float viewManipulateRight = io.DisplaySize.x;
+	float viewManipulateTop = 0;
+	static ImGuiWindowFlags gizmoWindowFlags = 0;
+
+	ImGuizmo::SetOrthographic(true);
+	ImGuizmo::BeginFrame();
+
+	if (ImGui::IsKeyPressed(90)) // z 키
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (ImGui::IsKeyPressed(69)) // e 키
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (ImGui::IsKeyPressed(82)) // r 키
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+	useWindow = false;
+
+	if (useWindow)
+	{
+		ImGui::SetNextWindowSize(ImVec2(640, 360), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(400, 20), ImGuiCond_Appearing);
+
+		ImGui::Begin("Main", 0, gizmoWindowFlags);
+
+		ImGuizmo::SetDrawlist();
+
+		float windowWidth = (float)ImGui::GetWindowWidth();
+		float windowHeight = (float)ImGui::GetWindowHeight();
+		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight); // ImGuizmo 전용 공간. 0번 렌더타겟을 렌더할 Image랑 크기 똑같이 매칭해줘야됨.
+		viewManipulateRight = ImGui::GetWindowPos().x + windowWidth;
+		viewManipulateTop = ImGui::GetWindowPos().y;
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+		gizmoWindowFlags =
+			ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window->InnerRect.Min, window->InnerRect.Max) ? ImGuiWindowFlags_NoMove : 0;
+	}
+	else
+	{
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	}
+	
+	ImGui::Begin("Gizmo Transform");
+
+	//float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+	ImGuizmo::DecomposeMatrixToComponents(objectTransformMatrix, matrixTranslation, matrixRotation, matrixScale); // 첫번째 매개변수는 조절하고자하는 오브젝트 트랜스폼행렬.
+	ImGui::InputFloat3("Tr", matrixTranslation);
+	//ImGui::InputFloat3("Rt", matrixRotation);
+	//ImGui::InputFloat3("Sc", matrixScale);
+	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, objectTransformMatrix);
+
+	mBoxCollider->mPosition.x = matrixTranslation[0];
+	mBoxCollider->mPosition.y = matrixTranslation[1];
+	mBoxCollider->mPosition.z = matrixTranslation[2];
+
+
 	ImGui::End();
 
+	ImGuizmo::Manipulate( // 실제 기즈모 렌더코드.
+		cameraView, // 뷰행렬 (float*)
+		cameraProjection, // 투영행렬 (float*)
+		mCurrentGizmoOperation, // ImGuizmo::OPERATION::TRANSLATE
+		ImGuizmo::LOCAL,
+		objectTransformMatrix,
+		NULL
+	);
 
-
-	/*ImGui::Begin("Gizmo Y");
-	Vector3 cameraForward = { WORLDCAMERA->Forward().x,WORLDCAMERA->Forward().y,WORLDCAMERA->Forward().z };
-	Vector3 colliderUp = { mBoxCollider->Up().x,mBoxCollider->Up().y,mBoxCollider->Up().z };
-	Vector3 tempForwardCrossResult = Vector3::Cross(cameraForward, colliderUp);
-	ImGui::InputFloat3("Forward Corss Result", (float*)&tempForwardCrossResult);
-	SpacingRepeatedly(2);
-
-	Vector3 cameraUp = { WORLDCAMERA->Right().x,WORLDCAMERA->Right().y,WORLDCAMERA->Right().z };
-	Vector3 tempRightCrossResult = Vector3::Cross(cameraRight, colliderRight);
-	ImGui::InputFloat3("Right Corss Result", (float*)&tempRightCrossResult);
-	SpacingRepeatedly(2);
-	ImGui::End();*/
+	if (useWindow)
+	{
+		ImGui::End();
+	}
 }
+
 
 void ColorPickingScene::colorPicking()
 {
@@ -455,7 +353,7 @@ void ColorPickingScene::colorPicking()
 	mColorPickingComputeShader->Set(); // 디바이스에 Set..
 	mInputBuffer->SetCSBuffer(1); // CS 1번 레지스터에 Set.
 
-	DEVICECONTEXT->CSSetShaderResources(0, 1, &mRenderTargets[0]->GetSRV()); // CS 0번 레지스터에 바인딩.
+	DEVICECONTEXT->CSSetShaderResources(0, 1, &mPreRenderTargets[1]->GetSRV()); // CS 0번 레지스터에 바인딩.
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mComputeStructuredBuffer->GetUAV(), nullptr);
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 

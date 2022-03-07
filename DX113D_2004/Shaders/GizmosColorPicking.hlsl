@@ -23,10 +23,10 @@ PixelInput VS(VertexColor input)
 
 struct PixelOutput
 {
-    float4 colorForPicking : SV_Target0;
+    float4 colorForPicking;
 };
 
-PixelOutput PS(PixelInput input) : SV_Target
+PixelOutput PS(PixelInput input) : SV_Target1
 {
     PixelOutput output;
   

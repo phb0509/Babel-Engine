@@ -102,6 +102,7 @@ void Transform::PreRenderGizmosForColorPicking()
 void Transform::RenderGizmos()
 {
 	mMaterial->SetShader(L"Gizmos");
+	mMaterial->Set();
 
 	//Set WolrdBuffer to VertexShader
 
@@ -116,7 +117,7 @@ void Transform::RenderGizmos()
 
 	mRSState->FillMode(D3D11_FILL_SOLID);
 	mRSState->SetState();
-	mMaterial->Set();
+
 
 	mGizmosWorldBuffer->Set(worldMatrix);
 	mGizmosWorldBuffer->SetVSBuffer(0);

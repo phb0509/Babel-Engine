@@ -148,6 +148,6 @@ private:
 	ColorPickingOutputBuffer* mOutputBuffer;
 
 	Collider* mPickedCollider;
-	
+
 
 };

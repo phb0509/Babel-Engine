@@ -33,9 +33,8 @@ private:
 	Player* mPlayer;
 	Terrain* mTerrain;
 
-	DepthStencil* mDepthStencil;
-	RenderTarget* mRenderTargets[2];
-	Texture* texture;
+	RenderTarget* mPreRenderTargets[2];
+	DepthStencil* mPreRenderTargetDSV;
 
 
 	Vector3 mMouseScreenUVPosition;
@@ -52,10 +51,19 @@ private:
 	vector<Collider*> mColliders;
 	Vector3 mMousePositionColor;
 	
-	Collider* mPickedCollider;
+	Collider* mCurrentPickedCollider;
+	Collider* mPreviousPickedCollider;
 	Gizmos* mGizmos;
 
 	bool mbIsGizmosRender = false;
 	int mPickedGizmo = 0;
 	Vector3 mPreviousMousePosition;
+
+	Player* player;
+	bool useWindow = true;
+
+	float objectTransformMatrix[16] = {};
+	float matrixTranslation[3] = {};
+	float matrixRotation[3] = {};
+	float matrixScale[3] = {};
 };

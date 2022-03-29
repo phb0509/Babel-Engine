@@ -18,5 +18,4 @@ void ModelAnimObject::Render()
 {
 	SetWorldBuffer();
 	ModelAnimator::Render();
-	RenderGizmos();
 }

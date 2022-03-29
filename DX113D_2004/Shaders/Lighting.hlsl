@@ -49,16 +49,11 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     return output;
 }
 
-struct PixelOutput
-{
-    float4 color : SV_Target0;
-};
 
 
-PixelOutput PS(PixelInput input) : SV_Target
+float4 PS(PixelInput input) : SV_Target
 {
-    PixelOutput output;
-    
+
     float4 albedo = float4(1, 1, 1, 1);
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv);
@@ -95,9 +90,6 @@ PixelOutput PS(PixelInput input) : SV_Target
     float4 emissive = CalcEmissive(material);
     
     
-    output.color = result + ambient + emissive;
-    //return output;
-    //return result + ambient + emissive;
-    
-    return output;
+
+    return result + ambient + emissive;
 }

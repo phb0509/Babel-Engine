@@ -986,6 +986,125 @@ namespace IMGUIZMO_NAMESPACE
       return false;
    }
 
+   bool IsOverTranslationX()
+   {
+       if (Intersects(gContext.mOperation, TRANSLATE)) // 현재 렌더링중인 기즈모타입. 피킹중이여도 true 리턴한다.
+       {
+           if (GetMoveType(TRANSLATE_X, NULL) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverTranslationY()
+   {
+       if (Intersects(gContext.mOperation, TRANSLATE)) // 현재 렌더링중인 기즈모타입. 피킹중이여도 true 리턴한다.
+       {
+           if (GetMoveType(TRANSLATE_Y, NULL) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverTranslationZ()
+   {
+       if (Intersects(gContext.mOperation, TRANSLATE)) // 현재 렌더링중인 기즈모타입. 피킹중이여도 true 리턴한다.
+       {
+           if (GetMoveType(TRANSLATE_Z, NULL) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverRotationX()
+   {
+       if (Intersects(gContext.mOperation, ROTATE))
+       {
+           if (GetRotateType(ROTATE_X) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverRotationY()
+   {
+       if (Intersects(gContext.mOperation, ROTATE))
+       {
+           if (GetRotateType(ROTATE_Y) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverRotationZ()
+   {
+       if (Intersects(gContext.mOperation, ROTATE))
+       {
+           if (GetRotateType(ROTATE_Z) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverScaleX()
+   {
+       if (Intersects(gContext.mOperation, SCALE))
+       {
+           if (GetScaleType(SCALE_X) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverScaleY()
+   {
+       if (Intersects(gContext.mOperation, SCALE))
+       {
+           if (GetScaleType(SCALE_Y) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+   bool IsOverScaleZ()
+   {
+       if (Intersects(gContext.mOperation, SCALE))
+       {
+           if (GetScaleType(SCALE_Z) != MT_NONE)
+           {
+               return true;
+           }
+       }
+
+       return false;
+   }
+
+
+
    void Enable(bool enable)
    {
       gContext.mbEnable = enable;
@@ -1851,6 +1970,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             continue;
          }
+
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
@@ -1911,6 +2031,7 @@ namespace IMGUIZMO_NAMESPACE
             }
          }
       }
+
       return type;
    }
 

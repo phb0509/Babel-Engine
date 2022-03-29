@@ -70,8 +70,6 @@ void Collider::Render()
     Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
 
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-    //mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 
     DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
 }

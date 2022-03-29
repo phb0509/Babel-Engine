@@ -201,7 +201,7 @@ inline void rotationY(const float angle, float* m16)
    m16[15] = 1.0f;
 }
 
-void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition) // 뷰행렬, 투영행렬, 오브젝트 트랜스폼행렬,
+void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition) // 뷰행렬, 투영행렬, 오브젝트 트랜스폼행렬, objectMatrix[0] 시작주소.
 {
    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
    static bool useSnap = false;
@@ -857,7 +857,7 @@ int main(int, char**)
 
          //////////////////////////////////////////////////////////////////////////////////////////
          //////////////////////////////////////////////////////////////////////////////////////////
-         EditTransform(cameraView, cameraProjection, objectMatrix[matId], lastUsing == matId);
+         EditTransform(cameraView, cameraProjection, objectMatrix[matId], lastUsing == matId); // objectMatrix 전역변수다...
          //////////////////////////////////////////////////////////////////////////////////////////
          //////////////////////////////////////////////////////////////////////////////////////////
          if (ImGuizmo::IsUsing())

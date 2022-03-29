@@ -55,11 +55,7 @@ public:
 	void SetSpecularMap(Texture* specularMap);
 	void SetNormalMap(Texture* normalMap);
 	void SetBrushMap(Texture* brushMap);
-
-
 	MaterialBuffer* GetBuffer() { return mBuffer; }
-
-
 
 public:
 	string mName;

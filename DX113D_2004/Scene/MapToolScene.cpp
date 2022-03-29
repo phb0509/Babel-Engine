@@ -4,10 +4,13 @@
 MapToolScene::MapToolScene()
 {
 	Environment::Get()->SetIsEnabledTargetCamera(false);
-	//WORLDCAMERA->mPosition = { -35.2f,113.6f, -105.7f };
+	WORLDCAMERA->mPosition = { -35.2f,113.6f, -105.7f };
+	WORLDCAMERA->mRotation = { 0.5f,0.4f, 0.0f };
+	WORLDCAMERA->mMoveSpeed = 200.0f;
+	WORLDCAMERA->mWheelSpeed = 30.0f;
+
 	terrainEditor = new TerrainEditor();
 	//skyBox = new SkyBox();
-	//cube = new Cube();
 
 	mRasterizerState = new RasterizerState();
 	mRasterizerState->FillMode(D3D11_FILL_WIREFRAME);
@@ -18,7 +21,6 @@ MapToolScene::~MapToolScene()
 	delete terrainEditor;
 	//delete skyBox;
 	delete mRasterizerState;
-	//delete cube;
 }
 
 void MapToolScene::Update()
@@ -35,15 +37,8 @@ void MapToolScene::Update()
 
 void MapToolScene::PreRender()
 {
-	Environment::Get()->Set();
 	Environment::Get()->SetPerspectiveProjectionBuffer();
-
-	terrainEditor->PreRender();
-}
-
-void MapToolScene::Render()
-{
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
 
 	if (Environment::Get()->GetIsEnabledTargetCamera())
 	{
@@ -51,7 +46,24 @@ void MapToolScene::Render()
 	}
 
 	Environment::Get()->GetWorldCamera()->Render();
-	Environment::Get()->Set();
+
+	terrainEditor->PreRender();
+}
+
+void MapToolScene::Render()
+{
+	// ¹é¹öÆÛ¿Í ¿¬°áµÈ ·»´õÅ¸°Ù
+	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
+	Device::Get()->ClearDepthStencilView();
+	Device::Get()->SetRenderTarget();
+
+	if (Environment::Get()->GetIsEnabledTargetCamera())
+	{
+		Environment::Get()->GetTargetCamera()->Render();
+	}
+
+	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender ¿Ü¿£ ¹¹ ¾÷½Â¤±.
+	Environment::Get()->Set(); // SetViewPort
 	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	//skyBox->Render();

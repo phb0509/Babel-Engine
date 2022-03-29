@@ -69,12 +69,9 @@ private:
 	void createTangent();
 	void createCompute();
 	void createPixelPickingCompute();
-	void createTestCompute();
-	
 
 	bool computePicking(OUT Vector3* position);
 	void computePixelPicking(OUT Vector3* position);
-	void computeTestPicking();
 
 	void adjustY(Vector3 position);
 	void paintBrush(Vector3 position);
@@ -87,15 +84,16 @@ private:
 	void changeHeightMap(wstring heightFileName);
 	void changeTextureMap(wstring textureFileName);
 
-	void addTexture();
-	void showAddedTextures();
+	void showAssetsWindow();
+	void showTerrainEditor();
 	void getFileNames(string path);
 	void showTextureAsset();
+	void loadFileList(string folderName, vector<string>& fileList);
 	
 
 
 private:
-	const float MAX_HEIGHT = 30.0f;
+	const float MAX_HEIGHT = 100.0f;
 
 	Material* mMaterial;
 	Mesh* mMesh;
@@ -169,6 +167,11 @@ private:
 	MouseUVBuffer* mMouseUVBuffer;
 	OutputUVDesc mTestOutputDesc;
 	float mDepthRedValue = 0.0f;
-
 	ID3D11ShaderResourceView* mLayerArray[4];
+
+	string mProjectPath;
+	ImVec2 mStandardCursorPos;
+	map<string, Texture*> mExtensionPreviewImages;
+	bool mbIsDropped = false;
+	string mDraggedFileName;
 };

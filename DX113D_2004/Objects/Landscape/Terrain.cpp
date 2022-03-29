@@ -5,8 +5,8 @@ Terrain::Terrain()
 	mHeight(10)
 {
 	mMaterial = new Material(L"Lighting");
-	mMaterial->SetDiffuseMap(L"Textures/Landscape/Stones.png");
-	mMaterial->SetNormalMap(L"Textures/Landscape/Stones_normal.png");
+	mMaterial->SetDiffuseMap(L"Textures/Stones.png");
+	mMaterial->SetNormalMap(L"Textures/Stones_normal.png");
 
 	mMaterial->GetBuffer()->data.emissive = { 0, 0, 0, 0 };
 
@@ -17,7 +17,7 @@ Terrain::Terrain()
 	//D3D11_FILL_SOLID
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	mHeightMap = Texture::Add(L"Textures/HeightMaps/HeightMap.png"); // 100 & 100
+	mHeightMap = Texture::Add(L"Textures/HeightMap.png"); // 100 & 100
 
 	CreateMesh();
 

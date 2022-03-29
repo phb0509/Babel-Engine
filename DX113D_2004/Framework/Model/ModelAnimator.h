@@ -68,5 +68,5 @@ protected:
 	//Model
 	BoneBuffer* mBoneBuffer;
 	map<int, Matrix> mBoneTransforms;
-	Matrix* mNodeTransforms;
+	Matrix* mNodeTransforms = nullptr;
 };

@@ -15,6 +15,27 @@ public:
 
 
 private:
-	Collider* mBoxCollider;
+	
 
+private:
+	Collider* mBoxCollider;
+	Cube* mCube;
+	bool mbIsPicked = false;
+
+	RenderTarget* mPreRenderTargets[1];
+	DepthStencil* mPreRenderTargetDSV;
+
+
+	Vector3 mMouseScreenUVPosition;
+	ComputeShader* mColorPickingComputeShader;
+	ComputeStructuredBuffer* mComputeStructuredBuffer;
+	ColorPickingInputBuffer* mInputBuffer;
+	ColorPickingOutputBuffer* mOutputBuffer;
+	Vector3 mMousePositionColor;
+
+	float objectTransformMatrix[16] = {};
+
+	float matrixTranslation[3] = {};
+	float matrixRotation[3] = {};
+	float matrixScale[3] = {};
 };

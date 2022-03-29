@@ -3,11 +3,11 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN
 
-#define WIN_WIDTH 1280
-#define WIN_HEIGHT 720
+//#define WIN_WIDTH 1280
+//#define WIN_HEIGHT 720
 
-//#define WIN_WIDTH 1920
-//#define WIN_HEIGHT 1080
+#define WIN_WIDTH 1850
+#define WIN_HEIGHT 900
 
 #define CENTER_X WIN_WIDTH * 0.5f
 #define CENTER_Y WIN_HEIGHT * 0.5f
@@ -238,7 +238,7 @@ using namespace utility;
 #include "Framework/Math/Vector3.h"
 #include "Framework/Math/Transform.h"
 #include "Framework/Math/Math.h"
-#include "Framework/Math/Gizmos.h"
+
 
 #include "GameObject/Utility/E_States.h"
 

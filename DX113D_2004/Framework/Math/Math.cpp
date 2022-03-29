@@ -41,6 +41,8 @@ bool GameMath::CompareVector3XZ(Vector3 v1, Vector3 v2)
     return false;
 }
 
+
+
 Vector3 GameMath::ClosestPointOnLineSegment(const Vector3& v1, const Vector3& v2, const Vector3& point)
 {
     Vector3 line = v2 - v1;
@@ -67,3 +69,44 @@ Vector3 GameMath::WorldToScreen(const Vector3& worldPos)
 
     return screenPos;
 }
+
+void GameMath::MatrixToFloatArray(Matrix matrix, float* floatArray)
+{
+    floatArray[0] = matrix.r[0].m128_f32[0];
+    floatArray[1] = matrix.r[0].m128_f32[1];
+    floatArray[2] = matrix.r[0].m128_f32[2];
+    floatArray[3] = matrix.r[0].m128_f32[3];
+    floatArray[4] = matrix.r[1].m128_f32[0];
+    floatArray[5] = matrix.r[1].m128_f32[1];
+    floatArray[6] = matrix.r[1].m128_f32[2];
+    floatArray[7] = matrix.r[1].m128_f32[3];
+    floatArray[8] = matrix.r[2].m128_f32[0];
+    floatArray[9] = matrix.r[2].m128_f32[1];
+    floatArray[10] = matrix.r[2].m128_f32[2];
+    floatArray[11] = matrix.r[2].m128_f32[3];
+    floatArray[12] = matrix.r[3].m128_f32[0];
+    floatArray[13] = matrix.r[3].m128_f32[1];
+    floatArray[14] = matrix.r[3].m128_f32[2];
+    floatArray[15] = matrix.r[3].m128_f32[3];
+}
+
+void GameMath::FloatArrayToMatrix(float* floatArray, Matrix& matrix)
+{
+    matrix.r[0].m128_f32[0] = floatArray[0];
+    matrix.r[0].m128_f32[1] = floatArray[1];
+    matrix.r[0].m128_f32[2] = floatArray[2];
+    matrix.r[0].m128_f32[3] = floatArray[3];
+    matrix.r[1].m128_f32[0] = floatArray[4];
+    matrix.r[1].m128_f32[1] = floatArray[5];
+    matrix.r[1].m128_f32[2] = floatArray[6];
+    matrix.r[1].m128_f32[3] = floatArray[7];
+    matrix.r[2].m128_f32[0] = floatArray[8];
+    matrix.r[2].m128_f32[1] = floatArray[9];
+    matrix.r[2].m128_f32[2] = floatArray[10];
+    matrix.r[2].m128_f32[3] = floatArray[11];
+    matrix.r[3].m128_f32[0] = floatArray[12];
+    matrix.r[3].m128_f32[1] = floatArray[13];
+    matrix.r[3].m128_f32[2] = floatArray[14];
+    matrix.r[3].m128_f32[3] = floatArray[15];
+}
+

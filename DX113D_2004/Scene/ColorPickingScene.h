@@ -27,13 +27,14 @@ public:
 
 private:
 	void colorPicking();
+	void changePickedObject();
 
 private:
 	Monster* mMonster;
 	Player* mPlayer;
 	Terrain* mTerrain;
 
-	RenderTarget* mPreRenderTargets[2];
+	RenderTarget* mPreRenderTargets[1];
 	DepthStencil* mPreRenderTargetDSV;
 
 
@@ -53,7 +54,6 @@ private:
 	
 	Collider* mCurrentPickedCollider;
 	Collider* mPreviousPickedCollider;
-	Gizmos* mGizmos;
 
 	bool mbIsGizmosRender = false;
 	int mPickedGizmo = 0;
@@ -63,7 +63,10 @@ private:
 	bool useWindow = true;
 
 	float objectTransformMatrix[16] = {};
-	float matrixTranslation[3] = {};
-	float matrixRotation[3] = {};
-	float matrixScale[3] = {};
+
+	Vector3 matrixTranslation;
+	Vector3 matrixRotation;
+	Vector3 matrixScale;
+
+	ImGuizmo::OPERATION currentGizmo = ImGuizmo::NONE;
 };

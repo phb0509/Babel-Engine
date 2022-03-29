@@ -31,7 +31,6 @@ void Sphere::Render()
 	typeBuffer->SetVSBuffer(5);
 
 	DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
-	RenderGizmos();
 }
 
 void Sphere::CreateMesh()

@@ -18,9 +18,9 @@ Program::Program()
 
 	//SceneManager::Get()->Add("export", new ModelExportScene());
 	//SceneManager::Get()->Add("start", new MainScene());
-	//SceneManager::Get()->Add("start", new MapToolScene());
+	SceneManager::Get()->Add("start", new MapToolScene());
 	//SceneManager::Get()->Add("start", new ColliderSettingScene());
-	SceneManager::Get()->Add("start", new ColorPickingScene());
+	//SceneManager::Get()->Add("start", new ColorPickingScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
@@ -37,11 +37,6 @@ Program::~Program()
 
 void Program::Update()
 {
-	if (KEY_DOWN(VK_F1))
-	{
-		Transform::mbIsRenderGizmos = !Transform::mbIsRenderGizmos;
-	}
-
 	Timer::Get()->Update();
 	Control::Get()->Update();
 	SceneManager::Get()->Update();

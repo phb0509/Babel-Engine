@@ -187,9 +187,6 @@
     <ClInclude Include="Framework\Buffer\Texture2DBuffer.h" />
     <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
-    <ClInclude Include="Framework\Math\Gizmos.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Framework\Render\TextureClass.h" />
     <ClInclude Include="GameObject\CDialogEventHandler.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
@@ -320,9 +317,6 @@
     <ClCompile Include="Framework\Collider\TetrahedronCollider.cpp" />
     <ClCompile Include="Framework\Device\DepthStencil.cpp" />
     <ClCompile Include="Framework\Device\RenderTarget.cpp" />
-    <ClCompile Include="Framework\Math\Gizmos.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Framework\Math\Math.cpp" />
     <ClCompile Include="Framework\Math\Transform.cpp" />
     <ClCompile Include="Framework\Math\Vector3.cpp" />

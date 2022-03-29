@@ -22,12 +22,15 @@ public:
 	virtual ~Transform();
 
 	void UpdateWorld();
-	void RenderGizmos();
-	void PreRenderGizmosForColorPicking();
 	void SetWorldBuffer(UINT slot = 0);
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
-	Matrix GetWorldMatrixTemp() { return mWorldMatrix; }
+	Matrix GetWorldMatrixValue() { return mWorldMatrix; }
+	Matrix GetInverseWorldMatrix() { return XMMatrixInverse(nullptr, mWorldMatrix); }
+	Matrix GetLocalWorldMatrix() { return mLocalWorldMatrix; }
+	Matrix* GetParentMatrix() { return mParentMatrix; }
+
+
 	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 	Vector3 Forward();
@@ -47,28 +50,16 @@ public:
 	void ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime); // 경로설정 periodTime마다 한번씩.
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
-
 	void SetHashColorBuffer();
-	void SetGizmosColorBuffer(Float4 gizmoColor);
-
 	Float4 GetHashColor() { return mHashColor; }
 
-	Float4 GetGizmosHashColorX() { return mGizmosHashColor.x; }
-	Float4 GetGizmosHashColorY() { return mGizmosHashColor.y; }
-	Float4 GetGizmosHashColorZ() { return mGizmosHashColor.z; }
 
-	void SetGizmoXColor(Float4 color) { mGizmoXColor = color; }
-	void SetGizmoYColor(Float4 color) { mGizmoYColor = color; }
-	void SetGizmoZColor(Float4 color) { mGizmoZColor = color; }
 	
 	
 private:
 	void createHashColor();
-	void createGizmos();
-	void createGizmoseHashColor();
 
 public:
-	static bool mbIsRenderGizmos;
 
 	bool mbIsActive;
 
@@ -78,14 +69,15 @@ public:
 	Vector3 mRotation;
 	Vector3 mScale;
 
-protected:
 	Vector3 mGlobalPosition;
 	Vector3 mGlobalRotation;
 	Vector3 mGlobalScale;
 
-	Vector3 mPivot;
+protected:
 
+	Vector3 mPivot;
 	Matrix mWorldMatrix;
+	Matrix mLocalWorldMatrix;
 	Matrix* mParentMatrix;
 
 	MatrixBuffer* mWorldBuffer;
@@ -102,28 +94,8 @@ private:
 
 	// Gizmos
 	Material* mMaterial;
-	MatrixBuffer* mGizmosWorldBuffer;
 	RasterizerState* mRSState;
 	ColorBuffer* mHashColorBuffer;
-	ColorBuffer* mGizmosColorBuffer;
 	Float4 mHashColor;
-	GizmosHashColor mGizmosHashColor;
-
-	Mesh* mGizmoXMesh;
-	Mesh* mGizmoYMesh;
-	Mesh* mGizmoZMesh;
-
-	vector<VertexColor> mGizmoXVertices;
-	vector<VertexColor> mGizmoYVertices;
-	vector<VertexColor> mGizmoZVertices;
-
-	vector<UINT> mGizmoXIndices;
-	vector<UINT> mGizmoYIndices;
-	vector<UINT> mGizmoZIndices;
-
-	Float4 mGizmoXColor;
-	Float4 mGizmoYColor;
-	Float4 mGizmoZColor;
-
-	Vector3 mGizmosScale;
+	
 };

@@ -23,15 +23,7 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     return output;
 }
 
-struct PixelOutput
+float4 PS(PixelInput input) : SV_Target0
 {
-    float4 color;
-};
-
-PixelOutput PS(PixelInput input) : SV_Target1
-{
-    PixelOutput output;
-    output.color = input.color;
-
-    return output;
+    return input.color;
 }

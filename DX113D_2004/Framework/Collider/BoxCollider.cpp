@@ -142,6 +142,7 @@ bool BoxCollider::CapsuleCollision(CapsuleCollider* collider)
 void BoxCollider::createMeshForColorPicking()
 {
     mVerticesForColorPicking.resize(24);
+
     //Front
     mVerticesForColorPicking[0].position = { mMinBox.x, mMinBox.y, mMinBox.z };
     mVerticesForColorPicking[1].position = { mMinBox.x, mMaxBox.y, mMinBox.z };

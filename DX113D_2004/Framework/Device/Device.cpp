@@ -130,7 +130,15 @@ void Device::SetRenderTargetNullDSV()
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
 }
 
+void Device::ClearRenderTargetView(Float4 color)
+{
+	mDeviceContext->ClearRenderTargetView(mRenderTargetView, (float*)&color);
+}
 
+void Device::ClearDepthStencilView()
+{
+	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
 
 void Device::InitRenderTargets(RenderTarget** renderTargets, int count)
 {
@@ -180,15 +188,7 @@ void Device::SetRenderTargets()
 
 
 
-void Device::ClearRenderTargetView(Float4 color)
-{
-	mDeviceContext->ClearRenderTargetView(mRenderTargetView, (float*)&color);
-}
 
-void Device::ClearDepthStencilView()
-{
-	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
 
 void Device::Present()
 {

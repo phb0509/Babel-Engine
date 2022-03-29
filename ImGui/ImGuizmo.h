@@ -188,7 +188,8 @@ namespace IMGUIZMO_NAMESPACE
       ROTATE = ROTATE_X | ROTATE_Y | ROTATE_Z | ROTATE_SCREEN,
       SCALE = SCALE_X | SCALE_Y | SCALE_Z,
       SCALEU = SCALE_XU | SCALE_YU | SCALE_ZU, // universal
-      UNIVERSAL = TRANSLATE | ROTATE | SCALEU
+      UNIVERSAL = TRANSLATE | ROTATE | SCALEU,
+      NONE
    };
 
    inline OPERATION operator|(OPERATION lhs, OPERATION rhs)
@@ -214,6 +215,18 @@ namespace IMGUIZMO_NAMESPACE
 
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
+
+   // 내가 쓰려고 만든거 ^^
+   IMGUI_API bool IsOverTranslationX();
+   IMGUI_API bool IsOverTranslationY();
+   IMGUI_API bool IsOverTranslationZ();
+   IMGUI_API bool IsOverRotationX();
+   IMGUI_API bool IsOverRotationY();
+   IMGUI_API bool IsOverRotationZ();
+   IMGUI_API bool IsOverScaleX();
+   IMGUI_API bool IsOverScaleY();
+   IMGUI_API bool IsOverScaleZ();
+
    IMGUI_API void SetGizmoSizeClipSpace(float value);
 
    // Allow axis to flip

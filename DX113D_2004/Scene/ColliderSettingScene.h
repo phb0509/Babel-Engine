@@ -29,9 +29,7 @@ public:
 		string meshTextOnInspector;
 		string materialTextOnInspector;
 	};
-
-	
-
+ 
 	ColliderSettingScene();
 	~ColliderSettingScene();
 
@@ -51,7 +49,7 @@ private:
 	void showColliderEditorWindow();
 	void showAssetsWindow();
 	void showModelInspector();
-	void showTestWindow();
+	void showPreRenderTargetWindow();
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
@@ -67,7 +65,10 @@ private:
 	//void loadBinaryFile();
 
 	void loadFileList(string folderName, vector<string>& fileList);
-	
+	void colorPicking();
+	void updatePickedColliderMatrix();
+	void initPickedColliderMatrix();
+	void renderGizmos();
 
 private:
 	ToolModel* mModel;
@@ -136,18 +137,32 @@ private:
 	float mCurrentClipTakeTime;
 
 	// ColorPicking
-	DepthStencil* mDepthStencil;
-	RenderTarget* mRenderTargets[1];
-	RenderTarget* mRenderTarget;
+	RenderTarget* mPreRenderTargets[1];
+	DepthStencil* mPreRenderTargetDSV;
 
 	Vector3 mMouseScreenPosition;
 	Vector3 mMouseScreenUVPosition;
-	ComputeShader* mComputeShader;
+
+	ComputeShader* mColorPickingComputeShader;
 	ComputeStructuredBuffer* mComputeStructuredBuffer;
 	ColorPickingInputBuffer* mInputBuffer;
 	ColorPickingOutputBuffer* mOutputBuffer;
+	Vector3 mMousePositionColor;
 
-	Collider* mPickedCollider;
+	Collider* mCurrentPickedCollider;
+	Collider* mPreviousPickedCollider;
+	float objectTransformMatrix[16] = {};
+	float matrixTranslation[3] = {};
+	float matrixRotation[3] = {};
+	float matrixScale[3] = {};
 
+	Cube* mStandardCube;
 
+	Matrix mPickedColliderParentMatrix;
+
+	float tempTranslation[3];
+	float tempRotation[3];
+	float tempScale[3];
+
+	bool mbCheck = false;
 };

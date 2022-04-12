@@ -207,8 +207,8 @@ namespace IMGUIZMO_NAMESPACE
          w += (v.w - w) * t;
       }
 
-      void Set(float v) { x = y = z = w = v; }
-      void Set(float _x, float _y, float _z = 0.f, float _w = 0.f) { x = _x; y = _y; z = _z; w = _w; }
+      void SetMatrix(float v) { x = y = z = w = v; }
+      void SetMatrix(float _x, float _y, float _z = 0.f, float _w = 0.f) { x = _x; y = _y; z = _z; w = _w; }
 
       vec_t& operator -= (const vec_t& v) { x -= v.x; y -= v.y; z -= v.z; w -= v.w; return *this; }
       vec_t& operator += (const vec_t& v) { x += v.x; y += v.y; z += v.z; w += v.w; return *this; }
@@ -225,7 +225,7 @@ namespace IMGUIZMO_NAMESPACE
       float Length() const { return sqrtf(x * x + y * y + z * z); };
       float LengthSq() const { return (x * x + y * y + z * z); };
       vec_t Normalize() { (*this) *= (1.f / ( Length() > FLT_EPSILON ? Length() : FLT_EPSILON ) ); return (*this); }
-      vec_t Normalize(const vec_t& v) { this->Set(v.x, v.y, v.z, v.w); this->Normalize(); return (*this); }
+      vec_t Normalize(const vec_t& v) { this->SetMatrix(v.x, v.y, v.z, v.w); this->Normalize(); return (*this); }
       vec_t Abs() const;
 
       void Cross(const vec_t& v)
@@ -332,18 +332,18 @@ namespace IMGUIZMO_NAMESPACE
 
       void Translation(const vec_t& vt)
       {
-         v.right.Set(1.f, 0.f, 0.f, 0.f);
-         v.up.Set(0.f, 1.f, 0.f, 0.f);
-         v.dir.Set(0.f, 0.f, 1.f, 0.f);
-         v.position.Set(vt.x, vt.y, vt.z, 1.f);
+         v.right.SetMatrix(1.f, 0.f, 0.f, 0.f);
+         v.up.SetMatrix(0.f, 1.f, 0.f, 0.f);
+         v.dir.SetMatrix(0.f, 0.f, 1.f, 0.f);
+         v.position.SetMatrix(vt.x, vt.y, vt.z, 1.f);
       }
 
       void Scale(float _x, float _y, float _z)
       {
-         v.right.Set(_x, 0.f, 0.f, 0.f);
-         v.up.Set(0.f, _y, 0.f, 0.f);
-         v.dir.Set(0.f, 0.f, _z, 0.f);
-         v.position.Set(0.f, 0.f, 0.f, 1.f);
+         v.right.SetMatrix(_x, 0.f, 0.f, 0.f);
+         v.up.SetMatrix(0.f, _y, 0.f, 0.f);
+         v.dir.SetMatrix(0.f, 0.f, _z, 0.f);
+         v.position.SetMatrix(0.f, 0.f, 0.f, 1.f);
       }
       void Scale(const vec_t& s) { Scale(s.x, s.y, s.z); }
 
@@ -384,10 +384,10 @@ namespace IMGUIZMO_NAMESPACE
       float Inverse(const matrix_t& srcMatrix, bool affine = false);
       void SetToIdentity()
       {
-         v.right.Set(1.f, 0.f, 0.f, 0.f);
-         v.up.Set(0.f, 1.f, 0.f, 0.f);
-         v.dir.Set(0.f, 0.f, 1.f, 0.f);
-         v.position.Set(0.f, 0.f, 0.f, 1.f);
+         v.right.SetMatrix(1.f, 0.f, 0.f, 0.f);
+         v.up.SetMatrix(0.f, 1.f, 0.f, 0.f);
+         v.dir.SetMatrix(0.f, 0.f, 1.f, 0.f);
+         v.position.SetMatrix(0.f, 0.f, 0.f, 1.f);
       }
       void Transpose()
       {
@@ -721,8 +721,8 @@ namespace IMGUIZMO_NAMESPACE
 
       float mX = 0.f;
       float mY = 0.f;
-      float mWidth = 0.f;
-      float mHeight = 0.f;
+      float mTerrainWidth = 0.f;
+      float mTerrainHeight = 0.f;
       float mXMax = 0.f;
       float mYMax = 0.f;
       float mDisplayRatio = 1.f;
@@ -765,7 +765,7 @@ namespace IMGUIZMO_NAMESPACE
    static int GetRotateType(OPERATION op);
    static int GetScaleType(OPERATION op);
 
-   static ImVec2 worldToPos(const vec_t& worldPos, const matrix_t& mat, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mWidth, gContext.mHeight))
+   static ImVec2 worldToPos(const vec_t& worldPos, const matrix_t& mat, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mTerrainWidth, gContext.mTerrainHeight))
    {
       vec_t trans;
       trans.TransformPoint(worldPos, mat);
@@ -779,7 +779,7 @@ namespace IMGUIZMO_NAMESPACE
       return ImVec2(trans.x, trans.y);
    }
 
-   static void ComputeCameraRay(vec_t& rayOrigin, vec_t& rayDir, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mWidth, gContext.mHeight))
+   static void ComputeCameraRay(vec_t& rayOrigin, vec_t& rayDir, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mTerrainWidth, gContext.mTerrainHeight))
    {
       ImGuiIO& io = ImGui::GetIO();
 
@@ -907,9 +907,9 @@ namespace IMGUIZMO_NAMESPACE
    {
       gContext.mX = x;
       gContext.mY = y;
-      gContext.mWidth = width;
-      gContext.mHeight = height;
-      gContext.mXMax = gContext.mX + gContext.mWidth;
+      gContext.mTerrainWidth = width;
+      gContext.mTerrainHeight = height;
+      gContext.mXMax = gContext.mX + gContext.mTerrainWidth;
       gContext.mYMax = gContext.mY + gContext.mXMax;
       gContext.mDisplayRatio = width / height;
    }
@@ -1134,7 +1134,7 @@ namespace IMGUIZMO_NAMESPACE
          gContext.mModel.Translation(((matrix_t*)matrix)->v.position);
       }
       gContext.mModelSource = *(matrix_t*)matrix;
-      gContext.mModelScaleOrigin.Set(gContext.mModelSource.v.right.Length(), gContext.mModelSource.v.up.Length(), gContext.mModelSource.v.dir.Length());
+      gContext.mModelScaleOrigin.SetMatrix(gContext.mModelSource.v.right.Length(), gContext.mModelSource.v.up.Length(), gContext.mModelSource.v.dir.Length());
 
       gContext.mModelInverse.Inverse(gContext.mModel);
       gContext.mModelSourceInverse.Inverse(gContext.mModelSource);
@@ -1337,7 +1337,7 @@ namespace IMGUIZMO_NAMESPACE
 
       cameraToModelNormalized.TransformVector(gContext.mModelInverse);
 
-      gContext.mRadiusSquareCenter = screenRotateSize * gContext.mHeight;
+      gContext.mRadiusSquareCenter = screenRotateSize * gContext.mTerrainHeight;
 
       bool hasRSC = Intersects(op, ROTATE_SCREEN);
       for (int axis = 0; axis < 3; axis++)
@@ -1840,7 +1840,7 @@ namespace IMGUIZMO_NAMESPACE
                gContext.mBoundsAxis[0] = secondAxis;
                gContext.mBoundsAxis[1] = thirdAxis;
 
-               gContext.mBoundsLocalPivot.Set(0.f);
+               gContext.mBoundsLocalPivot.SetMatrix(0.f);
                gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
                gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
 
@@ -1860,7 +1860,7 @@ namespace IMGUIZMO_NAMESPACE
                gContext.mBoundsAxis[0] = indices[i % 2];
                gContext.mBoundsAxis[1] = -1;
 
-               gContext.mBoundsLocalPivot.Set(0.f);
+               gContext.mBoundsLocalPivot.SetMatrix(0.f);
                gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
 
                gContext.mbUsingBounds = true;
@@ -2292,7 +2292,7 @@ namespace IMGUIZMO_NAMESPACE
             const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
             gContext.mTranslationPlanOrigin = gContext.mRayOrigin + gContext.mRayVector * len;
             gContext.mMatrixOrigin = gContext.mModel.v.position;
-            gContext.mScale.Set(1.f, 1.f, 1.f);
+            gContext.mScale.SetMatrix(1.f, 1.f, 1.f);
             gContext.mRelativeOrigin = (gContext.mTranslationPlanOrigin - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor);
             gContext.mScaleValueOrigin = makeVect(gContext.mModelSource.v.right.Length(), gContext.mModelSource.v.up.Length(), gContext.mModelSource.v.dir.Length());
             gContext.mSaveMousePosx = io.MousePos.x;
@@ -2323,7 +2323,7 @@ namespace IMGUIZMO_NAMESPACE
          else
          {
             float scaleDelta = (io.MousePos.x - gContext.mSaveMousePosx) * 0.01f;
-            gContext.mScale.Set(max(1.f + scaleDelta, 0.001f));
+            gContext.mScale.SetMatrix(max(1.f + scaleDelta, 0.001f));
          }
 
          // snap
@@ -2368,7 +2368,7 @@ namespace IMGUIZMO_NAMESPACE
          if (!io.MouseDown[0])
          {
             gContext.mbUsing = false;
-            gContext.mScale.Set(1.f, 1.f, 1.f);
+            gContext.mScale.SetMatrix(1.f, 1.f, 1.f);
          }
 
          type = gContext.mCurrentOperation;
@@ -2456,7 +2456,7 @@ namespace IMGUIZMO_NAMESPACE
          else
          {
             matrix_t res = gContext.mModelSource;
-            res.v.position.Set(0.f);
+            res.v.position.SetMatrix(0.f);
 
             *(matrix_t*)matrix = res * deltaRotation;
             ((matrix_t*)matrix)->v.position = gContext.mModelSource.v.position;
@@ -2523,7 +2523,7 @@ namespace IMGUIZMO_NAMESPACE
       mat.v.right *= validScale[0];
       mat.v.up *= validScale[1];
       mat.v.dir *= validScale[2];
-      mat.v.position.Set(translation[0], translation[1], translation[2], 1.f);
+      mat.v.position.SetMatrix(translation[0], translation[1], translation[2], 1.f);
    }
 
    void SetID(int id)

@@ -58,7 +58,7 @@ void Transform::UpdateWorld()
 	XMMatrixDecompose(&mGlobalScale.data, &mGlobalRotation.data,
 		&mGlobalPosition.data, mWorldMatrix);
 
-	mWorldBuffer->Set(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
+	mWorldBuffer->SetMatrix(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
 
@@ -182,7 +182,7 @@ bool Transform::CheckTime(float periodTime)
 
 void Transform::SetHashColorBuffer()
 {
-	mHashColorBuffer->Set(mHashColor); // 별도의 렌더타겟에 그릴 오브젝트의 해쉬컬러.
+	mHashColorBuffer->SetMatrix(mHashColor); // 별도의 렌더타겟에 그릴 오브젝트의 해쉬컬러.
 	mHashColorBuffer->SetVSBuffer(10);
 }
 

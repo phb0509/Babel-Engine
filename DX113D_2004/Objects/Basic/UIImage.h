@@ -2,20 +2,8 @@
 
 class UIImage : public Transform
 {
-protected:
-	Material* material;
-	Mesh* mesh;
 
-	ID3D11ShaderResourceView* srv;
 
-	Matrix view;
-	Matrix orthographic;
-
-	MatrixBuffer* viewBuffer;
-	MatrixBuffer* projectionBuffer;
-
-	BlendState* blendState[2];
-	DepthStencilState* depthMode[2];
 public:
 	UIImage(wstring shaderFile);
 	virtual ~UIImage();
@@ -23,9 +11,24 @@ public:
 	virtual void Update();
 	virtual void Render();
 
-	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
+	void SetSRV(ID3D11ShaderResourceView* srv) { this->mSRV = srv; }
 
 private:
 	void CreateMesh();
 	void CreateVP();
+
+protected:
+	Material* mMaterial;
+	Mesh* mMesh;
+
+	ID3D11ShaderResourceView* mSRV;
+
+	Matrix mViewMatrix;
+	Matrix mOrthographicMatrix;
+
+	MatrixBuffer* mViewBuffer;
+	MatrixBuffer* mProjectionBuffer;
+
+	BlendState* mBlendStates[2];
+	DepthStencilState* mDepthMode[2];
 };

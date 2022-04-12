@@ -2,15 +2,6 @@
 
 class AStar
 {
-private:
-	UINT width, height;
-
-	vector<Node*> nodes;
-	Heap* heap;
-
-	Float2 interval;
-
-	vector<Collider*> obstacles;
 public:
 	AStar(UINT width = 20, UINT height = 20);
 	~AStar();
@@ -35,8 +26,15 @@ public:
 	void SetCheckFalse();
 
 private:
-	float GetDistance(int curIndex, int end);
+	float getDistance(int curIndex, int end);
+	void extend(int center, int end);
+	int getMinNode();
 
-	void Extend(int center, int end);
-	int GetMinNode();
+private:
+	UINT mWidth;
+	UINT mHeight;
+	vector<Node*> mNodes;
+	Heap* mHeap;
+	Float2 mInterval;
+	vector<Collider*> mObstacles;
 };

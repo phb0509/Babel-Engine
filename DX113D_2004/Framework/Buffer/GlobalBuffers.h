@@ -14,7 +14,7 @@ public:
 		data.matrix = XMMatrixIdentity();
 	}
 
-	void Set(Matrix value)
+	void SetMatrix(Matrix value)
 	{
 		data.matrix = XMMatrixTranspose(value);
 	}
@@ -36,7 +36,7 @@ public:
 		data.invMatrix = XMMatrixIdentity();
 	}
 
-	void Set(Matrix value)
+	void SetMatrix(Matrix value)
 	{
 		data.matrix = XMMatrixTranspose(value); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
 		Matrix temp = XMMatrixInverse(nullptr, value);
@@ -62,7 +62,7 @@ public:
 		data.invMatrix = XMMatrixIdentity();
 	}
 
-	void Set(Matrix value)
+	void SetMatrix(Matrix value)
 	{
 		data.matrix = XMMatrixTranspose(value); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
 		Matrix temp = XMMatrixInverse(nullptr, value);
@@ -326,7 +326,7 @@ public:
 	{
 	}
 
-	void Set(Float4 color)
+	void SetMatrix(Float4 color)
 	{
 		data.color = color;
 	}

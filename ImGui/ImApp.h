@@ -2611,18 +2611,18 @@ GLEXTERN void(APIENTRY* glActiveTexture) (GLenum texture);
 #endif
 GLEXTERN void(APIENTRY* glUniform1i) (GLint location, GLint v0);
 GLEXTERN void(APIENTRY* glUniformMatrix3fv) (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-GLEXTERN void(APIENTRY* glBindFramebuffer) (GLenum target, GLuint framebuffer);
+GLEXTERN void(APIENTRY* glBindFramebuffer) (GLenum mTargetObject, GLuint framebuffer);
 GLEXTERN void(APIENTRY* glDeleteFramebuffers) (GLsizei n, const GLuint* framebuffers);
 GLEXTERN void(APIENTRY* glDeleteRenderbuffers) (GLsizei n, const GLuint* renderbuffers);
-GLEXTERN void(APIENTRY* glFramebufferTexture2D) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-GLEXTERN void(APIENTRY* glFramebufferRenderbuffer) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-GLEXTERN void(APIENTRY* glRenderbufferStorage) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+GLEXTERN void(APIENTRY* glFramebufferTexture2D) (GLenum mTargetObject, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+GLEXTERN void(APIENTRY* glFramebufferRenderbuffer) (GLenum mTargetObject, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+GLEXTERN void(APIENTRY* glRenderbufferStorage) (GLenum mTargetObject, GLenum internalformat, GLsizei width, GLsizei height);
 GLEXTERN void(APIENTRY* glGenFramebuffers) (GLsizei n, GLuint* framebuffers);
 GLEXTERN void(APIENTRY* glGenRenderbuffers) (GLsizei n, GLuint* renderbuffers);
-GLEXTERN void(APIENTRY* glBindRenderbuffer) (GLenum target, GLuint renderbuffer);
-GLEXTERN GLenum(APIENTRY* glCheckFramebufferStatus) (GLenum target);
-GLEXTERN void(APIENTRY* glGenerateMipmap) (GLenum target);
-GLEXTERN void(APIENTRY* glBufferData) (GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+GLEXTERN void(APIENTRY* glBindRenderbuffer) (GLenum mTargetObject, GLuint renderbuffer);
+GLEXTERN GLenum(APIENTRY* glCheckFramebufferStatus) (GLenum mTargetObject);
+GLEXTERN void(APIENTRY* glGenerateMipmap) (GLenum mTargetObject);
+GLEXTERN void(APIENTRY* glBufferData) (GLenum mTargetObject, GLsizeiptr size, const GLvoid* data, GLenum usage);
 GLEXTERN void(APIENTRY* glUseProgram) (GLuint program);
 GLEXTERN GLint(APIENTRY* glGetUniformLocation) (GLuint program, const GLchar* name);
 GLEXTERN GLint(APIENTRY* glGetAttribLocation) (GLuint program, const GLchar* name);
@@ -2631,7 +2631,7 @@ GLEXTERN void(APIENTRY* glDeleteVertexArrays) (GLsizei n, const GLuint* arrays);
 GLEXTERN void(APIENTRY* glEnableVertexAttribArray) (GLuint);
 GLEXTERN void(APIENTRY* glVertexAttribPointer) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
 GLEXTERN void(APIENTRY* glGenBuffers) (GLsizei n, GLuint* buffers);
-GLEXTERN void(APIENTRY* glBindBuffer) (GLenum target, GLuint buffer);
+GLEXTERN void(APIENTRY* glBindBuffer) (GLenum mTargetObject, GLuint buffer);
 GLEXTERN GLuint(APIENTRY* glCreateShader) (GLenum type);
 GLEXTERN void(APIENTRY* glShaderSource) (GLuint shader, GLsizei count, const GLchar** strings, const GLint* lengths);
 GLEXTERN void(APIENTRY* glCompileShader) (GLuint shader);
@@ -2651,16 +2651,16 @@ GLEXTERN void(APIENTRY* glUniform2fv) (GLint location, GLsizei count, const floa
 GLEXTERN void(APIENTRY* glUniform3f) (GLint location, float v0, float v1, float v2);
 GLEXTERN void(APIENTRY* glUniform3fv) (GLint location, GLsizei count, const float* value);
 GLEXTERN void(APIENTRY* glUniform4fv) (GLint location, GLsizei count, const float* value);
-GLEXTERN void(APIENTRY* glBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
+GLEXTERN void(APIENTRY* glBufferSubData) (GLenum mTargetObject, GLintptr offset, GLsizeiptr size, const GLvoid* data);
 GLEXTERN void(APIENTRY* glGenVertexArrays) (GLsizei n, const GLuint* arrays);
 GLEXTERN void(APIENTRY* glGetShaderInfoLog) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
 GLEXTERN void(APIENTRY* glGetProgramInfoLog) (GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
 GLEXTERN GLuint(APIENTRY* glGetUniformBlockIndex) (GLuint program, const GLchar* uniformBlockName);
 GLEXTERN void(APIENTRY* glUniformBlockBinding) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
-GLEXTERN void(APIENTRY* glBindBufferBase) (GLenum target, GLuint index, GLuint buffer);
+GLEXTERN void(APIENTRY* glBindBufferBase) (GLenum mTargetObject, GLuint index, GLuint buffer);
 GLEXTERN void(APIENTRY* glTransformFeedbackVaryings) (GLuint, GLsizei, const GLchar**, GLenum);
-GLEXTERN GLvoid* (APIENTRY* glMapBuffer) (GLenum target, GLenum access);
-GLEXTERN GLboolean(APIENTRY* glUnmapBuffer) (GLenum target);
+GLEXTERN GLvoid* (APIENTRY* glMapBuffer) (GLenum mTargetObject, GLenum access);
+GLEXTERN GLboolean(APIENTRY* glUnmapBuffer) (GLenum mTargetObject);
 GLEXTERN void(APIENTRY* glDrawElementsInstanced) (GLenum, GLsizei, GLenum, const GLvoid*, GLsizei);
 GLEXTERN void(APIENTRY* glDrawArraysInstanced) (GLenum, GLint, GLsizei, GLsizei);
 GLEXTERN void(APIENTRY* glDrawElementsInstancedBaseVertex) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount, GLint basevertex);
@@ -2670,7 +2670,7 @@ GLEXTERN void(APIENTRY* glUniform1f) (GLint location, float v0);
 GLEXTERN void(APIENTRY* glUniform2f) (GLint location, float v0, float v1);
 GLEXTERN void(APIENTRY* glBlendEquationSeparate) (GLenum, GLenum);
 GLEXTERN void(APIENTRY* glBlendFuncSeparate) (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-GLEXTERN void(APIENTRY* glGetBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
+GLEXTERN void(APIENTRY* glGetBufferSubData) (GLenum mTargetObject, GLintptr offset, GLsizeiptr size, GLvoid* data);
 GLEXTERN void(APIENTRY* glGetShaderSource) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source);
 GLEXTERN GLboolean(APIENTRY* glIsProgram)(GLuint program);
 GLEXTERN void(APIENTRY* glGetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders);
@@ -2695,12 +2695,12 @@ namespace ImApp
 
    struct Config
    {
-      Config() : mWidth(1280), mHeight(720), mFullscreen(false)
+      Config() : mTerrainWidth(1280), mTerrainHeight(720), mFullscreen(false)
       {
 
       }
-      int mWidth;
-      int mHeight;
+      int mTerrainWidth;
+      int mTerrainHeight;
       bool mFullscreen;
    };
 
@@ -2727,9 +2727,9 @@ namespace ImApp
 
          static DEVMODEA screenSettings = { { 0 },
 #if defined(_MSC_VER) && _MSC_VER < 1400
-                0,0,148,0,0x001c0000,{ 0 },0,0,0,0,0,0,0,0,0,{ 0 },0,32,config.mWidth,config.mHeight,0,0,      // Visual C++ 6.0
+                0,0,148,0,0x001c0000,{ 0 },0,0,0,0,0,0,0,0,0,{ 0 },0,32,config.mTerrainWidth,config.mTerrainHeight,0,0,      // Visual C++ 6.0
 #else
-                0,0,156,0,0x001c0000,{ 0 },0,0,0,0,0,{ 0 },0,32,static_cast<DWORD>(config.mWidth), static_cast<DWORD>(config.mHeight),{ 0 }, 0,           // Visuatl Studio 2005
+                0,0,156,0,0x001c0000,{ 0 },0,0,0,0,0,{ 0 },0,32,static_cast<DWORD>(config.mTerrainWidth), static_cast<DWORD>(config.mTerrainHeight),{ 0 }, 0,           // Visuatl Studio 2005
 #endif
 #if(WINVER >= 0x0400)
                 0,0,0,0,0,0,
@@ -2935,8 +2935,8 @@ namespace ImApp
             dmScreenSettings.dmSize = sizeof(DEVMODE);
             dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
             dmScreenSettings.dmBitsPerPel = 32;
-            dmScreenSettings.dmPelsWidth = mConfig.mWidth;
-            dmScreenSettings.dmPelsHeight = mConfig.mHeight;
+            dmScreenSettings.dmPelsWidth = mConfig.mTerrainWidth;
+            dmScreenSettings.dmPelsHeight = mConfig.mTerrainHeight;
 
             if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
                return(0);
@@ -2955,8 +2955,8 @@ namespace ImApp
          
          rec.left = 0;
          rec.top = 0;
-         rec.right = mConfig.mWidth;
-         rec.bottom = mConfig.mHeight;
+         rec.right = mConfig.mTerrainWidth;
+         rec.bottom = mConfig.mTerrainHeight;
          AdjustWindowRect(&rec, dwStyle, 0);
 
          info->hWnd = CreateWindowExA(dwExStyle, "ImGuizmoWndClass", " ", dwStyle | WS_MAXIMIZE,

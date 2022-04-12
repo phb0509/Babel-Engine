@@ -17,7 +17,7 @@
 
 #define MAX_BONE 500
 #define MAX_FRAME_KEY 600
-#define MAX_INSTANCE 400
+#define MAX_INSTANCE 600
 
 #define LERP(s, e, t) s + (e - s) * t
 //#define LERP(s, e, t) s * (1 - t) + e * t
@@ -41,8 +41,8 @@
 
 #define DELTA Timer::Get()->GetElapsedTime()
 
-#define TARGETCAMERA Environment::Get()->GetTargetCamera()
-#define WORLDCAMERA Environment::Get()->GetWorldCamera()
+//#define TARGETCAMERA Environment::Get()->GetTargetCamera()
+//#define WORLDCAMERA Environment::Get()->GetWorldCamera()
 #define LIGHT Environment::Get()->GetLight()
 
 #define GM GameManager::Get()
@@ -65,6 +65,7 @@
 #include <commdlg.h>
 #include "resource.h"
 #include <thread>
+#include <algorithm>
 
 
 #include <windows.h>      // For common windows data types and function headers
@@ -315,6 +316,8 @@ using namespace states;
 #include "GameObject/Monster/Mutant.h"
 #include "GameObject/Monster/Warrok.h"
 #include "GameObject/Player/Player.h"
+#include "GameObject/Monster/InstanceMonster.h"
+#include "GameObject/Monster/InstanceMutant.h"
 
 #include "GameObject/Utility/State.h"
 #include "GameObject/Monster/MonsterStates/PatrolState.h"

@@ -7807,13 +7807,13 @@ void ImGui::EndGroup()
 // So the difference between WindowPadding and ItemSpacing will be in the visible area after scrolling.
 // When we refactor the scrolling API this may be configurable with a flag?
 // Note that the effect for this won't be visible on X axis with default Style settings as WindowPadding.x == ItemSpacing.x by default.
-static float CalcScrollEdgeSnap(float target, float snap_min, float snap_max, float snap_threshold, float center_ratio)
+static float CalcScrollEdgeSnap(float mTargetObject, float snap_min, float snap_max, float snap_threshold, float center_ratio)
 {
-    if (target <= snap_min + snap_threshold)
-        return ImLerp(snap_min, target, center_ratio);
-    if (target >= snap_max - snap_threshold)
-        return ImLerp(target, snap_max, center_ratio);
-    return target;
+    if (mTargetObject <= snap_min + snap_threshold)
+        return ImLerp(snap_min, mTargetObject, center_ratio);
+    if (mTargetObject >= snap_max - snap_threshold)
+        return ImLerp(mTargetObject, snap_max, center_ratio);
+    return mTargetObject;
 }
 
 static ImVec2 CalcNextScrollFromScrollTargetAndClamp(ImGuiWindow* window)

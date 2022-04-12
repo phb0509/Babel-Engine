@@ -4,6 +4,7 @@ VertexBuffer::VertexBuffer(void* data, UINT stride, UINT count, bool isCPUWrite)
 	: stride(stride), offset(0)
 {
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
+
 	if (isCPUWrite)
 	{
 		vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -40,7 +41,14 @@ void VertexBuffer::IASet(UINT slot)
 
 void VertexBuffer::Update(void* data, UINT count) // vertices.data, vertices.size(원소개수)
 {
-	DEVICECONTEXT->UpdateSubresource(buffer, 0, nullptr, data, stride, count);  // 벡터주소,원소크기,원소개수 
+	DEVICECONTEXT->UpdateSubresource(
+		buffer, // GPU에 넘길 버퍼. 여기에 넘기고자 하는 데이터를 담을거다.
+		0,		// DstSubResource. MipLevel이라 표기한사람도있음.
+		nullptr, // D3D11_BOX.
+		data,    // 넘길 데이터의 첫주소. 벡터.data로 쓰고있음.
+		stride,  //  원소크기// srcRowPitch , 구조체 한 개의 크기.  // Texture에선 width * sizeData. 즉 Width의 크기.
+		count);  // 원소개수   // srcDepthPitch
+
 	//deviceContext->UpdateSubresource(m_texture, 0, NULL, m_targaData, rowPitch, 0);
 }
 
@@ -55,8 +63,43 @@ void VertexBuffer::Map(void* data, UINT dataSize) // vector.data, sizeof(Data) *
 	DEVICECONTEXT->Unmap(buffer, 0);
 }
 
-void VertexBuffer::UpdateBox()
+void VertexBuffer::UpdateBox(void* data, UINT count, Vector3 pickedPosition, float range, float width, float height)
 {
-	//DEVICECONTEXT->CopySubresourceRegion
+	//D3D11_BOX box;
+	//box.left = width * (pickedPosition.y - range) + (pickedPosition.x - range);
+	//box.right = width * (pickedPosition.y + range) + (pickedPosition.y + range);
+	//box.top = 0;
+	//box.bottom = 1;
+	//box.front = 0;
+	//box.back = 1;
+
+	//if (box.left <= 0)
+	//{
+	//	box.left = 0;
+	//}
+
+	//if (box.right >= count)
+	//{
+	//	box.right = count - 1;
+	//}
+
+	D3D11_BOX box;
+	box.left = width * stride;
+	box.right = height * stride;
+	box.top = 0;
+	box.bottom = 1;
+	box.front = 0;
+	box.back = 1;
+	
+	DEVICECONTEXT->UpdateSubresource(
+		buffer, // 넘길 버퍼
+		0,		// DstSubResource. MipLevel이라 표기한사람도있음.
+		&box, // D3D11_BOX.
+		data,    // 넘길 데이터의 첫주소. 벡터.data로 쓰고있음.
+		0,  // width * sizeData , 원소크기// srcRowPitch , 구조체 한 개의 크기.
+		0);  // 원소개수   // srcDepthPitch
+
 }
+
+
 

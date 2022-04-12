@@ -52,12 +52,14 @@ Vector3 GameMath::ClosestPointOnLineSegment(const Vector3& v1, const Vector3& v2
     return v1 + t * line;
 }
 
-Vector3 GameMath::WorldToScreen(const Vector3& worldPos)
+Vector3 GameMath::WorldToScreen(const Vector3& worldPos, Camera* camera)
 {
     Vector3 screenPos;
 
-    screenPos = XMVector3TransformCoord(worldPos.data, TARGETCAMERA->GetViewMatrix());
-    screenPos = XMVector3TransformCoord(screenPos.data, Environment::Get()->GetProjectionMatrix());
+    screenPos = XMVector3TransformCoord(worldPos.data, camera->GetViewMatrix());
+    screenPos = XMVector3TransformCoord(screenPos.data, camera->GetProjectionMatrixInUse());
+
+    
     //NDC공간 좌표(-1 ~ 1) -> 화면좌표(0 ~ WIN_WIDTH)
 
     screenPos.y *= -1;

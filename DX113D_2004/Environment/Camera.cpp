@@ -1,251 +1,117 @@
 #include "Framework.h"
 
-Camera::Camera()
-	:
+Camera::Camera():
 	mMoveSpeed(50.0f),
 	mRotationSpeed(2.0f),
-	distance(13),
-	height(11),
-	offset(0, 5, 0),
-	moveDamping(5),
-	rotDamping(0),
-	destRot(0),
-	rotY(0.0f),
-	rotX(0.0f),
-	target(nullptr),
 	mWheelSpeed(5.0f),
-	mbIsOnFrustumCollider(false),
-	mbIsMouseInputing(true),
-	mbHasInitalized(false),
-	mFrustum(nullptr)
+	mbIsInitialized(false),
+	mFrustum(nullptr),
+	mDistanceToNearZ(0.1f),
+	mDistanceToFarZ(1000.0f),
+	mAspectRatio(WIN_WIDTH/(float)WIN_HEIGHT),
+	mFoV (XM_PIDIV4),
+	mbIsPerspectiveProjection(true),
+	mbIsUsingFrustumCulling(false),
+	mbIsRenderFrustumCollider(false)
 {
 	mViewBuffer = new ViewBuffer();
+	mFrustum = new Frustum(mFoV,mAspectRatio,mDistanceToNearZ,mDistanceToFarZ);
 
-	oldPos = MOUSEPOS;
+	createPerspectiveProjectionBuffer();
+	createOrthographicProjectionBuffer();
 }
 
 Camera::~Camera()
 {
 	delete mViewBuffer;
+	delete mFrustum;
 }
 
 void Camera::Update()
 {
-	if (!mbHasInitalized)
+	Transform::UpdateWorld();
+	//SetViewMatrixToBuffer();
+
+	if (!mbIsInitialized)
 	{
 		initialize();
-		mbHasInitalized = true;
+		mbIsInitialized = true;
 	}
 
-	if (target != nullptr)
+	if (mbIsUsingFrustumCulling)
 	{
-		if (mbIsMouseInputing) // 1인칭시점이 타겟카메라시점일 때
-		{
-			targetMove(); // 타겟카메라시점의 타겟카메라이동
-		}
-		else
-		{
-			targetMoveInWorldCamera(); // 1인칭 시점이 월드카메라 시점일때 타겟카메라의 이동, 프러스텀컬링 확인용.
-		}
-	
 		mFrustum->Update();
-	}
-	else
-	{
-		freeMode();
 	}
 }
 
 void Camera::Render()
 {
-	if (target != nullptr)
-	{
-		mFrustum->Render();
-	}
-}
-
-void Camera::PostRender()
-{
-	if (mFrustum != nullptr)
-	{
-		mFrustum->PostRender();
-	}
-}
-
-void Camera::targetMove()
-{
-	mRotation = { 0.0f,0.0f,0.0f };
-	followControl();
-
-	mRotMatrixY = XMMatrixRotationY(rotY); // rotY는 FollowControl에서 마우스x좌표값 이동절대값에 따라 크기조절. 걍 rotY만큼 이동량 조절.
-	mRotMatrixX = XMMatrixRotationX(rotX);
-
-	Vector3 forward = XMVector3TransformNormal(kForward, mRotMatrixX * mRotMatrixY); // rotMatrix의 방향만? 따오는듯.
-	//forward = XMVector3TransformNormal(forward, mRotMatrixX);
-
-	destPos = forward * -distance;
-	destPos += target->GetGlobalPosition();
-	destPos.y += height;
-
-	mPosition = LERP(mPosition, destPos, 5.0f * DELTA); // 카메라 위치.
-													    // 현위치에서 desPost까지 moveDamping값만큼.
-
-	Vector3 tempOffset = XMVector3TransformCoord(offset.data, mRotMatrixY);
-	Vector3 targetPosition = target->GetGlobalPosition() + tempOffset;
-
-	//cameraForward = (mPlayer->GlobalPos() - position).Normal();
-	mCameraForward = forward.Normal();
-
-	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
-		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
-
-	// 프러스텀에 뷰버퍼 설정.
-	mViewBuffer->Set(mViewMatrix);
-	setViewToFrustum(mViewMatrix);
 	
 }
-
-void Camera::targetMoveInWorldCamera()
+void Camera::PostRender()
 {
-	Vector3 targetPosition = target->mPosition;
-	Vector3 beforePosition = mPosition;
-
-	mPosition = target->mPosition + target->Forward() * 1.1f;
-	mDistanceToTarget = (mPosition - beforePosition).Length();
-
-	mViewMatrix = XMMatrixLookAtLH(mPosition.data, targetPosition.data,
-		Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
-
-	// 프러스텀에 뷰버퍼 설정.
-	mViewBuffer->Set(mViewMatrix);
-	setViewToFrustum(mViewMatrix);
-
-	//Vector3 targetPosition = target->mPosition;
-	//mPosition = target->mPosition + target->Forward() * 1.1f; // 타겟의 뒤.(모델은 포워드벡터가 반대다)
-
-	//RotateToDestinationForNotModel(this, targetPosition);
-
-	//Vector3 focus = mPosition + Forward();
-
-	//char buff[100];
-	//sprintf_s(buff, "Forwrd.x : %f  Forward.y : %f  Forward.z : %f\n", Forward().x,Forward().y,Forward().z);
-	//OutputDebugStringA(buff);
-
-	//mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data,
-	//	Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
-
-	//mViewBuffer->Set(mViewMatrix);
-	//setViewToFrustum(mViewMatrix);
 }
 
-
-
-void Camera::followControl()
+void Camera::RenderFrustumCollider()
 {
-	// 마우스를 계속 좌측이나 우측으로 돌릴 시, 계속 캐릭터 회전시키기 위해
-	// 끝에 닿을 시 커서좌표 이동시켜야함.
-	// 버그많음.고쳐야됨.
-
-	/*if (MOUSEPOS.x >= WIN_WIDTH-20)
+	if (mbIsUsingFrustumCulling)
 	{
-		ClientToScreen(hWnd, &pt);
-
-		pt.x = WIN_WIDTH - 100;
-		pt.y = MOUSEPOS.y;
-
-		SetCursorPos(pt.x, pt.y);
-
-		oldPos.x = pt.x;
-		oldPos.y = pt.y;
+		if (mbIsRenderFrustumCollider)
+		{
+			mFrustum->RenderCollider();
+		}
 	}
-
-	if (MOUSEPOS.x <= 0 + 20)
-	{
-		ClientToScreen(hWnd, &pt);
-
-		pt.x = 100;
-		pt.y = MOUSEPOS.y;
-
-		SetCursorPos(pt.x, pt.y);
-
-		oldPos.x = pt.x;
-		oldPos.y = pt.y;
-	}*/
-
-
-	Vector3 value = MOUSEPOS - oldPos;
-
-	rotY += value.x * mRotationSpeed * DELTA;
-	rotX += value.y * mRotationSpeed * DELTA;
-
-	oldPos = MOUSEPOS;
 }
 
 
-
-void Camera::freeMode()
-{
-	freeMove();
-	rotation();
-	SetViewMatrixToBuffer();
-}
-
-
-
-void Camera::freeMove()
-{
-	if (KEY_PRESS(VK_RBUTTON))
-	{
-		if (KEY_PRESS('I'))
-			mPosition += Forward() * mMoveSpeed * DELTA;
-		if (KEY_PRESS('K'))
-			mPosition -= Forward() * mMoveSpeed * DELTA;
-		if (KEY_PRESS('J'))
-			mPosition -= Right() * mMoveSpeed * DELTA;
-		if (KEY_PRESS('L'))
-			mPosition += Right() * mMoveSpeed * DELTA;
-		if (KEY_PRESS('U'))
-			mPosition -= Up() * mMoveSpeed * DELTA;
-		if (KEY_PRESS('O'))
-			mPosition += Up() * mMoveSpeed * DELTA;
-	}
-
-	mPosition += Forward() * Control::Get()->GetWheel() * mWheelSpeed * DELTA;
-}
-
-void Camera::rotation()
-{
-	if (KEY_PRESS(VK_RBUTTON))
-	{
-		Vector3 value = MOUSEPOS - oldPos;
-
-		mRotation.x += value.y * mRotationSpeed * DELTA;
-		mRotation.y += value.x * mRotationSpeed * DELTA;
-	}
-
-	oldPos = MOUSEPOS;
-}
 
 void Camera::initialize()
 {
-	if(mFrustum != nullptr)
-	{
-		mFrustum->SetCamera(this);
-	}
+	mFrustum->SetCamera(this);
+}
+
+void Camera::SetViewToFrustum(Matrix view)
+{
+	mFrustum->SetView(view);
 }
 
 void Camera::SetViewMatrixToBuffer()
 {
-	UpdateWorld();
+	Transform::UpdateWorld();
 
 	Vector3 focus = mPosition + Forward();
 	mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data, Up().data); // 카메라위치, 타겟위치, 카메라 윗벡터
-	mViewBuffer->Set(mViewMatrix);
+	mViewBuffer->SetMatrix(mViewMatrix);
 }
 
-void Camera::SetVertexShader(UINT slot)
+void Camera::SetViewBuffer(UINT slot)
 {
 	mViewBuffer->SetVSBuffer(slot);
+}
+
+void Camera::SetProjectionBuffer()
+{
+	if (mbIsPerspectiveProjection)
+	{
+		mPerspectiveProjectionBuffer->SetVSBuffer(2);
+	}
+	else
+	{
+		mOrthographicProjectionBuffer->SetVSBuffer(2);
+	}
+}
+
+void Camera::SetProjectionOption(float FoV, float aspectRatio, float distanceToNearZ, float distanceToFarZ)
+{
+	mFoV = FoV;
+	mAspectRatio = aspectRatio;
+	mDistanceToNearZ = distanceToNearZ; 
+	mDistanceToFarZ = distanceToFarZ; 
+
+	delete mFrustum;
+	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	createPerspectiveProjectionBuffer();
+	createOrthographicProjectionBuffer();
 }
 
 Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
@@ -255,16 +121,22 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	Float2 point;
 	point.x = ((2 * pos.x) / screenSize.x) - 1.0f; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 	point.y = (((2 * pos.y) / screenSize.y) - 1.0f) * -1.0f;                        
-	Matrix projection = Environment::Get()->GetProjectionMatrix();
-
+	
 	Float4x4 temp;
-	XMStoreFloat4x4(&temp, projection);
 
+	if (mbIsPerspectiveProjection)
+	{
+		XMStoreFloat4x4(&temp, mPerspectiveProjectionMatrix);
+	}
+	else
+	{
+		XMStoreFloat4x4(&temp, mOrthographicProjectionMatrix);
+	}
+	
 	//Unprojection
 	point.x /= temp._11; // 뷰공간의 x,y좌표로 전환.
 	point.y /= temp._22;
 
-	
 	Ray ray;
 	ray.position = mPosition;
 
@@ -278,14 +150,68 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	return ray;
 }
 
-void Camera::CreateFrustum()
+Matrix Camera::GetProjectionMatrixInUse()
 {
-	mFrustum = new Frustum();
+	if (mbIsPerspectiveProjection)
+	{
+		return mPerspectiveProjectionMatrix;
+	}
+
+	return mOrthographicProjectionMatrix;
 }
 
-void Camera::setViewToFrustum(Matrix view)
+ProjectionBuffer* Camera::GetProjectionBufferInUse()
 {
-	mFrustum->SetView(view);
+	if (mbIsPerspectiveProjection)
+	{
+		return mPerspectiveProjectionBuffer;
+	}
+
+	return mOrthographicProjectionBuffer;
+}
+
+void Camera::createPerspectiveProjectionBuffer()
+{
+	if (mPerspectiveProjectionBuffer != nullptr)
+	{
+		delete mPerspectiveProjectionBuffer;
+	}
+
+	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(mFoV,
+		mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	mPerspectiveProjectionBuffer = new ProjectionBuffer();
+	mPerspectiveProjectionBuffer->SetMatrix(mPerspectiveProjectionMatrix);
+}
+
+void Camera::createOrthographicProjectionBuffer()
+{
+	//float w = 2.0f / WIN_WIDTH;
+	//float h = 2.0f / WIN_HEIGHT;
+	//float a = 0.001f;
+	//float b = -a * 0.001f;
+
+	////float a = 1.0f;
+	////float b = 0.0f;
+
+	//Matrix orthographicMatrix = XMMatrixIdentity();
+
+	//orthographicMatrix.r[0].m128_f32[0] = w;
+	//orthographicMatrix.r[1].m128_f32[1] = h;
+	//orthographicMatrix.r[2].m128_f32[2] = a;
+	//orthographicMatrix.r[3].m128_f32[2] = b;
+	//orthographicMatrix.r[3].m128_f32[3] = 1;
+
+	//mOrthographicProjectionBuffer = new ProjectionBuffer();
+	//mOrthographicProjectionBuffer->Set(orthographicMatrix);
+
+	if (mOrthographicProjectionBuffer != nullptr)
+	{
+		delete mOrthographicProjectionBuffer;
+	}
+
+	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 0.01f, 1000.0f);
+	mOrthographicProjectionBuffer = new ProjectionBuffer();
+	mOrthographicProjectionBuffer->SetMatrix(mOrthographicProjectionMatrix);
 }
 
 

@@ -28,12 +28,12 @@ DeferredRenderingScene::~DeferredRenderingScene()
 
 void DeferredRenderingScene::Update()
 {
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
+	//if (Environment::Get()->GetIsEnabledTargetCamera())
+	//{
+	//	Environment::Get()->GetTargetCamera()->Update();
+	//}
 
-	Environment::Get()->GetWorldCamera()->Update();
+	//Environment::Get()->GetWorldCamera()->Update();
 
 	groot->Update();
 	sphere->Update();
@@ -41,8 +41,8 @@ void DeferredRenderingScene::Update()
 
 void DeferredRenderingScene::PreRender()
 {
-	Environment::Get()->Set();
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+	/*Environment::Get()->Set();
+	Environment::Get()->SetProjectionBuffer();*/
 
 	gBuffer->PreRender(); // 여기서 OM에 Set. (rtv 3개, dev 1개)
 
@@ -64,21 +64,21 @@ void DeferredRenderingScene::PreRender()
 
 void DeferredRenderingScene::Render()
 {
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	//Device::Get()->SetRenderTarget(); // SetMainRenderTarget
 
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
+	//if (Environment::Get()->GetIsEnabledTargetCamera())
+	//{
+	//	Environment::Get()->GetTargetCamera()->Render();
+	//}
 
-	Environment::Get()->GetWorldCamera()->Render();
-	Environment::Get()->Set();
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+	//Environment::Get()->GetWorldCamera()->Render();
+	//Environment::Get()->Set();
+	//Environment::Get()->SetProjectionBuffer();
 
-	// Device::SetRenderTarget
+	//// Device::SetRenderTarget
 
-	TARGETCAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
-	Environment::Get()->GetPerspectiveProjectionBuffer()->SetPSBuffer(2);
+	//TARGETCAMERA->GetViewBuffer()->SetPSBuffer(3); // 카메라 뷰버퍼 PS 3번에 셋
+	//Environment::Get()->GetPerspectiveProjectionBuffer()->SetPSBuffer(2);
 
 	gBuffer->Render(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 
@@ -94,40 +94,40 @@ void DeferredRenderingScene::Render()
 
 void DeferredRenderingScene::PostRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-
-	gBuffer->PostRender(); // UIImage들 렌더.
+	//	Environment::Get()->SetProjectionBuffer();
+	//
+	//	gBuffer->PostRender(); // UIImage들 렌더.
 }
 
 void DeferredRenderingScene::CreateModels()
 {
-	TARGETCAMERA->mPosition = { 0, 10, -20 };
-	TARGETCAMERA->mRotation.x = 0.4f;
+	//TARGETCAMERA->mPosition = { 0, 10, -20 };
+	//TARGETCAMERA->mRotation.x = 0.4f;
 
-	bunny = new ModelObject();
-	bunny->mScale = { 0.01f, 0.01f, 0.01f };
-	bunny->mPosition.y = 2.35f;
-	bunny->mPosition.x = -3.0f;
+	//bunny = new ModelObject();
+	//bunny->mScale = { 0.01f, 0.01f, 0.01f };
+	//bunny->mPosition.y = 2.35f;
+	//bunny->mPosition.x = -3.0f;
 
-	plane = new ModelObject();
-	plane->mScale = { 2.0f, 2.0f, 2.0f };
+	//plane = new ModelObject();
+	//plane->mScale = { 2.0f, 2.0f, 2.0f };
 
-	groot = new ModelAnimObject();
-	groot->mScale = { 0.01f, 0.01f, 0.01f };
-	groot->mPosition.x = 3.0f;
-	groot->SetShader(L"Lighting");
-	//groot->ReadClip("Groot/Dancing0");
+	//groot = new ModelAnimObject();
+	//groot->mScale = { 0.01f, 0.01f, 0.01f };
+	//groot->mPosition.x = 3.0f;
+	//groot->SetShader(L"Lighting");
+	////groot->ReadClip("Groot/Dancing0");
 
-	groot->SetDiffuseMap(L"ModelData/Materials/Groot/groot_diffuse.png");
-	groot->SetSpecularMap(L"ModelData/Materials/Groot/groot_glossiness.png");
-	groot->SetNormalMap(L"ModelData/Materials/Groot/groot_normal_map.png");
+	//groot->SetDiffuseMap(L"ModelData/Materials/Groot/groot_diffuse.png");
+	//groot->SetSpecularMap(L"ModelData/Materials/Groot/groot_glossiness.png");
+	//groot->SetNormalMap(L"ModelData/Materials/Groot/groot_normal_map.png");
 
-	groot->PlayClip(0);
+	//groot->PlayClip(0);
 
-	sphere = new Sphere(L"Lighting");
-	sphere->mPosition = { 0.0f, 1.0f, -3.0f };
-	sphere->GetMaterial()->SetDiffuseMap(L"Textures/Landscape/Fieldstone_DM.tga");
-	sphere->GetMaterial()->SetNormalMap(L"Textures/Landscape/fieldstone_NM.tga");
+	//sphere = new Sphere(L"Lighting");
+	//sphere->mPosition = { 0.0f, 1.0f, -3.0f };
+	//sphere->GetMaterial()->SetDiffuseMap(L"Textures/Landscape/Fieldstone_DM.tga");
+	//sphere->GetMaterial()->SetNormalMap(L"Textures/Landscape/fieldstone_NM.tga");
 }
 
 void DeferredRenderingScene::CreateMesh()

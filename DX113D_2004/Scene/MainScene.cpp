@@ -2,68 +2,66 @@
 #include "MainScene.h"
 
 MainScene::MainScene() :
-	mTargetCameraFrustum(nullptr)
+	mTargetCameraFrustum(nullptr),
+	mbIsWorldMode(true),
+	mMainCamera(eCamera::WorldCamera),
+	mPreFrameMousePosition(MOUSEPOS)
 {
+	mWorldCamera = new Camera();
+	mWorldCamera->mTag = "WorldCamera";
+	mWorldCamera->mPosition = { 72.8f, 73.5f, -93.0f };
+	mWorldCamera->mRotation = { 0.5f, -0.3f, 0.0f };
+
+	mTargetCamera = new Camera();
+	mTargetCamera->mTag = "TargetCamera";
+	mTargetCamera->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 100.0f);
+	mTargetCamera->SetIsUsingFrustumCulling(true);
+	mTargetCamera->SetIsRenderFrustumCollider(true);
+
+	mTargetCameraForShow = new Camera();
+	mTargetCameraForShow->mTag = "TargetCameraInWorld";
+	mTargetCameraForShow->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 100.0f);
+	mTargetCameraForShow->SetIsUsingFrustumCulling(true);
+	mTargetCameraForShow->SetIsRenderFrustumCollider(true);
+
+
 	mTerrain = new Terrain();
+	mTerrain->SetCamera(mWorldCamera);
 	mPlayer = GM->GetPlayer();
 	mPlayer->SetTerrain(mTerrain);
-	Environment::Get()->SetTargetToCamera(mPlayer);
-	mMonsters = GM->GetMonsters();
-
-	/*mObstacle1 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	mObstacle1->mScale = { 0.1f, 0.1f, 0.1f };
-	mObstacle1->mPosition = { 40, 20, 40 };
-	mObstacle1->UpdateWorld();
-	mObstacle1->GetCollider()->UpdateWorld();
-
-	mObstacle2 = new ModelObject("StanfordBunny/StanfordBunny", Collider::BOX);
-	mObstacle2->mScale = { 0.1f, 0.1f, 0.1f };
-	mObstacle2->mPosition = { 90, 20, 90 };
-	mObstacle2->UpdateWorld();
-	mObstacle2->GetCollider()->UpdateWorld();*/
-
-	mMonsters[0]->mPosition = { 50.0f, 0.0f, 50.0f };
-	//mMonsters[1]->position = { 45.0f, 0.0f, 50.0f };
-
-	mMonsters[0]->SetTerrain(mTerrain);
-	//mMonsters[1]->SetTerrain(terrain);
-
+	mPlayer->SetTargetCamera(mTargetCamera);
+	mPlayer->SetTargetCameraInWorld(mTargetCameraForShow);
+	mPlayer->SetIsTargetMode(false);
+	mMutants = GM->GetMonsters();
 	vector<Collider*> monsters0Obstacles;
-	//monsters0Obstacles.push_back(mObstacle1->GetCollider());
-	//monsters0Obstacles.push_back(mObstacle2->GetCollider());
-	//vector<Collider*> monsters1Obstacles;
 
-	//monsters0Obstacles.push_back(mMonsters[1]->GetColliderForAStar());
-	//monsters1Obstacles.push_back(mMonsters[0]->GetColliderForAStar());
+	float startX = 30.0f;
+	float startZ = 30.0f;
+	float gapWidth = 10.0f;
+	float gapHeight = 10.0f;
 
-	mMonsters[0]->GetAStar()->SetObstacle(monsters0Obstacles);
-	//mMonsters[1]->GetAStar()->SetObstacle(monsters1Obstacles);
+	int row = 30;
+	int column = 20;
 
-	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
-	
-	//mInstancedMutants = new ModelAnimators("Mutant/Mutant");
-	//mInstancedMutants->SetShader(L"Models");
-	//mInstancedMutants->ReadClip("Mutant/Idle0.clip");
+	mMutantInstanceCount = row * column;
 
-	//Vector3 minBox, maxBox;
-	//mInstancedMutants->SetBox(&minBox, &maxBox);
+	mInstanceMutant = new InstanceMutant(mMutantInstanceCount); // ModelAnimators
+	mInstanceMutant->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
+	mInstanceMutant->SetIsFrustumCullingMode(true);
 
-	//for (float z = 0.0f; z < 5.0f; z++)
-	//{
-	//	for (float x = 0.0f; x < 50.0f; x++)
-	//	{
-	//		Transform* transform = mInstancedMutants->Add();
-	//		transform->mTag = "x : " + to_string((int)x) + " z : " + to_string((int)z);
-	//		transform->mPosition = { x, 0.0f, z };
-	//		transform->mScale = { 0.1f, 0.1f, 0.1f };
+	mInstanceMutants = mInstanceMutant->GetInstanceObjects(); // InstanceObjectsVector
 
-	//		mInstancedMutants->SetEndEvents(boneMatrix.size(), 2, // 인스턴스,클립
-	//			bind(&MainScene::SetIdle, this, placeholders::_1));
-	//		mInstancedMutants->SetParams(boneMatrix.size(), 2, boneMatrix.size());
-
-	//		boneMatrix.emplace_back(XMMatrixIdentity()); // 인스턴스수만큼 단위행렬로 초기화.			
-	//	}
-	//}
+	for (int z = 0; z < column; z++)
+	{
+		for (int x = 0; x < row; x++)
+		{
+			int monsterIndex = z * row + x;
+			mInstanceMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
+			mInstanceMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
+			//mInstanceMutants[monsterIndex]->SetTerrain(mTerrain);
+			//mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
+		}
+	}
 }
 
 MainScene::~MainScene()
@@ -73,63 +71,115 @@ MainScene::~MainScene()
 
 void MainScene::Update()
 {
-	if (Environment::Get()->GetIsEnabledTargetCamera())
+	switch (static_cast<int>(mMainCamera))
 	{
-		Environment::Get()->GetTargetCamera()->Update();
+	case 0:    // World
+	{
+		mWorldCamera->Update();
+		moveWorldCamera();
 	}
+	break;
 
-	Environment::Get()->GetWorldCamera()->Update();
+	case 1:    // Target
+	{
+		mTargetCamera->Update();
+	}
+	break;
+	
+	default:
+		break;
+	}
 
 	mTerrain->Update();
-	mPlayer->Update();
+	mPlayer->Update(); // Update TargetCameraInWorld
 
-	for (int i = 0; i < mMonsters.size(); i++)
-	{
-		mMonsters[i]->Update();
-	}
+	//for (int i = 0; i < mMutants.size(); i++)
+	//{
+	//	mMutants[i]->Update();
+	//}
 
-	//mInstancedMutants->Update();
+	mInstanceMutant->Update();
 }
 
 void MainScene::PreRender()
 {
-	Environment::Get()->Set(); // 뷰버퍼 Set VS
-	Environment::Get()->SetPerspectiveProjectionBuffer();
 }
 
 void MainScene::Render()
 {
-	// 메인렌더타겟 Clear 후에 Set.
-	Device::Get()->ClearRenderTargetView();
+	// 백버퍼와 연결된 렌더타겟
+	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
-	//Device::Get()->SetRenderTarget(); // SetMainRenderTarget
 	Device::Get()->SetRenderTarget();
-
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-
-	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender 외엔 뭐 업승ㅁ.
 	Environment::Get()->Set(); // SetViewPort
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+
+	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
+	{
+	case 0:    // World
+	{
+		mWorldCamera->SetViewBuffer();
+		mWorldCamera->SetProjectionBuffer();
+		mTargetCameraForShow->RenderFrustumCollider();
+	}
+	break;
+
+	case 1:    // Target
+	{
+		mTargetCamera->SetViewBuffer();
+		mTargetCamera->SetProjectionBuffer();
+		//mTargetCamera->RenderFrustumCollider();
+	}
+	break;
+
+	default:
+		break;
+	}
 
 	mTerrain->Render();
 	mPlayer->Render();
 
-	for (int i = 0; i < mMonsters.size(); i++)
+	/*for (int i = 0; i < mMutants.size(); i++)
 	{
-		mMonsters[i]->Render();
-	}
+		mMutants[i]->Render();
+	}*/
 
-	//mInstancedMutants->Render();
+	mInstanceMutant->Render();
 }
 
 void MainScene::PostRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-
 	mPlayer->PostRender();
+
+	ImGui::Begin("Camera Info");
+	ImGui::Text("SelectCamera");
+
+	if (ImGui::Button("TargetCamera")) // 
+	{
+		mMainCamera = eCamera::TargetCamera;
+		mPlayer->SetIsTargetMode(true);
+		mTargetCameraForShow->SetIsUsingFrustumCulling(false);
+		mTargetCamera->SetIsUsingFrustumCulling(true);
+		mInstanceMutant->SetCameraForCulling(mTargetCamera);
+	}
+
+	if (ImGui::Button("WorldCamera"))
+	{
+		mMainCamera = eCamera::WorldCamera;
+		mPlayer->SetIsTargetMode(false);
+		mTargetCameraForShow->SetIsUsingFrustumCulling(true);
+		mTargetCamera->SetIsUsingFrustumCulling(false);
+		mInstanceMutant->SetCameraForCulling(mTargetCameraForShow);
+	}
+
+	SpacingRepeatedly(2);
+	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
+	SpacingRepeatedly(2);
+	ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
+	SpacingRepeatedly(2);
+	ImGui::InputFloat3("Player Position", (float*)&mPlayer->mPosition, "%.3f");
+	SpacingRepeatedly(2);
+
+	ImGui::End();
 }
 
 
@@ -139,13 +189,13 @@ void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함
 	FILE* file;
 	fopen_s(&file, "TextData/monstersPosition.csv", "w");
 
-	for (UINT i = 0; i < mMonsters.size(); i++)
+	for (UINT i = 0; i < mMutants.size(); i++)
 	{
 		fprintf(
 			file,
 			"%d,%.3f,%.3f,%.3f\n",
 			i,
-			mMonsters[i]->mPosition.x, mMonsters[i]->mPosition.y, mMonsters[i]->mPosition.z
+			mMutants[i]->mPosition.x, mMutants[i]->mPosition.y, mMutants[i]->mPosition.z
 		);
 	}
 
@@ -156,3 +206,41 @@ void MainScene::setIdle(int instance)
 {
 	mInstancedMutants->PlayClip(instance, 0); // Idle.
 }
+
+void MainScene::moveWorldCamera()
+{
+	// Update Position
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		if (KEY_PRESS('I'))
+			mWorldCamera->mPosition += mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('K'))
+			mWorldCamera->mPosition -= mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('J'))
+			mWorldCamera->mPosition -= mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('L'))
+			mWorldCamera->mPosition += mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('U'))
+			mWorldCamera->mPosition -= mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('O'))
+			mWorldCamera->mPosition += mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+	}
+
+	mWorldCamera->mPosition += mWorldCamera->Forward() * Control::Get()->GetWheel() * mWorldCamera->mWheelSpeed * DELTA;
+
+	// Update Rotation
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		Vector3 value = MOUSEPOS - mPreFrameMousePosition;
+
+		mWorldCamera->mRotation.x += value.y * mWorldCamera->mRotationSpeed * DELTA;
+		mWorldCamera->mRotation.y += value.x * mWorldCamera->mRotationSpeed * DELTA;
+	}
+
+	mPreFrameMousePosition = MOUSEPOS;
+	mWorldCamera->SetViewMatrixToBuffer();
+}
+
+
+
+

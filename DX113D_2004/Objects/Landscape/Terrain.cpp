@@ -1,12 +1,12 @@
 #include "Framework.h"
 
 Terrain::Terrain()
-	: mWidth(10), 
-	mHeight(10)
+	: mTerrainWidth(10), 
+	mTerrainHeight(10)
 {
 	mMaterial = new Material(L"Lighting");
-	mMaterial->SetDiffuseMap(L"Textures/Stones.png");
-	mMaterial->SetNormalMap(L"Textures/Stones_normal.png");
+	mMaterial->SetDiffuseMap(L"Textures/dirt.png");
+	//mMaterial->SetNormalMap(L"Textures/Stones_normal.png");
 
 	mMaterial->GetBuffer()->data.emissive = { 0, 0, 0, 0 };
 
@@ -17,9 +17,9 @@ Terrain::Terrain()
 	//D3D11_FILL_SOLID
 //	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	mHeightMap = Texture::Add(L"Textures/HeightMap.png"); // 100 & 100
+	mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
 
-	CreateMesh();
+	createMesh();
 
 	mComputeShader = Shader::AddCS(L"ComputePicking");	
 
@@ -69,17 +69,17 @@ void Terrain::Render()
 
 bool Terrain::Picking(OUT Vector3* position)
 {
-	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = mCamera->ScreenPointToRay(MOUSEPOS);
 
-	for (UINT z = 0; z < mHeight; z++) // 0~255
+	for (UINT z = 0; z < mTerrainHeight; z++) // 0~255
 	{
-		for (UINT x = 0; x < mWidth; x++) // 0~255
+		for (UINT x = 0; x < mTerrainWidth; x++) // 0~255
 		{
 			UINT index[4];
-			index[0] = (mWidth + 1) * z + x; // 0 ~
-			index[1] = (mWidth + 1) * z + x + 1; // 1~
-			index[2] = (mWidth + 1) * (z + 1) + x; // 1 ~
-			index[3] = (mWidth + 1) * (z + 1) + x + 1; // 2 ~
+			index[0] = (mTerrainWidth + 1) * z + x; // 0 ~
+			index[1] = (mTerrainWidth + 1) * z + x + 1; // 1~
+			index[2] = (mTerrainWidth + 1) * (z + 1) + x; // 1 ~
+			index[3] = (mTerrainWidth + 1) * (z + 1) + x + 1; // 2 ~
 
 			Vector3 p[4];
 			for (UINT i = 0; i < 4; i++)
@@ -110,7 +110,7 @@ bool Terrain::Picking(OUT Vector3* position)
 
 bool Terrain::ComputePicking(OUT Vector3* position)
 {	
-	Ray ray = TARGETCAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = mCamera->ScreenPointToRay(MOUSEPOS);
 
 	mRayBuffer->data.position = ray.position;
 	mRayBuffer->data.direction = ray.direction;
@@ -161,14 +161,14 @@ float Terrain::GetHeight(Vector3 position)
 	UINT x = (UINT)position.x;
 	UINT z = (UINT)position.z;
 
-	if (x < 0 || x > mWidth) return 0.0f;
-	if (z < 0 || z > mHeight) return 0.0f;
+	if (x < 0 || x > mTerrainWidth) return 0.0f;
+	if (z < 0 || z > mTerrainHeight) return 0.0f;
 
 	UINT index[4];
-	index[0] = (mWidth + 1) * z + x;
-	index[1] = (mWidth + 1) * (z + 1) + x;
-	index[2] = (mWidth + 1) * z + x + 1;
-	index[3] = (mWidth + 1) * (z + 1) + x + 1;
+	index[0] = (mTerrainWidth + 1) * z + x;
+	index[1] = (mTerrainWidth + 1) * (z + 1) + x;
+	index[2] = (mTerrainWidth + 1) * z + x + 1;
+	index[3] = (mTerrainWidth + 1) * (z + 1) + x + 1;
 
 	Vector3 p[4];
 	for (int i = 0; i < 4; i++)
@@ -193,23 +193,23 @@ float Terrain::GetHeight(Vector3 position)
 	return result.y;
 }
 
-void Terrain::CreateMesh()
+void Terrain::createMesh()
 {
-	mWidth = mHeightMap->GetWidth() - 1;
-	mHeight = mHeightMap->GetHeight() - 1;
+	mTerrainWidth = mHeightMap->GetWidth() - 1;
+	mTerrainHeight = mHeightMap->GetHeight() - 1;
 
 	vector<Float4> pixels = mHeightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
 
 	//Vertices
-	for (UINT z = 0; z <= mHeight; z++)
+	for (UINT z = 0; z <= mTerrainHeight; z++)
 	{
-		for (UINT x = 0; x <= mWidth; x++)
+		for (UINT x = 0; x <= mTerrainWidth; x++)
 		{
 			VertexType vertex;
 			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
+			vertex.uv = Float2(x / (float)mTerrainWidth, 1.0f - z / (float)mTerrainHeight);
 
-			UINT index = (mWidth + 1) * z + x;
+			UINT index = (mTerrainWidth + 1) * z + x;
 			vertex.position.y += pixels[index].x * 20.0f; // 걍 값이 정규화되서 너무 작으니까 임의의 값 20.0f를 곱해준것.
 
 			mVertices.emplace_back(vertex);
@@ -217,17 +217,17 @@ void Terrain::CreateMesh()
 	}
 
 	//Indices
-	for (UINT z = 0; z < mHeight; z++)
+	for (UINT z = 0; z < mTerrainHeight; z++)
 	{
-		for (UINT x = 0; x < mWidth; x++)
+		for (UINT x = 0; x < mTerrainWidth; x++)
 		{
-			mIndices.emplace_back((mWidth + 1) * z + x);//0
-			mIndices.emplace_back((mWidth + 1) * (z + 1) + x);//1
-			mIndices.emplace_back((mWidth + 1) * (z + 1) + x + 1);//2
+			mIndices.emplace_back((mTerrainWidth + 1) * z + x);//0
+			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x);//1
+			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x + 1);//2
 
-			mIndices.emplace_back((mWidth + 1) * z + x);//0
-			mIndices.emplace_back((mWidth + 1) * (z + 1) + x + 1);//2
-			mIndices.emplace_back((mWidth + 1) * z + x + 1);//3
+			mIndices.emplace_back((mTerrainWidth + 1) * z + x);//0
+			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x + 1);//2
+			mIndices.emplace_back((mTerrainWidth + 1) * z + x + 1);//3
 		}
 	}
 	 
@@ -248,14 +248,14 @@ void Terrain::CreateMesh()
 		mInput[i].index = i;
 	}
 
-	CreateNormal();
-	CreateTangent();
+	createNormal();
+	createTangent();
 
 	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
 		mIndices.data(), (UINT)mIndices.size());
 }
 
-void Terrain::CreateNormal()
+void Terrain::createNormal()
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
@@ -284,7 +284,7 @@ void Terrain::CreateNormal()
 	mVertices;
 }
 
-void Terrain::CreateTangent()
+void Terrain::createTangent()
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{

@@ -25,6 +25,11 @@ void Mesh::UpdateVertex(void* data, UINT count) // º¤ÅÍÁÖ¼Ò,¿ø¼Ò°³¼ö
 	vertexBuffer->Update(data, count); // UpdateSubresource (DEFAULT) // º¤ÅÍ.data, º¤ÅÍ¿ø¼Ò°³¼ö.
 }
 
+void Mesh::UpdateVertexUsingBox(void* data, UINT count, Vector3 pickedPosition, float range, float width, float height)
+{
+	vertexBuffer->UpdateBox(data, count, pickedPosition, range, width, height); // UpdateSubresource (DEFAULT) // º¤ÅÍ.data, º¤ÅÍ¿ø¼Ò°³¼ö.
+}
+
 void Mesh::UpdateVertexUsingMap(void* data, UINT dataSize)
 {
 	vertexBuffer->Map(data, dataSize); // map , unmap  (DYNAMIC) // vector.data, sizeof(Data) * DataCount

@@ -2,16 +2,16 @@
 
 Billboard::Billboard(wstring diffuseFile)
 {
-	material = new Material(L"Texture");
-	material->SetDiffuseMap(diffuseFile);
+	mMaterial = new Material(L"Texture");
+	mMaterial->SetDiffuseMap(diffuseFile);
 
 	CreateMesh();
 }
 
 Billboard::~Billboard()
 {
-	delete material;
-	delete mesh;
+	delete mMaterial;
+	delete mMesh;
 }
 
 void Billboard::Update()
@@ -19,15 +19,15 @@ void Billboard::Update()
 	//rotation.y = CAMERA->rotation.y;
 	//rotation = CAMERA->rotation;
 
-	Vector3 dir = mPosition - TARGETCAMERA->mPosition; // 오브젝트가 카메라를 바라보는 방향벡터.
+	Vector3 dir = mPosition - mCamera->mPosition; // 오브젝트가 카메라를 바라보는 방향벡터.
 	mRotation.y = atan2(dir.x, dir.z);
 }
 
 void Billboard::Render()
 {
 	SetWorldBuffer();
-	mesh->IASet();
-	material->Set();
+	mMesh->IASet();
+	mMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexed(6, 0, 0);
 }
@@ -50,5 +50,5 @@ void Billboard::CreateMesh()
 		1, 3, 2
 	};
 
-	mesh = new Mesh(vertices, sizeof(VertexUV), 4, indices, 6);
+	mMesh = new Mesh(vertices, sizeof(VertexUV), 4, indices, 6);
 }

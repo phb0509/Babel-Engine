@@ -71,6 +71,7 @@ private:
 	void renderGizmos();
 
 private:
+	Camera* mCamera;
 	ToolModel* mModel;
 	ToolModel* mCurrentModel;
 
@@ -165,4 +166,5 @@ private:
 	float tempScale[3];
 
 	bool mbCheck = false;
+	
 };

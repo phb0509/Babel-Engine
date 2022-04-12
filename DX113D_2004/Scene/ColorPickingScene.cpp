@@ -6,13 +6,11 @@
 ColorPickingScene::ColorPickingScene()
 {
 	srand(static_cast<unsigned int>(time(NULL)));
-	Environment::Get()->SetIsEnabledTargetCamera(false); // ¿ùµåÄ«¸Þ¶ó¸¸ »ç¿ë.
-
+	
 	// Ä«¸Þ¶ó ¼³Á¤.
-	WORLDCAMERA->mPosition = { 0.0f, 0.0f, -40.0f };
-	WORLDCAMERA->mRotation = { 0.0, 0.0, 0.0 };
 
-	WORLDCAMERA->mMoveSpeed = 50.0f;
+
+	mCamera->mMoveSpeed = 50.0f;
 	mPreviousMousePosition = MOUSEPOS;
 	mTerrain = new Terrain();
 	mPlayer = GM->GetPlayer();
@@ -65,12 +63,7 @@ ColorPickingScene::~ColorPickingScene()
 
 void ColorPickingScene::Update()
 {
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
 
-	Environment::Get()->GetWorldCamera()->Update();
 
 	for (Collider* collider : mColliders)
 	{
@@ -174,17 +167,9 @@ void ColorPickingScene::Update()
 
 void ColorPickingScene::PreRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
 	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
-
-
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-
-	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender ¿Ü¿£ ¹¹ ¾÷½Â¤±.
 
 	// ÄÃ·¯ÇÇÅ·¿ë ·»´õÅ¸°ÙÅØ½ºÃÄ¿¡ ·»´õ.
 
@@ -202,14 +187,8 @@ void ColorPickingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-
-	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender ¿Ü¿£ ¹¹ ¾÷½Â¤±.
 	Environment::Get()->Set(); // SetViewPort
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 
 	for (Collider* collider : mColliders)
 	{
@@ -221,8 +200,6 @@ void ColorPickingScene::Render()
 
 void ColorPickingScene::PostRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-
 	ImGui::Begin("Test Window");
 
 	int frame_padding = 0;
@@ -247,8 +224,8 @@ void ColorPickingScene::PostRender()
 	Matrix viewMatrix;
 	Matrix projectionMatrix;
 
-	viewMatrix = WORLDCAMERA->GetViewMatrix();
-	projectionMatrix = Environment::Get()->GetProjectionMatrix();
+	viewMatrix = mCamera->GetViewMatrix();
+	projectionMatrix = mCamera->GetProjectionMatrixInUse();
 
 	Float4x4 cameraView;
 	Float4x4 cameraProjection;

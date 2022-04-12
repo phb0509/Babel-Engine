@@ -69,4 +69,6 @@ private:
 	Vector3 matrixScale;
 
 	ImGuizmo::OPERATION currentGizmo = ImGuizmo::NONE;
+	Camera* mCamera;
+
 };

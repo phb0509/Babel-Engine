@@ -10,7 +10,7 @@ TerrainLOD::TerrainLOD(wstring heightFile)
 
     material->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");
 
-    ReadHeightData();
+    readHeightData();
 
     mTerrainBuffer = new TerrainBuffer();
     mTerrainBuffer->data.cellSpacingU = 1.0f / width;
@@ -25,10 +25,10 @@ TerrainLOD::TerrainLOD(wstring heightFile)
     // 그냥 터레인이면 *6 이다. 2개의 폴리곤을 네모처럼 이으려면 6개를 사용했으니까 (0,1,2, 2,1,3)
     // 근데 왜 4개? IA에 넘길 때 기존의 프리미티브 토폴로지인 트라이앵글리스트로 넘기는게 아니라 4 Control Pointer로 넘기고있다.
 
-    CreatePatchVertex();
-    CreatePatchIndex();
+    createPatchVertex();
+    createPatchIndex();
 
-    frustum = new Frustum();
+    //frustum = new Frustum();
 }
 
 TerrainLOD::~TerrainLOD()
@@ -54,10 +54,10 @@ void TerrainLOD::Render()
     mWorldBuffer->SetHSBuffer(0);
     mWorldBuffer->SetDSBuffer(0);
 
-    TARGETCAMERA->GetViewBuffer()->SetHSBuffer(1);
-    TARGETCAMERA->GetViewBuffer()->SetDSBuffer(1);
+    mCamera->GetViewBuffer()->SetHSBuffer(1);
+    mCamera->GetViewBuffer()->SetDSBuffer(1);
 
-    Environment::Get()->GetPerspectiveProjectionBuffer()->SetDSBuffer(2);
+    mCamera->GetPerspectiveProjectionBuffer()->SetDSBuffer(2);
 
     mTerrainBuffer->SetHSBuffer(10);
     mTerrainBuffer->SetDSBuffer(10);
@@ -91,7 +91,7 @@ float TerrainLOD::GetHeight()
     return height * mTerrainBuffer->data.cellSpacing;
 }
 
-void TerrainLOD::ReadHeightData()
+void TerrainLOD::readHeightData()
 {
     heightTexture = Texture::Add(heightFile);
 
@@ -99,7 +99,7 @@ void TerrainLOD::ReadHeightData()
     height = heightTexture->GetHeight();
 }
 
-void TerrainLOD::CreatePatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주기.
+void TerrainLOD::createPatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주기.
 {
     float halfWidth = GetWidth() * 0.5f; // 256 * 5 = 1280 * 0.5 = 640   // 반지름.  GetWidth에서  실제 width * cellSpaceing(default 5.0f) 곱해주는데 임의의값. 클수록 그냥 터레인 커지고 뭐 더 많이쪼개고 할듯
     float halfHeight = GetHeight() * 0.5f;
@@ -127,7 +127,7 @@ void TerrainLOD::CreatePatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주
     }
 }
 
-void TerrainLOD::CreatePatchIndex()
+void TerrainLOD::createPatchIndex()
 {
     UINT index = 0;
 

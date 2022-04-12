@@ -1,6 +1,6 @@
 #define MAX_BONE 256
 #define MAX_LIGHT 10
-#define MAX_INSTANCE 400
+#define MAX_INSTANCE 600
 
 //VertexShaderBuffer
 cbuffer World : register(b0)
@@ -44,13 +44,13 @@ struct TweenFrame
     float runningTime;
     float padding;
     
-    KeyFrame cur;
-    KeyFrame next;
+    KeyFrame cur; // 32byte
+    KeyFrame next; // 32byte
 };
 
 cbuffer Frame : register(b4)
 {
-    TweenFrame tweenFrame[MAX_INSTANCE];
+    TweenFrame tweenFrame[MAX_INSTANCE]; // °³´ç 80byte.
 }
 
 cbuffer ModelType : register(b5)

@@ -14,8 +14,8 @@ public:
 
 	vector<Float4> ReadPixels();
 
-	UINT GetWidth() { return mWidth; }
-	UINT GetHeight() { return mHeight; }
+	UINT GetWidth() { return mTerrainWidth; }
+	UINT GetHeight() { return mTerrainHeight; }
 
 	ID3D11ShaderResourceView*& GetSRV() { return srv; }
 	ID3D11ShaderResourceView*& GetTestSRV() { return mTestSRV; }
@@ -34,8 +34,8 @@ private:
 	ID3D11ShaderResourceView* srv;
 	ID3D11ShaderResourceView* mTestSRV;
 	ID3D11Texture2D* mTexture;
-	UINT mWidth;
-	UINT mHeight;
+	UINT mTerrainWidth;
+	UINT mTerrainHeight;
 
 	static map<wstring, Texture*> totalTexture;
 	static map<ID3D11ShaderResourceView*, Texture*> totalSRVTexture;

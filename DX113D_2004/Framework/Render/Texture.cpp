@@ -6,12 +6,12 @@ map<ID3D11ShaderResourceView*, Texture*> Texture::totalSRVTexture;
 Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image)
     : srv(srv), image(move(image))
 {
-    mWidth = image.GetMetadata().width;
-    mHeight = image.GetMetadata().height;
+    mTerrainWidth = image.GetMetadata().width;
+    mTerrainHeight = image.GetMetadata().height;
 
     D3D11_TEXTURE2D_DESC textureDesc;
-    textureDesc.Height = mHeight;
-    textureDesc.Width = mWidth;
+    textureDesc.Height = mTerrainHeight;
+    textureDesc.Width = mTerrainWidth;
     textureDesc.MipLevels = 0;
     textureDesc.ArraySize = 1;
     textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -27,10 +27,23 @@ Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image)
     //mPixels = ReadPixels();
     getImages();
 
-    UINT rowPitch = (mWidth * 4) * sizeof(unsigned char);
+    UINT rowPitch = (mTerrainWidth * 4) * sizeof(unsigned char);
+    UINT depthPitch = mTerrainWidth * mTerrainHeight * 4 * sizeof(unsigned char);
+
+ /*   D3D11_BOX box;
+    box.left = 0;
+    box.right = mWidth;
+    box.top = 0;
+    box.bottom = mHeight;
+    box.front = 0;
+    box.back = 1;*/
 
     DEVICECONTEXT->UpdateSubresource(mTexture, 0, nullptr, mCharArray, rowPitch, 0);  // 벡터주소,원소크기,원소개수 sizeof(mPixels[0])
 
+    // mTexture는 
+    // mCharArray의 크기는 텍스쳐의 픽셀 수 (width*height) * 4의 크기다. 한 픽셀당 rgba값을 갖고있기 때문.
+    // 1차원배열이니 결국 rgbargbargbargba.......형태로 저장되어있을것.
+    // rowPitch는 딱 width만큼의 크기.
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
     srvDesc.Format = textureDesc.Format;
@@ -41,7 +54,6 @@ Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image)
 
     DEVICE->CreateShaderResourceView(mTexture, &srvDesc, &mTestSRV);
     //DEVICECONTEXT->GenerateMips(mTestSRV);
-
 }
 
 Texture::Texture(ID3D11ShaderResourceView* srv)
@@ -79,7 +91,6 @@ Texture* Texture::Add(wstring file)
         LoadFromWICFile(file.c_str(), WIC_FLAGS_FORCE_RGB, nullptr, image);
     }
        
-
     //int a = image.GetImageCount(); // 1나옴.
     
     ID3D11ShaderResourceView* srv;
@@ -87,9 +98,7 @@ Texture* Texture::Add(wstring file)
     V(CreateShaderResourceView(DEVICE, image.GetImages(), image.GetImageCount(),
         image.GetMetadata(), &srv));
     
-   
     totalTexture[file] = new Texture(srv, image);
-    
     
     return totalTexture[file];
 }

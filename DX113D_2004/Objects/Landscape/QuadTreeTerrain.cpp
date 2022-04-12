@@ -6,7 +6,7 @@ QuadTreeTerrain::QuadTreeTerrain(TerrainData* terrainData)
     material = new Material(L"Lighting");
     material->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");
 
-    frustum = new Frustum();
+    //frustum = new Frustum();
 
     UINT vertexCount = terrainData->vertices.size();
     triangleCount = vertexCount / 3;

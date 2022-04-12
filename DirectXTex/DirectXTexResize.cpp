@@ -256,9 +256,9 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row = target + destImage.width;
+        XMVECTOR* row = mTargetObject + destImage.width;
 
 #ifdef _DEBUG
         memset(row, 0xCD, sizeof(XMVECTOR)*srcImage.width);
@@ -287,11 +287,11 @@ namespace
             size_t sx = 0;
             for (size_t x = 0; x < destImage.width; ++x)
             {
-                target[x] = row[sx >> 16];
+                mTargetObject[x] = row[sx >> 16];
                 sx += xinc;
             }
 
-            if (!_StoreScanline(pDest, destImage.rowPitch, destImage.format, target, destImage.width))
+            if (!_StoreScanline(pDest, destImage.rowPitch, destImage.format, mTargetObject, destImage.width))
                 return E_FAIL;
             pDest += destImage.rowPitch;
 
@@ -317,9 +317,9 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* urow0 = target + destImage.width;
+        XMVECTOR* urow0 = mTargetObject + destImage.width;
         XMVECTOR* urow1 = urow0 + srcImage.width;
 
 #ifdef _DEBUG
@@ -352,10 +352,10 @@ namespace
             {
                 size_t x2 = x << 1;
 
-                AVERAGE4(target[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
+                AVERAGE4(mTargetObject[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
             }
 
-            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, target, destImage.width, filter))
+            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, mTargetObject, destImage.width, filter))
                 return E_FAIL;
             pDest += destImage.rowPitch;
         }
@@ -386,9 +386,9 @@ namespace
         _CreateLinearFilter(srcImage.width, destImage.width, (filter & TEX_FILTER_WRAP_U) != 0, lfX);
         _CreateLinearFilter(srcImage.height, destImage.height, (filter & TEX_FILTER_WRAP_V) != 0, lfY);
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row0 = target + destImage.width;
+        XMVECTOR* row0 = mTargetObject + destImage.width;
         XMVECTOR* row1 = row0 + srcImage.width;
 
 #ifdef _DEBUG
@@ -438,10 +438,10 @@ namespace
             {
                 auto& toX = lfX[x];
 
-                BILINEAR_INTERPOLATE(target[x], toX, toY, row0, row1)
+                BILINEAR_INTERPOLATE(mTargetObject[x], toX, toY, row0, row1)
             }
 
-            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, target, destImage.width, filter))
+            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, mTargetObject, destImage.width, filter))
                 return E_FAIL;
             pDest += destImage.rowPitch;
         }
@@ -472,9 +472,9 @@ namespace
         _CreateCubicFilter(srcImage.width, destImage.width, (filter & TEX_FILTER_WRAP_U) != 0, (filter & TEX_FILTER_MIRROR_U) != 0, cfX);
         _CreateCubicFilter(srcImage.height, destImage.height, (filter & TEX_FILTER_WRAP_V) != 0, (filter & TEX_FILTER_MIRROR_V) != 0, cfY);
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row0 = target + destImage.width;
+        XMVECTOR* row0 = mTargetObject + destImage.width;
         XMVECTOR* row1 = row0 + srcImage.width;
         XMVECTOR* row2 = row0 + srcImage.width * 2;
         XMVECTOR* row3 = row0 + srcImage.width * 3;
@@ -598,10 +598,10 @@ namespace
                 CUBIC_INTERPOLATE(C2, toX.x, row2[toX.u0], row2[toX.u1], row2[toX.u2], row2[toX.u3])
                 CUBIC_INTERPOLATE(C3, toX.x, row3[toX.u0], row3[toX.u1], row3[toX.u2], row3[toX.u3])
 
-                CUBIC_INTERPOLATE(target[x], toY.x, C0, C1, C2, C3)
+                CUBIC_INTERPOLATE(mTargetObject[x], toY.x, C0, C1, C2, C3)
             }
 
-            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, target, destImage.width, filter))
+            if (!_StoreScanlineLinear(pDest, destImage.rowPitch, destImage.format, mTargetObject, destImage.width, filter))
                 return E_FAIL;
             pDest += destImage.rowPitch;
         }

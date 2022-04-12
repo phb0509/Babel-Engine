@@ -25,7 +25,6 @@ namespace utility
 	void UnIndentRepeatedly(int loopCount);
 	void SpacingRepeatedly(int loopCount);
 
-
 	bool ExistDirectory(string path);
 	bool ExistFile(string path);
 

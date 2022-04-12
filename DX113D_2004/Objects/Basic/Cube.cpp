@@ -146,13 +146,13 @@ void Cube::createMesh()
 	mIndices.emplace_back(23);
 	mIndices.emplace_back(22);
 
-	createNormal();
+	updateVertexNormal();
 
 	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
 		mIndices.data(), (UINT)mIndices.size());
 }
 
-void Cube::createNormal()
+void Cube::updateVertexNormal()
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{

@@ -6,8 +6,6 @@ private:
 	friend class ModelAnimator;
 	friend class ModelAnimators;
 
-
-
 public:
 	ModelClip();
 	~ModelClip();

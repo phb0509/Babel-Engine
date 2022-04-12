@@ -13,9 +13,10 @@ public:
 
 
 private:
-	TerrainEditor* terrainEditor = nullptr;
+	TerrainEditor* mTerrainEditor = nullptr;
 	SkyBox* skyBox = nullptr;
 	Cube* cube = nullptr;
 
 	RasterizerState* mRasterizerState = nullptr;
+	Camera* mCamera;
 };

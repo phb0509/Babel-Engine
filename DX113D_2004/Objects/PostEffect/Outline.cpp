@@ -21,5 +21,5 @@ void Outline::Render()
 
 	ImGui::SliderInt("Value", &buffer->data.value, 0, 8);
 	ImGui::SliderInt("Range", &buffer->data.range, 0, 8);
-	ImGui::ColorEdit4("Color", (float*)&material->GetBuffer()->data.diffuse);
+	ImGui::ColorEdit4("Color", (float*)&mMaterial->GetBuffer()->data.diffuse);
 }

@@ -20,21 +20,22 @@ public:
 	void Render() override;
 
 	Transform* Add();
-
-	InstanceData* GetInstanceData() { return instanceData; }
-
-	Transform* GetTransform(UINT instance) { return transforms[instance]; }
+	InstanceData* GetInstanceData() { return mInstanceData; }
+	Transform* GetTransform(UINT instance) { return mTransforms[instance]; }
+	void SetCameraForCulling(Camera* camera) { mCameraForFrustumCulling = camera; }
+	void SetBoxForFrustumCulling() { SetBox(&mMinBox, &mMaxBox); }
 
 protected:
-	vector<Transform*> transforms;
+	vector<Transform*> mTransforms;
 	//Matrix worlds[MAX_INSTANCE];
-	InstanceData instanceData[MAX_INSTANCE];
+	InstanceData mInstanceData[MAX_INSTANCE];
 
-	VertexBuffer* instanceBuffer;
+	VertexBuffer* mInstanceBuffer;
 
-	UINT drawCount;
+	UINT mDrawCount;
 
-	Vector3 minBox, maxBox;
-	Frustum* mTargetCameraFrustum;
+	Vector3 mMinBox;
+	Vector3 mMaxBox;
+	Camera* mCameraForFrustumCulling;
 	
 };

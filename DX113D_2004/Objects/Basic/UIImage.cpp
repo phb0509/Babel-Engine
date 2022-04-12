@@ -2,32 +2,32 @@
 
 UIImage::UIImage(wstring shaderFile)
 {
-	material = new Material(shaderFile);
+	mMaterial = new Material(shaderFile);
 	CreateMesh();	
 	CreateVP();
 
-	blendState[0] = new BlendState();
-	blendState[1] = new BlendState();
-	blendState[1]->Alpha(false);
+	mBlendStates[0] = new BlendState();
+	mBlendStates[1] = new BlendState();
+	mBlendStates[1]->Alpha(false);
 
-	depthMode[0] = new DepthStencilState();
-	depthMode[1] = new DepthStencilState();
-	depthMode[1]->DepthEnable(false);
+	mDepthMode[0] = new DepthStencilState();
+	mDepthMode[1] = new DepthStencilState();
+	mDepthMode[1]->DepthEnable(false);
 }
 
 UIImage::~UIImage()
 {
-	delete material;
-	delete mesh;
+	delete mMaterial;
+	delete mMesh;
 
-	delete viewBuffer;
-	delete projectionBuffer;
+	delete mViewBuffer;
+	delete mProjectionBuffer;
 
-	delete blendState[0];
-	delete blendState[1];
+	delete mBlendStates[0];
+	delete mBlendStates[1];
 
-	delete depthMode[0];
-	delete depthMode[1];
+	delete mDepthMode[0];
+	delete mDepthMode[1];
 }
 
 void UIImage::Update()
@@ -37,21 +37,21 @@ void UIImage::Update()
 void UIImage::Render()
 {
 	
-	mesh->IASet();
+	mMesh->IASet();
 
 	SetWorldBuffer(); // 0번에
-	viewBuffer->SetVSBuffer(1);
-	projectionBuffer->SetVSBuffer(2);
+	mViewBuffer->SetVSBuffer(1);
+	mProjectionBuffer->SetVSBuffer(2);
 
-	DEVICECONTEXT->PSSetShaderResources(0, 1, &srv);
+	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
 
-	material->Set();
+	mMaterial->Set();
 
-	blendState[1]->SetState();
-	depthMode[1]->SetState();
+	mBlendStates[1]->SetState();
+	mDepthMode[1]->SetState();
 	DEVICECONTEXT->DrawIndexed(6, 0, 0);
-	blendState[0]->SetState(); // 다시 0번으로 SetState하는 이유 => 1번 SetState하고 다시 안바꿔놓으면 다른거에 영향을 미치기 떄문.
-	depthMode[0]->SetState();
+	mBlendStates[0]->SetState(); // 다시 0번으로 SetState하는 이유 => 1번 SetState하고 다시 안바꿔놓으면 다른거에 영향을 미치기 떄문.
+	mDepthMode[0]->SetState();
 }
 
 void UIImage::CreateMesh()
@@ -72,17 +72,17 @@ void UIImage::CreateMesh()
 		2, 1, 3
 	};
 
-	mesh = new Mesh(vertices, sizeof(VertexUV), 4, indices, 6);
+	mMesh = new Mesh(vertices, sizeof(VertexUV), 4, indices, 6);
 }
 
 void UIImage::CreateVP()
 {
-	view = XMMatrixIdentity();
-	orthographic = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);
+	mViewMatrix = XMMatrixIdentity();
+	mOrthographicMatrix = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);
 
-	viewBuffer = new MatrixBuffer();
-	viewBuffer->Set(view);
+	mViewBuffer = new MatrixBuffer();
+	mViewBuffer->SetMatrix(mViewMatrix);
 
-	projectionBuffer = new MatrixBuffer();
-	projectionBuffer->Set(orthographic);
+	mProjectionBuffer = new MatrixBuffer();
+	mProjectionBuffer->SetMatrix(mOrthographicMatrix);
 }

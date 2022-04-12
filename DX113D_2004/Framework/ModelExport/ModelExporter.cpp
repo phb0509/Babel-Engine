@@ -174,7 +174,7 @@ string ModelExporter::CreateTexture(string savePath, string file)
 
 	if (texture)
 	{
-		if (texture->mHeight < 1)
+		if (texture->mWidth < 1)
 		{
 			BinaryWriter w(path);
 			w.Byte(texture->pcData, texture->mWidth);

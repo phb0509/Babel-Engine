@@ -1,11 +1,7 @@
 #include "Framework.h"
 
 
-Mutant::Mutant()
-	: 
-	mAnimation(eAnimationStates::Idle),
-	mFSM(eFSMstates::Patrol),
-	mbOnHit(false)
+Mutant::Mutant() : mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
 
@@ -106,7 +102,6 @@ void Mutant::setOnDamageEnd()
 	mbOnHit = false;
 }
 
-
 void Mutant::SetIdle()
 {
 	SetAnimation(eAnimationStates::Idle);
@@ -120,9 +115,6 @@ void Mutant::SetAnimation(eAnimationStates value)
 		PlayClip(static_cast<int>(mAnimation));
 	}
 }
-
-
-
 
 void Mutant::setAttackEnd()
 {

@@ -18,7 +18,7 @@ public:
 
 private:
 	void createMesh();
-	void createNormal();
+	void updateVertexNormal();
 
 
 private:

@@ -64,6 +64,5 @@ private:
 
 	bool mbOnHit;
 
-	eAnimationStates mAnimation;
-	eFSMstates mFSM;
+
 };

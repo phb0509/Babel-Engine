@@ -430,7 +430,7 @@ static inline ImVec2 ImFloor(const ImVec2& v)                                   
 static inline int    ImModPositive(int a, int b)                                { return (a + b) % b; }
 static inline float  ImDot(const ImVec2& a, const ImVec2& b)                    { return a.x * b.x + a.y * b.y; }
 static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)        { return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a); }
-static inline float  ImLinearSweep(float current, float target, float speed)    { if (current < target) return ImMin(current + speed, target); if (current > target) return ImMax(current - speed, target); return current; }
+static inline float  ImLinearSweep(float current, float mTargetObject, float speed)    { if (current < mTargetObject) return ImMin(current + speed, mTargetObject); if (current > mTargetObject) return ImMax(current - speed, mTargetObject); return current; }
 static inline ImVec2 ImMul(const ImVec2& lhs, const ImVec2& rhs)                { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
 IM_MSVC_RUNTIME_CHECKS_RESTORE
 

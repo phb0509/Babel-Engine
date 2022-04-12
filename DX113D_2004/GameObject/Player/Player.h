@@ -49,37 +49,55 @@ public:
 
 	void SetTerrain(Terrain* value) { mTerrain = value; }
 	void SetAStar(AStar* value) { aStar = value; }
-
+	void SetTargetCamera(Camera* camera) { mTargetCamera = camera; }
+	void SetTargetCameraInWorld(Camera* camera) { mTargetCameraInWorld = camera; }
+	void SetIsTargetMode(bool value) { mbIsTargetMode = value; }
 
 private:
 	void initialize();
 	void setIdle();
 	void setAnimation(State value);
-	void input();
-	void moveInTargetCamera();
-	void moveInWorldCamera();
+	void move();
+	void attack();
+	void updateCamera();
+
+	void moveInTargetMode(); // Move player
+	void moveInWorldMode();
+
+	void moveTargetCamera(); // Move Camera
+	void moveTargetCameraInWorld(); // for Show FrustumCulling
+	void rotateTargetCamera();
+
 	void setColliders();
 	void loadBinaryFile();
-	void rotate();
+	void rotateInTargetMode();
 	void checkNormalAttackCollision();
-
 	void setAttackEnd();
 	void normalAttack();
 
 private:
-	bool mbIsInitialize;
 	Terrain* mTerrain;
 	AStar* aStar;
+	Camera* mTargetCamera;
+	Camera* mTargetCameraInWorld; // for Show
 
 	vector<TempCollider> mColliderSRTdatas;
 	vector<ColliderData> mColliderDatas;
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
 
-	vector<Monster*> mMonsters;
+	vector<Monster*> mMutants;
 	
+	bool mbIsInitialize;
 	bool mbIsNormalAttack;
 	bool mbIsNormalAttackCollide;
 	float mNormalAttackDamage;
+	bool mbIsTargetMode;
+
+	Vector3 mPreFrameMousePosition;
+	Vector3 mTargetCameraForward;
+	float mTargetCameraRotationY;
+	float mTargetCameraRotationX;
+
 
 };

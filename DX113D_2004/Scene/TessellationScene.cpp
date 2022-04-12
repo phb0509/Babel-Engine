@@ -42,31 +42,20 @@ TessellationScene::~TessellationScene()
 void TessellationScene::Update()
 {
 	Environment::Get()->Set();
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
-
-	Environment::Get()->GetWorldCamera()->Update();
 }
 
 void TessellationScene::PreRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+	Environment::Get()->Set();
 }
 
 void TessellationScene::Render()
 {
 	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
 
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
 
-	Environment::Get()->GetWorldCamera()->Render();
 	Environment::Get()->Set();
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+
 
 	rsState->SetState();
 
@@ -85,7 +74,6 @@ void TessellationScene::Render()
 
 void TessellationScene::PostRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
 
 	ImGui::SliderInt("Edge0", &edgeBuffer->data.values[0], 0, 100);
 	ImGui::SliderInt("Edge1", &edgeBuffer->data.values[1], 0, 100);

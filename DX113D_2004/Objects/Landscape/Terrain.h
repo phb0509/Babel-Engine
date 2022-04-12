@@ -29,28 +29,24 @@ public:
 	bool ComputePicking(OUT Vector3* position);
 
 	float GetHeight(Vector3 position);
+	Float2 GetSize() { return Float2(mTerrainWidth, mTerrainHeight); }
+	void SetCamera(Camera* camera) { mCamera = camera; }
 
-	Float2 GetSize() { return Float2(mWidth, mHeight); }
 private:
-	void CreateMesh();
-	void CreateNormal();
-	void CreateTangent();
-
-
-
+	void createMesh();
+	void createNormal();
+	void createTangent();
 
 private:
 	Material* mMaterial;
 	Mesh* mMesh;
-
 	vector<VertexType> mVertices;
 	vector<UINT> mIndices;
 
-	UINT mWidth;
-	UINT mHeight;
+	UINT mTerrainWidth;
+	UINT mTerrainHeight;
 
 	Texture* mHeightMap;
-
 	RasterizerState* mFillMode[2];
 
 	ComputeShader* mComputeShader;
@@ -60,6 +56,6 @@ private:
 	OutputDesc* mOutput;
 
 	TypeBuffer* mTypeBuffer;
-
 	UINT mPolygonCount;
+	Camera* mCamera;
 };

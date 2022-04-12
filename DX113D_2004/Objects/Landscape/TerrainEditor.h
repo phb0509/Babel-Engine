@@ -60,13 +60,13 @@ public:
 	void PreRender();
 	void Render();
 	void PostRender();
-		
+	void SetCamera(Camera* camera) { mCamera = camera; }
 
 
 private:
 	void createMesh();
-	void createNormal();
-	void createTangent();
+	void updateVertexNormal();
+	void updateVertexTangent();
 	void createCompute();
 	void createPixelPickingCompute();
 
@@ -95,13 +95,14 @@ private:
 private:
 	const float MAX_HEIGHT = 100.0f;
 
+	Camera* mCamera;
 	Material* mMaterial;
 	Mesh* mMesh;
 
 	vector<VertexType> mVertices;
 	vector<UINT> mIndices;
 
-	UINT mWidth, mHeight;
+	UINT mTerrainWidth, mTerrainHeight;
 
 	Texture* mHeightMap;
 	RayBuffer* mRayBuffer;
@@ -174,4 +175,7 @@ private:
 	map<string, Texture*> mExtensionPreviewImages;
 	bool mbIsDropped = false;
 	string mDraggedFileName;
+
+	int boxLeft;
+	int boxRight;
 };

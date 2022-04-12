@@ -7,11 +7,11 @@ class EmptyObject;
 class Frustum
 {
 public:
-	Frustum();
+	Frustum(float FoV, float aspectRatio, float distanceToNearZ, float distanceToFarZ);
 	~Frustum();
 
 	void Update();
-	void Render();
+	void RenderCollider();
 	void PostRender();
 
 	bool ContainPoint(Vector3 position);
@@ -25,15 +25,14 @@ public:
 
 private:
 	void setCollider(float colliderRectSize, float distanceToColliderRect);
-	void moveFrustumCollider();
 	void initialize();
-	void createFrustumCollider();
+	void createCollider();
 
 private:
-	Vector4 planes[6];
+	Vector4 mPlanes[6];
 	FrustumCollider* mCollider;
 
-	Matrix mProjection;
+	Matrix mProjectionMatrix;
 	Matrix mView;
 
 	float mColliderRectSize;
@@ -45,8 +44,8 @@ private:
 
 	EmptyObject* mEmptyObject;
 
-	float mDistanceToFarZ;
-	float mDistanceToNearZ;
-	float mAspectRatio;
 	float mFoV;
+	float mAspectRatio;
+	float mDistanceToNearZ;
+	float mDistanceToFarZ;
 };

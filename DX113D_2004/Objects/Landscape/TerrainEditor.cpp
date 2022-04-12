@@ -2,10 +2,10 @@
 
 
 TerrainEditor::TerrainEditor(UINT width, UINT height) :
-	mWidth(width),
-	mHeight(height),
+	mTerrainWidth(width),
+	mTerrainHeight(height),
 	mbIsPainting(false),
-	mAdjustValue(50),
+	mAdjustValue(500),
 	mHeightMap(nullptr),
 	mInputFileName{},
 	mComputePickingStructuredBuffer(nullptr),
@@ -42,7 +42,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
 
-	createMesh();
+	createMesh(); // 적용할 HeightMap 기준으로 mTerrainWidth와 mTerrainHeight 결정.
 
 	mbIsUVPicking = true;
 
@@ -56,6 +56,9 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mExtensionPreviewImages["dds"] = Texture::Add(L"Textures/DDS_PreviewImage.png");
 	mExtensionPreviewImages["tga"] = Texture::Add(L"Textures/TGA_PreviewImage.png");
 	mExtensionPreviewImages["default"] = Texture::Add(L"Textures/DefaultImage.png");
+
+	boxLeft = 0;
+	boxRight = 249999;
 }
 
 TerrainEditor::~TerrainEditor()
@@ -80,10 +83,11 @@ TerrainEditor::~TerrainEditor()
 void TerrainEditor::Update()
 {
 	mCurrentMousePosition = MOUSEPOS;
-	mBrushBuffer->data.location = mPickedPosition;
-	UpdateWorld();
 
+	UpdateWorld();
 	computePixelPicking(&mPickedPosition);
+	mBrushBuffer->data.location = mPickedPosition;
+
 	//computePicking(&mPickedPosition);
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
@@ -109,8 +113,17 @@ void TerrainEditor::Update()
 		//createNormal(); // 이거 두개가 프레임 은근 먹는다.
 		//createTangent();
 		//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+		//mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size());
 		//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size());
 	}
+
+	if (KEY_DOWN('P'))
+	{
+		//std::reverse(mVertices.begin(), mVertices.end());
+		mVertices;
+		int a = 0;
+	}
+	
 }
 
 void TerrainEditor::PreRender()
@@ -184,11 +197,23 @@ void TerrainEditor::PostRender()
 		0.0f }; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 
 	ImGui::End();
+
+	ImGui::Begin("TerrainInformation");
+
+	SpacingRepeatedly(2);
+	ImGui::InputFloat3("PickedPosition", (float*)&mPickedPosition);
+	SpacingRepeatedly(2);
+
+	ImGui::InputInt("Box.Left", &boxLeft);
+	ImGui::InputInt("Box.Right", &boxRight);
+	SpacingRepeatedly(2);
+
+	ImGui::End();
 }
 
 bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
 {
-	Ray ray = WORLDCAMERA->ScreenPointToRay(MOUSEPOS);
+	Ray ray = mCamera->ScreenPointToRay(MOUSEPOS);
 
 	mRayBuffer->data.position = ray.position; // 카메라 포지션(원점)
 	mRayBuffer->data.direction = ray.direction; // 원점에서 마우스피킹한곳까지(near평면) 방향벡터.
@@ -236,8 +261,8 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 {
 	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
-	mMouseUVBuffer->data.invViewMatrix = WORLDCAMERA->GetViewBuffer()->GetInvViewMatrix();
-	mMouseUVBuffer->data.invProjectionMatrix = Environment::Get()->GetPerspectiveProjectionBuffer()->GetInvProjectionMatrix();
+	mMouseUVBuffer->data.invViewMatrix = mCamera->GetViewBuffer()->GetInvViewMatrix();
+	mMouseUVBuffer->data.invProjectionMatrix = mCamera->GetProjectionBufferInUse()->GetInvProjectionMatrix();
 
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
@@ -250,7 +275,7 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 	ID3D11ShaderResourceView* pSRV = NULL;
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &pSRV); // CS 0번 레지스터에 NULL값 세팅. 안하면 경고 뜬다
 
-	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴. 
+	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴.  왜 여기서 에러나지? VertexBuffer 건드렸는데
 																			 
 	mTestOutputDesc.worldPosition = mOutputUVDesc->worldPosition;
 
@@ -296,10 +321,9 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 	rect.right = (LONG)position.x + range;
 	rect.bottom = (LONG)position.z - range;
 
-
 	if (rect.left < 0) rect.left = 0;
-	if (rect.top >= (LONG)mHeight) rect.top = (LONG)mHeight;
-	if (rect.right >= (LONG)mWidth) rect.right = (LONG)mWidth;
+	if (rect.top >= (LONG)mTerrainHeight) rect.top = (LONG)mTerrainHeight;
+	if (rect.right >= (LONG)mTerrainWidth) rect.right = (LONG)mTerrainWidth;
 	if (rect.bottom < 0) rect.bottom = 0;
 
 	switch (mBrushBuffer->data.type)
@@ -311,7 +335,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
 			{
-				UINT index = mWidth * z + x;
+				UINT index = mTerrainWidth * z + x;
 
 				float dx = x - position.x;
 				float dz = z - position.z;
@@ -351,7 +375,7 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
 			{
-				UINT index = mWidth * z + x;
+				UINT index = mTerrainWidth * z + x;
 
 				// 정점 높이 높이기
 				if (KEY_PRESS(VK_CONTROL)) // 높이값 -
@@ -381,8 +405,9 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 		break;
 	}
 
-	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
-
+	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
+	//mMesh->UpdateVertex(mVertices.data(), mVertices.size()); // // 벡터주소,원소개수
+	mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight); // // 벡터주소,원소개수
 }
 
 void TerrainEditor::paintBrush(Vector3 position)
@@ -395,8 +420,8 @@ void TerrainEditor::paintBrush(Vector3 position)
 	rect.bottom = (LONG)position.z - range;
 
 	if (rect.left < 0) rect.left = 0;
-	if (rect.top >= (LONG)mHeight) rect.top = (LONG)mHeight;
-	if (rect.right >= (LONG)mWidth) rect.right = (LONG)mWidth;
+	if (rect.top >= (LONG)mTerrainHeight) rect.top = (LONG)mTerrainHeight;
+	if (rect.right >= (LONG)mTerrainWidth) rect.right = (LONG)mTerrainWidth;
 	if (rect.bottom < 0) rect.bottom = 0;
 
 	switch (mBrushBuffer->data.type)
@@ -408,7 +433,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 		{
 			for (LONG x = rect.left; x < rect.right; x++)
 			{
-				UINT index = mWidth * z + x;
+				UINT index = mTerrainWidth * z + x;
 
 				float dx = x - position.x;
 				float dz = z - position.z;
@@ -438,7 +463,8 @@ void TerrainEditor::paintBrush(Vector3 position)
 		break;
 	}
 
-	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
+	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
+	mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 }
 
 bool TerrainEditor::checkMouseMove()
@@ -457,7 +483,7 @@ bool TerrainEditor::checkMouseMove()
 
 void TerrainEditor::saveHeightMap(wstring heightFile)
 {
-	UINT size = mWidth * mHeight * 4;
+	UINT size = mTerrainWidth * mTerrainHeight * 4;
 	uint8_t* pixels = new uint8_t[size];
 
 	for (UINT i = 0; i < size / 4; i++)
@@ -473,8 +499,8 @@ void TerrainEditor::saveHeightMap(wstring heightFile)
 	}
 
 	Image image;
-	image.width = mWidth;
-	image.height = mHeight;
+	image.width = mTerrainWidth;
+	image.height = mTerrainHeight;
 	image.pixels = pixels;
 	image.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	image.rowPitch = image.width * 4;
@@ -509,7 +535,7 @@ void TerrainEditor::changeTextureMap(wstring textureFileName)
 	mMaterial->SetDiffuseMap(textureFileName);
 }
 
-void TerrainEditor::createNormal() // 법선벡터구하는 함수.
+void TerrainEditor::updateVertexNormal() // 법선벡터구하는 함수.
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++) // 폴리곤갯수만큼 반복. (한폴리곤에 인덱스3개니까)
 	{
@@ -535,7 +561,7 @@ void TerrainEditor::createNormal() // 법선벡터구하는 함수.
 		vertex.normal = Vector3(vertex.normal).Normal();
 }
 
-void TerrainEditor::createTangent()
+void TerrainEditor::updateVertexTangent()
 {
 	for (UINT i = 0; i < mIndices.size() / 3; i++)
 	{
@@ -587,8 +613,8 @@ void TerrainEditor::createMesh()
 
 	if (mHeightMap != nullptr)
 	{
-		mWidth = mHeightMap->GetWidth();
-		mHeight = mHeightMap->GetHeight();
+		mTerrainWidth = mHeightMap->GetWidth();
+		mTerrainHeight = mHeightMap->GetHeight();
 		pixels = mHeightMap->ReadPixels();
 	}
 
@@ -596,15 +622,15 @@ void TerrainEditor::createMesh()
 	mIndices.clear();
 
 	//Vertices
-	for (UINT z = 0; z < mHeight; z++)
+	for (UINT z = 0; z < mTerrainHeight; z++)
 	{
-		for (UINT x = 0; x < mWidth; x++)
+		for (UINT x = 0; x < mTerrainWidth; x++)
 		{
 			VertexType vertex;
 			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)mWidth, 1.0f - z / (float)mHeight);
+			vertex.uv = Float2(x / (float)mTerrainWidth, 1.0f - z / (float)mTerrainHeight);
 
-			UINT index = mWidth * z + x;
+			UINT index = mTerrainWidth * z + x;
 			if (pixels.size() > index)
 				vertex.position.y += pixels[index].x * MAX_HEIGHT;
 
@@ -613,23 +639,23 @@ void TerrainEditor::createMesh()
 	}
 
 	//Indices
-	for (UINT z = 0; z < mHeight - 1; z++)
+	for (UINT z = 0; z < mTerrainHeight - 1; z++)
 	{
-		for (UINT x = 0; x < mWidth - 1; x++)
+		for (UINT x = 0; x < mTerrainWidth - 1; x++)
 		{
-			mIndices.emplace_back(mWidth * z + x);//0
-			mIndices.emplace_back(mWidth * (z + 1) + x);//1
-			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
+			mIndices.emplace_back(mTerrainWidth * z + x);//0
+			mIndices.emplace_back(mTerrainWidth * (z + 1) + x);//1
+			mIndices.emplace_back(mTerrainWidth * (z + 1) + x + 1);//2
 
-			mIndices.emplace_back(mWidth * z + x);//0
-			mIndices.emplace_back(mWidth * (z + 1) + x + 1);//2
-			mIndices.emplace_back(mWidth * z + x + 1);//3
+			mIndices.emplace_back(mTerrainWidth * z + x);//0
+			mIndices.emplace_back(mTerrainWidth * (z + 1) + x + 1);//2
+			mIndices.emplace_back(mTerrainWidth * z + x + 1);//3
 		}
 	}
 
 	mPolygonCount = mIndices.size() / 3;
-
 	mInput = new InputDesc[mPolygonCount];
+
 	for (UINT i = 0; i < mPolygonCount; i++) // 폴리곤개수
 	{
 		UINT index0 = mIndices[i * 3 + 0];
@@ -643,11 +669,14 @@ void TerrainEditor::createMesh()
 		mInput[i].index = i;
 	}
 
-	createNormal();
-	createTangent();
+	updateVertexNormal();
+	updateVertexTangent();
+
+	//mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
+	//	mIndices.data(), (UINT)mIndices.size(), true);
 
 	mMesh = new Mesh(mVertices.data(), sizeof(VertexType), (UINT)mVertices.size(),
-		mIndices.data(), (UINT)mIndices.size(), true);
+		mIndices.data(), (UINT)mIndices.size(), false);
 }
 
 void TerrainEditor::showAssetsWindow() 
@@ -873,6 +902,7 @@ void TerrainEditor::getFileNames(string path)
 
 	closedir(dirp);
 }
+
 void TerrainEditor::showTextureAsset()
 {
 	ImGui::Begin("Asset");

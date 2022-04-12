@@ -1,56 +1,56 @@
 #include "Framework.h"
 
 Reflection::Reflection(Transform* transform)
-	: transform(transform)
+	: mTransform(transform)
 {
-	renderTarget = new RenderTarget(2000, 2000);
-	depthStencil = new DepthStencil(2000, 2000);
+	mRenderTarget = new RenderTarget(2000, 2000);
+	mDepthStencil = new DepthStencil(2000, 2000);
 
-	reflectionBuffer = new MatrixBuffer();
+	mReflectionBuffer = new MatrixBuffer();
 
-	targetTexture = new UIImage(L"Texture");
-	targetTexture->SetSRV(renderTarget->GetSRV());
-	targetTexture->mScale = { 300, 300, 1 };
-	targetTexture->mPosition = { 150, 150, 0 };
+	mTargetTexture = new UIImage(L"Texture");
+	mTargetTexture->SetSRV(mRenderTarget->GetSRV());
+	mTargetTexture->mScale = { 300, 300, 1 };
+	mTargetTexture->mPosition = { 150, 150, 0 };
 
-	camera = new Camera();
+	mCamera = new Camera();
 }
 
 Reflection::~Reflection()
 {
-	delete renderTarget;
-	delete depthStencil;
-	delete reflectionBuffer;
-	delete targetTexture;
-	delete camera;
+	delete mRenderTarget;
+	delete mDepthStencil;
+	delete mReflectionBuffer;
+	delete mTargetTexture;
+	delete mCamera;
 }
 
 void Reflection::Update()
 {	
-	camera->mRotation = TARGETCAMERA->mRotation;
-	camera->mPosition = TARGETCAMERA->mPosition;
+	mCamera->mRotation = mTargetCamera->mRotation;
+	mCamera->mPosition = mTargetCamera->mPosition;
 
-	camera->mRotation.x *= -1.0f;
-	camera->mPosition.y = transform->mPosition.y * 2.0f - camera->mPosition.y;
+	mCamera->mRotation.x *= -1.0f;
+	mCamera->mPosition.y = mTransform->mPosition.y * 2.0f - mCamera->mPosition.y;
 
-	camera->SetViewMatrixToBuffer();
+	mCamera->SetViewMatrixToBuffer();
 
-	reflectionBuffer->Set(camera->GetViewMatrix());
+	mReflectionBuffer->SetMatrix(mCamera->GetViewMatrix());
 }
 
 void Reflection::PreRender()
 {
-	renderTarget->SetDepthStencil(depthStencil);  // ¼ÎÀÌ´õ¿¡ ³Ñ±æ ·»´õÅ¸°Ù Àâ´ÂºÎºĞ.
-	reflectionBuffer->SetVSBuffer(1);
+	mRenderTarget->SetDepthStencil(mDepthStencil);  // ¼ÎÀÌ´õ¿¡ ³Ñ±æ ·»´õÅ¸°Ù Àâ´ÂºÎºĞ.
+	mReflectionBuffer->SetVSBuffer(1);
 }
 
 void Reflection::Render()
 {
-	DEVICECONTEXT->PSSetShaderResources(10, 1, &renderTarget->GetSRV()); // ¼ÎÀÌ´õ¿¡ ¼ÂÆÃÇÒ ºÎºĞ.
-	reflectionBuffer->SetVSBuffer(10);
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &mRenderTarget->GetSRV()); // ¼ÎÀÌ´õ¿¡ ¼ÂÆÃÇÒ ºÎºĞ.
+	mReflectionBuffer->SetVSBuffer(10);
 }
 
 void Reflection::PostRender()
 {
-	targetTexture->Render();
+	mTargetTexture->Render();
 }

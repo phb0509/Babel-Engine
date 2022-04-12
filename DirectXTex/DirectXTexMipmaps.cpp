@@ -900,9 +900,9 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row = target + width;
+        XMVECTOR* row = mTargetObject + width;
 
         // Resize base image to each target mip level
         for (size_t level = 1; level < levels; ++level)
@@ -944,11 +944,11 @@ namespace
                 size_t sx = 0;
                 for (size_t x = 0; x < nwidth; ++x)
                 {
-                    target[x] = row[sx >> 16];
+                    mTargetObject[x] = row[sx >> 16];
                     sx += xinc;
                 }
 
-                if (!_StoreScanline(pDest, dest->rowPitch, dest->format, target, nwidth))
+                if (!_StoreScanline(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth))
                     return E_FAIL;
                 pDest += dest->rowPitch;
 
@@ -987,10 +987,10 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* urow0 = target + width;
-        XMVECTOR* urow1 = target + width * 2;
+        XMVECTOR* urow0 = mTargetObject + width;
+        XMVECTOR* urow1 = mTargetObject + width * 2;
 
         const XMVECTOR* urow2 = urow0 + 1;
         const XMVECTOR* urow3 = urow1 + 1;
@@ -1041,10 +1041,10 @@ namespace
                 {
                     size_t x2 = x << 1;
 
-                    AVERAGE4(target[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
+                    AVERAGE4(mTargetObject[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
                 }
 
-                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                     return E_FAIL;
                 pDest += dest->rowPitch;
             }
@@ -1085,10 +1085,10 @@ namespace
         LinearFilter* lfX = lf.get();
         LinearFilter* lfY = lf.get() + width;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row0 = target + width;
-        XMVECTOR* row1 = target + width * 2;
+        XMVECTOR* row0 = mTargetObject + width;
+        XMVECTOR* row1 = mTargetObject + width * 2;
 
         // Resize base image to each target mip level
         for (size_t level = 1; level < levels; ++level)
@@ -1153,10 +1153,10 @@ namespace
                 {
                     auto& toX = lfX[x];
 
-                    BILINEAR_INTERPOLATE(target[x], toX, toY, row0, row1)
+                    BILINEAR_INTERPOLATE(mTargetObject[x], toX, toY, row0, row1)
                 }
 
-                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                     return E_FAIL;
                 pDest += dest->rowPitch;
             }
@@ -1196,12 +1196,12 @@ namespace
         CubicFilter* cfX = cf.get();
         CubicFilter* cfY = cf.get() + width;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row0 = target + width;
-        XMVECTOR* row1 = target + width * 2;
-        XMVECTOR* row2 = target + width * 3;
-        XMVECTOR* row3 = target + width * 4;
+        XMVECTOR* row0 = mTargetObject + width;
+        XMVECTOR* row1 = mTargetObject + width * 2;
+        XMVECTOR* row2 = mTargetObject + width * 3;
+        XMVECTOR* row3 = mTargetObject + width * 4;
 
         // Resize base image to each target mip level
         for (size_t level = 1; level < levels; ++level)
@@ -1338,10 +1338,10 @@ namespace
                     CUBIC_INTERPOLATE(C2, toX.x, row2[toX.u0], row2[toX.u1], row2[toX.u2], row2[toX.u3])
                     CUBIC_INTERPOLATE(C3, toX.x, row3[toX.u0], row3[toX.u1], row3[toX.u2], row3[toX.u3])
 
-                    CUBIC_INTERPOLATE(target[x], toY.x, C0, C1, C2, C3)
+                    CUBIC_INTERPOLATE(mTargetObject[x], toY.x, C0, C1, C2, C3)
                 }
 
-                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                     return E_FAIL;
                 pDest += dest->rowPitch;
             }
@@ -1645,9 +1645,9 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* row = target + width;
+        XMVECTOR* row = mTargetObject + width;
 
         // Resize base image to each target mip level
         for (size_t level = 1; level < levels; ++level)
@@ -1698,11 +1698,11 @@ namespace
                         size_t sx = 0;
                         for (size_t x = 0; x < nwidth; ++x)
                         {
-                            target[x] = row[sx >> 16];
+                            mTargetObject[x] = row[sx >> 16];
                             sx += xinc;
                         }
 
-                        if (!_StoreScanline(pDest, dest->rowPitch, dest->format, target, nwidth))
+                        if (!_StoreScanline(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth))
                             return E_FAIL;
                         pDest += dest->rowPitch;
 
@@ -1747,11 +1747,11 @@ namespace
                     size_t sx = 0;
                     for (size_t x = 0; x < nwidth; ++x)
                     {
-                        target[x] = row[sx >> 16];
+                        mTargetObject[x] = row[sx >> 16];
                         sx += xinc;
                     }
 
-                    if (!_StoreScanline(pDest, dest->rowPitch, dest->format, target, nwidth))
+                    if (!_StoreScanline(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth))
                         return E_FAIL;
                     pDest += dest->rowPitch;
 
@@ -1794,12 +1794,12 @@ namespace
         if (!scanline)
             return E_OUTOFMEMORY;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* urow0 = target + width;
-        XMVECTOR* urow1 = target + width * 2;
-        XMVECTOR* vrow0 = target + width * 3;
-        XMVECTOR* vrow1 = target + width * 4;
+        XMVECTOR* urow0 = mTargetObject + width;
+        XMVECTOR* urow1 = mTargetObject + width * 2;
+        XMVECTOR* vrow0 = mTargetObject + width * 3;
+        XMVECTOR* vrow1 = mTargetObject + width * 4;
 
         const XMVECTOR* urow2 = urow0 + 1;
         const XMVECTOR* urow3 = urow1 + 1;
@@ -1878,11 +1878,11 @@ namespace
                         {
                             size_t x2 = x << 1;
 
-                            AVERAGE8(target[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2],
+                            AVERAGE8(mTargetObject[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2],
                                 vrow0[x2], vrow1[x2], vrow2[x2], vrow3[x2])
                         }
 
-                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                             return E_FAIL;
                         pDest += dest->rowPitch;
                     }
@@ -1922,10 +1922,10 @@ namespace
                     {
                         size_t x2 = x << 1;
 
-                        AVERAGE4(target[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
+                        AVERAGE4(mTargetObject[x], urow0[x2], urow1[x2], urow2[x2], urow3[x2])
                     }
 
-                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                         return E_FAIL;
                     pDest += dest->rowPitch;
                 }
@@ -1971,12 +1971,12 @@ namespace
         LinearFilter* lfY = lf.get() + width;
         LinearFilter* lfZ = lf.get() + width + height;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
-        XMVECTOR* urow0 = target + width;
-        XMVECTOR* urow1 = target + width * 2;
-        XMVECTOR* vrow0 = target + width * 3;
-        XMVECTOR* vrow1 = target + width * 4;
+        XMVECTOR* urow0 = mTargetObject + width;
+        XMVECTOR* urow1 = mTargetObject + width * 2;
+        XMVECTOR* vrow0 = mTargetObject + width * 3;
+        XMVECTOR* vrow1 = mTargetObject + width * 4;
 
         // Resize base image to each target mip level
         for (size_t level = 1; level < levels; ++level)
@@ -2055,10 +2055,10 @@ namespace
                         {
                             auto& toX = lfX[x];
 
-                            TRILINEAR_INTERPOLATE(target[x], toX, toY, toZ, urow0, urow1, vrow0, vrow1)
+                            TRILINEAR_INTERPOLATE(mTargetObject[x], toX, toY, toZ, urow0, urow1, vrow0, vrow1)
                         }
 
-                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                             return E_FAIL;
                         pDest += dest->rowPitch;
                     }
@@ -2115,10 +2115,10 @@ namespace
                     {
                         auto& toX = lfX[x];
 
-                        BILINEAR_INTERPOLATE(target[x], toX, toY, urow0, urow1)
+                        BILINEAR_INTERPOLATE(mTargetObject[x], toX, toY, urow0, urow1)
                     }
 
-                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                         return E_FAIL;
                     pDest += dest->rowPitch;
                 }
@@ -2164,7 +2164,7 @@ namespace
         CubicFilter* cfY = cf.get() + width;
         CubicFilter* cfZ = cf.get() + width + height;
 
-        XMVECTOR* target = scanline.get();
+        XMVECTOR* mTargetObject = scanline.get();
 
         XMVECTOR* urow[4];
         XMVECTOR* vrow[4];
@@ -2365,10 +2365,10 @@ namespace
                                 CUBIC_INTERPOLATE(D[j], toY.x, C0, C1, C2, C3)
                             }
 
-                            CUBIC_INTERPOLATE(target[x], toZ.x, D[0], D[1], D[2], D[3])
+                            CUBIC_INTERPOLATE(mTargetObject[x], toZ.x, D[0], D[1], D[2], D[3])
                         }
 
-                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                        if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                             return E_FAIL;
                         pDest += dest->rowPitch;
                     }
@@ -2494,10 +2494,10 @@ namespace
                         CUBIC_INTERPOLATE(C2, toX.x, srow[0][toX.u0], srow[0][toX.u1], srow[0][toX.u2], srow[0][toX.u3])
                         CUBIC_INTERPOLATE(C3, toX.x, trow[0][toX.u0], trow[0][toX.u1], trow[0][toX.u2], trow[0][toX.u3])
 
-                        CUBIC_INTERPOLATE(target[x], toY.x, C0, C1, C2, C3)
+                        CUBIC_INTERPOLATE(mTargetObject[x], toY.x, C0, C1, C2, C3)
                     }
 
-                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, target, nwidth, filter))
+                    if (!_StoreScanlineLinear(pDest, dest->rowPitch, dest->format, mTargetObject, nwidth, filter))
                         return E_FAIL;
                     pDest += dest->rowPitch;
                 }

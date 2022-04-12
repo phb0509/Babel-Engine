@@ -117,7 +117,7 @@ void ModelAnimator::Update()
 					desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
 					desc.runningTime = 0.0f;
 
-					mCurrentClipFrame = desc.curFrame;
+					mCurrentClipFrame = desc.curFrame; // 씬에서 ImGui로 렌더하려고 따로 저장해놓는거.
 					mCurrentClipFrameCount = clip->mFrameCount;
 				}
 

@@ -4,102 +4,66 @@
 
 class Camera : public Transform
 {
-	//class ViewBuffer : public ConstBuffer
-	//{
-	//private:
-	//	struct Data
-	//	{
-	//		Matrix matrix;
-	//		Matrix invMatrix;
-	//	}data;
-
-	//public:
-	//	ViewBuffer() : ConstBuffer(&data, sizeof(Data))
-	//	{
-	//		data.matrix = XMMatrixIdentity();
-	//		data.invMatrix = XMMatrixIdentity();
-	//	}
-
-	//	void Set(Matrix value)
-	//	{
-	//		data.matrix = XMMatrixTranspose(value); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
-	//		Matrix temp = XMMatrixInverse(nullptr, value);
-	//		data.invMatrix = XMMatrixTranspose(temp);
-	//	}
-
-	//	Matrix GetInvView() { return data.invMatrix; }
-	//};
-
 public:
 	Camera();
 	~Camera();
 
 	void Update();
 	void Render();
+	void RenderFrustumCollider();
 	void PostRender();
 
 	Ray ScreenPointToRay(Vector3 pos);
-	void CreateFrustum();
-
-
-	void SetVertexShader(UINT slot = 1);
-	void SetTarget(Transform* value) { target = value; }
-	void SetIsMouseInputing(bool cameraInput) { mbIsMouseInputing = cameraInput; }
-	void SetViewMatrixToBuffer();
-
-	Vector3 GetOriginForward() { return originForward; }
 	Matrix GetViewMatrix() { return mViewMatrix; }
+	Matrix GetProjectionMatrixInUse();
+	ProjectionBuffer* GetProjectionBufferInUse();
 	ViewBuffer* GetViewBuffer() { return mViewBuffer; }
 	Frustum* GetFrustum() { return mFrustum; }
-	Transform* GetCameraTarget() { return target; }
-	float GetDistanceToTarget() { return mDistanceToTarget; }
+	bool GetIsUsingFrustumCulling() { return mbIsUsingFrustumCulling; }
+	bool GetIsRenderFrustumCollider() { return mbIsRenderFrustumCollider; }
+	ProjectionBuffer* GetPerspectiveProjectionBuffer() { return mPerspectiveProjectionBuffer; }
+	ProjectionBuffer* GetOrthographicProjectionBuffer() { return mOrthographicProjectionBuffer; }
+
+	void SetViewBuffer(UINT slot = 1);
+	void SetViewMatrix(Matrix matrix) { mViewMatrix = matrix; }
+	void SetViewToFrustum(Matrix view);
+	void SetViewMatrixToBuffer();
+	void SetProjectionBuffer();
+	void SetIsUsingFrustumCulling(bool value) { mbIsUsingFrustumCulling = value; }
+	void SetIsRenderFrustumCollider(bool value) { mbIsRenderFrustumCollider = value; }
+	void SetProjectionOption(float FoV, float aspectRatio, float distanceToNearZ, float distanceToFarZ);
+	
 
 private:
-	void targetMove();
-	void targetMoveInWorldCamera();
-	void followControl();
-	void freeMode();
-	void freeMove();
-	void rotation();
 	void initialize();
-	void setViewToFrustum(Matrix view);
+	void createPerspectiveProjectionBuffer();
+	void createOrthographicProjectionBuffer();
 
 public:
 	float mMoveSpeed;
 	float mWheelSpeed;
+	float mRotationSpeed;
 	Vector3 mCameraForward;
 	POINT mPoint;
 
 private:
-	float mRotationSpeed;
-
 	ViewBuffer* mViewBuffer;
 	Matrix mViewMatrix;
 
-	Vector3 oldPos;
+	Matrix mPerspectiveProjectionMatrix;
+	Matrix mOrthographicProjectionMatrix;
 
-	float distance;
-	float height;
+	ProjectionBuffer* mPerspectiveProjectionBuffer;
+	ProjectionBuffer* mOrthographicProjectionBuffer;
 
-	Vector3 offset;
+	float mDistanceToFarZ;
+	float mDistanceToNearZ;
+	float mAspectRatio;
+	float mFoV;
 
-	Vector3 destPos;
-	float destRot;
-
-	float moveDamping;
-	float rotDamping;
-	Vector3 originForward;
-	float rotY;
-	float rotX;
-
-	Matrix mRotMatrixY;
-	Matrix mRotMatrixX;
-
-	Transform* target;
-	bool mbIsOnFrustumCollider;
 	Frustum* mFrustum;
-	bool mbIsMouseInputing;
-	bool mbHasInitalized;
-	float mDistanceToTarget;
-
+	bool mbIsInitialized;
+	bool mbIsPerspectiveProjection;
+	bool mbIsUsingFrustumCulling;
+	bool mbIsRenderFrustumCollider;
 };

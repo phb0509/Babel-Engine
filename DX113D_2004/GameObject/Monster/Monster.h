@@ -38,17 +38,15 @@ public:
 	StalkingState* GetStalkingState() { return mStalkingState; }
 	AttackState* GetAttackState() { return mAttackState; }
 	AStar* GetAStar() { return mAStar; }
-
-
+	eAnimationStates GetAnimationStates() { return mAnimation; }
 
 	void SetTerrain(Terrain* value);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
-
+	void SetAnimationStates(eAnimationStates animationStates) { mAnimation = animationStates; }
 
 	// Test¿ë Getter
-
 	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
 
 
@@ -79,6 +77,8 @@ protected:
 	OnDamageState* mOnDamageState;
 
 	ModelAnimator* mModelAnimator;
+	eAnimationStates mAnimation;
+	eFSMstates mFSM;
 
 
 private:
@@ -100,4 +100,5 @@ private:
 	bool mbPathSizeCheck;
 
 	int count = 0;
+
 };

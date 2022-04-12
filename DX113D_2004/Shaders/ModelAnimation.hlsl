@@ -62,9 +62,7 @@ float4 PS(PixelInput input) : SV_Target
     }
     
     float3 viewDir = normalize(input.viewDir);
-    
     float diffuseIntensity = saturate(dot(normal, -light));
-    
     float4 specular = 0;
     
     if (diffuseIntensity > 0)
@@ -83,6 +81,5 @@ float4 PS(PixelInput input) : SV_Target
     specular *= mSpecular;
     float4 ambient = albedo * mAmbient;
     
- 
     return diffuse + specular + ambient;
 }

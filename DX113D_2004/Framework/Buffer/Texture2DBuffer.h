@@ -7,8 +7,8 @@ public:
 	Texture2DBuffer(ID3D11Texture2D* src);
 	~Texture2DBuffer();
 
-	UINT GetWidth() { return mWidth; }
-	UINT GetHeight() {return mHeight; }
+	UINT GetWidth() { return mTerrainWidth; }
+	UINT GetHeight() {return mTerrainHeight; }
 	UINT GetPage() { return mPage; }
 
 	ID3D11Texture2D* GetInput() { return (ID3D11Texture2D*)mInput; }
@@ -35,8 +35,8 @@ private:
 	
 	ID3D11Resource* mResult = nullptr;
 
-	UINT mWidth;
-	UINT mHeight;
+	UINT mTerrainWidth;
+	UINT mTerrainHeight;
 	UINT mPage;
 	DXGI_FORMAT mFormat;
 

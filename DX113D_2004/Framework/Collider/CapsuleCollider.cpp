@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 CapsuleCollider::CapsuleCollider(float radius, float height, UINT stackCount, UINT sliceCount)
-    : mRadius(radius), mHeight(height), mStackCount(stackCount), mSliceCount(sliceCount)
+    : mRadius(radius), mTerrainHeight(height), mStackCount(stackCount), mSliceCount(sliceCount)
 {
     mType = eType::CAPSULE;
     createMesh();
@@ -164,9 +164,9 @@ void CapsuleCollider::createMesh()
 			vertex.position.z = sin(phi) * sin(theta) * mRadius;
 
 			if (vertex.position.y > 0)
-				vertex.position.y += mHeight * 0.5f;
+				vertex.position.y += mTerrainHeight * 0.5f;
 			else
-				vertex.position.y -= mHeight * 0.5f;
+				vertex.position.y -= mTerrainHeight * 0.5f;
 
 			mVertices.emplace_back(vertex);
 		}
@@ -208,9 +208,9 @@ void CapsuleCollider::createMeshForColorPicking()
 			vertex.position.z = sin(phi) * sin(theta) * mRadius;
 
 			if (vertex.position.y > 0)
-				vertex.position.y += mHeight * 0.5f;
+				vertex.position.y += mTerrainHeight * 0.5f;
 			else
-				vertex.position.y -= mHeight * 0.5f;
+				vertex.position.y -= mTerrainHeight * 0.5f;
 
 			mVerticesForColorPicking.emplace_back(vertex);
 		}

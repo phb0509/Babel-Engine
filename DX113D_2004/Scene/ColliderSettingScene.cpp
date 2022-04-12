@@ -19,12 +19,12 @@ ColliderSettingScene::ColliderSettingScene() :
 	srand(time(NULL));
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
-	Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
+	//Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
 
 	// 카메라 설정.
-	WORLDCAMERA->mPosition = { -7.3f, 13.96f, -14.15f };
-	WORLDCAMERA->mRotation = { 0.64f, 0.58f, 0.0f, };
-	WORLDCAMERA->mMoveSpeed = 50.0f;
+	mCamera->mPosition = { -7.3f, 13.96f, -14.15f };
+	mCamera->mRotation = { 0.64f, 0.58f, 0.0f, };
+	mCamera->mMoveSpeed = 50.0f;
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
@@ -92,12 +92,7 @@ ColliderSettingScene::~ColliderSettingScene()
 
 void ColliderSettingScene::Update()
 {
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Update();
-	}
-
-	Environment::Get()->GetWorldCamera()->Update();
+	mCamera->Update();
 
 	colorPicking();
 
@@ -164,16 +159,10 @@ void ColliderSettingScene::Update()
 
 void ColliderSettingScene::PreRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
 	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
-	Environment::Get()->Set(); // 뷰버퍼 Set VS
-
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-
-	Environment::Get()->GetWorldCamera()->Render(); 
+	Environment::Get()->Set(); // SetViewport
+	mCamera->SetViewBuffer();
+	mCamera->SetProjectionBuffer();
 
 	mRSStateForColorPicking->SetState();
 
@@ -192,15 +181,10 @@ void ColliderSettingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 
-	if (Environment::Get()->GetIsEnabledTargetCamera())
-	{
-		Environment::Get()->GetTargetCamera()->Render();
-	}
-
-	Environment::Get()->GetWorldCamera()->Render(); // FrustumRender 외엔 뭐 업승ㅁ.
 	Environment::Get()->Set(); // SetViewPort
-	Environment::Get()->SetPerspectiveProjectionBuffer();
-
+	mCamera->SetViewBuffer();
+	mCamera->SetProjectionBuffer();
+	
 	mMonster->Render();
 	mStandardCube->Render();
 	mRSState->SetState();
@@ -221,7 +205,9 @@ void ColliderSettingScene::Render()
 
 void ColliderSettingScene::PostRender()
 {
-	Environment::Get()->SetPerspectiveProjectionBuffer();
+	Environment::Get()->Set(); // SetViewPort
+	mCamera->SetViewBuffer();
+	mCamera->SetProjectionBuffer();
 
 	showModelSelectWindow();
 
@@ -255,8 +241,8 @@ void ColliderSettingScene::renderGizmos()
 	Matrix viewMatrix;
 	Matrix projectionMatrix;
 
-	viewMatrix = WORLDCAMERA->GetViewMatrix();
-	projectionMatrix = Environment::Get()->GetProjectionMatrix();
+	viewMatrix = mCamera->GetViewMatrix();
+	projectionMatrix = mCamera->GetProjectionMatrixInUse();
 
 	Float4x4 cameraView;
 	Float4x4 cameraProjection;

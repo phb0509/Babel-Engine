@@ -3,7 +3,22 @@
 class TerrainLOD : public Transform
 {
 
+public:
+	TerrainLOD(wstring heightFile);
+	~TerrainLOD();
 
+	void Update();
+	void Render();
+	void PostRender();
+
+	float GetWidth();
+	float GetHeight();
+	void SetCamera(Camera* camera) {mCamera = camera;}
+
+private:
+	void readHeightData();
+	void createPatchVertex();
+	void createPatchIndex();	
 
 private:
 	typedef VertexUV VertexType;
@@ -28,19 +43,5 @@ private:
 	Texture* heightTexture;
 
 	Frustum* frustum;
-
-public:
-	TerrainLOD(wstring heightFile);
-	~TerrainLOD();
-
-	void Update();
-	void Render();
-	void PostRender();
-
-	float GetWidth();
-	float GetHeight();
-private:
-	void ReadHeightData();
-	void CreatePatchVertex();
-	void CreatePatchIndex();	
+	Camera* mCamera;
 };

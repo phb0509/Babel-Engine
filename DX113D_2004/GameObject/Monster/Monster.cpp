@@ -20,7 +20,9 @@ Monster::Monster() :
 	mPathNodesCheckSize(200),
 	mBeforeTargetPosition(0.0f,0.0f,0.0f),
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
-	mbPathSizeCheck(false)
+	mbPathSizeCheck(false),
+	mAnimation(eAnimationStates::Idle),
+	mFSM(eFSMstates::Patrol)
 {
 	mCurrentHP = mMaxHP;
 	mPatrolState = new PatrolState();

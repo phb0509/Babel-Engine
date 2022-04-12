@@ -3755,11 +3755,11 @@ namespace
                 v = XMVectorAdd(v, vError); \
                 if (norm) v = XMVectorMultiply(v, scalev); \
                 \
-                XMVECTOR target; \
+                XMVECTOR mTargetObject; \
                 if (pDiffusionErrors) \
                 { \
-                    target = XMVectorRound(v); \
-                    vError = XMVectorSubtract(v, target); \
+                    mTargetObject = XMVectorRound(v); \
+                    vError = XMVectorSubtract(v, mTargetObject); \
                     if (norm) vError = XMVectorDivide(vError, scalev); \
                     \
                     /* Distribute error to next scanline and next pixel */ \
@@ -3771,15 +3771,15 @@ namespace
                 else \
                 { \
                     /* Applied ordered dither */ \
-                    target = XMVectorAdd(v, ordered[ index & 3 ]); \
-                    target = XMVectorRound(target); \
+                    mTargetObject = XMVectorAdd(v, ordered[ index & 3 ]); \
+                    mTargetObject = XMVectorRound(mTargetObject); \
                 } \
                 \
-                target = XMVectorMin(scalev, target); \
-                target = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), target); \
+                mTargetObject = XMVectorMin(scalev, mTargetObject); \
+                mTargetObject = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), mTargetObject); \
                 \
                 XMFLOAT4A tmp; \
-                XMStoreFloat4A(&tmp, target); \
+                XMStoreFloat4A(&tmp, mTargetObject); \
                 \
                 auto dPtr = &dest[ index ]; \
                 if (dPtr >= ePtr) break; \
@@ -3810,11 +3810,11 @@ namespace
                 v = XMVectorAdd(v, vError); \
                 if (norm) v = XMVectorMultiply(v, scalev); \
                 \
-                XMVECTOR target; \
+                XMVECTOR mTargetObject; \
                 if (pDiffusionErrors) \
                 { \
-                    target = XMVectorRound(v); \
-                    vError = XMVectorSubtract(v, target); \
+                    mTargetObject = XMVectorRound(v); \
+                    vError = XMVectorSubtract(v, mTargetObject); \
                     if (norm) vError = XMVectorDivide(vError, scalev); \
                     \
                     /* Distribute error to next scanline and next pixel */ \
@@ -3826,15 +3826,15 @@ namespace
                 else \
                 { \
                     /* Applied ordered dither */ \
-                    target = XMVectorAdd(v, ordered[ index & 3 ]); \
-                    target = XMVectorRound(target); \
+                    mTargetObject = XMVectorAdd(v, ordered[ index & 3 ]); \
+                    mTargetObject = XMVectorRound(mTargetObject); \
                 } \
                 \
-                target = XMVectorMin(scalev, target); \
-                target = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), target); \
+                mTargetObject = XMVectorMin(scalev, mTargetObject); \
+                mTargetObject = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), mTargetObject); \
                 \
                 XMFLOAT4A tmp; \
-                XMStoreFloat4A(&tmp, target); \
+                XMStoreFloat4A(&tmp, mTargetObject); \
                 \
                 auto dPtr = &dest[ index ]; \
                 if (dPtr >= ePtr) break; \
@@ -3863,11 +3863,11 @@ namespace
                 v = XMVectorAdd(v, vError); \
                 if (norm) v = XMVectorMultiply(v, scalev); \
                 \
-                XMVECTOR target; \
+                XMVECTOR mTargetObject; \
                 if (pDiffusionErrors) \
                 { \
-                    target = XMVectorRound(v); \
-                    vError = XMVectorSubtract(v, target); \
+                    mTargetObject = XMVectorRound(v); \
+                    vError = XMVectorSubtract(v, mTargetObject); \
                     if (norm) vError = XMVectorDivide(vError, scalev); \
                     \
                     /* Distribute error to next scanline and next pixel */ \
@@ -3879,16 +3879,16 @@ namespace
                 else \
                 { \
                     /* Applied ordered dither */ \
-                    target = XMVectorAdd(v, ordered[ index & 3 ]); \
-                    target = XMVectorRound(target); \
+                    mTargetObject = XMVectorAdd(v, ordered[ index & 3 ]); \
+                    mTargetObject = XMVectorRound(mTargetObject); \
                 } \
                 \
-                target = XMVectorMin(scalev, target); \
-                target = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), target); \
+                mTargetObject = XMVectorMin(scalev, mTargetObject); \
+                mTargetObject = XMVectorMax((clampzero) ? g_XMZero : (XMVectorAdd(XMVectorNegate(scalev), g_XMOne)), mTargetObject); \
                 \
                 auto dPtr = &dest[ index ]; \
                 if (dPtr >= ePtr) break; \
-                *dPtr = type(static_cast<type>((selectw) ? XMVectorGetW(target) : XMVectorGetX(target)) & mask); \
+                *dPtr = type(static_cast<type>((selectw) ? XMVectorGetW(mTargetObject) : XMVectorGetX(mTargetObject)) & mask); \
             } \
             return true; \
         } \
@@ -3991,11 +3991,11 @@ bool DirectX::_StoreScanlineDither(
                 XMVECTOR v = XMVectorClamp(sPtr[index], MinXR, MaxXR);
                 v = XMVectorMultiplyAdd(v, Scale, vError);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, Scale);
 
                     // Distribute error to next scanline and next pixel
@@ -4007,15 +4007,15 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorAdd(target, Bias);
-                target = XMVectorClamp(target, g_XMZero, g_Scale10pc);
+                mTargetObject = XMVectorAdd(mTargetObject, Bias);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, g_Scale10pc);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;
@@ -4070,11 +4070,11 @@ bool DirectX::_StoreScanlineDither(
                 v = XMVectorAdd(v, vError);
                 v = XMVectorMultiply(v, Scale);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, Scale);
 
                     // Distribute error to next scanline and next pixel
@@ -4086,14 +4086,14 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorClamp(target, g_XMZero, Scale2);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, Scale2);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;
@@ -4158,11 +4158,11 @@ bool DirectX::_StoreScanlineDither(
                 v = XMVectorAdd(v, vError);
                 v = XMVectorMultiply(v, g_Scale565pc);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, g_Scale565pc);
 
                     // Distribute error to next scanline and next pixel
@@ -4174,14 +4174,14 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorClamp(target, g_XMZero, g_Scale565pc);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, g_Scale565pc);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;
@@ -4207,11 +4207,11 @@ bool DirectX::_StoreScanlineDither(
                 v = XMVectorAdd(v, vError);
                 v = XMVectorMultiply(v, g_Scale5551pc);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, g_Scale5551pc);
 
                     // Distribute error to next scanline and next pixel
@@ -4223,21 +4223,21 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorClamp(target, g_XMZero, g_Scale5551pc);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, g_Scale5551pc);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;
                 dPtr->x = uint16_t(static_cast<uint16_t>(tmp.x) & 0x1F);
                 dPtr->y = uint16_t(static_cast<uint16_t>(tmp.y) & 0x1F);
                 dPtr->z = uint16_t(static_cast<uint16_t>(tmp.z) & 0x1F);
-                dPtr->w = (XMVectorGetW(target) > threshold) ? 1u : 0u;
+                dPtr->w = (XMVectorGetW(mTargetObject) > threshold) ? 1u : 0u;
             }
             return true;
         }
@@ -4262,11 +4262,11 @@ bool DirectX::_StoreScanlineDither(
                 v = XMVectorAdd(v, vError);
                 v = XMVectorMultiply(v, g_Scale8pc);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, g_Scale8pc);
 
                     // Distribute error to next scanline and next pixel
@@ -4278,14 +4278,14 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorClamp(target, g_XMZero, g_Scale8pc);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, g_Scale8pc);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;
@@ -4317,11 +4317,11 @@ bool DirectX::_StoreScanlineDither(
                 v = XMVectorAdd(v, vError);
                 v = XMVectorMultiply(v, g_Scale4pc);
 
-                XMVECTOR target;
+                XMVECTOR mTargetObject;
                 if (pDiffusionErrors)
                 {
-                    target = XMVectorRound(v);
-                    vError = XMVectorSubtract(v, target);
+                    mTargetObject = XMVectorRound(v);
+                    vError = XMVectorSubtract(v, mTargetObject);
                     vError = XMVectorDivide(vError, g_Scale4pc);
 
                     // Distribute error to next scanline and next pixel
@@ -4333,14 +4333,14 @@ bool DirectX::_StoreScanlineDither(
                 else
                 {
                     // Applied ordered dither
-                    target = XMVectorAdd(v, ordered[index & 3]);
-                    target = XMVectorRound(target);
+                    mTargetObject = XMVectorAdd(v, ordered[index & 3]);
+                    mTargetObject = XMVectorRound(mTargetObject);
                 }
 
-                target = XMVectorClamp(target, g_XMZero, g_Scale4pc);
+                mTargetObject = XMVectorClamp(mTargetObject, g_XMZero, g_Scale4pc);
 
                 XMFLOAT4A tmp;
-                XMStoreFloat4A(&tmp, target);
+                XMStoreFloat4A(&tmp, mTargetObject);
 
                 auto dPtr = &dest[index];
                 if (dPtr >= ePtr) break;

@@ -2,62 +2,59 @@
 
 Models::Models() : 
     Model(), 
-    drawCount(0),
-    mTargetCameraFrustum(nullptr)
+    mDrawCount(0),
+    mCameraForFrustumCulling(nullptr)
 {
-    for (InstanceData& data : instanceData)
+    for (InstanceData& data : mInstanceData)
         data.world = XMMatrixIdentity();
 
-    instanceBuffer = new VertexBuffer(instanceData, sizeof(InstanceData), MAX_INSTANCE);
-
-    mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
-    SetBox(&minBox, &maxBox);
+    mInstanceBuffer = new VertexBuffer(mInstanceData, sizeof(InstanceData), MAX_INSTANCE);
 }
 
 Models::~Models()
 {
-    for (Transform* transform : transforms)
+    for (Transform* transform : mTransforms)
         delete transform;
 
-    delete instanceBuffer;
-    delete mTargetCameraFrustum;
+    delete mInstanceBuffer;
+    delete mCameraForFrustumCulling;
 }
 
 void Models::Update()
 {
-    mTargetCameraFrustum->Update();
-    drawCount = 0;
+    mCameraForFrustumCulling->Update();
+    mDrawCount = 0;
 
-    for (UINT i = 0; i < transforms.size(); i++)
+    for (UINT i = 0; i < mTransforms.size(); i++)
     {
-        Vector3 worldMin = XMVector3TransformCoord(minBox.data, *transforms[i]->GetWorldMatrix());
-        Vector3 worldMax = XMVector3TransformCoord(maxBox.data, *transforms[i]->GetWorldMatrix());
+        Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix());
+        Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
 
-        if (mTargetCameraFrustum->ContainBox(worldMin, worldMax)) // 프러스텀범위안의 인스턴스들만 렌더링.
+        if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀범위안의 인스턴스들만 렌더링.
         {
-            transforms[i]->UpdateWorld();
-            instanceData[drawCount].world = XMMatrixTranspose(*transforms[i]->GetWorldMatrix()); // 셰이더에 넘기기위해 전치행렬 변환.
-            instanceData[drawCount].index = i;
-            drawCount++;
+            mTransforms[i]->UpdateWorld();
+            mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix()); // 셰이더에 넘기기위해 전치행렬 변환.
+            mInstanceData[mDrawCount].index = i;
+            mDrawCount++;
         }
     }
 
-    instanceBuffer->Update(instanceData, drawCount); // 렌더링시킬만큼의 수의 메모리만 업데이트.(drawCount)
+    mInstanceBuffer->Update(mInstanceData, mDrawCount); // 렌더링시킬만큼의 수의 메모리만 업데이트.(drawCount)
 }
 
 void Models::Render()
 {
-    instanceBuffer->IASet(1);
+    mInstanceBuffer->IASet(1);
     SetBoneTransforms();
     mBoneBuffer->SetVSBuffer(3);
 
-    MeshRender(drawCount);
+    MeshRender(mDrawCount);
 }
 
 Transform* Models::Add()
 {
     Transform* transform = new Transform();
-    transforms.emplace_back(transform);
+    mTransforms.emplace_back(transform);
 
     return transform;
 }

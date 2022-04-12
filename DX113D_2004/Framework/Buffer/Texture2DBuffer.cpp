@@ -5,16 +5,16 @@ Texture2DBuffer::Texture2DBuffer(ID3D11Texture2D* src)
 	D3D11_TEXTURE2D_DESC srcDesc;
 	src->GetDesc(&srcDesc);
 
-	mWidth = srcDesc.Width;
-	mHeight = srcDesc.Height;
+	mTerrainWidth = srcDesc.Width;
+	mTerrainHeight = srcDesc.Height;
 	mPage = srcDesc.ArraySize;
 	mFormat = srcDesc.Format;
 
 
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-	desc.Width = mWidth;
-	desc.Height = mHeight;
+	desc.Width = mTerrainWidth;
+	desc.Height = mTerrainHeight;
 	desc.ArraySize = mPage;
 	desc.Format = mFormat;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -64,8 +64,8 @@ void Texture2DBuffer::createOutput()
 
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-	desc.Width = mWidth;
-	desc.Height = mHeight;
+	desc.Width = mTerrainWidth;
+	desc.Height = mTerrainHeight;
 	desc.ArraySize = mPage;
 	desc.Format = mFormat;
 	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;

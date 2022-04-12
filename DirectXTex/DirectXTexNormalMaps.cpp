@@ -107,7 +107,7 @@ namespace
         XMVECTOR* row0 = scanline.get();
         XMVECTOR* row1 = row0 + width;
         XMVECTOR* row2 = row1 + width;
-        XMVECTOR* target = row2 + width;
+        XMVECTOR* mTargetObject = row2 + width;
 
         float* val0 = buffer.get();
         float* val1 = val0 + width + 2;
@@ -167,7 +167,7 @@ namespace
             EvaluateRow(row2, val2, width, flags);
 
             // Generate target scanline
-            XMVECTOR *dptr = target;
+            XMVECTOR *dptr = mTargetObject;
             for (size_t x = 0; x < width; ++x)
             {
                 // Compute normal via central differencing
@@ -227,7 +227,7 @@ namespace
                 }
             }
 
-            if (!_StoreScanline(pDest, normalMap.rowPitch, format, target, width))
+            if (!_StoreScanline(pDest, normalMap.rowPitch, format, mTargetObject, width))
                 return E_FAIL;
 
             // Cycle buffers

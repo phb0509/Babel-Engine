@@ -190,6 +190,8 @@
     <ClInclude Include="Framework\Render\TextureClass.h" />
     <ClInclude Include="GameObject\CDialogEventHandler.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
+    <ClInclude Include="GameObject\Monster\InstanceMonster.h" />
+    <ClInclude Include="GameObject\Monster\InstanceMutant.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\AttackState.h" />
     <ClInclude Include="GameObject\Monster\MonsterStates\OnDamageState.h" />
@@ -354,6 +356,8 @@
     <ClCompile Include="Framework\Utility\Xml.cpp" />
     <ClCompile Include="GameObject\CDialogEventHandler.cpp" />
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />
+    <ClCompile Include="GameObject\Monster\InstanceMonster.cpp" />
+    <ClCompile Include="GameObject\Monster\InstanceMutant.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\AttackState.cpp" />
     <ClCompile Include="GameObject\Monster\MonsterStates\OnDamageState.cpp" />

@@ -80,7 +80,7 @@ namespace
     struct WICConvert
     {
         const GUID&     source;
-        const GUID&     target;
+        const GUID&     mTargetObject;
         TEX_ALPHA_MODE  alphaMode;
     };
 
@@ -188,9 +188,9 @@ namespace
                     if (memcmp(&g_WICConvert[i].source, &pixelFormat, sizeof(WICPixelFormatGUID)) == 0)
                     {
                         if (pConvert)
-                            memcpy_s(pConvert, sizeof(WICPixelFormatGUID), &g_WICConvert[i].target, sizeof(GUID));
+                            memcpy_s(pConvert, sizeof(WICPixelFormatGUID), &g_WICConvert[i].mTargetObject, sizeof(GUID));
 
-                        format = _WICToDXGI(g_WICConvert[i].target);
+                        format = _WICToDXGI(g_WICConvert[i].mTargetObject);
                         assert(format != DXGI_FORMAT_UNKNOWN);
                         *alphaMode = g_WICConvert[i].alphaMode;
                         break;

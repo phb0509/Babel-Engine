@@ -65,8 +65,8 @@ void Shadow::SetViewProjection()
 	Matrix view = XMMatrixLookAtLH(lightPos.data, XMVectorZero(), kUp);
 	Matrix projection = XMMatrixOrthographicLH(radius * 2, radius * 2, 0.0f, 1000.0f);
 
-	viewBuffer->Set(view);
-	projectionBuffer->Set(projection);
+	viewBuffer->SetMatrix(view);
+	projectionBuffer->SetMatrix(projection);
 
 	viewBuffer->SetVSBuffer(1);
 	projectionBuffer->SetVSBuffer(2);

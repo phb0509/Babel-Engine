@@ -485,7 +485,7 @@ namespace
             return reinterpret_cast<int*>(this)[i];
         }
 
-        void Set(_In_ const HDRColorA& c, _In_ bool bSigned) noexcept
+        void SetMatrix(_In_ const HDRColorA& c, _In_ bool bSigned) noexcept
         {
             PackedVector::XMHALF4 aF16;
 
@@ -714,7 +714,7 @@ namespace
             {
                 for (size_t i = 0; i < NUM_PIXELS_PER_BLOCK; ++i)
                 {
-                    aIPixels[i].Set(aOriginal[i], bSigned);
+                    aIPixels[i].SetMatrix(aOriginal[i], bSigned);
                 }
             }
         };
@@ -2493,8 +2493,8 @@ float D3DX_BC6H::RoughMSE(EncodeParams* pEP) const noexcept
 
         HDRColorA epA, epB;
         OptimizeRGB(pEP->aHDRPixels, &epA, &epB, 4, np, auPixIdx);
-        aEndPts[p].A.Set(epA, pEP->bSigned);
-        aEndPts[p].B.Set(epB, pEP->bSigned);
+        aEndPts[p].A.SetMatrix(epA, pEP->bSigned);
+        aEndPts[p].B.SetMatrix(epB, pEP->bSigned);
         if (pEP->bSigned)
         {
             aEndPts[p].A.Clamp(-F16MAX, F16MAX);

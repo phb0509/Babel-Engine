@@ -1,7 +1,10 @@
 #include "Framework.h"
 
-ModelAnimators::ModelAnimators()
-    : ModelAnimator(), mDrawCount(0)
+ModelAnimators::ModelAnimators() : 
+	ModelAnimator(), 
+	mCameraForFrustumCulling(nullptr),
+	mDrawCount(0),
+	mbIsFrustumCullingMode(false)
 {
 	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
@@ -10,9 +13,6 @@ ModelAnimators::ModelAnimators()
 	}
 
     mInstanceBuffer = new VertexBuffer(mInstanceData, sizeof(InstanceData), MAX_INSTANCE);
-	mTargetCameraFrustum = Environment::Get()->GetTargetCamera()->GetFrustum();
-
-	SetBox(&mMinBox, &mMaxBox);
 }
 
 ModelAnimators::~ModelAnimators()
@@ -22,6 +22,11 @@ ModelAnimators::~ModelAnimators()
 
 void ModelAnimators::Update()
 {
+	if (mCameraForFrustumCulling != nullptr)
+	{
+		mCameraForFrustumCulling->Update();
+	}
+
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
 		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[i];
@@ -38,7 +43,10 @@ void ModelAnimators::Update()
 				if (desc.curFrame + desc.time >= clip->mFrameCount)
 				{
 					if (mEndEvents[i].count(desc.clip) > 0)
+					{
 						mEndEvents[i][desc.clip](mParams[i][desc.clip]);
+					}
+						
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
@@ -109,7 +117,7 @@ void ModelAnimators::PostRender()
 {
 	for (Transform* transform : mTransforms)
 	{
-		Vector3 screenPos = WorldToScreen(transform->GetGlobalPosition());
+		Vector3 screenPos = WorldToScreen(transform->GetGlobalPosition(),mCameraForFrustumCulling);
 
 		POINT size = { 200, 100 };
 		RECT rect;
@@ -133,24 +141,44 @@ Transform* ModelAnimators::Add()
 	return transform;
 }
 
+void ModelAnimators::AddTransform(Transform* transform)
+{
+	mTransforms.emplace_back(transform);
+	mEndEvents.emplace_back();
+	mParams.emplace_back();
+}
+
 void ModelAnimators::PlayClip(UINT instance, UINT clip, float speed, float takeTime)
 {
-	mFrameBuffer->data.tweenDesc[instance].takeTime = takeTime;
 	mFrameBuffer->data.tweenDesc[instance].next.clip = clip;
 	mFrameBuffer->data.tweenDesc[instance].next.speed = speed;
+	mFrameBuffer->data.tweenDesc[instance].takeTime = takeTime;
 }
 
 void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 {
-	//mTargetCameraFrustum->Update();
 	mDrawCount = 0;
 
-	for (UINT i = 0; i < mTransforms.size(); i++)
+	if (mbIsFrustumCullingMode)
 	{
-		Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix());
-		Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
-		if (mTargetCameraFrustum->ContainBox(worldMin, worldMax))
-		{			
+		for (UINT i = 0; i < mTransforms.size(); i++)
+		{
+			Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix()); // 임의의 컬링용 컬라이더박스 생성 후 세팅.
+			Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
+
+			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
+			{
+				mTransforms[i]->UpdateWorld();
+				mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
+				mInstanceData[mDrawCount].index = i;
+				mDrawCount++;
+			}
+		}
+	}
+	else
+	{
+		for (UINT i = 0; i < mTransforms.size(); i++)
+		{
 			mTransforms[i]->UpdateWorld();
 			mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 			mInstanceData[mDrawCount].index = i;
@@ -160,3 +188,5 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 
 	mInstanceBuffer->Update(mInstanceData, mDrawCount);
 }
+
+

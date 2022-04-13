@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "GameObject/Utility/E_States.h"
 #include "MainScene.h"
 
 MainScene::MainScene() :
@@ -14,13 +15,13 @@ MainScene::MainScene() :
 
 	mTargetCamera = new Camera();
 	mTargetCamera->mTag = "TargetCamera";
-	mTargetCamera->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 100.0f);
+	mTargetCamera->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 200.0f);
 	mTargetCamera->SetIsUsingFrustumCulling(true);
 	mTargetCamera->SetIsRenderFrustumCollider(true);
 
 	mTargetCameraForShow = new Camera();
 	mTargetCameraForShow->mTag = "TargetCameraInWorld";
-	mTargetCameraForShow->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 100.0f);
+	mTargetCameraForShow->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 200.0f);
 	mTargetCameraForShow->SetIsUsingFrustumCulling(true);
 	mTargetCameraForShow->SetIsRenderFrustumCollider(true);
 
@@ -47,7 +48,7 @@ MainScene::MainScene() :
 
 	mInstanceMutant = new InstanceMutant(mMutantInstanceCount); // ModelAnimators
 	mInstanceMutant->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
-	mInstanceMutant->SetIsFrustumCullingMode(true);
+	mInstanceMutant->SetIsFrustumCullingMode(false);
 
 	mInstanceMutants = mInstanceMutant->GetInstanceObjects(); // InstanceObjectsVector
 
@@ -99,6 +100,23 @@ void MainScene::Update()
 	//}
 
 	mInstanceMutant->Update();
+
+
+	if (KEY_DOWN('1'))
+	{
+		mInstanceMutant->SetAnimation(1, eAnimationStates::Run);
+	}
+
+	if (KEY_DOWN('2'))
+	{
+		mInstanceMutant->SetAnimation(1, eAnimationStates::OnDamage);
+	}
+
+	if (KEY_DOWN('3'))
+	{
+		mInstanceMutant->SetAnimation(1, eAnimationStates::Die);
+	}
+
 }
 
 void MainScene::PreRender()
@@ -181,8 +199,6 @@ void MainScene::PostRender()
 
 	ImGui::End();
 }
-
-
 
 void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함수.
 {

@@ -30,8 +30,6 @@ void PatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
 	
 }
 
-
-
 void PatrolState::Enter(Monster* mMonster)
 {
 	Initialize();
@@ -55,7 +53,6 @@ void PatrolState::Execute(Monster* mMonster)
 		float patrolDestPosCorrectionValue = 50.0f;
 		mPatrolDestPos.x = Random(mMonster->mPosition.x - patrolDestPosCorrectionValue, mMonster->mPosition.x + patrolDestPosCorrectionValue);
 		mPatrolDestPos.z = Random(mMonster->mPosition.z - patrolDestPosCorrectionValue, mMonster->mPosition.z + patrolDestPosCorrectionValue);
-
 
 		// Á¤Âû¸ñÇ¥ÁöÁ¡ÀÌ ¸ÊÅ©±â¸¦ ¹þ¾î³¯ °æ¿ì ¿¹¿ÜÃ³¸®.
 		float patrolRangeCorrectionValue = 30.0f;

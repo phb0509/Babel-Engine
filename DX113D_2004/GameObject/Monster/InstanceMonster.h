@@ -17,6 +17,8 @@ public:
 	virtual Collider* GetColliderForAStar() override;
 	virtual void SetAnimation(eAnimationStates value) override;
 
+	void SetTest() {};
+
 private:
 
 

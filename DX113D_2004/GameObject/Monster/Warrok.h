@@ -21,7 +21,6 @@ public:
 		Vector3 scale;
 	};
 
-
 	Warrok();
 	~Warrok();
 

@@ -30,9 +30,10 @@ InstanceMutant::InstanceMutant(int instanceCount)
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
 
-		ModelAnimators::SetEndEvents(i, 1,
-			bind(&InstanceMutant::SetIdle, this, placeholders::_1));
+		/*ModelAnimators::SetEndEvents(i, 1,
+			bind(&InstanceMutant::SetIdle, this, placeholders::_1));*/
 	}
+
 
 	for (int i = 0; i < instanceCount; i++)
 	{
@@ -53,6 +54,11 @@ InstanceMutant::~InstanceMutant()
 
 void InstanceMutant::Update()
 {
+	for (int i = 0; i < mInstanceObjects.size(); i++)
+	{
+		//mInstanceOjbects[i]->mCurrentState->Execute(this);
+	}
+
 	ModelAnimators::Update();
 }
 

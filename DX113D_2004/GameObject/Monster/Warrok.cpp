@@ -11,11 +11,7 @@ Warrok::Warrok()
 
 	SetMesh("Warrok", "Warrok.mesh");
 	SetMaterial("Warrok", "Warrok.mat");
-
 	SetShader(L"ModelAnimation");
-
-
-
 
 	mRotation.y = XM_PI;
 	UpdateWorld();

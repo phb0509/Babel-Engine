@@ -8,8 +8,8 @@ ModelAnimators::ModelAnimators() :
 {
 	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
-		mInstanceData[i].world = XMMatrixIdentity();
-		mInstanceData[i].index = i;
+		mInstanceData[i].worldMatrix = XMMatrixIdentity();
+		mInstanceData[i].instanceIndex = i;
 	}
 
     mInstanceBuffer = new VertexBuffer(mInstanceData, sizeof(InstanceData), MAX_INSTANCE);
@@ -134,7 +134,6 @@ Transform* ModelAnimators::Add()
 {
 	Transform* transform = new Transform();
 	mTransforms.emplace_back(transform);
-
 	mEndEvents.emplace_back();
 	mParams.emplace_back();
 
@@ -169,8 +168,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
 			{
 				mTransforms[i]->UpdateWorld();
-				mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
-				mInstanceData[mDrawCount].index = i;
+				mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
+				mInstanceData[mDrawCount].instanceIndex = i;
 				mDrawCount++;
 			}
 		}
@@ -180,8 +179,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
 			mTransforms[i]->UpdateWorld();
-			mInstanceData[mDrawCount].world = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
-			mInstanceData[mDrawCount].index = i;
+			mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
+			mInstanceData[mDrawCount].instanceIndex = i;
 			mDrawCount++;
 		}
 	}

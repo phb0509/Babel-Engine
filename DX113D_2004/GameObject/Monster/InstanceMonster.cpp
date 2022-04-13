@@ -23,10 +23,6 @@ void InstanceMonster::Render()
 
 }
 
-
-
-
-
 Collider* InstanceMonster::GetHitCollider()
 {
 	return nullptr;

@@ -109,10 +109,10 @@ void Mutant::SetIdle()
 
 void Mutant::SetAnimation(eAnimationStates value)
 {
-	if (mAnimation != value)
+	if (mAnimationState != value)
 	{
-		mAnimation = value;
-		PlayClip(static_cast<int>(mAnimation));
+		mAnimationState = value;
+		PlayClip(static_cast<int>(mAnimationState));
 	}
 }
 

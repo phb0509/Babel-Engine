@@ -21,7 +21,7 @@ Monster::Monster() :
 	mBeforeTargetPosition(0.0f,0.0f,0.0f),
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
-	mAnimation(eAnimationStates::Idle),
+	mAnimationState(eAnimationStates::Idle),
 	mFSM(eFSMstates::Patrol)
 {
 	mCurrentHP = mMaxHP;
@@ -43,8 +43,6 @@ Monster::~Monster()
 	delete mAttackState;
 	delete mOnDamageState;
 }
-
-
 
 void Monster::SetAStarPath(Vector3 destPos)
 {
@@ -103,7 +101,6 @@ void Monster::SetAStarPath(Vector3 destPos)
 	}
 
 }
-
 
 void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 {
@@ -246,7 +243,6 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 		mBeforeNode = mTargetNode;
 	}
 }
-
 
 float Monster::GetDistanceToPlayer()
 {

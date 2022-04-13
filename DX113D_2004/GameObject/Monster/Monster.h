@@ -22,8 +22,6 @@ public:
 	virtual Collider* GetColliderForAStar() = 0;
 	virtual void SetAnimation(eAnimationStates value) = 0;
 
-	void SetRealtimeAStarPath(Vector3 destPos);
-	void SetAStarPath(Vector3 destPos);
 	void MoveToDestUsingAStar(Vector3 dest);
 	void ChangeState(State* nextState);
 
@@ -38,13 +36,15 @@ public:
 	StalkingState* GetStalkingState() { return mStalkingState; }
 	AttackState* GetAttackState() { return mAttackState; }
 	AStar* GetAStar() { return mAStar; }
-	eAnimationStates GetAnimationStates() { return mAnimation; }
+	eAnimationStates GetAnimationStates() { return mAnimationState; }
 
 	void SetTerrain(Terrain* value);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
-	void SetAnimationStates(eAnimationStates animationStates) { mAnimation = animationStates; }
+	void SetAnimationStates(eAnimationStates animationStates) { mAnimationState = animationStates; }
+	void SetRealtimeAStarPath(Vector3 destPos);
+	void SetAStarPath(Vector3 destPos);
 
 	// Test¿ë Getter
 	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
@@ -69,17 +69,14 @@ protected:
 	float mDistanceToPlayerForAttack;
 	float mAStarPathUpdatePeriodTime;
 
-
 	State* mCurrentState;
 	PatrolState* mPatrolState;
 	StalkingState* mStalkingState;
 	AttackState* mAttackState;
 	OnDamageState* mOnDamageState;
-
 	ModelAnimator* mModelAnimator;
-	eAnimationStates mAnimation;
+	eAnimationStates mAnimationState;
 	eFSMstates mFSM;
-
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;

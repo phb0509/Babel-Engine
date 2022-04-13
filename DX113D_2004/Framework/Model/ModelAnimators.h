@@ -7,8 +7,8 @@ class ModelAnimators : public ModelAnimator
 private:
 	struct InstanceData
 	{
-		Matrix world;
-		UINT index;
+		Matrix worldMatrix;
+		UINT instanceIndex;
 	};
 
 
@@ -17,15 +17,13 @@ public:
 	~ModelAnimators();
 
 	void Update() override;
+	void UpdateTransforms();
 	void Render() override;
 	void PostRender();
 
 	Transform* Add();
 	void AddTransform(Transform* transform);
-
 	void PlayClip(UINT instance, UINT clip, float speed = 1.0f, float takeTime = 0.2f);
-
-	void UpdateTransforms();
 
 	Transform* GetTransform(UINT instance) { return mTransforms[instance]; }
 

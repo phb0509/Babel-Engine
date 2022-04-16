@@ -1,18 +1,24 @@
 #include "Framework.h"
 
-Node::Node(Vector3 pos, int index, Float2 interval)
-	: pos(pos), index(index), interval(interval),
-	via(-1), f(0), g(0), h(0), state(NONE), obstacle(nullptr)
+Node::Node(Vector3 pos, int index, Float2 interval): 
+	mPosition(pos), 
+	mIndex(index), 
+	mDistanceBetweenNodes(interval),
+	mbIsCheck(false),
+	mVia(-1), 
+	mF(0), mG(0), mH(0), 
+	mState(NONE), 
+	mObstacle(nullptr)
 {
-	collider = new SphereCollider();
-	collider->mPosition = pos;
+	mCollider = new SphereCollider();
+	mCollider->mPosition = pos;
 }
 
 Node::~Node()
 {
-	delete collider;
-	if(obstacle != nullptr)
-		delete obstacle;
+	delete mCollider;
+	if(mObstacle != nullptr)
+		delete mObstacle;
 
 	for (EdgeInfo* edge : edges)
 		delete edge;
@@ -20,59 +26,59 @@ Node::~Node()
 
 void Node::Render()
 {
-	switch (state)
+	switch (mState)
 	{
 	case Node::NONE:
-		collider->SetColor(Float4(1, 1, 1, 1));
+		mCollider->SetColor(Float4(1, 1, 1, 1));
 		break;
 	case Node::OPEN:
-		collider->SetColor(Float4(0, 0, 1, 1));
+		mCollider->SetColor(Float4(0, 0, 1, 1));
 		break;
 	case Node::CLOSED:
-		collider->SetColor(Float4(1, 0, 0, 1));
+		mCollider->SetColor(Float4(1, 0, 0, 1));
 		break;
 	case Node::USING:
-		collider->SetColor(Float4(0, 1, 0, 1));
+		mCollider->SetColor(Float4(0, 1, 0, 1));
 		break;
 	case Node::OBSTACLE:
-		collider->SetColor(Float4(0, 0, 0, 1));
+		mCollider->SetColor(Float4(0, 0, 0, 1));
 		break;	
 	case Node::DIRECT:
-		collider->SetColor(Float4(1, 1, 0, 1));
+		mCollider->SetColor(Float4(1, 1, 0, 1));
 		break;
 	default:
 		break;
 	}
 
-	if(mIsCheck)
+	if(mbIsCheck)
 	{
-		collider->SetColor(Float4(0.6f, 0.0f, 1.0f, 1.0f));
+		mCollider->SetColor(Float4(0.6f, 0.0f, 1.0f, 1.0f));
 	}
 
 
-	collider->Render();
-	if(obstacle != nullptr)
-		obstacle->Render();
+	mCollider->Render();
+	if(mObstacle != nullptr)
+		mObstacle->Render();
 }
 
 void Node::AddEdge(Node* node)
 {
 	EdgeInfo* edge = new EdgeInfo();
-	edge->index = node->index;
-	edge->edgeCost = Distance(pos, node->pos);
+	edge->index = node->mIndex;
+	edge->edgeCost = Distance(mPosition, node->mPosition);
 
 	edges.emplace_back(edge);
 }
 
 Collider* Node::MakeObstacle()
 {
-	state = OBSTACLE;
+	mState = OBSTACLE;
 
-	Vector3 min = { -interval.x * 0.6f, -20, -interval.y * 0.6f };
+	Vector3 min = { -mDistanceBetweenNodes.x * 0.6f, -20, -mDistanceBetweenNodes.y * 0.6f };
 	Vector3 max = min * -1.0f;
 
-	obstacle = new BoxCollider(min, max);
-	obstacle->mPosition = collider->mPosition;
+	mObstacle = new BoxCollider(min, max);
+	mObstacle->mPosition = mCollider->mPosition;
 
-	return obstacle;
+	return mObstacle;
 }

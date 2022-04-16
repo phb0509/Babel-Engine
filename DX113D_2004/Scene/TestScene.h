@@ -15,27 +15,23 @@ public:
 
 
 private:
-	
+	void moveWorldCamera();
 
 private:
-	Collider* mBoxCollider;
-	Cube* mCube;
-	bool mbIsPicked = false;
 
-	RenderTarget* mPreRenderTargets[1];
-	DepthStencil* mPreRenderTargetDSV;
+	Terrain* mTerrain;
+	Camera* mWorldCamera;
+	Vector3 mPreFrameMousePosition;
+	GBuffer* mGBuffer;
+	Material* mMaterial;
+	VertexBuffer* mVertexBuffer;
 
+	InstancingMutants* mInstancingMutants;
+	vector<Monster*> mInstanceMutants;
+	int mMutantInstanceCount;
+	bool mbIsInstancingMode;
 
-	Vector3 mMouseScreenUVPosition;
-	ComputeShader* mColorPickingComputeShader;
-	ComputeStructuredBuffer* mComputeStructuredBuffer;
-	ColorPickingInputBuffer* mInputBuffer;
-	ColorPickingOutputBuffer* mOutputBuffer;
-	Vector3 mMousePositionColor;
-
-	float objectTransformMatrix[16] = {};
-
-	float matrixTranslation[3] = {};
-	float matrixRotation[3] = {};
-	float matrixScale[3] = {};
+	vector<RenderTarget*> mRenderTargets;
+	DepthStencil* mDepthStencil;
+	Sphere* mSphere;
 };

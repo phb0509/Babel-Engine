@@ -22,7 +22,8 @@ Monster::Monster() :
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
 	mAnimationState(eAnimationStates::Idle),
-	mFSM(eFSMstates::Patrol)
+	mFSM(eFSMstates::Patrol),
+	mInstanceIndex(0)
 {
 	mCurrentHP = mMaxHP;
 	mPatrolState = new PatrolState();
@@ -44,11 +45,23 @@ Monster::~Monster()
 	delete mOnDamageState;
 }
 
-void Monster::SetAStarPath(Vector3 destPos)
+void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Update.
 {
 	mPath.clear();
-	mAStar->Reset();
+	mAStar->ResetNodeState(); // 장애물 제외, 모든 Node의 State를 None으로 초기화.
 
+	if (mbHasTerrainObstacles) // 터레인의 장애물보유여부.
+	{
+		setObstaclesTerrain(destPos);
+	}
+	else
+	{
+		setNoneObstaclesTerrain(destPos);
+	}
+}
+
+void Monster::setObstaclesTerrain(Vector3 destPos)
+{
 	Ray ray;
 	ray.position = mPosition;
 	ray.direction = (destPos - mPosition).Normal();
@@ -62,8 +75,8 @@ void Monster::SetAStarPath(Vector3 destPos)
 		mPath = mAStar->FindPath(startIndex, endIndex); // 경로생성.
 		mPath.insert(mPath.begin(), destPos); // 목표위치를 경로벡터 맨 앞에 넣기. 
 
-		mAStar->MakeDirectPath(mPosition, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
-		mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣어주는구나
+		mAStar->MakeDirectPath(mPosition, destPos, mPath); // mPath에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
+		mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣어주기
 
 		UINT pathSize = mPath.size();
 
@@ -72,7 +85,9 @@ void Monster::SetAStarPath(Vector3 destPos)
 			vector<Vector3> tempPath;
 
 			for (UINT i = 1; i < mPath.size() - 1; i++) // 목적지,출발지 사이의 경로.
+			{
 				tempPath.emplace_back(mPath[i]);
+			}
 
 			Vector3 start = mPath.back(); // 출발지
 			Vector3 end = mPath.front(); // 목적지.
@@ -96,10 +111,14 @@ void Monster::SetAStarPath(Vector3 destPos)
 
 	else // 그냥 출발지에서 바로 다이렉트로 갈수있으면.
 	{
-	//	mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
+		//mAStar->SetDirectNode(mAStar->FindCloseNode(destPos)); // 다이렉트로 갈수있는 노드는 노란색 설정.
 		mPath.insert(mPath.begin(), destPos);
 	}
+}
 
+void Monster::setNoneObstaclesTerrain(Vector3 destPos)
+{
+	mPath.insert(mPath.begin(), destPos);
 }
 
 void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
@@ -109,7 +128,7 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		mCurrentTargetPosition = destPos;
 
 		mPath.clear();
-		mAStar->Reset();
+		mAStar->ResetNodeState();
 		mPathNodesCheck.assign(mPathNodesCheckSize, false);
 
 		Ray ray;
@@ -187,12 +206,12 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 		mBeforeTargetPosition = mCurrentTargetPosition;
 
 		// mPath 내부 노드들 인게임내에서 확인하기위한 코드(보라색으로). 없어도 상관없다.
-		mAStar->SetCheckFalse();
+		/*mAStar->SetCheckFalse();
 		for (int i = 0; i < mPath.size(); i++)
 		{
 			int t = mAStar->FindCloseNode(mPath[i]);
 			mAStar->SetTestNode(t);
-		}
+		}*/
 	}
 }
 
@@ -253,11 +272,11 @@ float Monster::GetDistanceToPlayer()
 	return mDistanceToPlayer;
 }
 
-void Monster::SetTerrain(Terrain* value)
+void Monster::SetTerrain(Terrain* terrain, bool hasTerrainObstacles) 
 {
-	mTerrain = value;
-	mAStar->SetNode(mTerrain);
-
+	mTerrain = terrain;
+	mbHasTerrainObstacles = hasTerrainObstacles;
+	mAStar->SetNodeMap(terrain->GetNodeMap());
 }
 
 void Monster::ChangeState(State* nextState)

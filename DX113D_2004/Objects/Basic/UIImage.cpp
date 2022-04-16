@@ -36,7 +36,6 @@ void UIImage::Update()
 
 void UIImage::Render()
 {
-	
 	mMesh->IASet();
 
 	SetWorldBuffer(); // 0¹ø¿¡

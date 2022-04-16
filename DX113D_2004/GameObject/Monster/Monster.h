@@ -14,6 +14,7 @@ public:
 	~Monster();
 
 	virtual void Update() = 0;
+	virtual void InstanceUpdate() = 0;
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
@@ -37,18 +38,26 @@ public:
 	AttackState* GetAttackState() { return mAttackState; }
 	AStar* GetAStar() { return mAStar; }
 	eAnimationStates GetAnimationStates() { return mAnimationState; }
+	State* GetCurrentState() { return mCurrentState; }
+	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
+	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 
-	void SetTerrain(Terrain* value);
+	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
 	void SetAnimationStates(eAnimationStates animationStates) { mAnimationState = animationStates; }
 	void SetRealtimeAStarPath(Vector3 destPos);
 	void SetAStarPath(Vector3 destPos);
+	void SetInstanceIndex(int index) { mInstanceIndex = index; }
+	void SetUpperFrameBuffer(FrameBuffer* frameBuffer) { mUpperFrameBuffer = frameBuffer; }
 
 	// Test¿ë Getter
 	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
 
+private:
+	void setObstaclesTerrain(Vector3 destPos);
+	void setNoneObstaclesTerrain(Vector3 destPos);
 
 protected:
 	float mDamage;
@@ -77,6 +86,8 @@ protected:
 	ModelAnimator* mModelAnimator;
 	eAnimationStates mAnimationState;
 	eFSMstates mFSM;
+	int mInstanceIndex;
+	FrameBuffer* mUpperFrameBuffer;
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;
@@ -95,6 +106,7 @@ private:
 	Vector3 mCurrentTargetPosition;
 
 	bool mbPathSizeCheck;
+	bool mbHasTerrainObstacles;
 
 	int count = 0;
 

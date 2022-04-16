@@ -42,6 +42,4 @@ private:
 	
 	vector<Float4> mPixels;
 	unsigned char* mCharArray;
-
-
 };

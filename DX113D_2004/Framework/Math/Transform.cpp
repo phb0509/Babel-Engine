@@ -23,7 +23,7 @@ Transform::Transform(string mTag) :
 	mWorldBuffer = new MatrixBuffer();
 	mHashColorBuffer = new ColorBuffer();
 
-	mMaterial = new Material(L"Gizmos");
+	//mMaterial = new Material(L"Gizmos");
 	mIsUpdateStandTimes.assign(3, true);
 	mNextExecuteTimes.assign(3, -100.0f);
 
@@ -33,7 +33,7 @@ Transform::Transform(string mTag) :
 Transform::~Transform()
 {
 	delete mWorldBuffer;
-	delete mMaterial;
+	//delete mMaterial;
 }
 
 void Transform::UpdateWorld()

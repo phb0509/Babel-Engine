@@ -21,7 +21,7 @@ void Heap::UpdateUpper(int index)
 
     while (curIndex != 0)
     {
-        if (heap[parent]->f < heap[curIndex]->f)
+        if (heap[parent]->mF < heap[curIndex]->mF)
             break;
 
         swap(heap[curIndex], heap[parent]);
@@ -52,10 +52,10 @@ void Heap::UpdateLower(int index)
 
     while (true)
     {
-        if (lChild < heap.size() && heap[lChild]->f < heap[minNode]->f)
+        if (lChild < heap.size() && heap[lChild]->mF < heap[minNode]->mF)
             minNode = lChild;
 
-        if (rChild < heap.size() && heap[rChild]->f < heap[minNode]->f)
+        if (rChild < heap.size() && heap[rChild]->mF < heap[minNode]->mF)
             minNode = rChild;
 
         if (minNode == curIndex)

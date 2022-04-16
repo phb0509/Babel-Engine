@@ -10,16 +10,17 @@ Mutant::Mutant() : mbOnHit(false)
 
 	SetShader(L"ModelAnimation");
 
-	ReadClip("Mutant","Idle.clip");
-	ReadClip("Mutant","Run.clip");
-	ReadClip("Mutant","SmashAttack.clip");
-	ReadClip("Mutant","OnDamage.clip");
-	ReadClip("Mutant","Die.clip");
+	ReadClip("Mutant", "Idle.clip");
+	ReadClip("Mutant", "Run.clip");
+	ReadClip("Mutant", "SmashAttack.clip");
+	ReadClip("Mutant", "OnDamage.clip");
+	ReadClip("Mutant", "Die.clip");
 
+	// FSM패턴을 사용하기 때문에 이제 필요없음.
 	SetEndEvent(static_cast<int>(eAnimationStates::Run), bind(&Mutant::SetIdle, this));
 	SetEndEvent(static_cast<int>(eAnimationStates::OnDamage), bind(&Mutant::setOnDamageEnd, this));
 	SetEndEvent(static_cast<int>(eAnimationStates::SmashAttack), bind(&Mutant::setAttackEnd, this));
-	
+
 	PlayClip(0);
 
 	loadBinaryFile(); // 툴에서 셋팅한 컬라이더 불러오기.
@@ -29,7 +30,7 @@ Mutant::Mutant() : mbOnHit(false)
 
 	mPlayerDetectRange = 15.0f;
 	mDistanceToPlayerForAttack = 7.0f;
-    mCurrentState = GetPatrolState();
+	mCurrentState = GetPatrolState();
 }
 
 Mutant::~Mutant()
@@ -54,9 +55,14 @@ void Mutant::Update()
 	ModelAnimator::Update();
 }
 
+void Mutant::InstanceUpdate()
+{
+
+}
+
 void Mutant::PreRender()
 {
-	
+
 }
 
 void Mutant::Render()
@@ -126,7 +132,6 @@ Collider* Mutant::GetHitCollider() // 히트체크용 컬라이더
 {
 	return mCollidersMap["bodyCollider"];
 }
-
 
 void Mutant::loadBinaryFile()
 {

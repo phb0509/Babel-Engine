@@ -2,60 +2,58 @@
 
 GBuffer::GBuffer()
 {
-	diffuseRender = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
-	specularRender = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
-	normalRender = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
+	mDiffuseRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
+	mSpecularRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
+	mNormalRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 
-	depthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
+	mRenderTargets.push_back(mDiffuseRenderTarget);
+	mRenderTargets.push_back(mSpecularRenderTarget);
+	mRenderTargets.push_back(mNormalRenderTarget);
 
-	rtvs[0] = diffuseRender; // 렌더타겟임.
-	rtvs[1] = specularRender;
-	rtvs[2] = normalRender;
+	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
 
-	srvs[0] = depthStencil->GetSRV(); // 렌더타겟의 SRV.
-	srvs[1] = diffuseRender->GetSRV();
-	srvs[2] = specularRender->GetSRV();
-	srvs[3] = normalRender->GetSRV();
-
-	
+	mSRVs[0] = mDepthStencil->GetSRV(); // 렌더타겟의 SRV.
+	mSRVs[1] = mDiffuseRenderTarget->GetSRV();
+	mSRVs[2] = mSpecularRenderTarget->GetSRV();
+	mSRVs[3] = mNormalRenderTarget->GetSRV();
 
 	for (UINT i = 0; i < 4; i++)
 	{
-		targetTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
-		targetTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
-		targetTextures[i]->mScale = { 200, 200, 200 };
-		targetTextures[i]->SetSRV(srvs[i]); // 띄울 srv(이미지)
+		mTargetTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
+		mTargetTextures[i]->mPosition = { 100 + (float)i * 200, 100, 0 };
+		mTargetTextures[i]->mScale = { 200, 200, 200 };
+		mTargetTextures[i]->SetSRV(mSRVs[i]); // 띄울 srv(이미지)
 	}
 }
 
 GBuffer::~GBuffer()
 {
-	delete diffuseRender;
-	delete specularRender;
-	delete normalRender;
-	delete depthStencil;
+	delete mDiffuseRenderTarget;
+	delete mSpecularRenderTarget;
+	delete mNormalRenderTarget;
+	delete mDepthStencil;
 
-	for (UIImage* texture : targetTextures)
+	for (UIImage* texture : mTargetTextures)
 		delete texture;
 }
 
 void GBuffer::PreRender()
 {
-	RenderTarget::ClearAndSetWithDSV(rtvs, 3, depthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget
+	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 3, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget
 											   // OM에 MRT(MultiRenderTarget) Set.
 }
 
 void GBuffer::Render()
 {
-	DEVICECONTEXT->PSSetShaderResources(3, 1, &srvs[0]);
-	DEVICECONTEXT->PSSetShaderResources(4, 1, &srvs[1]);
-	DEVICECONTEXT->PSSetShaderResources(5, 1, &srvs[2]);
-	DEVICECONTEXT->PSSetShaderResources(6, 1, &srvs[3]);
+	DEVICECONTEXT->PSSetShaderResources(3, 1, &mSRVs[0]);
+	DEVICECONTEXT->PSSetShaderResources(4, 1, &mSRVs[1]);
+	DEVICECONTEXT->PSSetShaderResources(5, 1, &mSRVs[2]);
+	DEVICECONTEXT->PSSetShaderResources(6, 1, &mSRVs[3]);
 }
 
 void GBuffer::PostRender()
 {
-	for (UIImage* texture : targetTextures)
+	for (UIImage* texture : mTargetTextures)
 		texture->Render();
 }
 

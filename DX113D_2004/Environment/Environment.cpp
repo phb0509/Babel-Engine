@@ -63,7 +63,6 @@ void Environment::showLightInformation()
 void Environment::Set()
 {
 	SetViewport();
-
 	mLightBuffer->SetPSBuffer(0);
 }
 

@@ -3,11 +3,11 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN
 
-//#define WIN_WIDTH 1280
-//#define WIN_HEIGHT 720
+#define WIN_WIDTH 1280
+#define WIN_HEIGHT 720
 
-#define WIN_WIDTH 1850
-#define WIN_HEIGHT 900
+//#define WIN_WIDTH 1850
+//#define WIN_HEIGHT 900
 
 #define CENTER_X WIN_WIDTH * 0.5f
 #define CENTER_Y WIN_HEIGHT * 0.5f
@@ -317,7 +317,7 @@ using namespace states;
 #include "GameObject/Monster/Warrok.h"
 #include "GameObject/Player/Player.h"
 #include "GameObject/Monster/InstanceMonster.h"
-#include "GameObject/Monster/InstanceMutant.h"
+#include "GameObject/Monster/InstancingMutants.h"
 
 #include "GameObject/Utility/State.h"
 #include "GameObject/Monster/MonsterStates/PatrolState.h"

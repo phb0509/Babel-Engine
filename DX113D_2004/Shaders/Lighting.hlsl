@@ -31,7 +31,6 @@ PixelInput VS(VertexUVNormalTangentBlend input)
         transform = world;
     }
        
-    
     output.pos = mul(input.pos, transform);
     
     output.camPos = invView._41_42_43; 

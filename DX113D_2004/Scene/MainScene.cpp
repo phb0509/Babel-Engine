@@ -6,7 +6,8 @@ MainScene::MainScene() :
 	mTargetCameraFrustum(nullptr),
 	mbIsWorldMode(true),
 	mMainCamera(eCamera::WorldCamera),
-	mPreFrameMousePosition(MOUSEPOS)
+	mPreFrameMousePosition(MOUSEPOS),
+	mbIsInstancingMode(false)
 {
 	mWorldCamera = new Camera();
 	mWorldCamera->mTag = "WorldCamera";
@@ -25,7 +26,6 @@ MainScene::MainScene() :
 	mTargetCameraForShow->SetIsUsingFrustumCulling(true);
 	mTargetCameraForShow->SetIsRenderFrustumCollider(true);
 
-
 	mTerrain = new Terrain();
 	mTerrain->SetCamera(mWorldCamera);
 	mPlayer = GM->GetPlayer();
@@ -33,34 +33,63 @@ MainScene::MainScene() :
 	mPlayer->SetTargetCamera(mTargetCamera);
 	mPlayer->SetTargetCameraInWorld(mTargetCameraForShow);
 	mPlayer->SetIsTargetMode(false);
-	mMutants = GM->GetMonsters();
-	vector<Collider*> monsters0Obstacles;
+	vector<Collider*> monsters0Obstacles = {};
 
-	float startX = 30.0f;
-	float startZ = 30.0f;
+	float startX = 100.0f;
+	float startZ = 100.0f;
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 30;
-	int column = 20;
+	mbIsInstancingMode = true;
 
-	mMutantInstanceCount = row * column;
-
-	mInstanceMutant = new InstanceMutant(mMutantInstanceCount); // ModelAnimators
-	mInstanceMutant->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
-	mInstanceMutant->SetIsFrustumCullingMode(false);
-
-	mInstanceMutants = mInstanceMutant->GetInstanceObjects(); // InstanceObjectsVector
-
-	for (int z = 0; z < column; z++)
+	if (mbIsInstancingMode)
 	{
-		for (int x = 0; x < row; x++)
+		int row = 10;
+		int column = 10;
+
+		mMutantInstanceCount = row * column;
+
+		mInstancingMutants = new InstancingMutants(mMutantInstanceCount, mTerrain); // ModelAnimators
+		mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
+		mInstancingMutants->SetIsFrustumCullingMode(true);
+		mInstanceMutants = mInstancingMutants->GetInstanceObjects(); // InstanceObjectsVector
+
+		for (int z = 0; z < column; z++)
 		{
-			int monsterIndex = z * row + x;
-			mInstanceMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
-			mInstanceMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
-			//mInstanceMutants[monsterIndex]->SetTerrain(mTerrain);
-			//mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
+			for (int x = 0; x < row; x++)
+			{
+				int monsterIndex = z * row + x;
+				mInstanceMutants[monsterIndex]->SetInstanceIndex(monsterIndex);
+				mInstanceMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
+				mInstanceMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
+				mInstanceMutants[monsterIndex]->SetTerrain(mTerrain, false);
+				mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
+			}
+		}
+	}
+
+	else
+	{
+		int tempRow = 2;
+		int tempColumn = 2;
+
+		for (int i = 0; i < tempRow * tempColumn; i++)
+		{
+			Monster* temp = new Mutant;
+			mMutants.push_back(temp);
+		}
+
+		for (int z = 0; z < tempColumn; z++)
+		{
+			for (int x = 0; x < tempRow; x++)
+			{
+				int monsterIndex = z * tempRow + x;
+				mMutants[monsterIndex]->mTag = to_string(monsterIndex) + "번 몬스터";
+				mMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
+				mMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
+				mMutants[monsterIndex]->SetTerrain(mTerrain, false);
+				mMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
+			}
 		}
 	}
 }
@@ -68,6 +97,12 @@ MainScene::MainScene() :
 MainScene::~MainScene()
 {
 	delete mTerrain;
+
+	for (int i = 0; i < mMutants.size(); i++)
+	{
+		delete mMutants[i];
+		mMutants[i] = nullptr;
+	}
 }
 
 void MainScene::Update()
@@ -86,7 +121,7 @@ void MainScene::Update()
 		mTargetCamera->Update();
 	}
 	break;
-	
+
 	default:
 		break;
 	}
@@ -94,33 +129,22 @@ void MainScene::Update()
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
 
-	//for (int i = 0; i < mMutants.size(); i++)
-	//{
-	//	mMutants[i]->Update();
-	//}
-
-	mInstanceMutant->Update();
-
-
-	if (KEY_DOWN('1'))
+	if (mbIsInstancingMode)
 	{
-		mInstanceMutant->SetAnimation(1, eAnimationStates::Run);
+		mInstancingMutants->Update();
 	}
-
-	if (KEY_DOWN('2'))
+	else
 	{
-		mInstanceMutant->SetAnimation(1, eAnimationStates::OnDamage);
+		for (int i = 0; i < mMutants.size(); i++)
+		{
+			mMutants[i]->Update();
+		}
 	}
-
-	if (KEY_DOWN('3'))
-	{
-		mInstanceMutant->SetAnimation(1, eAnimationStates::Die);
-	}
-
 }
 
 void MainScene::PreRender()
 {
+
 }
 
 void MainScene::Render()
@@ -156,17 +180,27 @@ void MainScene::Render()
 	mTerrain->Render();
 	mPlayer->Render();
 
-	/*for (int i = 0; i < mMutants.size(); i++)
+	if (mbIsInstancingMode)
 	{
-		mMutants[i]->Render();
-	}*/
-
-	mInstanceMutant->Render();
+		mInstancingMutants->Render();
+	}
+	else
+	{
+		for (int i = 0; i < mMutants.size(); i++)
+		{
+			mMutants[i]->Render();
+		}
+	}
 }
 
 void MainScene::PostRender()
 {
 	mPlayer->PostRender();
+
+	if (mbIsInstancingMode)
+	{
+		mInstancingMutants->PostRender();
+	}
 
 	ImGui::Begin("Camera Info");
 	ImGui::Text("SelectCamera");
@@ -177,7 +211,7 @@ void MainScene::PostRender()
 		mPlayer->SetIsTargetMode(true);
 		mTargetCameraForShow->SetIsUsingFrustumCulling(false);
 		mTargetCamera->SetIsUsingFrustumCulling(true);
-		mInstanceMutant->SetCameraForCulling(mTargetCamera);
+		mInstancingMutants->SetCameraForCulling(mTargetCamera);
 	}
 
 	if (ImGui::Button("WorldCamera"))
@@ -186,7 +220,7 @@ void MainScene::PostRender()
 		mPlayer->SetIsTargetMode(false);
 		mTargetCameraForShow->SetIsUsingFrustumCulling(true);
 		mTargetCamera->SetIsUsingFrustumCulling(false);
-		mInstanceMutant->SetCameraForCulling(mTargetCameraForShow);
+		mInstancingMutants->SetCameraForCulling(mTargetCameraForShow);
 	}
 
 	SpacingRepeatedly(2);
@@ -216,11 +250,6 @@ void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함
 	}
 
 	fclose(file);
-}
-
-void MainScene::setIdle(int instance)
-{
-	mInstancedMutants->PlayClip(instance, 0); // Idle.
 }
 
 void MainScene::moveWorldCamera()

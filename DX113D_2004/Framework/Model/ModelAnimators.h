@@ -33,10 +33,12 @@ public:
 	void SetBoxForFrustumCulling() { SetBox(&mMinBox, &mMaxBox); }
 	void SetCameraForCulling(Camera* cameraForFrustumCulling) { mCameraForFrustumCulling = cameraForFrustumCulling; }
 	void SetIsFrustumCullingMode(bool value) { mbIsFrustumCullingMode = value; }
+	void SetInstanceCount(int instanceCount);
 
 private:
 	vector<Transform*> mTransforms;
-	InstanceData mInstanceData[MAX_INSTANCE];
+	//InstanceData mInstanceData[MAX_INSTANCE];
+	vector<InstanceData> mInstanceData;
 	VertexBuffer* mInstanceBuffer;
 
 	Camera* mCameraForFrustumCulling;

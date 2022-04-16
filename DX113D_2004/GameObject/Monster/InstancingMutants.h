@@ -1,7 +1,7 @@
 #pragma once
 
 
-class InstanceMutant : public ModelAnimators
+class InstancingMutants : public ModelAnimators
 {
 public:
 
@@ -33,8 +33,8 @@ public:
 		Collider* collider;
 	};
 
-	InstanceMutant(int instanceCount);
-	~InstanceMutant();
+	InstancingMutants(int instanceCount, Terrain* terrain);
+	~InstancingMutants();
 
 	void Update();
 	void PreRender();
@@ -58,8 +58,8 @@ private:
 	void setAttackEnd(int instanceIndex);
 	void loadBinaryFile();
 
-
-
 private:
+
 	vector<Monster*> mInstanceObjects;
+	Terrain* mTerrain;
 };

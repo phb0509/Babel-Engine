@@ -1,14 +1,14 @@
 #include "Framework.h"
 
 AStar::AStar(UINT width, UINT height)
-	: mWidth(width), mHeight(height)
+	: mWidth(width), mHeight(height) // 터레인의 각 행,열에 배치할 노드개수.
 {
 	mHeap = new Heap();
 }
 
 AStar::~AStar()
 {
-	for (Node* node : mNodes)
+	for (Node* node : mNodeMap)
 		delete node;
 
 	delete mHeap;
@@ -33,67 +33,70 @@ void AStar::Update()
 
 void AStar::Render()
 {
-	for (Node* node : mNodes)
-		node->Render();	
+	/*for (Node* node : mNodeMap)
+	{
+		node->Render();
+	}*/
 }
 
-void AStar::SetNode(Terrain* terrain) // 터레인에 노드셋팅. 개수설정할 수 있음.
+void AStar::SetNodeToTerrain(Terrain* terrain) // 터레인에 노드셋팅. 개수설정할 수 있음.
 {
-	Float2 size = terrain->GetSize();
+	//Float2 size = terrain->GetSize();
 
-	mInterval.x = size.x / mWidth;
-	mInterval.y = size.y / mHeight;
+	//mInterval.x = size.x / mWidth; // mWidth,mHeight 의 default값 20.
+	//mInterval.y = size.y / mHeight;
 
-	for (UINT z = 0; z < mHeight; z++)
-	{
-		for (UINT x = 0; x < mWidth; x++)
-		{
-			Vector3 pos = Vector3(x * mInterval.x, 0, z * mInterval.y);
-			pos.y = terrain->GetHeight(pos);
+	//for (UINT z = 0; z < mHeight; z++)
+	//{
+	//	for (UINT x = 0; x < mWidth; x++)
+	//	{
+	//		Vector3 pos = Vector3(x * mInterval.x, 0, z * mInterval.y);
+	//		pos.y = terrain->GetHeight(pos);
 
-			int index = z * mWidth + x;
-			mNodes.emplace_back(new Node(pos, index, mInterval));
-		}
-	}
+	//		int index = z * mWidth + x;
+	//		mNodeMap.emplace_back(new Node(pos, index, mInterval));
+	//	}
+	//}
 
-	for (UINT i = 0; i < mNodes.size(); i++)
-	{
-		if (i % mWidth != mWidth - 1)
-		{
-			mNodes[i + 0]->AddEdge(mNodes[i + 1]);
-			mNodes[i + 1]->AddEdge(mNodes[i + 0]);
-		}
+	//for (UINT i = 0; i < mNodeMap.size(); i++)
+	//{
+	//	if (i % mWidth != mWidth - 1)
+	//	{
+	//		mNodeMap[i + 0]->AddEdge(mNodeMap[i + 1]);
+	//		mNodeMap[i + 1]->AddEdge(mNodeMap[i + 0]);
+	//	}
 
-		if (i < mNodes.size() - mWidth)
-		{
-			mNodes[i + 0]->AddEdge(mNodes[i + mWidth]);
-			mNodes[i + mWidth]->AddEdge(mNodes[i + 0]);
-		}
+	//	if (i < mNodeMap.size() - mWidth)
+	//	{
+	//		mNodeMap[i + 0]->AddEdge(mNodeMap[i + mWidth]);
+	//		mNodeMap[i + mWidth]->AddEdge(mNodeMap[i + 0]);
+	//	}
 
-		if (i < mNodes.size() - mWidth && i % mWidth != mWidth - 1)
-		{
-			mNodes[i + 0]->AddEdge(mNodes[i + mWidth + 1]);
-			mNodes[i + mWidth + 1]->AddEdge(mNodes[i + 0]);
-		}
+	//	if (i < mNodeMap.size() - mWidth && i % mWidth != mWidth - 1)
+	//	{
+	//		mNodeMap[i + 0]->AddEdge(mNodeMap[i + mWidth + 1]);
+	//		mNodeMap[i + mWidth + 1]->AddEdge(mNodeMap[i + 0]);
+	//	}
 
-		if (i < mNodes.size() - mWidth && i % mWidth != 0)
-		{
-			mNodes[i + 0]->AddEdge(mNodes[i + mWidth - 1]);
-			mNodes[i + mWidth - 1]->AddEdge(mNodes[i + 0]);
-		}
-	}
+	//	if (i < mNodeMap.size() - mWidth && i % mWidth != 0)
+	//	{
+	//		mNodeMap[i + 0]->AddEdge(mNodeMap[i + mWidth - 1]);
+	//		mNodeMap[i + mWidth - 1]->AddEdge(mNodeMap[i + 0]);
+	//	}
+	//}
 }
 
-void AStar::SetObstacle(vector<Collider*> value)
+void AStar::SetObstacle(vector<Collider*> value) // Obstacle벡터 셋팅.
 {
 	for (Collider* obstacle : value)
 	{
-		for (Node* node : mNodes)
+		for (Node* node : mNodeMap)
 		{
-			node->collider->UpdateWorld();
-			if (obstacle->Collision(node->collider))
+			node->mCollider->UpdateWorld();
+
+			if (obstacle->Collision(node->mCollider))
 			{
-				node->state = Node::OBSTACLE;
+				node->mState = Node::OBSTACLE;
 			}
 		}
 
@@ -103,12 +106,7 @@ void AStar::SetObstacle(vector<Collider*> value)
 
 void AStar::SetDirectNode(int index)
 {
-	mNodes[index]->state = Node::DIRECT;
-}
-
-void AStar::SetTestNode(int index)
-{
-	mNodes[index]->mIsCheck = true;
+	mNodeMap[index]->mState = Node::DIRECT;
 }
 
 int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 반환.
@@ -116,12 +114,12 @@ int AStar::FindCloseNode(Vector3 pos) // 매개변수 pos와 가장 가까운 노드 인덱스 
 	float minDistance = FLT_MAX;
 	int index = -1;
 
-	for (UINT i = 0; i < mNodes.size(); i++)
+	for (UINT i = 0; i < mNodeMap.size(); i++)
 	{
-		if (mNodes[i]->state == Node::OBSTACLE)
+		if (mNodeMap[i]->mState == Node::OBSTACLE)
 			continue;
 
-		float distance = Distance(pos, mNodes[i]->pos);
+		float distance = Distance(pos, mNodeMap[i]->mPosition);
 
 		if (distance < minDistance)
 		{
@@ -138,12 +136,12 @@ Vector3 AStar::FindCloseNodePosition(Vector3 pos)
 	float minDistance = FLT_MAX;
 	int index = -1;
 
-	for (UINT i = 0; i < mNodes.size(); i++)
+	for (UINT i = 0; i < mNodeMap.size(); i++)
 	{
-		if (mNodes[i]->state == Node::OBSTACLE)
+		if (mNodeMap[i]->mState == Node::OBSTACLE)
 			continue;
 
-		float distance = Distance(pos, mNodes[i]->pos);
+		float distance = Distance(pos, mNodeMap[i]->mPosition);
 
 		if (distance < minDistance)
 		{
@@ -152,29 +150,29 @@ Vector3 AStar::FindCloseNodePosition(Vector3 pos)
 		}
 	}
 
-	return mNodes[index]->pos;
+	return mNodeMap[index]->mPosition;
 }
 
 vector<Vector3> AStar::FindPath(int start, int end)
 {
-	Reset();
+	ResetNodeState();
 
 	float G = 0.0f;
 	float H = getDistance(start, end);
 
-	mNodes[start]->g = G;
-	mNodes[start]->h = H;
-	mNodes[start]->f = G + H;
-	mNodes[start]->via = start;
-	mNodes[start]->state = Node::OPEN;
+	mNodeMap[start]->mG = G;
+	mNodeMap[start]->mH = H;
+	mNodeMap[start]->mF = G + H;
+	mNodeMap[start]->mVia = start;
+	mNodeMap[start]->mState = Node::OPEN;
 
-	mHeap->Insert(mNodes[start]);
+	mHeap->Insert(mNodeMap[start]);
 
-	while (mNodes[end]->state != Node::CLOSED)
+	while (mNodeMap[end]->mState != Node::CLOSED)
 	{
 		int curIndex = getMinNode(); // F값 가장 적은거.
 		extend(curIndex, end);
-		mNodes[curIndex]->state = Node::CLOSED;
+		mNodeMap[curIndex]->mState = Node::CLOSED;
 	}
 
 	vector<Vector3> path;
@@ -183,13 +181,13 @@ vector<Vector3> AStar::FindPath(int start, int end)
 
 	while (curIndex != start)
 	{
-		mNodes[curIndex]->state = Node::USING;
-		path.emplace_back(mNodes[curIndex]->pos);
-		curIndex = mNodes[curIndex]->via;
+		mNodeMap[curIndex]->mState = Node::USING;
+		path.emplace_back(mNodeMap[curIndex]->mPosition);
+		curIndex = mNodeMap[curIndex]->mVia;
 	}
 
-	mNodes[curIndex]->state = Node::USING;
-	path.emplace_back(mNodes[curIndex]->pos);
+	mNodeMap[curIndex]->mState = Node::USING;
+	path.emplace_back(mNodeMap[curIndex]->mPosition);
 
 	mHeap->Clear();
 
@@ -204,13 +202,11 @@ void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>
 	Ray ray;
 	ray.position = start;
 
-	for (UINT i = 0; i < path.size(); i++) // 목적지 -> 시작지.
+	for (UINT i = 0; i < path.size(); i++) // 목적지 -> 시작지. 역순으로 들어있음.
 	{
-		ray.direction = path[i] - ray.position; // 캐릭터에서 path[i]까지 벡터
+		ray.direction = path[i] - ray.position; // 캐릭터에서 path[i]까지의 방향벡터.
 		float distance = ray.direction.Length(); // path[i]까지 거리.
-
 		ray.direction.Normalize();
-
 
 		// ray.direction : 캐릭터->path[i]까지 방향벡터.
 		// ray.position = start
@@ -218,20 +214,22 @@ void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>
 
 		if (!CollisionObstacle(ray, distance)) // 캐릭터와 path[i]사이에 장애물이 없다면...!
 		{
-			cutNodeNum = path.size() - i - 1;  // 9
+			cutNodeNum = path.size() - i - 1;  
 			break;
 		}
 	}
 
 	for (int i = 0; i < cutNodeNum; i++) // 캐릭터에서 다이렉트로 갈수있는 곳까지 전부 빼버리기.
+	{
 		path.pop_back();
+	}
 
 	cutNodeNum = 0;
 	ray.position = end;
 
-	for (UINT i = 0; i < path.size(); i++) // size는 5
+	for (UINT i = 0; i < path.size(); i++) 
 	{
-		ray.direction = path[path.size() - i - 1] - ray.position; // 4 -> 0
+		ray.direction = path[path.size() - i - 1] - ray.position; 
 		float distance = ray.direction.Length();
 
 		ray.direction.Normalize();
@@ -244,7 +242,9 @@ void AStar::MakeDirectPath(IN Vector3 start, IN Vector3 end, OUT vector<Vector3>
 	}
 
 	for (int i = 0; i < cutNodeNum; i++)
+	{
 		path.erase(path.begin());
+	}
 }
 
 bool AStar::CollisionObstacle(Ray ray, float destDistance)
@@ -253,9 +253,9 @@ bool AStar::CollisionObstacle(Ray ray, float destDistance)
 	{
 		Contact contact;
 
-		if (obstacle->RayCollision(ray, &contact)) // ray방향에 장애물이 있다면
+		if (obstacle->RayCollision(ray, &contact)) // ray방향에 장애물이 있다면 (방향만 체크)
 		{
-			if (contact.distance < destDistance)
+			if (contact.distance < destDistance) // 목표지점 사이에 장애물이 있다면.
 				return true;
 		}
 	}
@@ -263,70 +263,75 @@ bool AStar::CollisionObstacle(Ray ray, float destDistance)
 	return false;
 }
 
-void AStar::Reset() // 장애물 제외 전부 NONE
+void AStar::ResetNodeState() // 장애물 제외 전부 NONE
 {
-	for (Node* node : mNodes)
+	for (Node* node : mNodeMap)
 	{
-		if (node->state != Node::OBSTACLE)
-			node->state = Node::NONE;
+		if (node->mState != Node::OBSTACLE)
+			node->mState = Node::NONE;
 	}
 }
 
 void AStar::SetCheckFalse()
 {
-	for (int i = 0; i < mNodes.size(); i++)
+	for (int i = 0; i < mNodeMap.size(); i++)
 	{
-		mNodes[i]->SetTestNode(false);
+		mNodeMap[i]->SetTestNode(false);
 	}
 }
 
 float AStar::getDistance(int curIndex, int end)
 {
-	Vector3 startPos = mNodes[curIndex]->pos;
-	Vector3 endPos = mNodes[end]->pos;
+	Vector3 startPos = mNodeMap[curIndex]->mPosition;
+	Vector3 endPos = mNodeMap[end]->mPosition;
 
 	return Distance(startPos, endPos);
 }
 
 void AStar::extend(int center, int end)
 {
-	vector<Node::EdgeInfo*> edges = mNodes[center]->edges;
+	vector<Node::EdgeInfo*> edges = mNodeMap[center]->edges;
 
 	for (UINT i = 0; i < edges.size(); i++)
 	{
 		int index = edges[i]->index;
 
-		if (mNodes[index]->state == Node::CLOSED ||   //OPEN 이여야 건너뜀.
-			mNodes[index]->state == Node::OBSTACLE)
+		if (mNodeMap[index]->mState == Node::CLOSED ||   //OPEN 이여야 건너뜀.
+			mNodeMap[index]->mState == Node::OBSTACLE)
 			continue;
 
-		float G = mNodes[center]->g + edges[i]->edgeCost;
+		float G = mNodeMap[center]->mG + edges[i]->edgeCost;
 		float H = getDistance(index, end);
 		float F = G + H;
 
-		if (mNodes[index]->state == Node::OPEN)
+		if (mNodeMap[index]->mState == Node::OPEN)
 		{
-			if (F < mNodes[index]->f)
+			if (F < mNodeMap[index]->mF)
 			{
-				mNodes[index]->g = G;
-				mNodes[index]->f = F;
-				mNodes[index]->via = center;
+				mNodeMap[index]->mG = G;
+				mNodeMap[index]->mF = F;
+				mNodeMap[index]->mVia = center;
 			}
 		}
-		else if (mNodes[index]->state == Node::NONE)
+		else if (mNodeMap[index]->mState == Node::NONE)
 		{
-			mNodes[index]->g = G;
-			mNodes[index]->h = H;
-			mNodes[index]->f = F;
-			mNodes[index]->via = center;
-			mNodes[index]->state = Node::OPEN;
+			mNodeMap[index]->mG = G;
+			mNodeMap[index]->mH = H;
+			mNodeMap[index]->mF = F;
+			mNodeMap[index]->mVia = center;
+			mNodeMap[index]->mState = Node::OPEN;
 
-			mHeap->Insert(mNodes[index]);
+			mHeap->Insert(mNodeMap[index]);
 		}
 	}
 }
 
 int AStar::getMinNode()
 {
-	return mHeap->DeleteRoot()->index;
+	return mHeap->DeleteRoot()->mIndex;
 }
+
+//void AStar::SetTestNode(int index)
+//{
+//	mNodes[index]->mbIsCheck = true;
+//}

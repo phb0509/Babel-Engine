@@ -1,8 +1,10 @@
 #include "Framework.h"
 
-Terrain::Terrain()
-	: mTerrainWidth(10), 
-	mTerrainHeight(10)
+Terrain::Terrain(): 
+	mTerrainWidth(10), 
+	mTerrainHeight(10),
+	mDistanceBetweenNodes(0.0f,0.0f),
+    mNodeCount(30,30)
 {
 	mMaterial = new Material(L"Lighting");
 	mMaterial->SetDiffuseMap(L"Textures/dirt.png");
@@ -15,7 +17,7 @@ Terrain::Terrain()
 	mFillMode[0]->FillMode(D3D11_FILL_SOLID);
 	mFillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
 	//D3D11_FILL_SOLID
-//	heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
+	//heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
 	mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
 
@@ -30,6 +32,8 @@ Terrain::Terrain()
 	mOutput = new OutputDesc[mPolygonCount];
 
 	mTypeBuffer = new TypeBuffer();
+
+	createNodeMap();
 }
 
 Terrain::~Terrain()
@@ -327,5 +331,52 @@ void Terrain::createTangent()
 		Vector3 temp = (t - n * Vector3::Dot(n, t)).Normal();
 
 		vertex.tangent = temp;
+	}
+}
+
+void Terrain::createNodeMap()
+{
+	Float2 size = GetSize();
+
+	mDistanceBetweenNodes.x = size.x / mNodeCount.x; // mWidth,mHeight ÀÇ default°ª 20.
+	mDistanceBetweenNodes.y = size.y / mNodeCount.y;
+
+	for (UINT z = 0; z < mNodeCount.y; z++)
+	{
+		for (UINT x = 0; x < mNodeCount.x; x++)
+		{
+			Vector3 pos = Vector3(x * mDistanceBetweenNodes.x, 0, z * mDistanceBetweenNodes.y);
+			pos.y = GetHeight(pos);
+
+			int index = z * mNodeCount.x + x;
+			mNodeMap.emplace_back(new Node(pos, index, mDistanceBetweenNodes));
+		}
+	}
+
+	for (UINT i = 0; i < mNodeMap.size(); i++)
+	{
+		if (i % mNodeCount.x != mNodeCount.x - 1)
+		{
+			mNodeMap[i + 0]->AddEdge(mNodeMap[i + 1]);
+			mNodeMap[i + 1]->AddEdge(mNodeMap[i + 0]);
+		}
+
+		if (i < mNodeMap.size() - mNodeCount.x)
+		{
+			mNodeMap[i + 0]->AddEdge(mNodeMap[i + mNodeCount.x]);
+			mNodeMap[i + mNodeCount.x]->AddEdge(mNodeMap[i + 0]);
+		}
+
+		if (i < mNodeMap.size() - mNodeCount.x && i % mNodeCount.x != mNodeCount.x - 1)
+		{
+			mNodeMap[i + 0]->AddEdge(mNodeMap[i + mNodeCount.x + 1]);
+			mNodeMap[i + mNodeCount.x + 1]->AddEdge(mNodeMap[i + 0]);
+		}
+
+		if (i < mNodeMap.size() - mNodeCount.x && i % mNodeCount.x != 0)
+		{
+			mNodeMap[i + 0]->AddEdge(mNodeMap[i + mNodeCount.x - 1]);
+			mNodeMap[i + mNodeCount.x - 1]->AddEdge(mNodeMap[i + 0]);
+		}
 	}
 }

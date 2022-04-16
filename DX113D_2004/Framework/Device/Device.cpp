@@ -63,8 +63,6 @@ void Device::CreateBackBuffer()
 
 	mRenderTargets.emplace_back(mRenderTargetView);
 	
-
-
 	//{//RenderTargetView Texture
 	//	D3D11_TEXTURE2D_DESC desc = {};
 	//	desc.Width = WIN_WIDTH;

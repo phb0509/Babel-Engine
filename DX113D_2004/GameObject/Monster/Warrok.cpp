@@ -30,6 +30,10 @@ void Warrok::Update()
 	ModelAnimator::Update();
 }
 
+void Warrok::InstanceUpdate()
+{
+}
+
 void Warrok::PreRender()
 {
 }

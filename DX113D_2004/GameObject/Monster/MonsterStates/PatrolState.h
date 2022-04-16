@@ -28,8 +28,8 @@ private:
 
 	// Patrol 함수에 쓰이는 변수들.
 	float mPatrolRandomNum; // Patrol용 랜덤값.
-	bool mbPatrolMove; // 다시 정찰시간을 정해야하는가?
-	bool mbSetPatrolDest; // 정찰시간이 됐는가?
+	bool mbIsPatrolMove; // 다시 정찰시간을 정해야하는가?
+	bool mbIsSetPatrolDest; // 정찰시간이 됐는가?
 	float mCurrentTime;
 	float mStandTime;
 

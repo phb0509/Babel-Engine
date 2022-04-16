@@ -9,6 +9,7 @@ public:
 
 	// Monster을(를) 통해 상속됨
 	virtual void Update() override;
+	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
 	virtual void Render() override;
 	virtual Collider* GetHitCollider() override;
@@ -17,7 +18,6 @@ public:
 	virtual Collider* GetColliderForAStar() override;
 	virtual void SetAnimation(eAnimationStates value) override;
 
-	void SetTest() {};
 
 private:
 
@@ -29,5 +29,4 @@ private:
 	//map<string, Collider*> mCollidersMap;
 
 	bool mbOnHit;
-
 };

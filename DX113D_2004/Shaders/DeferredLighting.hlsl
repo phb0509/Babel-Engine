@@ -29,7 +29,7 @@ PixelInput VS(uint vertexID : SV_VertexID) // 주의. 값 그대로 PS에 넘기는 것 아�
     return output;
 }
 
-float ConvertDepthToLinear(float depth) // 
+float ConvertDepthToLinear(float depth)  
 {
     float linearDepth = projection._43 / (depth - projection._33); // 43,33은 뷰공간의 z값 클리핑공간 전환을 위한값.
     

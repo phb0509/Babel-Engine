@@ -19,7 +19,6 @@ public:
 
 private:
 	void printToCSV();
-	void setIdle(int instance);
 	void moveWorldCamera();
 
 private:
@@ -32,12 +31,12 @@ private:
 	ModelObject* mObstacle2;
 
 	Frustum* mTargetCameraFrustum;
-	ModelAnimators* mInstancedMutants;
 	vector<Matrix> boneMatrix;
 
-	InstanceMutant* mInstanceMutant;
+	InstancingMutants* mInstancingMutants;
 	vector<Monster*> mInstanceMutants;
 	int mMutantInstanceCount;
+	bool mbIsInstancingMode;
 
 	Camera* mWorldCamera;
 	Camera* mTargetCamera;
@@ -46,4 +45,6 @@ private:
 
 	eCamera mMainCamera;
 	Vector3 mPreFrameMousePosition;
+
+
 };

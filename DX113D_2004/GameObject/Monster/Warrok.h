@@ -25,6 +25,7 @@ public:
 	~Warrok();
 
 	virtual void Update() override;
+	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
 	virtual void Render() override;
 	void PostRender();

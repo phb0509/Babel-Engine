@@ -1,6 +1,7 @@
 #include "Framework.h"
 
-InstanceMutant::InstanceMutant(int instanceCount)
+InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
+	mTerrain(terrain)
 {
 	//loadBinaryFile(); // 툴에서 셋팅한 컬라이더 불러오기.
 
@@ -13,6 +14,10 @@ InstanceMutant::InstanceMutant(int instanceCount)
 
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
+	//ModelAnimators::SetDiffuseMap()
+
+
+	//ModelAnimators::SetNormalMap(L"ModelData/Mutant/Mutant_normal.png");
 
 	ModelAnimators::SetShader(L"Models"); // SetShader하기전에 Mesh랑 Material 먼저 Set해줘야됨.
 
@@ -20,62 +25,109 @@ InstanceMutant::InstanceMutant(int instanceCount)
 	ModelAnimators::ReadClip("Mutant", "Run.clip");
 	ModelAnimators::ReadClip("Mutant", "SmashAttack.clip");
 	ModelAnimators::ReadClip("Mutant", "OnDamage.clip");
-	ModelAnimators::ReadClip("Mutant", "Die.clip");
-
+	ModelAnimators::ReadClip("Mutant", "Die.clip"); // Mutant와 순서 동일하게.
 	ModelAnimators::SetBoxForFrustumCulling();
 
 	for (int i = 0; i < instanceCount; i++)
 	{
 		Monster* temp = new InstanceMonster();
+		temp->SetUpperFrameBuffer(mFrameBuffer);
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
 
-		/*ModelAnimators::SetEndEvents(i, 1,
-			bind(&InstanceMutant::SetIdle, this, placeholders::_1));*/
 	}
-
 
 	for (int i = 0; i < instanceCount; i++)
 	{
-		//mInstanceObjects[i]->PlayClip(i, eAnimationStates::Idle);
-		ModelAnimators::PlayClip(i, static_cast<UINT>(eAnimationStates::Idle));
+		//ModelAnimators::PlayClip(i, static_cast<UINT>(eAnimationStates::Idle));
 	}
-
-	//mModelAnimators->SetDrawCount(instanceCount);
-
-	//ModelAnimator::SetEndEvent(static_cast<int>(eAnimationStates::Run), bind(&Mutant::SetIdle, this));
-	//ModelAnimator::SetEndEvent(static_cast<int>(eAnimationStates::OnDamage), bind(&Mutant::setOnDamageEnd, this));
-	//ModelAnimator::SetEndEvent(static_cast<int>(eAnimationStates::SmashAttack), bind(&Mutant::setAttackEnd, this));
 }
 
-InstanceMutant::~InstanceMutant()
+InstancingMutants::~InstancingMutants()
 {
+
 }
 
-void InstanceMutant::Update()
+void InstancingMutants::Update()
 {
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
-		//mInstanceOjbects[i]->mCurrentState->Execute(this);
+		mInstanceObjects[i]->Update();
+	}
+
+	for (int i = 0; i < mInstanceObjects.size(); i++)
+	{
+		//mFrameBuffer->data.tweenDesc[i].cur.clip = static_cast<int>(mInstanceObjects[i]->GetAnimationStates());
+		/*mFrameBuffer->data.tweenDesc[i].cur.clip = mInstanceObjects[i]->GetCurrentClip();
+		mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();*/
+		//mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();
+	}
+
+	if (KEY_DOWN('1'))
+	{
+		SetAnimation(1, eAnimationStates::Run);
+	}
+
+	if (KEY_DOWN('2'))
+	{
+		SetAnimation(1, eAnimationStates::OnDamage);
+	}
+
+	if (KEY_DOWN('3'))
+	{
+		SetAnimation(1, eAnimationStates::Die);
 	}
 
 	ModelAnimators::Update();
 }
 
-void InstanceMutant::PreRender()
+void InstancingMutants::PreRender()
 {
 }
 
-void InstanceMutant::Render()
+void InstancingMutants::Render()
 {
 	ModelAnimators::Render();
 }
 
-void InstanceMutant::PostRender()
+void InstancingMutants::PostRender()
 {
+	ImGui::Begin("Instance Information");
+
+	for (int i = 0; i < mInstanceObjects.size(); i++)
+	{
+		string animationName;
+
+		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationStates()))
+		{
+		case 0:
+			animationName = "Idle";
+			break;
+		case 1:
+			animationName = "Run";
+			break;
+		case 2:
+			animationName = "SmashAttack";
+			break;
+		case 3:
+			animationName = "OnDamage";
+			break;
+		case 4:
+			animationName = "Die";
+			break;
+		}
+
+		string name = to_string(i) + " Mutant State is " + animationName;
+		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
+		ImGui::Text(name.c_str());
+		ImGui::Text(frameBufferValue.c_str());
+		SpacingRepeatedly(2);
+	}
+
+	ImGui::End();
 }
 
-void InstanceMutant::OnDamage(int instanceIndex, float damage)
+void InstancingMutants::OnDamage(int instanceIndex, float damage)
 {
 	//mFSM = eFSMstates::OnDamage;
 	//mbOnHit = true;
@@ -83,54 +135,54 @@ void InstanceMutant::OnDamage(int instanceIndex, float damage)
 	//mCurrentHP -= 10.0f;
 }
 
-void InstanceMutant::CheckOnHit(int instanceIndex)
+void InstancingMutants::CheckOnHit(int instanceIndex)
 {
 	/*if (!mbOnHit) return;
 
 	SetAnimation(eAnimationStates::OnDamage);*/
 }
 
-Collider* InstanceMutant::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
+Collider* InstancingMutants::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
 {
 	//return mCollidersMap["bodyCollider"];
 	return nullptr;
 }
 
-void InstanceMutant::setOnDamageEnd(int instanceIndex)
+void InstancingMutants::setOnDamageEnd(int instanceIndex)
 {
 	/*SetAnimation(instanceIndex,eAnimationStates::Idle);
 	GM->SetHitCheckMap(this, false);
 	mbOnHit = false;*/
 }
 
-
-void InstanceMutant::SetIdle(int instanceIndex)
+void InstancingMutants::SetIdle(int instanceIndex)
 {
-	ModelAnimators::PlayClip(instanceIndex, 0);
+	ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(eAnimationStates::Idle));
 }
 
-void InstanceMutant::SetAnimation(int instanceIndex, eAnimationStates value)
+void InstancingMutants::SetAnimation(int instanceIndex, eAnimationStates value) // 
 {
 	if (mInstanceObjects[instanceIndex]->GetAnimationStates() != value)
 	{
 		mInstanceObjects[instanceIndex]->SetAnimation(value);
-		ModelAnimators::PlayClip(instanceIndex,static_cast<int>(value));
+		ModelAnimators::PlayClip(instanceIndex,static_cast<UINT>(value));
+		//SetAnimation(1, eAnimationStates::Run);
 	}
 }
 
-void InstanceMutant::setAttackEnd(int instanceIndex)
+void InstancingMutants::setAttackEnd(int instanceIndex)
 {
 	/*mPlayer = GM->Get()->GetPlayer();
 	RotateToDestinationForModel(this, mPlayer->mPosition);*/
 }
 
-Collider* InstanceMutant::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
+Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
 {
 	//return mCollidersMap["bodyCollider"];
 	return nullptr;
 }
 
-void InstanceMutant::setColliders(int instanceIndex)
+void InstancingMutants::setColliders(int instanceIndex)
 {
 	//for (int i = 0; i < mColliders.size(); i++)
 	//{
@@ -141,7 +193,7 @@ void InstanceMutant::setColliders(int instanceIndex)
 	//}
 }
 
-void InstanceMutant::loadBinaryFile()
+void InstancingMutants::loadBinaryFile()
 {
 	//BinaryReader binaryReader(L"TextData/Mutant.map");
 	//UINT colliderCount = binaryReader.UInt();

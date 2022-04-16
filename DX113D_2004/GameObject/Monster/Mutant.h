@@ -36,6 +36,7 @@ public:
 	~Mutant();
 
 	virtual void Update() override;
+	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
 	virtual void Render() override;
 	void PostRender();
@@ -47,6 +48,7 @@ public:
 
 	void SetIdle();
 	void SetAnimation(eAnimationStates value) override;
+
 
 private:
 
@@ -61,8 +63,5 @@ private:
 	vector<ColliderData> mColliderDatas;
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
-
 	bool mbOnHit;
-
-
 };

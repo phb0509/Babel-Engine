@@ -30,12 +30,15 @@ public:
 
 	float GetHeight(Vector3 position);
 	Float2 GetSize() { return Float2(mTerrainWidth, mTerrainHeight); }
-	void SetCamera(Camera* camera) { mCamera = camera; }
+	vector<Node*> GetNodeMap() { return mNodeMap; }
 
+	void SetCamera(Camera* camera) { mCamera = camera; }
+	
 private:
 	void createMesh();
 	void createNormal();
 	void createTangent();
+	void createNodeMap();
 
 private:
 	Material* mMaterial;
@@ -58,4 +61,7 @@ private:
 	TypeBuffer* mTypeBuffer;
 	UINT mPolygonCount;
 	Camera* mCamera;
+	vector<Node*> mNodeMap;
+	Float2 mDistanceBetweenNodes;
+	Int2 mNodeCount;
 };

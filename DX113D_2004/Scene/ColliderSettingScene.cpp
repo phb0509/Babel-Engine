@@ -47,7 +47,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	terrain = new Terrain();
 	mMonster = new Warrok();
 
-	mMonster->SetTerrain(terrain);
+	mMonster->SetTerrain(terrain,false);
 	mMonster->mPosition = { 600,0,600 };
 
 

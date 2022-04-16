@@ -14,7 +14,6 @@ struct OutputDesc
     float padding1;
 };
 
-
 RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
 Texture2D<float> depthTexture : register(t0);
 

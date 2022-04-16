@@ -2,7 +2,7 @@
 
 class Node
 {
-private:
+public:
 	friend class AStar;
 	friend class Heap;
 
@@ -21,33 +21,29 @@ private:
 		OBSTACLE,
 		DIRECT,
 		TEST
-	}state;
-
-	Collider* collider;	
-	Collider* obstacle;
-
-	Vector3 pos;
-	int index;
-	int via;
-
-	float f, g, h;
-
-	Float2 interval;
-
-	vector<EdgeInfo*> edges;
+	}mState;
 
 	Node(Vector3 pos, int index, Float2 interval);
 	~Node();
 
 	void Render();
-
 	void AddEdge(Node* node);
-
 	Collider* MakeObstacle();
+	Collider* GetCollider() { return mCollider; };
 
-	bool mIsCheck = false;
+	void SetTestNode(bool isCheck) { mbIsCheck = isCheck; };
 
-public:
-	Collider* GetCollider() { return collider; };
-	void SetTestNode(bool isCheck) { mIsCheck = isCheck; };
+
+private:
+	Collider* mCollider;
+	Collider* mObstacle;
+	bool mbIsCheck;
+	Vector3 mPosition;
+	int mIndex;
+	int mVia;
+	float mF;
+	float mG;
+	float mH;
+	Float2 mDistanceBetweenNodes;
+	vector<EdgeInfo*> edges;
 };

@@ -94,7 +94,7 @@ void ModelAnimator::Update()
 				FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
 				ModelClip* clip = mClips[desc.clip]; // desc.clip == clipIndex
 
-				float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로다운받음.
+				float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로 다운받음.
 				desc.runningTime += DELTA;
 
 				if (desc.time >= 1.0f)
@@ -330,14 +330,13 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 		delete[] mNodeTransform;
 	}
 
-	mClipTransform = new ClipTransform[clipCount];
+	mClipTransform = new ClipTransform[clipCount]; // 애니메이션클립 갯수.
 	mNodeTransform = new ClipTransform[clipCount];
 
 	for (UINT i = 0; i < clipCount; i++)
 	{
-		CreateClipTransform(i);
+		CreateClipTransform(i); // mClipTransform, mNodeTransform에 채워넣기.
 	}
-
 
 	{//Create Texture
 		D3D11_TEXTURE2D_DESC desc = {};

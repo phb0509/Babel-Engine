@@ -8,11 +8,13 @@ ModelAnimators::ModelAnimators() :
 {
 	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
-		mInstanceData[i].worldMatrix = XMMatrixIdentity();
-		mInstanceData[i].instanceIndex = i;
+		InstanceData temp;
+		temp.worldMatrix = XMMatrixIdentity();
+		temp.instanceIndex = i;
+		mInstanceData.push_back(temp);
 	}
 
-    mInstanceBuffer = new VertexBuffer(mInstanceData, sizeof(InstanceData), MAX_INSTANCE);
+    mInstanceBuffer = new VertexBuffer(mInstanceData.data(), sizeof(InstanceData), MAX_INSTANCE);
 }
 
 ModelAnimators::~ModelAnimators()
@@ -46,7 +48,11 @@ void ModelAnimators::Update()
 					{
 						mEndEvents[i][desc.clip](mParams[i][desc.clip]);
 					}
-						
+
+					if (mEndParamEvent.count(desc.clip) > 0)
+					{
+						mEndParamEvent[desc.clip](mParam[desc.clip]);
+					}
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
@@ -103,10 +109,12 @@ void ModelAnimators::Update()
 void ModelAnimators::Render()
 {
 	if (mTexture == nullptr)
-		CreateTexture();
-
+	{
+		ModelAnimator::CreateTexture();
+	}
+		
 	mFrameBuffer->SetVSBuffer(4);
-	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV);
+	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // Set TransformTexture
 
 	mInstanceBuffer->IASet(1);
 
@@ -115,7 +123,7 @@ void ModelAnimators::Render()
 
 void ModelAnimators::PostRender()
 {
-	for (Transform* transform : mTransforms)
+	/*for (Transform* transform : mTransforms)
 	{
 		Vector3 screenPos = WorldToScreen(transform->GetGlobalPosition(),mCameraForFrustumCulling);
 
@@ -127,7 +135,7 @@ void ModelAnimators::PostRender()
 		rect.bottom = rect.top + size.y;
 
 		DirectWrite::Get()->RenderText(ToWString(transform->mTag), rect);
-	}
+	}*/
 }
 
 Transform* ModelAnimators::Add()
@@ -147,11 +155,24 @@ void ModelAnimators::AddTransform(Transform* transform)
 	mParams.emplace_back();
 }
 
-void ModelAnimators::PlayClip(UINT instance, UINT clip, float speed, float takeTime)
+void ModelAnimators::PlayClip(UINT instanceIndex, UINT clip, float speed, float takeTime)
 {
-	mFrameBuffer->data.tweenDesc[instance].next.clip = clip;
-	mFrameBuffer->data.tweenDesc[instance].next.speed = speed;
-	mFrameBuffer->data.tweenDesc[instance].takeTime = takeTime;
+	mFrameBuffer->data.tweenDesc[instanceIndex].next.clip = clip;
+	mFrameBuffer->data.tweenDesc[instanceIndex].next.speed = speed;
+	mFrameBuffer->data.tweenDesc[instanceIndex].takeTime = takeTime;
+}
+
+void ModelAnimators::SetInstanceCount(int instanceCount)
+{
+	//for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
+	//{
+	//	InstanceData temp;
+	//	temp.worldMatrix = XMMatrixIdentity();
+	//	temp.instanceIndex = i;
+	//	mInstanceData.push_back(temp);
+	//}
+
+	//mInstanceBuffer = new VertexBuffer(mInstanceData.data(), sizeof(InstanceData), MAX_INSTANCE);
 }
 
 void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
@@ -185,7 +206,7 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 		}
 	}
 
-	mInstanceBuffer->Update(mInstanceData, mDrawCount);
+	mInstanceBuffer->Update(mInstanceData.data(), mDrawCount);
 }
 
 

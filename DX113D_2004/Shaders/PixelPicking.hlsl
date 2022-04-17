@@ -41,7 +41,7 @@ void CS(uint3 index : SV_DispatchThreadID)
     
     //CalcWorldPositin
    
-    // depth는 클립공간의 z값인가?(투영행렬을 곱한이후의 z값?) 0~1로 정규화되어있어서;;
+    // depth는 클립공간의 z값인가?(투영행렬을 곱한이후의 z값?) 0~1로 정규화되어있어서..
     float4 clipSpacePosition = float4(ndcCoord.x, ndcCoord.y, depth, 1.0f); // 
     float4 viewSpacePosition = mul(clipSpacePosition, invProjectionMatrix); // 여기까지해서 뷰공간좌표구함.
 

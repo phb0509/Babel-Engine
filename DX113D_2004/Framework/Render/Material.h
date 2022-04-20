@@ -34,8 +34,6 @@ private:
 		}
 	};	
 
-
-	
 public:
 	Material();
 	Material(wstring file);

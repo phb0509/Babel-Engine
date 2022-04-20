@@ -3,11 +3,11 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN
 
-#define WIN_WIDTH 1280
-#define WIN_HEIGHT 720
+//#define WIN_WIDTH 1280
+//#define WIN_HEIGHT 720
 
-//#define WIN_WIDTH 1850
-//#define WIN_HEIGHT 900
+#define WIN_WIDTH 1850
+#define WIN_HEIGHT 900
 
 #define CENTER_X WIN_WIDTH * 0.5f
 #define CENTER_Y WIN_HEIGHT * 0.5f
@@ -15,7 +15,7 @@
 #define WIN_START_X 100
 #define WIN_START_Y 100
 
-#define MAX_BONE 500
+#define MAX_BONE 500 // 인스턴스오브젝트 각각의 최대 노드개수.
 #define MAX_FRAME_KEY 600
 #define MAX_INSTANCE 600
 

@@ -8,8 +8,6 @@ ModelReader::ModelReader():
 	mTypeBuffer = new TypeBuffer();
 }
 
-
-
 ModelReader::~ModelReader()
 {
 	for (auto material : mMaterials)
@@ -34,7 +32,9 @@ void ModelReader::MeshRender(UINT drawCount) // 인스턴싱용.
 	mTypeBuffer->SetVSBuffer(5);
 
 	for (ModelMesh* mesh : mMeshes)
+	{
 		mesh->Render(drawCount);
+	}
 }
 
 void ModelReader::ReadMaterial(string folderName,string fileName)
@@ -72,7 +72,6 @@ void ModelReader::ReadMaterial(string folderName,string fileName)
 			{
 				material->SetDiffuseMap(folderPath + fileName); // 여기서 그냥 해버려도 상관은 없는데, mat파일안이라
 			}
-				
 		}
 
 		node = node->NextSiblingElement();
@@ -208,6 +207,8 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 		mBones.emplace_back(bone);
 	}
+
+	delete r;
 }
 
 void ModelReader::SetShader(wstring fileName)
@@ -218,24 +219,28 @@ void ModelReader::SetShader(wstring fileName)
 	}
 }
 
-
-
 void ModelReader::SetDiffuseMap(wstring file)
 {
 	for (auto material : mMaterials)
+	{
 		material.second->SetDiffuseMap(file);
+	}
 }
 
 void ModelReader::SetSpecularMap(wstring file)
 {
 	for (auto material : mMaterials)
+	{
 		material.second->SetSpecularMap(file);
+	}
 }
 
 void ModelReader::SetNormalMap(wstring file)
 {
 	for (auto material : mMaterials)
+	{
 		material.second->SetNormalMap(file);
+	}
 }
 
 int ModelReader::GetNodeIndex(string name)
@@ -243,7 +248,9 @@ int ModelReader::GetNodeIndex(string name)
 	for (NodeData* node : mNodes)
 	{
 		if (node->name == name)
+		{
 			return node->index;
+		}	
 	}
 
 	return 0;
@@ -309,7 +316,10 @@ void ModelReader::SetMaterial(string folderName, string fileName)
 {
 	{ // 한번 싹 초기화해주기
 		for (auto material : mMaterials)
+		{
 			delete material.second;
+		}
+			
 		mMaterials.clear();
 	}
 
@@ -324,6 +334,7 @@ void ModelReader::SetMaterial(string folderName, string fileName)
 		else
 		{
 			mMeshes[i]->mMaterial = mMaterials[mMeshes[i]->mMaterialName];
+			int a = 0;
 		}
 	}
 

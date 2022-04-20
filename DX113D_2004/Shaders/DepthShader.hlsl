@@ -35,7 +35,7 @@ PixelOutput PS(PixelInput input) : SV_Target
     // 그림자값계산.
     float depthValue = input.pos.z / input.pos.w;
     
-    depthValue = depthValue * 10.0f;
+    depthValue = depthValue * 80.0f;
     output.color = float4(depthValue, depthValue, depthValue, 1.0f);
     //output.color = float4(1.0f,1.0f,0.0f,1.0f);
     // all 1.0f는 흰색.

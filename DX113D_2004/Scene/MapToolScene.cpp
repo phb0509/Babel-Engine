@@ -3,12 +3,14 @@
 
 MapToolScene::MapToolScene()
 {
-	mCamera->mPosition = { -35.2f,113.6f, -105.7f };
-	mCamera->mRotation = { 0.5f,0.4f, 0.0f };
-	mCamera->mMoveSpeed = 200.0f;
-	mCamera->mWheelSpeed = 30.0f;
+	mWorldCamera = new Camera();
+	mWorldCamera->mPosition = { -35.2f,113.6f, -105.7f };
+	mWorldCamera->mRotation = { 0.5f,0.4f, 0.0f };
+	mWorldCamera->mMoveSpeed = 200.0f;
+	mWorldCamera->mWheelSpeed = 30.0f;
 
 	mTerrainEditor = new TerrainEditor();
+	mTerrainEditor->SetCamera(mWorldCamera);
 	//skyBox = new SkyBox();
 
 	mRasterizerState = new RasterizerState();
@@ -24,7 +26,8 @@ MapToolScene::~MapToolScene()
 
 void MapToolScene::Update()
 {
-	mCamera->Update();
+	mWorldCamera->Update();
+	moveWorldCamera();
 
 	mTerrainEditor->Update();
 }
@@ -32,8 +35,8 @@ void MapToolScene::Update()
 void MapToolScene::PreRender()
 {
 	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
-	mCamera->SetViewBuffer();
-	mCamera->GetProjectionBufferInUse();
+	mWorldCamera->SetViewBuffer();
+	mWorldCamera->SetProjectionBuffer();
 
 	mTerrainEditor->PreRender();
 }
@@ -44,11 +47,10 @@ void MapToolScene::Render()
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
-
 	Environment::Get()->Set(); // SetViewPort
-	mCamera->SetViewBuffer();
-	mCamera->GetProjectionBufferInUse();
 
+	mWorldCamera->SetViewBuffer();
+	mWorldCamera->SetProjectionBuffer();
 
 	//skyBox->Render();
 	//mRasterizerState->SetState();
@@ -58,6 +60,38 @@ void MapToolScene::Render()
 void MapToolScene::PostRender()
 {
 	mTerrainEditor->PostRender();
-	//ImGui::ShowDemoWindow();
-	//ImGui::ShowMetricsWindow();
+}
+
+void MapToolScene::moveWorldCamera()
+{
+	// Update Position
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		if (KEY_PRESS('I'))
+			mWorldCamera->mPosition += mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('K'))
+			mWorldCamera->mPosition -= mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('J'))
+			mWorldCamera->mPosition -= mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('L'))
+			mWorldCamera->mPosition += mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('U'))
+			mWorldCamera->mPosition -= mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('O'))
+			mWorldCamera->mPosition += mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+	}
+
+	mWorldCamera->mPosition += mWorldCamera->Forward() * Control::Get()->GetWheel() * mWorldCamera->mWheelSpeed * DELTA;
+
+	// Update Rotation
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		Vector3 value = MOUSEPOS - mPreFrameMousePosition;
+
+		mWorldCamera->mRotation.x += value.y * mWorldCamera->mRotationSpeed * DELTA;
+		mWorldCamera->mRotation.y += value.x * mWorldCamera->mRotationSpeed * DELTA;
+	}
+
+	mPreFrameMousePosition = MOUSEPOS;
+	mWorldCamera->SetViewMatrixToBuffer();
 }

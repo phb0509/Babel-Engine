@@ -44,8 +44,8 @@ MainScene::MainScene() :
 
 	if (mbIsInstancingMode)
 	{
-		int row = 10;
-		int column = 10;
+		int row = 20;
+		int column = 20;
 
 		mMutantInstanceCount = row * column;
 

@@ -2,16 +2,7 @@
 
 class DeferredRenderingScene : public Scene
 {
-private:
-	ModelObject* bunny;
-	ModelObject* plane;
-	ModelAnimObject* groot;
-	Sphere* sphere;
 
-	GBuffer* gBuffer;
-
-	Material* material;
-	VertexBuffer* vertexBuffer;
 public:
 	DeferredRenderingScene();
 	~DeferredRenderingScene();
@@ -22,6 +13,20 @@ public:
 	virtual void PostRender() override;
 
 private:
-	void CreateModels();
-	void CreateMesh();
+	void createMesh();
+	void moveWorldCamera();
+
+
+private:
+	ModelObject* mBunny;
+	ModelObject* mPlane;
+	ModelAnimObject* mGroot;
+	Sphere* mSphere;
+	Camera* mWorldCamera;
+
+	GBuffer* mGBuffer;
+
+	Material* mMaterial;
+	VertexBuffer* mVertexBuffer;
+	Vector3 mPreFrameMousePosition;
 };

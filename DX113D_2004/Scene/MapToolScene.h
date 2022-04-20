@@ -11,12 +11,14 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-
+private:
+	void moveWorldCamera();
 private:
 	TerrainEditor* mTerrainEditor = nullptr;
 	SkyBox* skyBox = nullptr;
 	Cube* cube = nullptr;
 
 	RasterizerState* mRasterizerState = nullptr;
-	Camera* mCamera;
+	Camera* mWorldCamera;
+	Vector3 mPreFrameMousePosition;
 };

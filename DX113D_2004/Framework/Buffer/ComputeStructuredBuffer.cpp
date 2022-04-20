@@ -132,13 +132,13 @@ void ComputeStructuredBuffer::CreateResult() // 데이터카피하기위한 버퍼생성.
 void ComputeStructuredBuffer::Copy(void* data, UINT size) // 아웃풋버퍼구조체, 받아와야할 전체 크기 (구조체크기 * 개수) , 실제데이터 복사하는 과정.
 {
 	// 출력버퍼를 cpu메모리에 복사.
-	DEVICECONTEXT->CopyResource(mReturnedDataFromGPU, mUAVbuffer); 
+	DEVICECONTEXT->CopyResource(mReturnedDataFromGPU, mUAVbuffer);  // CPU에서 읽을 수 있는 버퍼에 카피. CPU에서 안쓴다면(그냥 뭐 바로 GPU에 넘길데이터라거나 그러면)  굳이 카피안해줘도됨.
 
 	// 자료를 매핑해서 읽어들인다.
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	DEVICECONTEXT->Map(mReturnedDataFromGPU, 0, D3D11_MAP_READ, 0, &mappedData); // subresource에 컴퓨트셰이더에서 나온 결과값들메모리의 주소 따와서 저장.
 	// mappedData에 리턴된값이 담겨있다.
 	
-	memcpy(data, mappedData.pData, size); // subResource.pData부터 size만큼의 크기를 data로 복사.
+	memcpy(data, mappedData.pData, size); // mappedData.pData부터 size만큼의 크기를 data로 복사.
 	DEVICECONTEXT->Unmap(mReturnedDataFromGPU, 0);
 }

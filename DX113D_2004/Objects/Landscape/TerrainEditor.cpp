@@ -5,7 +5,7 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mTerrainWidth(width),
 	mTerrainHeight(height),
 	mbIsPainting(false),
-	mAdjustValue(500),
+	mAdjustValue(100),
 	mHeightMap(nullptr),
 	mInputFileName{},
 	mComputePickingStructuredBuffer(nullptr),
@@ -120,8 +120,6 @@ void TerrainEditor::Update()
 	if (KEY_DOWN('P'))
 	{
 		//std::reverse(mVertices.begin(), mVertices.end());
-		mVertices;
-		int a = 0;
 	}
 	
 }
@@ -209,6 +207,19 @@ void TerrainEditor::PostRender()
 	SpacingRepeatedly(2);
 
 	ImGui::End();
+
+	ImGui::Begin("DepthTexture");
+
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(400.0f, 400.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	ImGui::ImageButton(mDepthRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+	ImGui::End();
 }
 
 bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
@@ -267,12 +278,30 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
+
+	// 경고출력 방지. samplerState를 반드시 셋팅해줘야한다.
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MinLOD = -FLT_MAX;
+	samplerDesc.MaxLOD = FLT_MAX;
+
+	ID3D11SamplerState* myLinearWrapSampler;
+	HRESULT hr = DEVICE->CreateSamplerState(&samplerDesc, &myLinearWrapSampler);
+	DEVICECONTEXT->CSSetSamplers(0, 1, &myLinearWrapSampler);
+
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mDepthStencil->GetSRV());
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mPixelPickingStructuredBuffer->GetUAV(), nullptr);
 
 	DEVICECONTEXT->Dispatch(1, 1, 1);
 
 	ID3D11ShaderResourceView* pSRV = NULL;
+
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &pSRV); // CS 0번 레지스터에 NULL값 세팅. 안하면 경고 뜬다
 
 	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴.  왜 여기서 에러나지? VertexBuffer 건드렸는데
@@ -442,7 +471,7 @@ void TerrainEditor::paintBrush(Vector3 position)
 
 				if (fabsf(distance) > range) continue;// 범위내의 버텍스가 아닐경우
 
-				float paintValue = mPaintValue * max(0, cos(XM_PIDIV2 * distance / range));
+				float paintValue = mPaintValue * max(0, cos(XM_PIDIV2 * distance / range)) * 0.5f;
 
 				if (KEY_PRESS(VK_CONTROL))
 				{
@@ -464,7 +493,8 @@ void TerrainEditor::paintBrush(Vector3 position)
 	}
 
 	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
-	mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+	//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+	mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight);
 }
 
 bool TerrainEditor::checkMouseMove()

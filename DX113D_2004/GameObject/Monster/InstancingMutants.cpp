@@ -34,7 +34,6 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 		temp->SetUpperFrameBuffer(mFrameBuffer);
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
-
 	}
 
 	for (int i = 0; i < instanceCount; i++)
@@ -61,21 +60,6 @@ void InstancingMutants::Update()
 		/*mFrameBuffer->data.tweenDesc[i].cur.clip = mInstanceObjects[i]->GetCurrentClip();
 		mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();*/
 		//mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();
-	}
-
-	if (KEY_DOWN('1'))
-	{
-		SetAnimation(1, eAnimationStates::Run);
-	}
-
-	if (KEY_DOWN('2'))
-	{
-		SetAnimation(1, eAnimationStates::OnDamage);
-	}
-
-	if (KEY_DOWN('3'))
-	{
-		SetAnimation(1, eAnimationStates::Die);
 	}
 
 	ModelAnimators::Update();

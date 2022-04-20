@@ -11,8 +11,6 @@ ModelExportScene::ModelExportScene()
 	//exporter->ExportMaterial(name + "/" + name);
 	//exporter->ExportMesh(name + "/" + name);
 
-	
-	
 	//string clip = "/OnDamage";
 	//exporter = new ModelExporter("ModelData/Animations/" + name + clip + ".fbx");
 	//exporter->ExportClip(name + clip);

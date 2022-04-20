@@ -368,6 +368,7 @@ void ModelExporter::WriteMesh(string savePath)
 	}
 	bones.clear();
 
+	w->CloseWriter();
 	delete w;
 }
 
@@ -516,6 +517,7 @@ void ModelExporter::WriteClip(Clip* clip, string savePath)
 	w->UInt(clip->frameCount);
 
 	w->UInt(clip->keyFrame.size());
+
 	for (KeyFrame* keyFrame : clip->keyFrame)
 	{
 		w->String(keyFrame->boneName);
@@ -528,6 +530,7 @@ void ModelExporter::WriteClip(Clip* clip, string savePath)
 
 	clip->keyFrame.clear();
 
+	w->CloseWriter();
 	delete clip;
 	delete w;
 }

@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-Player::Player()
-	: ModelAnimator(),
+Player::Player(): 
+	ModelAnimator(),
 	mbIsInitialize(false),
 	state(IDLE),
 	mbIsNormalAttack(false),
@@ -423,7 +423,7 @@ void Player::setAnimation(State value)
 
 void Player::PostRender()
 {
-	ImGui::Begin("Player PostRender");
+	/*ImGui::Begin("Player PostRender");
 
 	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
 
@@ -432,5 +432,5 @@ void Player::PostRender()
 	ImGui::InputFloat3("PlayerSword Position", (float*)&mCollidersMap["swordCollider"]->mPosition);
 	SpacingRepeatedly(1);
 
-	ImGui::End();
+	ImGui::End();*/
 }

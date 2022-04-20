@@ -3,15 +3,30 @@
 BinaryReader::BinaryReader(wstring filePath)
     : size(0)
 {
-    file = CreateFile(filePath.c_str(), GENERIC_READ,
-        FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    file = CreateFile(
+        filePath.c_str(), 
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        0, 
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL, 
+        nullptr);
+
+    
 }
 
 BinaryReader::BinaryReader(string filePath)
     : size(0)
 {
-    file = CreateFileA(filePath.c_str(), GENERIC_READ,
-        FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    file = CreateFileA(
+        filePath.c_str(), 
+        GENERIC_READ,
+        FILE_SHARE_READ, 
+        0, 
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
+
 }
 
 BinaryReader::~BinaryReader()

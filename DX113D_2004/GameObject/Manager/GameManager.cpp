@@ -3,8 +3,6 @@
 GameManager::GameManager()
 {
 	mPlayer = new Player();
-
-
 }
 
 GameManager::~GameManager()

@@ -36,14 +36,15 @@ ModelAnimator::~ModelAnimator()
 	delete[] mNodeTransforms;
 }
 
-void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포함한 파일명.
+
+bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포함한 파일명.
 {
 	mClipNames.push_back(GetFileNameWithoutExtension(clipFileName));
 
 	string filePath = "ModelData/" + modelName + "/" + clipFileName;
 
-	//BinaryReader* r = new BinaryReader(filePath);
-	BinaryReader binaryReader(filePath);
+	//BinaryReader* binaryReader = new BinaryReader(filePath);
+	BinaryReader binaryReader(filePath); // 이미 여기서 0xfff
 
 	ModelClip* clip = new ModelClip();
 
@@ -51,6 +52,14 @@ void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	clip->mDuration = binaryReader.Float(); // 총 프레임 개수. 믹사모랑 일치.
 	clip->mFramePerSecond = binaryReader.Float(); // FramesPerSecond // 초당 재생되는 프레임 개수.
 	clip->mFrameCount = binaryReader.UInt(); // 추출기에서 읽어들일 때 그냥 총프레임개수+1로 설정해버림.
+
+	if (clip->mFrameCount >= 1000)
+	{
+		delete clip;
+		mClipNames.pop_back();
+		binaryReader.CloseReader();
+		return false;
+	}
 
 	UINT keyFrameCount = binaryReader.UInt(); // 모델 노드개수. 애초에 믹사모에서 다운받을 때 모델넣고 다운받으니까.
 
@@ -74,7 +83,11 @@ void ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	mClips.emplace_back(clip);
 
 	binaryReader.CloseReader();
+
+	return true;
 }
+
+
 
 void ModelAnimator::TestEvent()
 {
@@ -187,7 +200,7 @@ void ModelAnimator::Render()
 		//SetBoneTransforms();
 		if (mBoneBuffer == nullptr)
 		{
-			ExecuteSetMeshEvent();
+			ExecuteSetMeshEvent(); // create BoneBuffer
 		}
 		mBoneBuffer->SetVSBuffer(3);
 	}

@@ -12,7 +12,7 @@ public:
 	void PostRender();
 	void CreateTexture();
 
-	void ReadClip(string modelName, string clipFileName);
+	bool ReadClip(string modelName, string clipFileName);
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
 	void SetEndEvent(UINT clip, CallBack Event) { mEndEvent[clip] = Event; }
 	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }

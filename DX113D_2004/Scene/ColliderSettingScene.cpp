@@ -14,17 +14,18 @@ ColliderSettingScene::ColliderSettingScene() :
 	mDroppedFileName(""),
 	mbIsDropped(true),
 	mCurrentClipSpeed(1.0f),
-	mCurrentClipTakeTime(0.2f)
+	mCurrentClipTakeTime(0.2f),
+	mPreFrameMousePosition(MOUSEPOS)
 {
 	srand(time(NULL));
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
-	//Environment::Get()->SetIsEnabledTargetCamera(false); // 월드카메라만 사용.
 
 	// 카메라 설정.
-	mCamera->mPosition = { -7.3f, 13.96f, -14.15f };
-	mCamera->mRotation = { 0.64f, 0.58f, 0.0f, };
-	mCamera->mMoveSpeed = 50.0f;
+	mWorldCamera = new Camera();
+	mWorldCamera->mPosition = { -7.3f, 13.96f, -14.15f };
+	mWorldCamera->mRotation = { 0.64f, 0.58f, 0.0f, };
+	mWorldCamera->mMoveSpeed = 50.0f;
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
@@ -92,13 +93,14 @@ ColliderSettingScene::~ColliderSettingScene()
 
 void ColliderSettingScene::Update()
 {
-	mCamera->Update();
+	mWorldCamera->Update();
+	moveWorldCamera();
 
 	colorPicking();
 
 	terrain->Update();
 	mMonster->Update();
-	mStandardCube->Update();
+	//mStandardCube->Update();
 
 	if (KEY_DOWN(VK_LBUTTON))
 	{
@@ -161,8 +163,8 @@ void ColliderSettingScene::PreRender()
 {
 	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
 	Environment::Get()->Set(); // SetViewport
-	mCamera->SetViewBuffer();
-	mCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBuffer();
+	mWorldCamera->SetProjectionBuffer();
 
 	mRSStateForColorPicking->SetState();
 
@@ -180,13 +182,12 @@ void ColliderSettingScene::Render()
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
-
 	Environment::Get()->Set(); // SetViewPort
-	mCamera->SetViewBuffer();
-	mCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBuffer();
+	mWorldCamera->SetProjectionBuffer();
 	
 	mMonster->Render();
-	mStandardCube->Render();
+	//mStandardCube->Render();
 	mRSState->SetState();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
@@ -206,8 +207,8 @@ void ColliderSettingScene::Render()
 void ColliderSettingScene::PostRender()
 {
 	Environment::Get()->Set(); // SetViewPort
-	mCamera->SetViewBuffer();
-	mCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBuffer();
+	mWorldCamera->SetProjectionBuffer();
 
 	showModelSelectWindow();
 
@@ -241,8 +242,8 @@ void ColliderSettingScene::renderGizmos()
 	Matrix viewMatrix;
 	Matrix projectionMatrix;
 
-	viewMatrix = mCamera->GetViewMatrix();
-	projectionMatrix = mCamera->GetProjectionMatrixInUse();
+	viewMatrix = mWorldCamera->GetViewMatrix();
+	projectionMatrix = mWorldCamera->GetProjectionMatrixInUse();
 
 	Float4x4 cameraView;
 	Float4x4 cameraProjection;
@@ -294,6 +295,8 @@ void ColliderSettingScene::renderGizmos()
 		ImGui::InputFloat3("Global Translation", worldTranslation);
 		ImGui::InputFloat3("Glpbal Rptation", worldRotation);
 		ImGui::InputFloat3("Global Scale", worldScale);
+
+		
 
 		SpacingRepeatedly(2);
 
@@ -352,6 +355,40 @@ void ColliderSettingScene::renderGizmos()
 
 		ImGui::End();
 	}
+}
+
+void ColliderSettingScene::moveWorldCamera()
+{
+	// Update Position
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		if (KEY_PRESS('I'))
+			mWorldCamera->mPosition += mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('K'))
+			mWorldCamera->mPosition -= mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('J'))
+			mWorldCamera->mPosition -= mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('L'))
+			mWorldCamera->mPosition += mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('U'))
+			mWorldCamera->mPosition -= mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+		if (KEY_PRESS('O'))
+			mWorldCamera->mPosition += mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
+	}
+
+	mWorldCamera->mPosition += mWorldCamera->Forward() * Control::Get()->GetWheel() * mWorldCamera->mWheelSpeed * DELTA;
+
+	// Update Rotation
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		Vector3 value = MOUSEPOS - mPreFrameMousePosition;
+
+		mWorldCamera->mRotation.x += value.y * mWorldCamera->mRotationSpeed * DELTA;
+		mWorldCamera->mRotation.y += value.x * mWorldCamera->mRotationSpeed * DELTA;
+	}
+
+	mPreFrameMousePosition = MOUSEPOS;
+	mWorldCamera->SetViewMatrixToBuffer();
 }
 
 void ColliderSettingScene::showModelSelectWindow()
@@ -681,9 +718,9 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 				ImGui::Text("");
 
-				ImGui::InputFloat3(positionLabel.c_str(), (float*)&collider->mPosition);
-				ImGui::InputFloat3(rotationLabel.c_str(), (float*)&collider->mRotation);
-				ImGui::InputFloat3(scaleLabel.c_str(), (float*)&collider->mScale);
+				ImGui::DragFloat3(positionLabel.c_str(), (float*)&collider->mPosition, 0.1f, -100.0f, 100.0f);
+				ImGui::DragFloat3(rotationLabel.c_str(), (float*)&collider->mRotation, 0.1f, -3.141592f, 3.141592f);
+				ImGui::DragFloat3(scaleLabel.c_str(), (float*)&collider->mScale, 0.1f, -100.0f, 100.0f);
 
 				SpacingRepeatedly(1);
 
@@ -702,9 +739,11 @@ void ColliderSettingScene::showColliderEditorWindow()
 			}
 		}
 
+		ImGui::ShowDemoWindow();
+
 		if (ImGui::Button("Save"))
 		{
-			//saveAsBinary(); //실수로 누를까봐 잠시 주석처리.
+			saveAsBinary(); //실수로 누를까봐 잠시 주석처리.
 		}
 
 		ImGui::SameLine();
@@ -1106,6 +1145,7 @@ void ColliderSettingScene::showModelInspector()
 					if (GetExtension(mDraggedFileName) == "clip")
 					{
 						mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
+						int a = 0;
 					}
 				}
 				ImGui::EndDragDropTarget();

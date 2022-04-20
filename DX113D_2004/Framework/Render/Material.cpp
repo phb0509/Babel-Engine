@@ -1,14 +1,21 @@
 #include "Framework.h"
 
-Material::Material()
-	: mVertexShader(nullptr), mPixelShader(nullptr),
-	mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr), mBrushMap(nullptr)
+Material::Material(): 
+	mVertexShader(nullptr), 
+	mPixelShader(nullptr),
+	mDiffuseMap(nullptr), 
+	mSpecularMap(nullptr), 
+	mNormalMap(nullptr), 
+	mBrushMap(nullptr)
 {
 	mBuffer = new MaterialBuffer();
 }
 
-Material::Material(wstring file)
-	: mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr),mBrushMap(nullptr)
+Material::Material(wstring file): 
+	mDiffuseMap(nullptr),
+	mSpecularMap(nullptr), 
+	mNormalMap(nullptr),
+	mBrushMap(nullptr)
 {
 	mVertexShader = Shader::AddVS(file);
 	mPixelShader = Shader::AddPS(file);
@@ -16,9 +23,12 @@ Material::Material(wstring file)
 	mBuffer = new MaterialBuffer();
 }
 
-Material::Material(VertexShader* vertexShader, PixelShader* pixelShader)
-	: mVertexShader(vertexShader), mPixelShader(pixelShader),
-	mDiffuseMap(nullptr), mSpecularMap(nullptr), mNormalMap(nullptr),
+Material::Material(VertexShader* vertexShader, PixelShader* pixelShader): 
+	mVertexShader(vertexShader), 
+	mPixelShader(pixelShader),
+	mDiffuseMap(nullptr), 
+	mSpecularMap(nullptr), 
+	mNormalMap(nullptr),
 	mBrushMap(nullptr)
 {
 	mBuffer = new MaterialBuffer();

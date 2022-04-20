@@ -70,8 +70,10 @@ private:
 	void initPickedColliderMatrix();
 	void renderGizmos();
 
+	void moveWorldCamera();
+
 private:
-	Camera* mCamera;
+	Camera* mWorldCamera;
 	ToolModel* mModel;
 	ToolModel* mCurrentModel;
 
@@ -166,5 +168,6 @@ private:
 	float tempScale[3];
 
 	bool mbCheck = false;
+	Vector3 mPreFrameMousePosition;
 	
 };

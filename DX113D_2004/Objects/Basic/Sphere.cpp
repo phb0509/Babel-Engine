@@ -7,7 +7,7 @@ Sphere::Sphere(wstring shaderFile, float radius, UINT sliceCount, UINT stackCoun
 	typeBuffer = new TypeBuffer();
 	CreateMesh();
 
-	material->GetBuffer()->data.specular.w = 250.0f;
+	material->GetBuffer()->data.specular.w = 100.0f;
 }
 
 Sphere::~Sphere()
@@ -31,6 +31,15 @@ void Sphere::Render()
 	typeBuffer->SetVSBuffer(5);
 
 	DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
+}
+
+void Sphere::PostRender()
+{
+	ImGui::Begin("Sphere");
+	ImGui::InputFloat3("Position", (float*)&this->mPosition);
+	ImGui::InputFloat3("Rotation", (float*)&this->mRotation);
+	ImGui::InputFloat3("Scale", (float*)&this->mScale);
+	ImGui::End();
 }
 
 void Sphere::CreateMesh()

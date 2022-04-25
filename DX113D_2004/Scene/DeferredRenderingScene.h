@@ -13,11 +13,10 @@ public:
 	virtual void PostRender() override;
 
 private:
-	void createMesh();
 	void moveWorldCamera();
 
-
 private:
+	ModelAnimObject* mPlayer;
 	ModelObject* mBunny;
 	ModelObject* mPlane;
 	ModelAnimObject* mGroot;
@@ -26,7 +25,15 @@ private:
 
 	GBuffer* mGBuffer;
 
-	Material* mMaterial;
+	Material* mDeferredMaterial;
 	VertexBuffer* mVertexBuffer;
 	Vector3 mPreFrameMousePosition;
+	LightBuffer* mLightBuffer;
+	Terrain* mTerrain;
+
+	Light* mDirectionalLight;
+	Light* mPointLight;
+	Light* mSpotLight;
+	Light* mCapsuleLight;
+
 };

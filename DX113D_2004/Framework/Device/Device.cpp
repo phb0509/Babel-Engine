@@ -113,9 +113,7 @@ void Device::CreateBackBuffer()
 
 		V(mDevice->CreateDepthStencilView(mDSVtexture, &desc, &mDepthStencilView));
 		mDSVtexture->Release();
-	}
-
-	
+	}	
 }
 
 void Device::SetRenderTarget()
@@ -177,17 +175,13 @@ void Device::SetRenderTargets()
 			mDeviceContext->OMSetRenderTargets(mRenderTargets.size(), mRenderTargets.data(), mDepthStencilView);
 		}
 	}
+
 	else
 	{
 		MessageBox(hWnd, L"There must be at least one render target.", L"Device.cpp", MB_ICONQUESTION | MB_OKCANCEL);
 	}
 	
 }
-
-
-
-
-
 
 void Device::Present()
 {

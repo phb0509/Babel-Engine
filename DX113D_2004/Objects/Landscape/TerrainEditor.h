@@ -1,5 +1,7 @@
 #pragma once
 
+class ModelAnimObject;
+
 class TerrainEditor : public Transform
 {
 private:
@@ -61,7 +63,6 @@ public:
 	void Render();
 	void PostRender();
 	void SetCamera(Camera* camera) { mCamera = camera; }
-
 
 private:
 	void createMesh();
@@ -178,4 +179,8 @@ private:
 
 	int boxLeft;
 	int boxRight;
+
+
+
+	ModelAnimObject* mPlayer;
 };

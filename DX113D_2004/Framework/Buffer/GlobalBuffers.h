@@ -1,5 +1,6 @@
 #pragma once
 
+
 class MatrixBuffer : public ConstBuffer
 {
 private:
@@ -73,37 +74,36 @@ public:
 	Matrix GetInvProjectionMatrix() { return data.invMatrix; }
 };
 
-#define MAX_LIGHT 10
 
-struct Light
+enum class LightType
 {
-	enum Type
-	{
-		DIRECTIONAL,
-		POINT,
-		SPOT,
-		CAPSULE
-	};
+	DIRECTIONAL,
+	POINT,
+	SPOT,
+	CAPSULE
+};
 
+struct LightInfo
+{
 	Float4 color;
+
 	Float3 direction;
-	Type type;
+	LightType type;
 
 	Float3 position;
 	float range;
 
 	float inner;
 	float outer;
-
 	float length;
 	int active;
 
-	Light()
+	LightInfo()
 	{
 		color = Float4(1, 1, 1, 1);
 
 		direction = Float3(0, -1, 1);
-		type = DIRECTIONAL;
+		type = LightType::DIRECTIONAL;
 
 		position = Float3(0, 0, 0);
 		range = 80.0f;
@@ -114,43 +114,12 @@ struct Light
 		length = 50;
 		active = 1;
 	}
+
 };
 
-class LightBuffer : public ConstBuffer
-{
-public:
-	struct Data
-	{
-		Light lights[MAX_LIGHT];
-		UINT lightCount;
-		float padding[3];
 
-		Float4 ambient;
-		Float4 ambientCeil;
-	}data;
 
-	LightBuffer() : ConstBuffer(&data, sizeof(Data))
-	{
-		data.lightCount = 0;
-		data.ambient = { 0.1f, 0.1f, 0.1f, 1.0f };
-		data.ambientCeil = { 0.1f, 0.1f, 0.1f, 1.0f };
-	}
 
-	void Add(Light light)
-	{
-		data.lights[data.lightCount++] = light;
-	}
-
-	void Add()
-	{
-		data.lightCount++;
-	}
-	
-	void Delete()
-	{
-		data.lightCount--;
-	}
-};
 
 class RayBuffer : public ConstBuffer
 {

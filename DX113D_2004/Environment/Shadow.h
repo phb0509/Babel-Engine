@@ -2,20 +2,6 @@
 
 class Shadow
 {
-private:
-	UINT width, height;
-	float radius;
-
-	RenderTarget* renderTarget;
-	DepthStencil* depthStencil;
-
-	class UIImage* depthMap;
-
-	MatrixBuffer* viewBuffer;
-	MatrixBuffer* projectionBuffer;
-
-	TypeBuffer* qualityBuffer;
-	SizeBuffer* sizeBuffer;
 public:
 	Shadow(UINT width = 2000, UINT height = 2000);
 	~Shadow();
@@ -25,4 +11,22 @@ public:
 	void PostRender();
 
 	void SetViewProjection();
+	void SetLight(Light* light) { mLight = light; }
+
+private:
+	UINT mWidth;
+	UINT mHeight;
+	float mRadius;
+
+	RenderTarget* mRenderTarget;
+	DepthStencil* mDepthStencil;
+
+	class UIImage* mDepthMap;
+
+	MatrixBuffer* mViewBuffer;
+	MatrixBuffer* mProjectionBuffer;
+
+	TypeBuffer* mQualityBuffer;
+	SizeBuffer* mSizeBuffer;
+	Light* mLight;
 };

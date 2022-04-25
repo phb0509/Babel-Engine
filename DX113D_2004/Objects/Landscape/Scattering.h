@@ -30,31 +30,7 @@ private:
 		}
 	};
 
-	TargetBuffer* targetBuffer;
 
-	RenderTarget* targets[2];
-	DepthStencil* depthStencil;
-
-	UIImage* rayleighTexture;
-	UIImage* mieTexture;
-
-	VertexUV* quadVertices;
-	VertexBuffer* quadBuffer;
-
-	Material* quadMaterial;
-
-	//Shpere
-	float radius;
-
-	UINT slices, stacks;
-
-	UINT vertexCount, indexCount;
-	Mesh* mesh;
-	Material* material;
-
-	TimeBuffer* starBuffer;
-
-	DepthStencilState* depthMode[2];
 public:
 	Scattering();
 	~Scattering();
@@ -63,8 +39,35 @@ public:
 	void PreRender();
 	void Render();
 	void PostRener();
+	void SetLight(Light* light) { mLight = light; }
 
 private:
 	void CreateQuad();
 	void CreateSphere();
+
+
+	TargetBuffer* mTargetBuffer;
+
+	RenderTarget* mRenderTargets[2];
+	DepthStencil* mDepthStencil;
+
+	UIImage* mRayleighTexture;
+	UIImage* mMieTexture;
+
+	VertexUV* mQuadVertices;
+	VertexBuffer* mQuadBuffer;
+
+	Material* mQuadMaterial;
+
+	//Shpere
+	float mRadius;
+	UINT mSlices, mStacks;
+	UINT mVertexCount, mIndexCount;
+	Mesh* mMesh;
+	Material* mMaterial;
+
+	TimeBuffer* mStarBuffer;
+
+	DepthStencilState* mDepthMode[2];
+	Light* mLight;
 };

@@ -95,7 +95,7 @@ void TestScene::Render()
 	mWorldCamera->GetViewBuffer()->SetPSBuffer(3);
 	mWorldCamera->GetProjectionBufferInUse()->SetPSBuffer(2);
 
-	mGBuffer->Render();
+	mGBuffer->SetRenderTargetsToPS();
 
 	mTerrain->Render();
 	mInstancingMutants->SetShader(L"Models");

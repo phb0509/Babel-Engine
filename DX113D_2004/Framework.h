@@ -41,10 +41,6 @@
 
 #define DELTA Timer::Get()->GetElapsedTime()
 
-//#define TARGETCAMERA Environment::Get()->GetTargetCamera()
-//#define WORLDCAMERA Environment::Get()->GetWorldCamera()
-#define LIGHT Environment::Get()->GetLight()
-
 #define GM GameManager::Get()
 
 #define ASSETSWINDOW 0
@@ -145,15 +141,6 @@
 #include <ImZoomSlider.h>
 #include <ImCurveEdit.h>
 #include <GraphEditor.h>
-//#include <ImGuizmo-master/ImGuizmo.h>
-//#include <ImGuizmo-master/ImSequencer.h>
-//#include <ImGuizmo-master/ImZoomSlider.h>
-//#include <ImGuizmo-master/ImCurveEdit.h>
-//#include <ImGuizmo-master/GraphEditor.h>
-
-
-
-//#include <ImGuizmo-master/ImGuizmo.cpp>
 
 //Dialog
 #include <dirent.h>
@@ -203,7 +190,6 @@ const XMVECTORF32 kForward = { 0, 0, 1 };
 #include "Framework/Utility/Xml.h"
 #include "Framework/Utility/DirectWrite.h"
 
-
 using namespace utility;
 
 #include "Framework/Device/Device.h"
@@ -230,6 +216,7 @@ using namespace utility;
 #include "Framework/Buffer/Texture2DBuffer.h"
 #include "Framework/Buffer/VertexLayouts.h"
 #include "Framework/Buffer/GlobalBuffers.h"
+#include "Framework/Buffer/LightBuffer.h"
 
 #include "Framework/Render/Mesh.h"
 #include "Framework/Render/Texture.h"
@@ -240,13 +227,10 @@ using namespace utility;
 #include "Framework/Math/Transform.h"
 #include "Framework/Math/Math.h"
 
-
 #include "GameObject/Utility/E_States.h"
 
 using namespace GameMath;
 using namespace states;
-
-
 
 #include "Framework/Collider/Collider.h"
 #include "Framework/Collider/BoxCollider.h"
@@ -266,6 +250,7 @@ using namespace states;
 #include "Framework/Model/ModelAnimator.h"
 #include "Framework/Model/ModelAnimators.h"
 
+#include "Environment/Light.h"
 #include "Environment/Camera.h"
 #include "Environment/Environment.h"
 #include "Environment/Frustum.h"
@@ -294,7 +279,6 @@ using namespace states;
 #include "Objects/Landscape/Billboard.h"
 #include "Objects/Landscape/Water.h"
 #include "Objects/Landscape/Scattering.h"
-
 
 #include "Objects/Model/ModelObject.h"
 #include "Objects/Model/ModelAnimObject.h"

@@ -32,7 +32,7 @@ void CS(uint3 index : SV_DispatchThreadID)
     screenCoord.x = mouseScreenPosition.x;
     screenCoord.y = mouseScreenPosition.y;
     
-    float2 ndcCoord;
+    float2 ndcCoord; // -1 ~ 1로 정규화된 값.
     ndcCoord.x = mouseNDCPosition.x;
     ndcCoord.y = mouseNDCPosition.y;
      
@@ -53,5 +53,6 @@ void CS(uint3 index : SV_DispatchThreadID)
     float4 worldSpacePosition = mul(viewSpacePosition, invViewMatrix);
     
     output[0].worldPosition = worldSpacePosition.xyz;
+    output[0].padding1 = depth;
 }
 

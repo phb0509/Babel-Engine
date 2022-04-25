@@ -64,7 +64,7 @@ void RenderTarget::ClearAndSetWithDSV(RenderTarget** targets, UINT count, DepthS
 {
 	vector<ID3D11RenderTargetView*> rtvs;
 
-	float color[4] = { 0, 0, 0, 0 };
+	float color[4] = { 0, 0, 0, 1 };
 	
 	for (UINT i = 0; i < count; i++)
 	{

@@ -53,3 +53,8 @@ void ModelMesh::SetBox(Vector3* minBox, Vector3* maxBox)
 	*minBox = minPos;
 	*maxBox = maxPos;
 }
+
+void ModelMesh::IASet()
+{
+	mMesh->IASet();
+}

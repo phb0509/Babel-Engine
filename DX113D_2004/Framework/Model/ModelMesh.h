@@ -13,6 +13,7 @@ private:
 	void Render(UINT drawCount);
 
 	void SetBox(Vector3* minBox, Vector3* maxBox);
+	void IASet();
 
 private:
 	string mName;

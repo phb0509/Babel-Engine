@@ -9,9 +9,9 @@ public:
 	void Update();
 	void Render();
 	void SetCamera(Camera* camera) { mCamera = camera; }
+
 private:
 	void CreateMesh();
-
 
 public:
 	Material* mMaterial;

@@ -19,7 +19,8 @@ Terrain::Terrain():
 	//D3D11_FILL_SOLID
 	//heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
+	//mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
+	mHeightMap = Texture::Add(L"Textures/HeightMap.png"); // 256 * 256
 
 	createMesh();
 

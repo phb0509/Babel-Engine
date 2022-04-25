@@ -1,6 +1,9 @@
 #include "Framework.h"
 
-DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil)
+DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil):
+	mDSV(nullptr),
+	mSRV(nullptr),
+	mDSVTexture(nullptr)
 {
 	{//DSV Texture
 		D3D11_TEXTURE2D_DESC desc = {};
@@ -14,7 +17,7 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil)
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		
-		V(DEVICE->CreateTexture2D(&desc, nullptr, &dsvTexture));
+		V(DEVICE->CreateTexture2D(&desc, nullptr, &mDSVTexture));
 	}
 
 	{//DSV
@@ -22,7 +25,7 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil)
 		desc.Format = isStencil ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-		V(DEVICE->CreateDepthStencilView(dsvTexture, &desc, &dsv));
+		V(DEVICE->CreateDepthStencilView(mDSVTexture, &desc, &mDSV));
 	}
 
 	{//SRV
@@ -31,19 +34,19 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil)
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		desc.Texture2D.MipLevels = 1;
 
-		V(DEVICE->CreateShaderResourceView(dsvTexture, &desc, &srv));
+		V(DEVICE->CreateShaderResourceView(mDSVTexture, &desc, &mSRV));
 	}
 }
 
 DepthStencil::~DepthStencil()
 {
-	dsvTexture->Release();
+	mDSVTexture->Release();
 
-	dsv->Release();
-	srv->Release();
+	mDSV->Release();
+	mSRV->Release();
 }
 
 void DepthStencil::Clear()
 {
-	DEVICECONTEXT->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	DEVICECONTEXT->ClearDepthStencilView(mDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

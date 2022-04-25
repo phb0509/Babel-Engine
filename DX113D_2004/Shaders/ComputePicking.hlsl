@@ -1,4 +1,4 @@
-cbuffer Ray : register(b0)
+cbuffer Ray : register(b0) // 28byte
 {
     float3 position; // 카메라위치(원점)
     float outputSize; // 폴리곤개수

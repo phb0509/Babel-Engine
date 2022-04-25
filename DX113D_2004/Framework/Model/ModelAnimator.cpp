@@ -44,7 +44,7 @@ bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	string filePath = "ModelData/" + modelName + "/" + clipFileName;
 
 	//BinaryReader* binaryReader = new BinaryReader(filePath);
-	BinaryReader binaryReader(filePath); // 이미 여기서 0xfff
+	BinaryReader binaryReader(filePath); // 
 
 	ModelClip* clip = new ModelClip();
 
@@ -188,8 +188,10 @@ void ModelAnimator::Render()
 		SetShader(L"ModelAnimation");
 
 		if (mTexture == nullptr)
+		{
 			CreateTexture(); // TransformMapTexture.
-
+		}
+		
 		mFrameBuffer->SetVSBuffer(4);
 		DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
 	}
@@ -208,9 +210,35 @@ void ModelAnimator::Render()
 	MeshRender(); // 부모클래스(ModelReader)함수.
 }
 
+void ModelAnimator::DeferredRender()
+{
+	if (mClips.size() != 0) // ModelAnimation
+	{
+		if (mTexture == nullptr)
+		{
+			CreateTexture(); // TransformMapTexture.
+		}
+			
+		mFrameBuffer->SetVSBuffer(4);
+		DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
+	}
+
+	else // Model
+	{
+		if (mBoneBuffer == nullptr)
+		{
+			ExecuteSetMeshEvent(); // create BoneBuffer
+		}
+		mBoneBuffer->SetVSBuffer(3);
+	}
+
+	MeshRender(); // 부모클래스(ModelReader)함수.
+}
+
 
 void ModelAnimator::PostRender()
 {
+
 }
 
 void ModelAnimator::PlayClip(UINT clip, float speed, float takeTime)

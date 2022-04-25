@@ -23,10 +23,7 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 struct PixelOutput
 {
     float4 color : SV_Target0; // 리턴을 이 인덱스의 rtv에 한다는것.
-    //float4 color;
 };
-
-
 
 PixelOutput PS(PixelInput input) : SV_Target
 {
@@ -36,6 +33,7 @@ PixelOutput PS(PixelInput input) : SV_Target
     float depthValue = input.pos.z / input.pos.w;
     
     depthValue = depthValue * 80.0f;
+    //depthValue = depthValue;
     output.color = float4(depthValue, depthValue, depthValue, 1.0f);
     //output.color = float4(1.0f,1.0f,0.0f,1.0f);
     // all 1.0f는 흰색.

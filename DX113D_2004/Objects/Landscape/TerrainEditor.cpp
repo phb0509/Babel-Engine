@@ -36,11 +36,11 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	mRenderTargets[0] = mDepthRenderTarget;
 
-	//mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
-	mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV(); // mDepthRenderTarget->GetSRV()
-	mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
+	////mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
+	//mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV(); // mDepthRenderTarget->GetSRV()
+	//mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
 
-	mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
+	//mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
 
 	createMesh(); // 적용할 HeightMap 기준으로 mTerrainWidth와 mTerrainHeight 결정.
 
@@ -59,6 +59,17 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 	boxLeft = 0;
 	boxRight = 249999;
+
+
+	mPlayer = new ModelAnimObject();
+	mPlayer->mScale = { 0.05f, 0.05f, 0.05f };
+	mPlayer->mPosition.x = -3.0f;
+	mPlayer->SetShader(L"ModelAnimation");
+
+	mPlayer->SetMesh("Player", "Player.mesh");
+	mPlayer->SetMaterial("Player", "Player.mat");
+	mPlayer->ReadClip("Player", "Idle.clip");
+	mPlayer->UpdateWorld();
 }
 
 TerrainEditor::~TerrainEditor()
@@ -88,6 +99,7 @@ void TerrainEditor::Update()
 	computePixelPicking(&mPickedPosition);
 	mBrushBuffer->data.location = mPickedPosition;
 
+	mPlayer->Update();
 	//computePicking(&mPickedPosition);
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
@@ -126,14 +138,17 @@ void TerrainEditor::Update()
 
 void TerrainEditor::PreRender()
 {
-	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
-	mWorldBuffer->SetVSBuffer(0);
-
 	// 여기다 DepthShader 관련.
 	RenderTarget::ClearAndSetWithDSV(mRenderTargets, 1, mDepthStencil); // 깊이값이 mDepthStencil에 저장..
-	mDepthMaterial->Set(); 
+	//mDepthMaterial->Set(); 
 
-	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+	mPlayer->IASet();
+	mPlayer->SetWorldBuffer(0);
+	mPlayer->Render();
+
+	//mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
+	//mWorldBuffer->SetVSBuffer(0);
+	//DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
 void TerrainEditor::Render()
@@ -152,6 +167,8 @@ void TerrainEditor::Render()
 	mMaterial->Set(); // 버퍼,srv,TerrainEditor 셰이더 Set.
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+
+	mPlayer->Render();
 }
 
 void TerrainEditor::PostRender()
@@ -190,9 +207,12 @@ void TerrainEditor::PostRender()
 	UnIndentRepeatedly(20);
 
 	mMouseScreenPosition = { MOUSEPOS.x / WIN_WIDTH, MOUSEPOS.y / WIN_HEIGHT ,0.0f };
-	mMouseNDCPosition = { ((2 * MOUSEPOS.x) / WIN_WIDTH) - 1.0f,
+	mMouseNDCPosition = 
+	{ 
+		((2 * MOUSEPOS.x) / WIN_WIDTH) - 1.0f,
 		(((2 * MOUSEPOS.y) / WIN_HEIGHT) - 1.0f) * -1.0f,
-		0.0f }; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
+		0.0f
+	}; // 마우스위치값을 -1~1로 정규화. NDC좌표로 변환.
 
 	ImGui::End();
 
@@ -220,6 +240,14 @@ void TerrainEditor::PostRender()
 	ImGui::ImageButton(mDepthRenderTarget->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
 	ImGui::End();
+
+
+	ImGui::Begin("TestTest");
+
+	ImGui::InputFloat("depth Value",(float*)&mTestOutputDesc.padding1,0.0f,0.0f,"%.10f");
+	ImGui::End();
+
+	ImGui::ShowDemoWindow();
 }
 
 bool TerrainEditor::computePicking(OUT Vector3* position) // 터레인의 피킹한곳의 월드포지션값 구해서 넘겨줌.
@@ -278,7 +306,6 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 	mComputeShader->Set(); // 디바이스에 Set..
 	mMouseUVBuffer->SetCSBuffer(0);
 
-
 	// 경고출력 방지. samplerState를 반드시 셋팅해줘야한다.
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -307,6 +334,7 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 	mPixelPickingStructuredBuffer->Copy(mOutputUVDesc, sizeof(OutputUVDesc)); // GPU에서 계산한거 받아옴.  왜 여기서 에러나지? VertexBuffer 건드렸는데
 																			 
 	mTestOutputDesc.worldPosition = mOutputUVDesc->worldPosition;
+	mTestOutputDesc.padding1 = mOutputUVDesc->padding1;
 
 	*position = mOutputUVDesc->worldPosition;
 }

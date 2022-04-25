@@ -1,73 +1,73 @@
 #include "Framework.h"
 
 Shadow::Shadow(UINT width, UINT height)
-	: width(width), height(height), radius(30)
+	: mWidth(width), mHeight(height), mRadius(30)
 {
-	renderTarget = new RenderTarget(width, height);
-	depthStencil = new DepthStencil(width, height);
+	mRenderTarget = new RenderTarget(width, height);
+	mDepthStencil = new DepthStencil(width, height);
 
-	depthMap = new UIImage(L"Texture");
-	depthMap->mScale = { 300, 300, 1 };
-	depthMap->mPosition = { 150, 150, 0 };
-	depthMap->SetSRV(renderTarget->GetSRV());
+	mDepthMap = new UIImage(L"Texture");
+	mDepthMap->mScale = { 300, 300, 1 };
+	mDepthMap->mPosition = { 150, 150, 0 };
+	mDepthMap->SetSRV(mRenderTarget->GetSRV());
 
-	viewBuffer = new MatrixBuffer();
-	projectionBuffer = new MatrixBuffer();
+	mViewBuffer = new MatrixBuffer();
+	mProjectionBuffer = new MatrixBuffer();
 
-	qualityBuffer = new TypeBuffer();
-	sizeBuffer = new SizeBuffer();
-	sizeBuffer->data.size = Float2(width, height);
+	mQualityBuffer = new TypeBuffer();
+	mSizeBuffer = new SizeBuffer();
+	mSizeBuffer->data.size = Float2(width, height);
 }
 
 Shadow::~Shadow()
 {
-	delete renderTarget;
-	delete depthStencil;
+	delete mRenderTarget;
+	delete mDepthStencil;
 
-	delete depthMap;
+	delete mDepthMap;
 
-	delete viewBuffer;
-	delete projectionBuffer;
+	delete mViewBuffer;
+	delete mProjectionBuffer;
 }
 
 void Shadow::PreRender()
 {
-	renderTarget->SetDepthStencil(depthStencil);
+	mRenderTarget->SetDepthStencil(mDepthStencil);
 	SetViewProjection();
 }
 
 void Shadow::Render()
 {
-	viewBuffer->SetVSBuffer(11);
-	projectionBuffer->SetVSBuffer(12);
+	mViewBuffer->SetVSBuffer(11);
+	mProjectionBuffer->SetVSBuffer(12);
 
-	qualityBuffer->SetPSBuffer(10);
-	sizeBuffer->SetPSBuffer(11);
+	mQualityBuffer->SetPSBuffer(10);
+	mSizeBuffer->SetPSBuffer(11);
 
-	DEVICECONTEXT->PSSetShaderResources(10, 1, &renderTarget->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &mRenderTarget->GetSRV());
 }
 
 void Shadow::PostRender()
 {
-	depthMap->Render();
+	mDepthMap->Render();
 
-	ImGui::SliderFloat("Radius", &radius, 10.0f, 100.0f);
-	ImGui::SliderInt("Quality", &qualityBuffer->data.values[0], 0, 1);
+	ImGui::SliderFloat("Radius", &mRadius, 10.0f, 100.0f);
+	ImGui::SliderInt("Quality", &mQualityBuffer->data.values[0], 0, 1);
 }
 
 void Shadow::SetViewProjection()
 {
-	Vector3 lightDir = Environment::Get()->GetLight()->data.lights[0].direction;
+	Vector3 lightDir = mLight->GetLightInfo().direction;
 	lightDir.Normalize();
 
-	Vector3 lightPos = lightDir * -radius;
+	Vector3 lightPos = lightDir * -mRadius;
 
 	Matrix view = XMMatrixLookAtLH(lightPos.data, XMVectorZero(), kUp);
-	Matrix projection = XMMatrixOrthographicLH(radius * 2, radius * 2, 0.0f, 1000.0f);
+	Matrix projection = XMMatrixOrthographicLH(mRadius * 2, mRadius * 2, 0.0f, 1000.0f);
 
-	viewBuffer->SetMatrix(view);
-	projectionBuffer->SetMatrix(projection);
+	mViewBuffer->SetMatrix(view);
+	mProjectionBuffer->SetMatrix(projection);
 
-	viewBuffer->SetVSBuffer(1);
-	projectionBuffer->SetVSBuffer(2);
+	mViewBuffer->SetVSBuffer(1);
+	mProjectionBuffer->SetVSBuffer(2);
 }

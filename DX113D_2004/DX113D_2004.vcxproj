@@ -181,9 +181,11 @@
     <ClInclude Include="Environment\Camera.h" />
     <ClInclude Include="Environment\Environment.h" />
     <ClInclude Include="Environment\Frustum.h" />
+    <ClInclude Include="Environment\Light.h" />
     <ClInclude Include="Environment\Reflection.h" />
     <ClInclude Include="Environment\Refraction.h" />
     <ClInclude Include="Environment\Shadow.h" />
+    <ClInclude Include="Framework\Buffer\LightBuffer.h" />
     <ClInclude Include="Framework\Buffer\Texture2DBuffer.h" />
     <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
@@ -300,6 +302,7 @@
     <ClCompile Include="Environment\Camera.cpp" />
     <ClCompile Include="Environment\Environment.cpp" />
     <ClCompile Include="Environment\Frustum.cpp" />
+    <ClCompile Include="Environment\Light.cpp" />
     <ClCompile Include="Environment\Reflection.cpp" />
     <ClCompile Include="Environment\Refraction.cpp" />
     <ClCompile Include="Environment\Shadow.cpp" />
@@ -310,6 +313,7 @@
     <ClCompile Include="Framework\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\ComputeStructuredBuffer.cpp" />
+    <ClCompile Include="Framework\Buffer\LightBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\Texture2DBuffer.cpp" />
     <ClCompile Include="Framework\Collider\BoxCollider.cpp" />
     <ClCompile Include="Framework\Collider\CapsuleCollider.cpp" />

@@ -17,13 +17,13 @@ VertexBuffer::VertexBuffer(void* data, UINT stride, UINT count, bool isCPUWrite)
 		
 	vertexBufferDesc.ByteWidth = stride * count; // stride는 버텍스 하나의 크기
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
+	//vertexBufferDesc.MiscFlags = 0;
+	//vertexBufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vertexBufferData = {};
 	vertexBufferData.pSysMem = data;
-	vertexBufferData.SysMemPitch = 0;
-	vertexBufferData.SysMemSlicePitch = 0;
+	//vertexBufferData.SysMemPitch = 0;
+	//vertexBufferData.SysMemSlicePitch = 0;
 	
 
 	V(DEVICE->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &buffer));

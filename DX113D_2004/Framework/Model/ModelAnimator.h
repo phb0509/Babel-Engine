@@ -9,6 +9,7 @@ public:
 
 	virtual void Update();
 	virtual void Render();
+	void DeferredRender();
 	void PostRender();
 	void CreateTexture();
 

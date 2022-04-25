@@ -243,6 +243,16 @@ void ModelReader::SetNormalMap(wstring file)
 	}
 }
 
+void ModelReader::IASet()
+{
+	mTypeBuffer->SetVSBuffer(5);
+
+	for (ModelMesh* mesh : mMeshes)
+	{
+		mesh->IASet();
+	}
+}
+
 int ModelReader::GetNodeIndex(string name)
 {
 	for (NodeData* node : mNodes)

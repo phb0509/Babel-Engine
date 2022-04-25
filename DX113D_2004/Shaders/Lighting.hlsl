@@ -87,8 +87,5 @@ float4 PS(PixelInput input) : SV_Target
     }
     
     float4 emissive = CalcEmissive(material);
-    
-    
-
     return result + ambient + emissive;
 }

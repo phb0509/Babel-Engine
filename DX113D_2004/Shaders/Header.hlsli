@@ -63,7 +63,7 @@ Texture2DArray transformMap : register(t0);
 //PixelShaderBuffer
 static const float2 specPowerRange = { 0.1f, 250.f };
 
-struct Light
+struct Light // 64byte
 {
     float4 color;
     
@@ -80,11 +80,11 @@ struct Light
     int active;
 };
 
-cbuffer Light : register(b0)
+cbuffer Light : register(b0) // 688 byte
 {
-    Light lights[MAX_LIGHT];
-    uint lightCount;
+    Light lights[MAX_LIGHT]; // 64 * 10 = 640byte
     
+    uint lightCount;
     float3 padding;
     
     float4 ambient;
@@ -93,16 +93,16 @@ cbuffer Light : register(b0)
 
 struct Material
 {
+    float shininess;
     float3 normal;    
     float4 diffuseColor;
     float4 emissive;    
     float4 specularIntensity;
-    float shininess;
     float3 camPos;    
     float3 worldPos;    
 };
 
-cbuffer MaterialInfo : register(b1)
+cbuffer MaterialInfo : register(b1) // 80byte
 {
     float4 mDiffuse;        
     float4 mSpecular;        
@@ -123,7 +123,7 @@ Texture2D specularMap : register(t1);
 Texture2D normalMap : register(t2);
 Texture2D brushMap : register(t7);
 
-Texture2D depthTexture : register(t3);
+Texture2D<float> depthTexture : register(t3);
 Texture2D diffuseTexture : register(t4);
 Texture2D specularTexture : register(t5);
 Texture2D normalTexture : register(t6);
@@ -400,16 +400,18 @@ float4 CalcDirectional(Material material, Light light)
 {
     float3 toLight = -normalize(light.direction);
     
-    float NDotL = dot(toLight, material.normal);
+    float NDotL = dot(toLight, material.normal); // 버텍스노말벡터와 빛방향벡터 내적. return cos(theta)
     float4 finalColor = light.color * saturate(NDotL);
         
-    float3 toEye = normalize(material.camPos - material.worldPos);
+    float3 toEye = normalize(material.camPos - material.worldPos); // 버텍스에서 카메라보는 방향벡터.
     float3 halfWay = normalize(toEye + toLight);
     float NDotH = saturate(dot(material.normal, halfWay));
     
     finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
     
     return finalColor * material.diffuseColor;
+    
+    //return material.diffuseColor;
 }
 
 float4 CalcPoint(Material material, Light light)
@@ -432,7 +434,7 @@ float4 CalcPoint(Material material, Light light)
     float distanceToLightNormal = 1.0f - saturate(distanceToLight / light.range);
     float attention = distanceToLightNormal * distanceToLightNormal;
 
-    return finalColor * material.diffuseColor;
+    //return finalColor * material.diffuseColor;
     return finalColor * material.diffuseColor * attention;
 }
 

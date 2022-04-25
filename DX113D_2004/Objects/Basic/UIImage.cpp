@@ -32,17 +32,18 @@ UIImage::~UIImage()
 
 void UIImage::Update()
 {
+	
 }
 
-void UIImage::Render()
+void UIImage::Render() // PostRender에다가 한단말이지
 {
+	UpdateWorld();
 	mMesh->IASet();
-
 	SetWorldBuffer(); // 0번에
 	mViewBuffer->SetVSBuffer(1);
 	mProjectionBuffer->SetVSBuffer(2);
 
-	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
+	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV); // PS 0번에 SRV넘기기.
 
 	mMaterial->Set();
 
@@ -79,9 +80,9 @@ void UIImage::CreateVP()
 	mViewMatrix = XMMatrixIdentity();
 	mOrthographicMatrix = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);
 
-	mViewBuffer = new MatrixBuffer();
+	mViewBuffer = new ViewBuffer();
 	mViewBuffer->SetMatrix(mViewMatrix);
 
-	mProjectionBuffer = new MatrixBuffer();
+	mProjectionBuffer = new ProjectionBuffer();
 	mProjectionBuffer->SetMatrix(mOrthographicMatrix);
 }

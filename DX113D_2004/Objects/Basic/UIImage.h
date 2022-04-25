@@ -2,8 +2,6 @@
 
 class UIImage : public Transform
 {
-
-
 public:
 	UIImage(wstring shaderFile);
 	virtual ~UIImage();
@@ -26,8 +24,8 @@ protected:
 	Matrix mViewMatrix;
 	Matrix mOrthographicMatrix;
 
-	MatrixBuffer* mViewBuffer;
-	MatrixBuffer* mProjectionBuffer;
+	ViewBuffer* mViewBuffer;
+	ProjectionBuffer* mProjectionBuffer;
 
 	BlendState* mBlendStates[2];
 	DepthStencilState* mDepthMode[2];

@@ -1,12 +1,10 @@
 #pragma once
 
-
 class Monster;
 class Collider;
 class BoxCollider;
 class SphereCollider;
 class CapsuleCollider;
-
 
 class Transform
 {
@@ -30,7 +28,6 @@ public:
 	Matrix GetLocalWorldMatrix() { return mLocalWorldMatrix; }
 	Matrix* GetParentMatrix() { return mParentMatrix; }
 
-
 	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 	Vector3 Forward();
@@ -53,14 +50,10 @@ public:
 	void SetHashColorBuffer();
 	Float4 GetHashColor() { return mHashColor; }
 
-
-	
-	
 private:
 	void createHashColor();
 
 public:
-
 	bool mbIsActive;
 
 	string mTag;

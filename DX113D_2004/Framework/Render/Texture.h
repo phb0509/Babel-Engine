@@ -14,11 +14,10 @@ public:
 
 	vector<Float4> ReadPixels();
 
-	UINT GetWidth() { return mTerrainWidth; }
-	UINT GetHeight() { return mTerrainHeight; }
+	UINT GetWidth() { return mWidth; }
+	UINT GetHeight() { return mHeight; }
 
 	ID3D11ShaderResourceView*& GetSRV() { return srv; }
-	ID3D11ShaderResourceView*& GetTestSRV() { return mTestSRV; }
 	ID3D11Texture2D* GetTexture() { return mTexture; }
 
 private:
@@ -30,12 +29,10 @@ private:
 
 private:
 	ScratchImage image;
-
 	ID3D11ShaderResourceView* srv;
-	ID3D11ShaderResourceView* mTestSRV;
 	ID3D11Texture2D* mTexture;
-	UINT mTerrainWidth;
-	UINT mTerrainHeight;
+	UINT mWidth;
+	UINT mHeight;
 
 	static map<wstring, Texture*> totalTexture;
 	static map<ID3D11ShaderResourceView*, Texture*> totalSRVTexture;

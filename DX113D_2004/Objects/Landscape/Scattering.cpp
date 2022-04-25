@@ -1,136 +1,136 @@
 #include "Framework.h"
 
 Scattering::Scattering()	
-	: radius(10), slices(32), stacks(16)
+	: mRadius(10), mSlices(32), mStacks(16)
 {
-	targets[0] = new RenderTarget();
-	targets[1] = new RenderTarget();
+	mRenderTargets[0] = new RenderTarget();
+	mRenderTargets[1] = new RenderTarget();
 
-	depthStencil = new DepthStencil();
+	mDepthStencil = new DepthStencil();
 
-	rayleighTexture = new UIImage(L"Texture");
-	rayleighTexture->mPosition = { 100, 150, 0 };
-	rayleighTexture->mScale = { 200, 100, 0 };
-	rayleighTexture->SetSRV(targets[0]->GetSRV());
+	mRayleighTexture = new UIImage(L"Texture");
+	mRayleighTexture->mPosition = { 100, 150, 0 };
+	mRayleighTexture->mScale = { 200, 100, 0 };
+	mRayleighTexture->SetSRV(mRenderTargets[0]->GetSRV());
 
-	mieTexture = new UIImage(L"Texture");
-	mieTexture->mPosition = { 100, 50, 0 };
-	mieTexture->mScale = { 200, 100, 0 };
-	mieTexture->SetSRV(targets[1]->GetSRV());
+	mMieTexture = new UIImage(L"Texture");
+	mMieTexture->mPosition = { 100, 50, 0 };
+	mMieTexture->mScale = { 200, 100, 0 };
+	mMieTexture->SetSRV(mRenderTargets[1]->GetSRV());
 
-	targetBuffer = new TargetBuffer();
+	mTargetBuffer = new TargetBuffer();
 
-	quadMaterial = new Material(L"ScatteringTarget");
+	mQuadMaterial = new Material(L"ScatteringTarget");
 
 	CreateQuad();
 	CreateSphere();
 
-	material = new Material(L"Scattering");
-	material->SetDiffuseMap(L"Textures/Landscape/NightSky.png");
+	mMaterial = new Material(L"Scattering");
+	mMaterial->SetDiffuseMap(L"Textures/Landscape/NightSky.png");
 
-	starBuffer = new TimeBuffer();
+	mStarBuffer = new TimeBuffer();
 
-	depthMode[0] = new DepthStencilState();
-	depthMode[1] = new DepthStencilState();
-	depthMode[1]->DepthEnable(false);	
+	mDepthMode[0] = new DepthStencilState();
+	mDepthMode[1] = new DepthStencilState();
+	mDepthMode[1]->DepthEnable(false);	
 }
 
 Scattering::~Scattering()
 {
-	delete targets[0];
-	delete targets[1];
+	delete mRenderTargets[0];
+	delete mRenderTargets[1];
 
-	delete depthStencil;
+	delete mDepthStencil;
 
-	delete rayleighTexture;
-	delete mieTexture;
+	delete mRayleighTexture;
+	delete mMieTexture;
 
-	delete targetBuffer;
-	delete quadBuffer;
+	delete mTargetBuffer;
+	delete mQuadBuffer;
 
-	delete quadMaterial;
-	delete material;
+	delete mQuadMaterial;
+	delete mMaterial;
 
-	delete mesh;
+	delete mMesh;
 
-	delete depthMode[0];
-	delete depthMode[1];
+	delete mDepthMode[0];
+	delete mDepthMode[1];
 }
 
 void Scattering::Update()
 {
-	starBuffer->data.time = LIGHT->data.lights[0].direction.y;
+	mStarBuffer->data.time = mLight->GetLightInfo().direction.y;
 }
 
 void Scattering::PreRender()
 {
-	RenderTarget::ClearAndSetWithDSV(targets, 2, depthStencil);
+	RenderTarget::ClearAndSetWithDSV(mRenderTargets, 2, mDepthStencil);
 
-	quadBuffer->IASet();
+	mQuadBuffer->IASet();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	targetBuffer->SetPSBuffer(10);
-	quadMaterial->Set();
+	mTargetBuffer->SetPSBuffer(10);
+	mQuadMaterial->Set();
 
 	DEVICECONTEXT->Draw(6, 0);
 }
 
 void Scattering::Render()
 {
-	mesh->IASet();
+	mMesh->IASet();
 
-	DEVICECONTEXT->PSSetShaderResources(10, 1, &targets[0]->GetSRV());
-	DEVICECONTEXT->PSSetShaderResources(11, 1, &targets[1]->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &mRenderTargets[0]->GetSRV());
+	DEVICECONTEXT->PSSetShaderResources(11, 1, &mRenderTargets[1]->GetSRV());
 
-	starBuffer->SetPSBuffer(10);
+	mStarBuffer->SetPSBuffer(10);
 
-	material->Set();
+	mMaterial->Set();
 
-	depthMode[1]->SetState();
-	DEVICECONTEXT->DrawIndexed(indexCount, 0, 0);
-	depthMode[0]->SetState();
+	mDepthMode[1]->SetState();
+	DEVICECONTEXT->DrawIndexed(mIndexCount, 0, 0);
+	mDepthMode[0]->SetState();
 }
 
 void Scattering::PostRener()
 {
-	rayleighTexture->Render();
-	mieTexture->Render();
+	mRayleighTexture->Render();
+	mMieTexture->Render();
 
-	ImGui::SliderInt("SampleCount", &targetBuffer->data.sampleCount, 1, 50);
+	ImGui::SliderInt("SampleCount", &mTargetBuffer->data.sampleCount, 1, 50);
 }
 
 void Scattering::CreateQuad()
 {
-	quadVertices = new VertexUV[6];
+	mQuadVertices = new VertexUV[6];
 
-	quadVertices[0].position = Float3(-1, -1, 0);
-	quadVertices[1].position = Float3(-1, +1, 0);
-	quadVertices[2].position = Float3(+1, -1, 0);
-	quadVertices[3].position = Float3(+1, -1, 0);
-	quadVertices[4].position = Float3(-1, +1, 0);
-	quadVertices[5].position = Float3(+1, +1, 0);
+	mQuadVertices[0].position = Float3(-1, -1, 0);
+	mQuadVertices[1].position = Float3(-1, +1, 0);
+	mQuadVertices[2].position = Float3(+1, -1, 0);
+	mQuadVertices[3].position = Float3(+1, -1, 0);
+	mQuadVertices[4].position = Float3(-1, +1, 0);
+	mQuadVertices[5].position = Float3(+1, +1, 0);
 
-	quadVertices[0].uv = Float2(0, 1);
-	quadVertices[1].uv = Float2(0, 0);
-	quadVertices[2].uv = Float2(1, 1);
-	quadVertices[3].uv = Float2(1, 1);
-	quadVertices[4].uv = Float2(0, 0);
-	quadVertices[5].uv = Float2(1, 0);
+	mQuadVertices[0].uv = Float2(0, 1);
+	mQuadVertices[1].uv = Float2(0, 0);
+	mQuadVertices[2].uv = Float2(1, 1);
+	mQuadVertices[3].uv = Float2(1, 1);
+	mQuadVertices[4].uv = Float2(0, 0);
+	mQuadVertices[5].uv = Float2(1, 0);
 
-	quadBuffer = new VertexBuffer(quadVertices, sizeof(VertexUV), 6);
-	delete[] quadVertices;
+	mQuadBuffer = new VertexBuffer(mQuadVertices, sizeof(VertexUV), 6);
+	delete[] mQuadVertices;
 }
 
 void Scattering::CreateSphere()
 {
-	UINT domeCount = slices;
-	UINT latitude = stacks;
+	UINT domeCount = mSlices;
+	UINT latitude = mStacks;
 	UINT longitude = domeCount;
 
-	vertexCount = longitude * latitude * 2;
-	indexCount = (longitude - 1) * (latitude - 1) * 2 * 6;
+	mVertexCount = longitude * latitude * 2;
+	mIndexCount = (longitude - 1) * (latitude - 1) * 2 * 6;
 
-	VertexUV* vertices = new VertexUV[vertexCount];
+	VertexUV* vertices = new VertexUV[mVertexCount];
 
 	UINT index = 0;
 	for (UINT i = 0; i < longitude; i++)
@@ -145,7 +145,7 @@ void Scattering::CreateSphere()
 			vertices[index].position.y = cos(xz);
 			vertices[index].position.z = sin(xz) * sin(y);
 			Vector3 temp = vertices[index].position;
-			temp *= radius;
+			temp *= mRadius;
 			vertices[index].position = temp;
 
 			vertices[index].uv.x = 0.5f / (float)longitude + i / (float)longitude;
@@ -167,7 +167,7 @@ void Scattering::CreateSphere()
 			vertices[index].position.y = cos(xz);
 			vertices[index].position.z = sin(xz) * sin(y);
 			Vector3 temp = vertices[index].position;
-			temp *= radius;
+			temp *= mRadius;
 			vertices[index].position = temp;
 
 			vertices[index].uv.x = 0.5f / (float)longitude + i / (float)longitude;
@@ -178,7 +178,7 @@ void Scattering::CreateSphere()
 	}
 
 	index = 0;
-	UINT* indices = new UINT[indexCount];
+	UINT* indices = new UINT[mIndexCount];
 
 	for (UINT i = 0; i < longitude - 1; i++)
 	{
@@ -209,8 +209,8 @@ void Scattering::CreateSphere()
 		}
 	}
 
-	mesh = new Mesh(vertices, sizeof(VertexUV), vertexCount,
-		indices, indexCount);
+	mMesh = new Mesh(vertices, sizeof(VertexUV), mVertexCount,
+		indices, mIndexCount);
 
 	delete[] vertices;
 	delete[] indices;

@@ -67,6 +67,7 @@ float4 PS(PixelInput input) : SV_Target
         specular = saturate(dot(-halfWay, normal));
         
         float4 specularIntensity = float4(1, 1, 1, 1);
+        
         if (hasSpecularMap)
             specularIntensity = specularMap.Sample(samp, input.uv);
         

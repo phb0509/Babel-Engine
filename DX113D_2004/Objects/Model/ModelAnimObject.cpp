@@ -17,12 +17,14 @@ void ModelAnimObject::Update()
 
 void ModelAnimObject::Render()
 {
+	UpdateWorld();
 	SetWorldBuffer();
 	ModelAnimator::Render();
 }
 
 void ModelAnimObject::DeferredRender()
 {
+	UpdateWorld();
 	SetWorldBuffer();
 	ModelAnimator::DeferredRender();
 }

@@ -53,6 +53,8 @@ public:
 	void SetSpecularMap(Texture* specularMap);
 	void SetNormalMap(Texture* normalMap);
 	void SetBrushMap(Texture* brushMap);
+
+	void SetHasSpecularMap(bool value);
 	MaterialBuffer* GetBuffer() { return mBuffer; }
 
 public:

@@ -87,14 +87,6 @@ bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	return true;
 }
 
-
-
-void ModelAnimator::TestEvent()
-{
-	mFrameBuffer->data.tweenDesc[0].cur.curFrame = 10;
-	//mFrameBuffer->data.tweenDesc[0].cur.nextFrame = 11;
-}
-
 void ModelAnimator::Update()
 {
 	if (mClips.size() != 0) // ModelAnimation

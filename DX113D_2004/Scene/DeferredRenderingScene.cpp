@@ -10,8 +10,9 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mSphere = new Sphere(L"Lighting");
 	mSphere->mScale = { 3.0f,3.0f,3.0f };
 	mSphere->mPosition = { 5.0f,3.0f,10.0f };
-	mSphere->GetMaterial()->SetDiffuseMap(L"Textures/Bricks.png");
-	mSphere->GetMaterial()->SetNormalMap(L"Textures/Bricks_normal.png");
+	mSphere->GetMaterial()->SetDiffuseMap(L"Textures/Wall.png");
+	mSphere->GetMaterial()->SetNormalMap(L"Textures/Wall_normal.png");
+	mSphere->GetMaterial()->SetSpecularMap(L"Textures/Wall_specular.png");
 	
 
 	mTerrain = new Terrain();
@@ -54,8 +55,11 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mPlayer->SetShader(L"GBuffer");
 	mPlayer->SetMesh("Player", "Player.mesh");
 	mPlayer->SetMaterial("Player", "Player.mat");
+	//mPlayer->SetDiffuseMap(L"ModelData/Player/Paladin_diffuse.png");
+	//mPlayer->SetNormalMap(L"ModelData/Player/Paladin_normal.png");
+	//mPlayer->SetSpecularMap(L"ModelData/Player/Paladin_specular.png");
 	mPlayer->ReadClip("Player", "Idle.clip");
-	mPlayer->mPosition = { 10.0f,0.0f,10.0f };
+	mPlayer->mPosition = { 10.0f,0.0f,0.0f };
 	mPlayer->UpdateWorld();
 
 	mGBuffer = new GBuffer(); // rtv»ý¼º
@@ -110,6 +114,7 @@ void DeferredRenderingScene::PreRender()
 
 	mGroot->DeferredRender();
 	mPlayer->DeferredRender();
+	//mPlayer->Render();
 	mSphere->Render();
 	mTerrain->Render();
 
@@ -139,6 +144,7 @@ void DeferredRenderingScene::Render()
 	mGBuffer->ClearSRVs();
 }
 
+static bool	hasPlayerSpecularMap = true;
 void DeferredRenderingScene::PostRender()
 {
 	mGBuffer->PostRender(); // UIImageµé ·»´õ.
@@ -147,10 +153,12 @@ void DeferredRenderingScene::PostRender()
 	ImGui::InputFloat3("PlayerPosition", (float*)&mPlayer->mPosition);
 	ImGui::InputFloat3("PlayerRotation", (float*)&mPlayer->mRotation);
 	ImGui::InputFloat3("PlayerScale", (float*)&mPlayer->mScale);
+	ImGui::Checkbox("HasSpecularMap", (bool*)&hasPlayerSpecularMap);
 	ImGui::End();
 
-	mSphere->PostRender();
+	mPlayer->IsRenderSpecularMap(hasPlayerSpecularMap);
 
+	mSphere->PostRender();
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
 	//mPointLight->PostRender();

@@ -19,6 +19,7 @@ public:
 	void SetDiffuseMap(wstring file);
 	void SetSpecularMap(wstring file);
 	void SetNormalMap(wstring file);
+	void IsRenderSpecularMap(bool value);
 	void IASet();
 
 	int GetNodeIndex(string name);

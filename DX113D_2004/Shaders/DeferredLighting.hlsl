@@ -14,10 +14,10 @@ struct PixelInput
 
 static const float2 arrBasePos[4] = // 2차원 NDC공간 꼭지점좌표.
 {
-    float2(-1.0f, 1.0f),
-    float2(1.0f, 1.0f),
+    float2(-1.0f, +1.0f),
+    float2(+1.0f, +1.0f),
     float2(-1.0f, -1.0f),
-    float2(1.0f, -1.0f)
+    float2(+1.0f, -1.0f)
 };
 
 SamplerState LinearSampler
@@ -61,8 +61,8 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
     
     int3 location3 = int3(location, 0);
     
-    float depth = depthTexture.Load(location3).x; // 깊이버퍼값 빼오기.
-    //float depth = asfloat(depthTexture.SampleLevel(LinearSampler, location, 0.0f)); // 0~1로 정규화한 마우스좌표로 샘플링.
+    //float depth = depthTexture.Load(location3).x; // 깊이버퍼값 빼오기.
+    float depth = asfloat(depthTexture.SampleLevel(LinearSampler, location, 0.0f)); // 0~1로 정규화한 마우스좌표로 샘플링.
     
     output.linearDepth = ConvertDepthToLinear(depth); 
     
@@ -115,17 +115,15 @@ float4 PS(PixelInput input) : SV_Target
     material.diffuseColor = float4(data.color, 1.0f); // 디퍼드특성상 알파값 못쓰니 1로 고정.
     material.camPos = PinvView._41_42_43;
     material.shininess = data.specPow;
-    material.specularIntensity = data.specInt.xxxx;
+    //material.specularIntensity = data.specInt.xxxx;
+    material.specularIntensity = float4(data.specInt.xxx, 1.0f);
     material.worldPos = CalcWorldPos(input.uv, data.linearDepth);
     material.emissive = float4(0, 0, 0, 0);
     
-    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    
-    //float4 ambient = CalcAmbient(material) * mAmbient;
-    //float4 emissive = CalcEmissive(material);
+
     
     float4 result = 0;
+    //float4 ambient = CalcAmbient(material);
     
     for (int i = 0; i < lightCount; i++)
     {
@@ -143,5 +141,5 @@ float4 PS(PixelInput input) : SV_Target
         //    result += CalcCapsule(material, lights[i]); //
     }
     
-    return result + ambient + emissive;
+    return result;
 }

@@ -243,6 +243,15 @@ void ModelReader::SetNormalMap(wstring file)
 	}
 }
 
+void ModelReader::IsRenderSpecularMap(bool value)
+{
+	for (auto material : mMaterials)
+	{
+		material.second->SetHasSpecularMap(value);
+		int a = 0;
+	}
+}
+
 void ModelReader::IASet()
 {
 	mTypeBuffer->SetVSBuffer(5);

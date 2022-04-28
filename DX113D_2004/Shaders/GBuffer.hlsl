@@ -44,23 +44,24 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 
 struct PixelOutput
 {
-    float4 diffuse : SV_Target0; // 리턴을 이 인덱스의 rtv에 한다는것.
+    float4 diffuse : SV_Target0; 
     float4 specular : SV_Target1;
     float4 normal : SV_Target2;
-    float4 depth : SV_Target3;
+    float4 depth : SV_Target3; // UITexture용
 };
 
 PixelOutput PackGBuffer(PixelInput input, float3 baseColor, float3 normal, float specIntensity) // 디퓨즈값, 스페큘라값,노말값 등 다 계산해놓기.
 {
     PixelOutput output;
-    
-    float specPowNorm = (mSpecular.a - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
     float depthValue = input.pos.z / input.pos.w;
     depthValue *= 13.0f;
     
-    output.diffuse = float4(baseColor, specIntensity); // 여기서 각 텍스쳐를 만든다. rtv의 srv들. 여기서 텍스쳐들만들어서 디퍼드라이팅셰이더에서 받아쓰는거다.
+    float specPowNorm = (mSpecular.a - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
+    //float specPowNorm = (shininess - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
+    output.diffuse = float4(baseColor, specIntensity); // specIntensity = 텍스쳐에서 샘플링한값.
     output.specular = float4(specPowNorm, 0, 0, 0);
-    output.normal = float4(normal * 0.5f + 0.5f, 0);
+    output.normal = float4(normal * 0.5f + 0.5f, 0); // 0~1 정규화.
+    
     output.depth = float4(depthValue, depthValue, depthValue, 1.0f);
     
     return output;
@@ -70,10 +71,10 @@ PixelOutput PS(PixelInput input) : SV_Target
 {
     float3 albedo = float3(1, 1, 1);
     
+    [flatten]
     if (hasDiffuseMap)
         albedo = diffuseMap.Sample(samp, input.uv).rgb;
-    albedo *= albedo;
-    
+       
     float specIntensity = 1.0f;
     
     if (hasSpecularMap)

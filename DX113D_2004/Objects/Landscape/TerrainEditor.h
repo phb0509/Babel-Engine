@@ -180,7 +180,5 @@ private:
 	int boxLeft;
 	int boxRight;
 
-
-
 	ModelAnimObject* mPlayer;
 };

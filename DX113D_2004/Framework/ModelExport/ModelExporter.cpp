@@ -77,14 +77,16 @@ void ModelExporter::ReadMaterial()
 
 		srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		material->diffuseMap = file.C_Str();
-
 		file.Clear();
+
+		
 		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		material->specularMap = file.C_Str();
-
 		file.Clear();
+
 		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalMap = file.C_Str();
+		file.Clear();
 
 		materials.emplace_back(material);
 	}

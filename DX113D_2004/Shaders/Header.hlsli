@@ -109,11 +109,11 @@ cbuffer MaterialInfo : register(b1) // 80byte
     float4 mAmbient;
     float4 mEmissive;
     
-    float shininess;
-    
     int hasDiffuseMap;
     int hasSpecularMap;
     int hasNormalMap;
+    
+    float shininess;
 }
 
 SamplerState samp : register(s0);
@@ -389,29 +389,47 @@ float4 SpecularMapping(float2 uv)
 
 float4 CalcAmbient(Material material)
 {
-    float up = material.normal.y * 0.5f + 0.5f;
+    float up = material.normal.y * 0.5f + 0.5f; // -1 ~ 1 -> 1 ~ 1 정규화.
     
-    float4 resultAmbient = ambient + up * ambientCeil;
+    float3 resultAmbient = ambient + up * ambientCeil;
     
-    return resultAmbient * material.diffuseColor;
+    return float4(resultAmbient, 1.0f) * material.diffuseColor;
 }
 
 float4 CalcDirectional(Material material, Light light)
 {
-    float3 toLight = -normalize(light.direction);
+    float3 toLight = -normalize(light.direction); // 버텍스에서 광원까지의 방향. 
     
-    float NDotL = dot(toLight, material.normal); // 버텍스노말벡터와 빛방향벡터 내적. return cos(theta)
-    float4 finalColor = light.color * saturate(NDotL);
+    float NDotL = saturate(dot(toLight, material.normal)); // 버텍스노말벡터와 빛방향벡터 내적. return cos(theta)
+    float4 finalColor = light.color * NDotL;
         
     float3 toEye = normalize(material.camPos - material.worldPos); // 버텍스에서 카메라보는 방향벡터.
     float3 halfWay = normalize(toEye + toLight);
     float NDotH = saturate(dot(material.normal, halfWay));
     
     finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
-    
+    //finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+ 
     return finalColor * material.diffuseColor;
     
-    //return material.diffuseColor;
+    
+    
+    //float3 toLight = -normalize(light.direction);
+    
+    //float NDotL = saturate(dot(toLight, material.normal));
+    //float4 finalColor = light.color * NDotL * mDiffuse;
+    
+    //[flatten]
+    //if (NDotL > 0)
+    //{
+    //    float3 toEye = normalize(material.camPos - material.worldPos);
+    //    float3 halfWay = normalize(toEye + toLight);
+    //    float NDotH = saturate(dot(material.normal, halfWay));
+        
+    //    finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+    //}
+    
+    //return finalColor * material.diffuseColor;
 }
 
 float4 CalcPoint(Material material, Light light)

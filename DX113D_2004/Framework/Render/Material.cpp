@@ -110,3 +110,10 @@ void Material::SetBrushMap(Texture* brushMap)
 {
 	mBrushMap = brushMap;
 }
+
+void Material::SetHasSpecularMap(bool value)
+{
+	mBuffer->data.hasSpecularMap = value;
+	mBuffer->data.hasSpecularMap;
+	int a = 0;
+}

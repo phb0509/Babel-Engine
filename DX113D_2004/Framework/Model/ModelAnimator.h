@@ -30,7 +30,6 @@ public:
 
 	void PlayAnimation() { mbIsPlayedAnimation = true; }
 	void StopAnimation() { mbIsPlayedAnimation = false; }
-	void TestEvent();
 	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
 
 

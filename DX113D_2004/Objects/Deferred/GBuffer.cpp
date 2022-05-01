@@ -53,10 +53,10 @@ void GBuffer::PreRender()
 
 void GBuffer::SetRenderTargetsToPS()
 {
-	DEVICECONTEXT->PSSetShaderResources(3, 1, &mSRVs[0]); // 깊이
-	DEVICECONTEXT->PSSetShaderResources(4, 1, &mSRVs[1]); // 디퓨즈
-	DEVICECONTEXT->PSSetShaderResources(5, 1, &mSRVs[2]); // 스페큘라
-	DEVICECONTEXT->PSSetShaderResources(6, 1, &mSRVs[3]); // 노말
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &mSRVs[0]); // 깊이
+	DEVICECONTEXT->PSSetShaderResources(11, 1, &mSRVs[1]); // 디퓨즈
+	DEVICECONTEXT->PSSetShaderResources(12, 1, &mSRVs[2]); // 스페큘라
+	DEVICECONTEXT->PSSetShaderResources(13, 1, &mSRVs[3]); // 노말
 }
 
 void GBuffer::PostRender()

@@ -24,11 +24,13 @@ public:
 	ProjectionBuffer* GetPerspectiveProjectionBuffer() { return mPerspectiveProjectionBuffer; }
 	ProjectionBuffer* GetOrthographicProjectionBuffer() { return mOrthographicProjectionBuffer; }
 
-	void SetViewBuffer(UINT slot = 1);
+	void SetViewBufferToVS(UINT slot = 1);
+	void SetViewBufferToPS(UINT slot = 1);
 	void SetViewMatrix(Matrix matrix) { mViewMatrix = matrix; }
 	void SetViewToFrustum(Matrix view);
 	void SetViewMatrixToBuffer();
-	void SetProjectionBuffer();
+	void SetProjectionBufferToVS(UINT slot = 2);
+	void SetProjectionBufferToPS(UINT slot = 2);
 	void SetIsUsingFrustumCulling(bool value) { mbIsUsingFrustumCulling = value; }
 	void SetIsRenderFrustumCollider(bool value) { mbIsRenderFrustumCollider = value; }
 	void SetProjectionOption(float FoV, float aspectRatio, float distanceToNearZ, float distanceToFarZ);

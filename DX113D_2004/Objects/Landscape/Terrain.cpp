@@ -19,8 +19,8 @@ Terrain::Terrain():
 	//D3D11_FILL_SOLID
 	//heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
 	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	//mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
-	mHeightMap = Texture::Add(L"Textures/HeightMap.png"); // 256 * 256
+	mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
+	//mHeightMap = Texture::Add(L"Textures/HeightMap.png"); // 256 * 256
 
 	createMesh();
 
@@ -177,7 +177,10 @@ float Terrain::GetHeight(Vector3 position)
 
 	Vector3 p[4];
 	for (int i = 0; i < 4; i++)
+	{
 		p[i] = mVertices[index[i]].position;
+	}
+		
 
 	float u = position.x - p[0].x;
 	float v = position.z - p[0].z;

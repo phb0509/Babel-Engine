@@ -353,8 +353,11 @@ void ModelReader::SetMaterial(string folderName, string fileName)
 		else
 		{
 			mMeshes[i]->mMaterial = mMaterials[mMeshes[i]->mMaterialName];
-			int a = 0;
 		}
 	}
+	
+	mMeshes;
+	mMaterials;
+	int a = 0;
 
 }

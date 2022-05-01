@@ -61,7 +61,7 @@ cbuffer ModelType : register(b5)
 Texture2DArray transformMap : register(t0);
 
 //PixelShaderBuffer
-static const float2 specPowerRange = { 0.1f, 250.f };
+static const float2 specPowerRange = { 0.1f, 50.f };
 
 struct Light // 64byte
 {
@@ -83,8 +83,8 @@ struct Light // 64byte
 cbuffer Light : register(b0) // 688 byte
 {
     Light lights[MAX_LIGHT]; // 64 * 10 = 640byte
-    
     uint lightCount;
+    
     float3 padding;
     
     float4 ambient;
@@ -93,11 +93,11 @@ cbuffer Light : register(b0) // 688 byte
 
 struct Material
 {
-    float shininess;
-    float3 normal;    
+    float3 normal;
     float4 diffuseColor;
-    float4 emissive;    
+    float4 emissive;
     float4 specularIntensity;
+    float shininess;
     float3 camPos;    
     float3 worldPos;    
 };
@@ -109,11 +109,11 @@ cbuffer MaterialInfo : register(b1) // 80byte
     float4 mAmbient;
     float4 mEmissive;
     
+    float shininess;
+    
     int hasDiffuseMap;
     int hasSpecularMap;
     int hasNormalMap;
-    
-    float shininess;
 }
 
 SamplerState samp : register(s0);
@@ -123,10 +123,11 @@ Texture2D specularMap : register(t1);
 Texture2D normalMap : register(t2);
 Texture2D brushMap : register(t7);
 
-Texture2D<float> depthTexture : register(t3);
-Texture2D diffuseTexture : register(t4);
-Texture2D specularTexture : register(t5);
-Texture2D normalTexture : register(t6);
+//Texture2D<float> depthTexture : register(t3);
+//Texture2D depthTexture : register(t3);
+//Texture2D diffuseTexture : register(t4);
+//Texture2D specularTexture : register(t5);
+//Texture2D normalTexture : register(t6);
 
 //VertexLayouts
 struct Vertex
@@ -391,68 +392,53 @@ float4 CalcAmbient(Material material)
 {
     float up = material.normal.y * 0.5f + 0.5f; // -1 ~ 1 -> 1 ~ 1 정규화.
     
-    float3 resultAmbient = ambient + up * ambientCeil;
+    float3 resultAmbient = ambient + up * ambientCeil; // 라이트버퍼에 있는 값들.
     
     return float4(resultAmbient, 1.0f) * material.diffuseColor;
 }
 
 float4 CalcDirectional(Material material, Light light)
 {
-    float3 toLight = -normalize(light.direction); // 버텍스에서 광원까지의 방향. 
+    float3 toLight = -normalize(light.direction);
     
-    float NDotL = saturate(dot(toLight, material.normal)); // 버텍스노말벡터와 빛방향벡터 내적. return cos(theta)
-    float4 finalColor = light.color * NDotL;
+    float NDotL = saturate(dot(toLight, material.normal));
+    float4 finalColor = light.color * NDotL * mDiffuse;
+    
+    [flatten]
+    if (NDotL > 0)
+    {
+        float3 toEye = normalize(material.camPos - material.worldPos);
+        float3 halfWay = normalize(toEye + toLight);
+        float NDotH = saturate(dot(material.normal, halfWay));
         
-    float3 toEye = normalize(material.camPos - material.worldPos); // 버텍스에서 카메라보는 방향벡터.
-    float3 halfWay = normalize(toEye + toLight);
-    float NDotH = saturate(dot(material.normal, halfWay));
+        finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+    }
     
-    finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
-    //finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
- 
     return finalColor * material.diffuseColor;
-    
-    
-    
-    //float3 toLight = -normalize(light.direction);
-    
-    //float NDotL = saturate(dot(toLight, material.normal));
-    //float4 finalColor = light.color * NDotL * mDiffuse;
-    
-    //[flatten]
-    //if (NDotL > 0)
-    //{
-    //    float3 toEye = normalize(material.camPos - material.worldPos);
-    //    float3 halfWay = normalize(toEye + toLight);
-    //    float NDotH = saturate(dot(material.normal, halfWay));
-        
-    //    finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
-    //}
-    
-    //return finalColor * material.diffuseColor;
 }
 
 float4 CalcPoint(Material material, Light light)
 {
-    float3 toLight = light.position - material.worldPos; 
-    float distanceToLight = length(toLight); // 광원과의 거리.
-    toLight /= distanceToLight; // 방향벡터(정규화한거)
+    float3 toLight = light.position - material.worldPos;
+    float distanceToLight = length(toLight);
+    toLight /= distanceToLight;
     
-    float NDotL = dot(toLight, material.normal);
-    float4 finalColor = light.color * saturate(NDotL);
+    float NDotL = saturate(dot(toLight, material.normal));
+    float4 finalColor = light.color * NDotL * mDiffuse;
     
-    /*
-    float3 toEye = normalize(material.camPos - material.worldPos);
-    float3 halfWay = normalize(toEye + toLight);
-    float NDotH = saturate(dot(material.normal, halfWay));
-    
-    finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
-    */    
+    [flatten]
+    if (NDotL > 0)
+    {
+        float3 toEye = normalize(material.camPos - material.worldPos);
+        float3 halfWay = normalize(toEye + toLight);
+        float NDotH = saturate(dot(material.normal, halfWay));
+        
+        finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+    }
     
     float distanceToLightNormal = 1.0f - saturate(distanceToLight / light.range);
     float attention = distanceToLightNormal * distanceToLightNormal;
-
-    //return finalColor * material.diffuseColor;
+    
     return finalColor * material.diffuseColor * attention;
 }
 
@@ -462,14 +448,18 @@ float4 CalcSpot(Material material, Light light)
     float distanceToLight = length(toLight);
     toLight /= distanceToLight;
     
-    float NDotL = dot(toLight, material.normal);
-    float4 finalColor = light.color * saturate(NDotL);
-        
-    float3 toEye = normalize(material.camPos - material.worldPos);
-    float3 halfWay = normalize(toEye + toLight);
-    float NDotH = saturate(dot(material.normal, halfWay));
+    float NDotL = saturate(dot(toLight, material.normal));
+    float4 finalColor = light.color * NDotL * mDiffuse;
     
-    finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
+    [flatten]
+    if (NDotL > 0)
+    {
+        float3 toEye = normalize(material.camPos - material.worldPos);
+        float3 halfWay = normalize(toEye + toLight);
+        float NDotH = saturate(dot(material.normal, halfWay));
+        
+        finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+    }
     
     float3 dir = -normalize(light.direction);
     float cosAngle = dot(dir, toLight);
@@ -494,23 +484,54 @@ float4 CalcCapsule(Material material, Light light)
     distanceOnLine = saturate(distanceOnLine) * light.length;
     
     float3 pointOnLine = light.position + direction * distanceOnLine;
+    
     float3 toLight = pointOnLine - material.worldPos;
     float distanceToLight = length(toLight);
     toLight /= distanceToLight;
     
-    float NDotL = dot(toLight, material.normal);
-    float4 finalColor = light.color * saturate(NDotL);
-        
-    float3 toEye = normalize(material.camPos - material.worldPos);
-    float3 halfWay = normalize(toEye + toLight);
-    float NDotH = saturate(dot(material.normal, halfWay));
+    float NDotL = saturate(dot(toLight, material.normal));
+    float4 finalColor = light.color * NDotL * mDiffuse;
     
-    finalColor += light.color * pow(NDotH, material.shininess) * material.specularIntensity;
+    [flatten]
+    if (NDotL > 0)
+    {
+        float3 toEye = normalize(material.camPos - material.worldPos);
+        float3 halfWay = normalize(toEye + toLight);
+        float NDotH = saturate(dot(material.normal, halfWay));
+        
+        finalColor += light.color * pow(NDotH, shininess) * material.specularIntensity;
+    }
     
     float distanceToLightNormal = 1.0f - saturate(distanceToLight / light.range);
     float attention = distanceToLightNormal * distanceToLightNormal;
     
     return finalColor * material.diffuseColor * attention;
+}
+
+float4 CalcLights(Material material)
+{
+    float4 result = 0;
+    
+    for (int i = 0; i < lightCount; i++)
+    {
+        [flatten]
+        if (!lights[i].active)
+        {
+            continue;
+        }
+           
+        [flatten]
+        if (lights[i].type == 0)
+            result += CalcDirectional(material, lights[i]);
+        else if (lights[i].type == 1)
+            result += CalcPoint(material, lights[i]);
+        else if (lights[i].type == 2)
+            result += CalcSpot(material, lights[i]);
+        else if (lights[i].type == 3)
+            result += CalcCapsule(material, lights[i]);
+    }
+    
+    return result;
 }
 
 float4 CalcEmissive(Material material)

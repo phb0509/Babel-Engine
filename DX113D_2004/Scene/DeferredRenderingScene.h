@@ -19,6 +19,7 @@ private:
 	ModelAnimObject* mPlayer;
 	ModelObject* mBunny;
 	ModelObject* mPlane;
+	ModelAnimObject* mMutant;
 	ModelAnimObject* mGroot;
 	Sphere* mSphere;
 	Camera* mWorldCamera;

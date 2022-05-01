@@ -72,8 +72,8 @@ void TestScene::PreRender()
 	//Device::Get()->ClearDepthStencilView();
 	//Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
-	mWorldCamera->SetViewBuffer(1);
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS(1);
+	mWorldCamera->SetProjectionBufferToVS();
 
 	mGBuffer->PreRender(); // Set RenderTargets
 
@@ -88,8 +88,8 @@ void TestScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 
 
 	mWorldCamera->GetViewBuffer()->SetPSBuffer(3);

@@ -46,5 +46,8 @@ private:
 	eCamera mMainCamera;
 	Vector3 mPreFrameMousePosition;
 
+	LightBuffer* mLightBuffer;
+	Light* mDirectionalLight;
+
 
 };

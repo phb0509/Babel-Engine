@@ -22,11 +22,11 @@ private:
 
 		MaterialBuffer() : ConstBuffer(&data, sizeof(Data))
 		{
-			data.diffuse = { 1, 1, 1, 1 }; //기본적으로 1,1,1,1이면 모든 색을 반사. 만약 1,0,0,1이면 빨간색만 반사
-			data.specular = { 1, 1, 1, 1 };
-			data.ambient = { 1, 1, 1, 1 };
-			data.emissive = { 0.3f, 0.3f, 0.3f, 0.1f };
-			data.shininess = 30;
+			data.diffuse = { 1.0f, 1.0f, 1.0f, 1.0f }; //기본적으로 1,1,1,1이면 모든 색을 반사. 만약 1,0,0,1이면 빨간색만 반사
+			data.specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+			data.ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+			data.emissive = { 0.0f, 0.0f, 0.0f, 1.0f };
+			data.shininess = 24.0f;
 
 			data.hasDiffuseMap = 0;
 			data.hasSpecularMap = 0;

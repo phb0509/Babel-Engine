@@ -163,8 +163,8 @@ void ColliderSettingScene::PreRender()
 {
 	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
 	Environment::Get()->Set(); // SetViewport
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 
 	mRSStateForColorPicking->SetState();
 
@@ -183,8 +183,8 @@ void ColliderSettingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 	
 	mMonster->Render();
 	//mStandardCube->Render();
@@ -207,8 +207,8 @@ void ColliderSettingScene::Render()
 void ColliderSettingScene::PostRender()
 {
 	Environment::Get()->Set(); // SetViewPort
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 
 	showModelSelectWindow();
 

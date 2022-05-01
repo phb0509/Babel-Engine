@@ -9,6 +9,10 @@ MainScene::MainScene() :
 	mPreFrameMousePosition(MOUSEPOS),
 	mbIsInstancingMode(false)
 {
+	mLightBuffer = new LightBuffer();
+	mDirectionalLight = new Light(LightType::DIRECTIONAL);
+	mLightBuffer->Add(mDirectionalLight);
+
 	mWorldCamera = new Camera();
 	mWorldCamera->mTag = "WorldCamera";
 	mWorldCamera->mPosition = { 72.8f, 73.5f, -93.0f };
@@ -107,6 +111,9 @@ MainScene::~MainScene()
 
 void MainScene::Update()
 {
+	mLightBuffer->Update();
+	mDirectionalLight->Update();
+
 	switch (static_cast<int>(mMainCamera))
 	{
 	case 0:    // World
@@ -154,21 +161,22 @@ void MainScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
+	mLightBuffer->SetPSBuffer(0);
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
 	{
 	case 0:    // World
 	{
-		mWorldCamera->SetViewBuffer();
-		mWorldCamera->SetProjectionBuffer();
+		mWorldCamera->SetViewBufferToVS();
+		mWorldCamera->SetProjectionBufferToVS();
 		mTargetCameraForShow->RenderFrustumCollider();
 	}
 	break;
 
 	case 1:    // Target
 	{
-		mTargetCamera->SetViewBuffer();
-		mTargetCamera->SetProjectionBuffer();
+		mTargetCamera->SetViewBufferToVS();
+		mTargetCamera->SetProjectionBufferToVS();
 		//mTargetCamera->RenderFrustumCollider();
 	}
 	break;
@@ -196,6 +204,8 @@ void MainScene::Render()
 void MainScene::PostRender()
 {
 	mPlayer->PostRender();
+	mLightBuffer->PostRender();
+	mDirectionalLight->PostRender();
 
 	if (mbIsInstancingMode)
 	{

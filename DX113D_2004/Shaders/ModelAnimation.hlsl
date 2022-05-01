@@ -19,7 +19,7 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     output.pos = mul(input.pos, boneWorld);
     
     float3 camPos = invView._41_42_43;
-    output.viewDir = normalize(output.pos.xyz - camPos);
+    output.viewDir = normalize(output.pos.xyz - camPos); // DirectionVector from Vertex to LightSource
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
@@ -35,10 +35,10 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-    float4 albedo = float4(1, 1, 1, 1);
+    float4 sampledDiffuseMap = float4(1, 1, 1, 1);
     
     if (hasDiffuseMap)
-        albedo = diffuseMap.Sample(samp, input.uv);
+        sampledDiffuseMap = diffuseMap.Sample(samp, input.uv);
     
     float3 light = normalize(lights[0].direction);
     
@@ -50,10 +50,10 @@ float4 PS(PixelInput input) : SV_Target
     
     if (hasNormalMap)
     {
-        float4 normalMapping = normalMap.Sample(samp, input.uv);
+        float4 sampledNormal = normalMap.Sample(samp, input.uv);
     
         float3x3 TBN = float3x3(T, B, N);
-        normal = normalMapping * 2.0f - 1.0f;
+        normal = sampledNormal * 2.0f - 1.0f; // 0 ~ 1 ¡§±‘»≠.
         normal = normalize(mul(normal, TBN));
     }
     
@@ -66,17 +66,19 @@ float4 PS(PixelInput input) : SV_Target
         float3 halfWay = normalize(viewDir + light);
         specular = saturate(dot(-halfWay, normal));
         
-        float4 specularIntensity = float4(1, 1, 1, 1);
+        float4 sampledSpecularMap = float4(1, 1, 1, 1);
         
         if (hasSpecularMap)
-            specularIntensity = specularMap.Sample(samp, input.uv);
-        
-        specular = pow(specular, shininess) * specularIntensity;
+        {
+            sampledSpecularMap = specularMap.Sample(samp, input.uv);
+        }
+           
+        specular = pow(specular, shininess) * sampledSpecularMap;
     }
     
-    float4 diffuse = albedo * diffuseIntensity * mDiffuse;
+    float4 diffuse = sampledDiffuseMap * diffuseIntensity * mDiffuse;
     specular *= mSpecular;
-    float4 ambient = albedo * mAmbient;
+    float4 ambient = sampledDiffuseMap * mAmbient;
     
     return diffuse + specular + ambient;
 }

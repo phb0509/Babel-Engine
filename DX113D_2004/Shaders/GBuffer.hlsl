@@ -2,13 +2,13 @@
 
 struct PixelInput
 {
-    float4 pos : SV_Position;
+    float4 pos : SV_POSITION;
     float2 uv : UV;
-    float3 normal : Normal;
-    float3 tangent : Tangent;
-    float3 binormal : Binormal;
-    float3 camPos : CamPos;
-    float3 worldPos : Position;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+    float3 viewPos : POSITION1;
+    float3 worldPos : POSITION2;
 };
 
 PixelInput VS(VertexUVNormalTangentBlend input)
@@ -27,14 +27,14 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     
     output.pos = mul(input.pos, transform);
     
-    output.camPos = invView._41_42_43;
+    output.viewPos = invView._41_42_43;
     output.worldPos = output.pos;
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
     
-    output.normal = mul(input.normal, (float3x3) transform);
-    output.tangent = mul(input.tangent, (float3x3) transform);
+    output.normal = normalize(mul(input.normal, (float3x3) transform));
+    output.tangent = normalize(mul(input.tangent, (float3x3) transform));
     output.binormal = cross(output.normal, output.tangent);
     
     output.uv = input.uv;
@@ -50,17 +50,18 @@ struct PixelOutput
     float4 depth : SV_Target3; // UITexture용
 };
 
-PixelOutput PackGBuffer(PixelInput input, float3 baseColor, float3 normal, float specIntensity) // 디퓨즈값, 스페큘라값,노말값 등 다 계산해놓기.
+PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappingedNormal, float sampledSpecularMap) // 디퓨즈값, 스페큘라값,노말값 등 다 계산해놓기.
 {
     PixelOutput output;
     float depthValue = input.pos.z / input.pos.w;
     depthValue *= 13.0f;
     
-    float specPowNorm = (mSpecular.a - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
-    //float specPowNorm = (shininess - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
-    output.diffuse = float4(baseColor, specIntensity); // specIntensity = 텍스쳐에서 샘플링한값.
-    output.specular = float4(specPowNorm, 0, 0, 0);
-    output.normal = float4(normal * 0.5f + 0.5f, 0); // 0~1 정규화.
+    //float specPowNorm = (mSpecular.a - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
+    float specPowNorm = (shininess - specPowerRange.x) / (specPowerRange.y); // 스페큘라값 정규화.
+    
+    output.diffuse = float4(sampledDiffuseMap, sampledSpecularMap); // specIntensity = 텍스쳐에서 샘플링한값.
+    output.specular = float4(specPowNorm, 0.0f, 0.0f, 1.0f);
+    output.normal = float4(mappingedNormal * 0.5f + 0.5f, 1.0f); // 0~1 정규화.
     
     output.depth = float4(depthValue, depthValue, depthValue, 1.0f);
     
@@ -69,18 +70,23 @@ PixelOutput PackGBuffer(PixelInput input, float3 baseColor, float3 normal, float
 
 PixelOutput PS(PixelInput input) : SV_Target
 {
-    float3 albedo = float3(1, 1, 1);
+    float3 sampledDiffuseMap = float3(1.0f, 1.0f, 1.0f);
     
     [flatten]
     if (hasDiffuseMap)
-        albedo = diffuseMap.Sample(samp, input.uv).rgb;
-       
-    float specIntensity = 1.0f;
+    {
+        sampledDiffuseMap = diffuseMap.Sample(samp, input.uv).rgb;
+    }
+      
+    float sampledSpecularMap = 1.0f;
     
+    [flatten]
     if (hasSpecularMap)
-        specIntensity = specularMap.Sample(samp, input.uv).r;
+    {
+        sampledSpecularMap = specularMap.Sample(samp, input.uv).r;
+    }
+        
+    float3 mappingedNormal = NormalMapping(input.tangent, input.binormal, input.normal, input.uv);
     
-    float3 normal = NormalMapping(input.tangent, input.binormal, input.normal, input.uv);
-    
-    return PackGBuffer(input,albedo, normal, specIntensity);
+    return PackGBuffer(input, sampledDiffuseMap, mappingedNormal, sampledSpecularMap); // 
 }

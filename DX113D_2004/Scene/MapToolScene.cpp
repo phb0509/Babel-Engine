@@ -35,8 +35,8 @@ void MapToolScene::Update()
 void MapToolScene::PreRender()
 {
 	Environment::Get()->Set(); // ºä¹öÆÛ Set VS
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 
 	mTerrainEditor->PreRender();
 }
@@ -49,8 +49,8 @@ void MapToolScene::Render()
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
 
-	mWorldCamera->SetViewBuffer();
-	mWorldCamera->SetProjectionBuffer();
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
 
 	//skyBox->Render();
 	//mRasterizerState->SetState();

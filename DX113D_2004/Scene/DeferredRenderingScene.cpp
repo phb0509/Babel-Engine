@@ -23,7 +23,7 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mDirectionalLight->mTag = "DirectionalLight";
 
 	mPointLight = new Light(LightType::POINT);
-	mPointLight->mTag = "PointLight";
+	mPointLight->mTag = "PointLight"; 
 
 	mSpotLight = new Light(LightType::SPOT);
 	mSpotLight->mTag = "SpotLight";
@@ -38,7 +38,7 @@ DeferredRenderingScene::DeferredRenderingScene()
 	// Create Models
 	mGroot = new ModelAnimObject();
 	mGroot->mScale = { 0.01f, 0.01f, 0.01f };
-	mGroot->mPosition.x = 20.0f;
+	mGroot->mPosition.x = 0.0f;
 	mGroot->SetShader(L"GBuffer");
 	mGroot->SetMesh("Groot", "Groot.mesh");
 	mGroot->SetMaterial("Groot", "Groot.mat");
@@ -55,12 +55,22 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mPlayer->SetShader(L"GBuffer");
 	mPlayer->SetMesh("Player", "Player.mesh");
 	mPlayer->SetMaterial("Player", "Player.mat");
-	//mPlayer->SetDiffuseMap(L"ModelData/Player/Paladin_diffuse.png");
-	//mPlayer->SetNormalMap(L"ModelData/Player/Paladin_normal.png");
-	//mPlayer->SetSpecularMap(L"ModelData/Player/Paladin_specular.png");
+	mPlayer->SetDiffuseMap(L"ModelData/Player/Paladin_diffuse.png");
+	mPlayer->SetNormalMap(L"ModelData/Player/Paladin_normal.png");
+	mPlayer->SetSpecularMap(L"ModelData/Player/Paladin_specular.png");
 	mPlayer->ReadClip("Player", "Idle.clip");
 	mPlayer->mPosition = { 10.0f,0.0f,0.0f };
 	mPlayer->UpdateWorld();
+
+	mMutant = new ModelAnimObject();
+	mMutant->mScale = { 0.05f, 0.05f, 0.05f };
+	
+	mMutant->SetShader(L"GBuffer");
+	mMutant->SetMesh("Mutant", "Mutant.mesh");
+	mMutant->SetMaterial("Mutant", "Mutant.mat");
+	mMutant->ReadClip("Mutant", "Idle.clip");
+	mMutant->mPosition = { 20.0f,0.0f,0.0f };
+	mMutant->UpdateWorld();
 
 	mGBuffer = new GBuffer(); // rtv생성
 
@@ -83,44 +93,60 @@ DeferredRenderingScene::~DeferredRenderingScene()
 void DeferredRenderingScene::Update()
 {
 	mDirectionalLight->Update();
-	//mPointLight->Update();
-	//mSpotLight->Update();
 	mLightBuffer->Update();
 
 	mWorldCamera->Update();
 	moveWorldCamera();
 
 	mTerrain->Update();
+	mSphere->Update();
 	mGroot->Update();
 	mPlayer->Update();
-	mSphere->Update();
+	mMutant->Update();
+
+	if (KEY_PRESS('Q'))
+	{
+		mPlayer->StopAnimation();
+	}
+	if (KEY_PRESS('W'))
+	{
+		mPlayer->PlayAnimation();
+	}
+
+	if (KEY_PRESS('E'))
+	{
+		mGroot->StopAnimation();
+	}
+	if (KEY_PRESS('R'))
+	{
+		mGroot->PlayAnimation();
+	}
 }
 
 void DeferredRenderingScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
-	mWorldCamera->SetViewBuffer(); // 1번 레지스터
-	mWorldCamera->SetProjectionBuffer(); // 2번 레지스터
+	mWorldCamera->SetViewBufferToVS(); // 1번 레지스터
+	mWorldCamera->SetProjectionBufferToVS(); // 2번 레지스터
 	
 	mGBuffer->PreRender(); // 여기서 OM에 Set. (rtv 4개, dev 1개)
 
 	// 디퍼드라이팅셰이더에서 쓸 텍스쳐들 4개 생성.
 	mGroot->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
-	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // 스피어 렌더하는거임.
+	mMutant->SetShader(L"GBuffer");
+	//mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // Render Sphere
 	mSphere->GetMaterial()->SetShader(L"GBuffer");
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
-	// GBuffer의 픽셀셰이더에서 OM의 렌더타겟에 float4형태로 리턴시켜놨음.
 
 	mGroot->DeferredRender();
 	mPlayer->DeferredRender();
-	//mPlayer->Render();
+	mMutant->DeferredRender();
+
 	mSphere->Render();
 	mTerrain->Render();
 
-	mDirectionalLight->Render();
-	//mPointLight->Render();
-	//mSpotLight->Render();
+	//mDirectionalLight->Render();
 }
 
 void DeferredRenderingScene::Render()
@@ -130,10 +156,13 @@ void DeferredRenderingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); //
+	mWorldCamera->SetViewBufferToPS(10); // 1번 레지스터
+	mWorldCamera->SetProjectionBufferToPS(11); // 2번 레지스터
+
 	mLightBuffer->SetPSBuffer(0);
 	
-	mWorldCamera->GetViewBuffer()->SetPSBuffer(3);
-	mWorldCamera->GetProjectionBufferInUse()->SetPSBuffer(2);
+	//mWorldCamera->GetViewBuffer()->SetPSBuffer(3);
+	//mWorldCamera->GetProjectionBufferInUse()->SetPSBuffer(2);
 	mGBuffer->SetRenderTargetsToPS(); // OM에 셋팅되어있는 RTV들의 SRV를 픽셀셰이더에 Set. 디퍼드라이팅셰이더에서 사용할거임.
 
 	// 최종화면 렌더셋팅.
@@ -145,6 +174,7 @@ void DeferredRenderingScene::Render()
 }
 
 static bool	hasPlayerSpecularMap = true;
+
 void DeferredRenderingScene::PostRender()
 {
 	mGBuffer->PostRender(); // UIImage들 렌더.

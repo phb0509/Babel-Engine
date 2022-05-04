@@ -73,7 +73,6 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
         output.specaulrForShow = specularMap.Sample(samp, input.uv);
     }
     
-    
     return output;
 }
 

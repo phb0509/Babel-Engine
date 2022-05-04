@@ -262,7 +262,7 @@ public:
 	}
 };
 
-class TerrainBuffer : public ConstBuffer
+class LODTerrainBuffer : public ConstBuffer
 {
 public:
 	struct Data
@@ -270,7 +270,7 @@ public:
 		Float2 distance = Float2(1, 1000); // 최대값 = 원평면
 		Float2 factor = Float2(1, 64); // 쪼개기 했을때 중심점값(in어쩌고) 64이상이후로 안쪼개짐.
 
-		float cellSpacing = 1.0f; // 셀 간격
+		float cellSpacing = 5.0f; // 셀 간격
 		float cellSpacingU; // 맵만들면서 정해짐.
 		float cellSpacingV;
 		float heightScale = 20.0f;
@@ -278,7 +278,7 @@ public:
 		Float4 cullings[6];
 	}data;
 
-	TerrainBuffer() : ConstBuffer(&data, sizeof(Data))
+	LODTerrainBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
 	}
 };

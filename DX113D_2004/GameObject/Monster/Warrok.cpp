@@ -24,7 +24,7 @@ Warrok::~Warrok()
 
 void Warrok::Update()
 {
-	mPosition.y = mTerrain->GetHeight(mPosition);
+	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
 	UpdateWorld();
 	ModelAnimator::Update();

@@ -20,7 +20,7 @@ InstanceMonster::~InstanceMonster()
 
 void InstanceMonster::Update()
 {
-	mPosition.y = mTerrain->GetHeight(mPosition);
+	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
 	mCurrentState->Execute(this);
 	UpdateWorld();

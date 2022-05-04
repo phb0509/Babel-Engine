@@ -12,12 +12,14 @@ TerrainLOD::TerrainLOD(wstring heightFile)
 
     readHeightData();
 
-    mTerrainBuffer = new TerrainBuffer();
+    mTerrainBuffer = new LODTerrainBuffer();
     mTerrainBuffer->data.cellSpacingU = 1.0f / width;
     mTerrainBuffer->data.cellSpacingV = 1.0f / height;
 
     patchWidth = ((width - 1) / cellsPerPatch) + 1; // 듬성듬성 몇개 찍을것인가. 원랜 256개 찍어야하는데 테셀레이션에서 쪼갤꺼니까 여기선 조금만 찍는다. UINT형이라 8나옴.
     patchHeight = ((height - 1) / cellsPerPatch) + 1;
+
+    int a = 0;
 
     vertices.resize((size_t)patchWidth * patchHeight); // 버텍스 개수 64개
     indices.resize(((size_t)patchWidth - 1) * (patchHeight - 1) * 4); 
@@ -68,7 +70,6 @@ void TerrainLOD::Render()
     domainShader->Set();
 
     DEVICECONTEXT->DrawIndexed(indices.size(), 0, 0);
-
     DEVICECONTEXT->HSSetShader(nullptr, nullptr, 0); // 해제안해놓으면 다른곳에서도 그대로 적용되서 버그남. 한번렌더해주고 다시 해제시켜줘야한다.
     DEVICECONTEXT->DSSetShader(nullptr, nullptr, 0);
 }
@@ -90,9 +91,15 @@ float TerrainLOD::GetHeight()
     return height * mTerrainBuffer->data.cellSpacing;
 }
 
+float TerrainLOD::GetTargetPositionY(Vector3 Target)
+{
+    return 0.0f;
+}
+
 void TerrainLOD::readHeightData()
 {
     heightTexture = Texture::Add(heightFile);
+   
 
     width = heightTexture->GetWidth();
     height = heightTexture->GetHeight();
@@ -111,19 +118,40 @@ void TerrainLOD::createPatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주
     float du = 1.0f / patchWidth; // 듬성듬성버텍스 uv값 단위.  1/8
     float dv = 1.0f / patchHeight;
 
+
+    float offsetZ = -(halfHeight - (patchHeight - 1) * tempHeight);
+    float offsetX = halfWidth;
+
+    int a = 0;
+
     for (UINT z = 0; z < patchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 버텍스 사이의 간격이 넓어져서 터레인이 기존에 비해 매우 커짐.
     {
-        float tempZ = halfHeight - z * tempHeight; // 640 - z * 160
-
+        float tempZ = halfHeight - z * tempHeight + offsetZ; // 125만큼
+ 
         for (UINT x = 0; x < patchWidth; x++)
         {
-            float tempX = -halfWidth + x * tempWidth; // 시작점? -640 + x * 160
+            float tempX = -halfWidth + x * tempWidth + offsetX; // 250만큼
 
             UINT index = patchWidth * z + x;
             vertices[index].position = Vector3(tempX, 0.0f, tempZ); // position.y값은 도메인셰이더에서 적용함.
-            vertices[index].uv = { x * du, z * dv };            
+            vertices[index].uv = { x * du, z * dv };
         }
     }
+
+
+    //for (UINT z = 0; z < patchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 버텍스 사이의 간격이 넓어져서 터레인이 기존에 비해 매우 커짐.
+    //{
+    //    float tempZ = halfHeight - z * tempHeight; // 640 - z * 160
+
+    //    for (UINT x = 0; x < patchWidth; x++)
+    //    {
+    //        float tempX = -halfWidth + x * tempWidth; // 시작점? -640 + x * 160
+
+    //        UINT index = patchWidth * z + x;
+    //        vertices[index].position = Vector3(tempX, 0.0f, tempZ); // position.y값은 도메인셰이더에서 적용함.
+    //        vertices[index].uv = { x * du, z * dv };            
+    //    }
+    //}
 }
 
 void TerrainLOD::createPatchIndex()

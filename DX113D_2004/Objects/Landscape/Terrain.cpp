@@ -161,7 +161,7 @@ bool Terrain::ComputePicking(OUT Vector3* position)
 	return false;
 }
 
-float Terrain::GetHeight(Vector3 target)
+float Terrain::GetTargetPositionY(Vector3 target)
 {
 	UINT x = (UINT)target.x;
 	UINT z = (UINT)target.z;
@@ -350,7 +350,7 @@ void Terrain::createNodeMap()
 		for (UINT x = 0; x < mNodeCount.x; x++)
 		{
 			Vector3 pos = Vector3(x * mDistanceBetweenNodes.x, 0, z * mDistanceBetweenNodes.y);
-			pos.y = GetHeight(pos);
+			pos.y = GetTargetPositionY(pos);
 
 			int index = z * mNodeCount.x + x;
 			mNodeMap.emplace_back(new Node(pos, index, mDistanceBetweenNodes));

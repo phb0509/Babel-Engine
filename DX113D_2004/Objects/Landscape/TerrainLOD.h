@@ -13,6 +13,8 @@ public:
 
 	float GetWidth();
 	float GetHeight();
+	float GetTargetPositionY(Vector3 Target);
+
 	void SetCamera(Camera* camera) {mCamera = camera;}
 
 private:
@@ -23,7 +25,7 @@ private:
 private:
 	typedef VertexUV VertexType;
 
-	TerrainBuffer* mTerrainBuffer;
+	LODTerrainBuffer* mTerrainBuffer;
 
 	Material* material;
 	Mesh* mesh;

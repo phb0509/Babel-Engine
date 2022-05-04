@@ -48,7 +48,8 @@ public:
 	void DeferredRender();
 	void PostRender();
 
-	void SetTerrain(Terrain* value) { mTerrain = value; }
+	void SetTerrain(Terrain* value) { mTerrain = value; mbIsLODTerrain = false; }
+	void SetLODTerrain(TerrainLOD* value) { mLODTerrain = value; mbIsLODTerrain = true; }
 	void SetAStar(AStar* value) { aStar = value; }
 	void SetTargetCamera(Camera* camera) { mTargetCamera = camera; }
 	void SetTargetCameraInWorld(Camera* camera) { mTargetCameraInWorld = camera; }
@@ -78,6 +79,7 @@ private:
 
 private:
 	Terrain* mTerrain;
+	TerrainLOD* mLODTerrain;
 	AStar* aStar;
 	Camera* mTargetCamera;
 	Camera* mTargetCameraInWorld; // for Show
@@ -99,6 +101,5 @@ private:
 	Vector3 mTargetCameraForward;
 	float mTargetCameraRotationY;
 	float mTargetCameraRotationX;
-
-
+	bool mbIsLODTerrain;
 };

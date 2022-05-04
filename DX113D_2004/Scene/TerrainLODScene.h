@@ -13,10 +13,13 @@ public:
 
 
 private:
-	TerrainLOD* mTerrain;
+	TerrainLOD* mLODTerrain;
 	RasterizerState* mRSState;
 
 	LightBuffer* mLightBuffer;
 	Light* mDirectionalLight;
 	Camera* mCamera;
+
+	Player* mPlayer;
+	Sphere* mSphere;
 };

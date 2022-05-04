@@ -47,7 +47,7 @@ void Mutant::Update()
 		mColliders[i].collider->Update();
 	}
 
-	mPosition.y = mTerrain->GetHeight(mPosition);
+	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
 	mCurrentState->Execute(this);
 

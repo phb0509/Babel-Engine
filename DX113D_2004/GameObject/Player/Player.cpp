@@ -9,7 +9,8 @@ Player::Player():
 	mNormalAttackDamage(10.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
-	mTargetCameraRotationY(0.0f)
+	mTargetCameraRotationY(0.0f),
+	mbIsLODTerrain(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
 	mMoveSpeed = 50.0f;
@@ -132,14 +133,23 @@ void Player::moveInTargetMode() // Player
 {
 	if (mbIsNormalAttack) return;
 
-	float terrainY = mTerrain->GetHeight(mPosition);
+	float terrainY = 0.0f;
+
+	if (mbIsLODTerrain)
+	{
+		//terrainY = mLODTerrain->GetHeight(mPosition);
+	}
+	else
+	{
+		terrainY = mTerrain->GetTargetPositionY(mPosition);
+	}
+	
 
 	mPosition.y = terrainY;
 
 	if (KEY_PRESS('W'))
 	{
 		rotateInTargetMode();
-
 		mPosition.z += mTargetCameraForward.z * mMoveSpeed * DELTA * 1.0f;
 		mPosition.x += mTargetCameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
@@ -172,7 +182,7 @@ void Player::moveInWorldMode() // Player
 {
 	if (mbIsNormalAttack) return;
 
-	float terrainY = mTerrain->GetHeight(mPosition);
+	float terrainY = mTerrain->GetTargetPositionY(mPosition);
 
 	mPosition.y = terrainY;
 

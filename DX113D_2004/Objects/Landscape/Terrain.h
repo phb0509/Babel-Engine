@@ -29,7 +29,7 @@ public:
 	bool ComputePicking(OUT Vector3* position);
 
 	Material* GetMaterial() { return mMaterial; }
-	float GetHeight(Vector3 position);
+	float GetTargetPositionY(Vector3 position);
 	Float2 GetSize() { return Float2(mTerrainWidth, mTerrainHeight); }
 	vector<Node*> GetNodeMap() { return mNodeMap; }
 

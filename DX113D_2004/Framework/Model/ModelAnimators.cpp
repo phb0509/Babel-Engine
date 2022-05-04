@@ -121,6 +121,10 @@ void ModelAnimators::Render()
 	MeshRender(mDrawCount);
 }
 
+void ModelAnimators::DeferredRender()
+{
+}
+
 void ModelAnimators::PostRender()
 {
 	/*for (Transform* transform : mTransforms)

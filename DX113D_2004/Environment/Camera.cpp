@@ -167,6 +167,40 @@ Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
 	return ray;
 }
 
+void Camera::Move()
+{
+	// Update Position
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		if (KEY_PRESS('I'))
+			mPosition += Forward() * mMoveSpeed * DELTA;
+		if (KEY_PRESS('K'))
+			mPosition -= Forward() * mMoveSpeed * DELTA;
+		if (KEY_PRESS('J'))
+			mPosition -= Right() * mMoveSpeed * DELTA;
+		if (KEY_PRESS('L'))
+			mPosition += Right() * mMoveSpeed * DELTA;
+		if (KEY_PRESS('U'))
+			mPosition -= Up() * mMoveSpeed * DELTA;
+		if (KEY_PRESS('O'))
+			mPosition += Up() * mMoveSpeed * DELTA;
+	}
+
+	mPosition += Forward() * Control::Get()->GetWheel() * mWheelSpeed * DELTA;
+
+	// Update Rotation
+	if (KEY_PRESS(VK_RBUTTON))
+	{
+		Vector3 value = MOUSEPOS - mPreFrameMousePosition;
+
+		mRotation.x += value.y * mRotationSpeed * DELTA;
+		mRotation.y += value.x * mRotationSpeed * DELTA;
+	}
+
+	mPreFrameMousePosition = MOUSEPOS;
+	SetViewMatrixToBuffer();
+}
+
 Matrix Camera::GetProjectionMatrixInUse()
 {
 	if (mbIsPerspectiveProjection)
@@ -194,33 +228,13 @@ void Camera::createPerspectiveProjectionBuffer()
 		delete mPerspectiveProjectionBuffer;
 	}
 
-	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(mFoV,
-		mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(mFoV,mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 	mPerspectiveProjectionBuffer = new ProjectionBuffer();
 	mPerspectiveProjectionBuffer->SetMatrix(mPerspectiveProjectionMatrix);
 }
 
 void Camera::createOrthographicProjectionBuffer()
 {
-	//float w = 2.0f / WIN_WIDTH;
-	//float h = 2.0f / WIN_HEIGHT;
-	//float a = 0.001f;
-	//float b = -a * 0.001f;
-
-	////float a = 1.0f;
-	////float b = 0.0f;
-
-	//Matrix orthographicMatrix = XMMatrixIdentity();
-
-	//orthographicMatrix.r[0].m128_f32[0] = w;
-	//orthographicMatrix.r[1].m128_f32[1] = h;
-	//orthographicMatrix.r[2].m128_f32[2] = a;
-	//orthographicMatrix.r[3].m128_f32[2] = b;
-	//orthographicMatrix.r[3].m128_f32[3] = 1;
-
-	//mOrthographicProjectionBuffer = new ProjectionBuffer();
-	//mOrthographicProjectionBuffer->Set(orthographicMatrix);
-
 	if (mOrthographicProjectionBuffer != nullptr)
 	{
 		delete mOrthographicProjectionBuffer;

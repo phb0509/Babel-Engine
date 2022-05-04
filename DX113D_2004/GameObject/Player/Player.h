@@ -45,6 +45,7 @@ public:
 
 	void Update();
 	void Render();
+	void DeferredRender();
 	void PostRender();
 
 	void SetTerrain(Terrain* value) { mTerrain = value; }

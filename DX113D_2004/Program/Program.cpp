@@ -17,14 +17,14 @@ Program::Program()
 	Create();
 
 	//SceneManager::Get()->Add("export", new ModelExportScene());
-	//SceneManager::Get()->Add("start", new MainScene());
+	SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
 	//SceneManager::Get()->Add("start", new ColliderSettingScene());
 	//SceneManager::Get()->Add("start", new ColorPickingScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());
 	//SceneManager::Get()->Add("start", new TerrainLODScene());
-	SceneManager::Get()->Add("start", new DeferredRenderingScene());
+	//SceneManager::Get()->Add("start", new DeferredRenderingScene());
 	//SceneManager::Get()->Add("start", new TestScene());
 	//SceneManager::Get()->AddScene("export");
 	SceneManager::Get()->AddScene("start");

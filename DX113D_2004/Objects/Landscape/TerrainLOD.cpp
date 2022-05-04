@@ -8,7 +8,7 @@ TerrainLOD::TerrainLOD(wstring heightFile)
     hullShader = Shader::AddHS(L"TerrainLOD");
     domainShader = Shader::AddDS(L"TerrainLOD");
 
-    material->SetDiffuseMap(L"Textures/Landscape/Dirt2.png");
+    material->SetDiffuseMap(L"Textures/Dirt2.png");
 
     readHeightData();
 
@@ -19,16 +19,14 @@ TerrainLOD::TerrainLOD(wstring heightFile)
     patchWidth = ((width - 1) / cellsPerPatch) + 1; // 듬성듬성 몇개 찍을것인가. 원랜 256개 찍어야하는데 테셀레이션에서 쪼갤꺼니까 여기선 조금만 찍는다. UINT형이라 8나옴.
     patchHeight = ((height - 1) / cellsPerPatch) + 1;
 
-    vertices.resize(patchWidth * patchHeight); // 버텍스 개수 64개
-    indices.resize((patchWidth - 1) * (patchHeight - 1) * 4); 
+    vertices.resize((size_t)patchWidth * patchHeight); // 버텍스 개수 64개
+    indices.resize(((size_t)patchWidth - 1) * (patchHeight - 1) * 4); 
     // (patchWidth - 1) * (patchHeight - 1) = 네모개수. 49개
     // 그냥 터레인이면 *6 이다. 2개의 폴리곤을 네모처럼 이으려면 6개를 사용했으니까 (0,1,2, 2,1,3)
     // 근데 왜 4개? IA에 넘길 때 기존의 프리미티브 토폴로지인 트라이앵글리스트로 넘기는게 아니라 4 Control Pointer로 넘기고있다.
 
     createPatchVertex();
     createPatchIndex();
-
-    //frustum = new Frustum();
 }
 
 TerrainLOD::~TerrainLOD()
@@ -40,9 +38,10 @@ TerrainLOD::~TerrainLOD()
 }
 
 void TerrainLOD::Update()
-{    
-    frustum->Update();
-    frustum->GetPlanes(mTerrainBuffer->data.cullings); // 현재 업데이트중인 카메라의 절두체의 6면을 mTerrainBuffer에 넣어준다.
+{   
+    mCamera->Update();
+    mCamera->SetViewToFrustum(mCamera->GetViewMatrix());
+    mCamera->GetFrustum()->GetPlanesForTerrainFrustumCulling(mTerrainBuffer->data.cullings); // 현재 업데이트중인 카메라의 절두체의 6면을 mTerrainBuffer에 넣어준다.
 
     UpdateWorld();
 }
@@ -141,8 +140,6 @@ void TerrainLOD::createPatchIndex()
             indices[index++] = patchWidth * (z + 1) + x + 1;
         } // 한면의 컨트롤포인트 4개
     }
-
-    
 
     mesh = new Mesh(vertices.data(), sizeof(VertexType), vertices.size(),
         indices.data(), indices.size());

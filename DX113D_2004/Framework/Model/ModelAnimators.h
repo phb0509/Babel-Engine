@@ -19,6 +19,7 @@ public:
 	void Update() override;
 	void UpdateTransforms();
 	void Render() override;
+	void DeferredRender();
 	void PostRender();
 
 	Transform* Add();

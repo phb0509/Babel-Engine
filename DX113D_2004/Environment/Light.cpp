@@ -44,8 +44,8 @@ void Light::Update()
 	UpdateWorld();
 	updateLightInfo();
 
-	//mSphere->mPosition = this->mPosition;
-	//mSphere->Update();
+	mSphere->mPosition = this->mPosition;
+	mSphere->Update();
 }
 
 void Light::Render()

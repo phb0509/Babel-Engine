@@ -14,6 +14,8 @@ public:
 	void PostRender();
 
 	Ray ScreenPointToRay(Vector3 pos);
+	void Move();
+
 	Matrix GetViewMatrix() { return mViewMatrix; }
 	Matrix GetProjectionMatrixInUse();
 	ProjectionBuffer* GetProjectionBufferInUse();
@@ -23,6 +25,10 @@ public:
 	bool GetIsRenderFrustumCollider() { return mbIsRenderFrustumCollider; }
 	ProjectionBuffer* GetPerspectiveProjectionBuffer() { return mPerspectiveProjectionBuffer; }
 	ProjectionBuffer* GetOrthographicProjectionBuffer() { return mOrthographicProjectionBuffer; }
+	float GetFoV() { return mFoV; }
+	float GetAspectRatio() { return mAspectRatio; }
+	float GetDistanceToNearZ() { return mDistanceToNearZ; }
+	float GetDistanceToFarZ() { return mDistanceToFarZ; }
 
 	void SetViewBufferToVS(UINT slot = 1);
 	void SetViewBufferToPS(UINT slot = 1);
@@ -68,4 +74,6 @@ private:
 	bool mbIsPerspectiveProjection;
 	bool mbIsUsingFrustumCulling;
 	bool mbIsRenderFrustumCollider;
+
+	Vector3 mPreFrameMousePosition;
 };

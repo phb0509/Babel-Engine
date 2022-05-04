@@ -13,7 +13,7 @@ public:
 	virtual void PostRender() override;
 
 private:
-	void moveWorldCamera();
+
 
 private:
 	ModelAnimObject* mPlayer;
@@ -36,5 +36,4 @@ private:
 	Light* mPointLight;
 	Light* mSpotLight;
 	Light* mCapsuleLight;
-
 };

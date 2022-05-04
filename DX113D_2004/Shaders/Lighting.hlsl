@@ -39,8 +39,8 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
     
-    output.normal = mul(input.normal, (float3x3) transform);
-    output.tangent = mul(input.tangent, (float3x3) transform);
+    output.normal = normalize(mul(input.normal, (float3x3) transform));
+    output.tangent = normalize(mul(input.tangent, (float3x3) transform));
     output.binormal = cross(output.normal, output.tangent);
     
     output.uv = input.uv;
@@ -53,39 +53,22 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 float4 PS(PixelInput input) : SV_Target
 {
 
-    float4 albedo = float4(1, 1, 1, 1);
+    float4 sampledDiffuseMap = float4(1, 1, 1, 1);
     if (hasDiffuseMap)
-        albedo = diffuseMap.Sample(samp, input.uv);
+        sampledDiffuseMap = diffuseMap.Sample(samp, input.uv);
     
     Material material;
     material.normal = NormalMapping(input.tangent, input.binormal, input.normal, input.uv);
-    material.diffuseColor = albedo;
+    material.diffuseColor = sampledDiffuseMap;
     material.camPos = input.camPos;
     material.emissive = mEmissive;
     material.shininess = shininess;
     material.specularIntensity = SpecularMapping(input.uv);
     material.worldPos = input.worldPos;    
     
+    float4 result = CalcLights(material);
     float4 ambient = CalcAmbient(material) * mAmbient;
-    
-    float4 result = 0;
-    
-    for (int i = 0; i < lightCount; i++)
-    {
-        if(!lights[i].active)
-            continue;
-        
-        [flatten]
-        if(lights[i].type == 0)
-            result += CalcDirectional(material, lights[i]);
-        else if (lights[i].type == 1)
-            result += CalcPoint(material, lights[i]);
-        else if (lights[i].type == 2)
-            result += CalcSpot(material, lights[i]);
-        else if (lights[i].type == 3)
-            result += CalcCapsule(material, lights[i]);
-    }
-    
     float4 emissive = CalcEmissive(material);
+    
     return result + ambient + emissive;
 }

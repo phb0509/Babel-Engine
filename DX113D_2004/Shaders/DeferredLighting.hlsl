@@ -36,7 +36,6 @@ cbuffer ProjectionBuffer : register(b11)
     matrix pProjection;
 }
 
-
 Texture2D depthTexture : register(t10);
 Texture2D diffuseTexture : register(t11);
 Texture2D specularTexture : register(t12);
@@ -111,8 +110,5 @@ float4 PS(PixelInput input) : SV_Target
     float4 result = CalcLights(material);
     float4 ambient = CalcAmbient(material);
    
-    //float4 finalResult = result + ambient;
-    //return finalResult;
-    
     return result + ambient;
 }

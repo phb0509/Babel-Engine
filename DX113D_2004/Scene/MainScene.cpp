@@ -9,6 +9,11 @@ MainScene::MainScene() :
 	mPreFrameMousePosition(MOUSEPOS),
 	mbIsInstancingMode(false)
 {
+	mDeferredMaterial = new Material(L"DeferredLighting");
+	UINT vertices[4] = { 0, 1, 2, 3 };
+	mVertexBuffer = new VertexBuffer(vertices, sizeof(UINT), 4);
+	mGBuffer = new GBuffer();
+
 	mLightBuffer = new LightBuffer();
 	mDirectionalLight = new Light(LightType::DIRECTIONAL);
 	mLightBuffer->Add(mDirectionalLight);
@@ -32,68 +37,42 @@ MainScene::MainScene() :
 
 	mTerrain = new Terrain();
 	mTerrain->SetCamera(mWorldCamera);
+	mTerrain->GetMaterial()->SetShader(L"GBuffer");
+
 	mPlayer = GM->GetPlayer();
 	mPlayer->SetTerrain(mTerrain);
 	mPlayer->SetTargetCamera(mTargetCamera);
 	mPlayer->SetTargetCameraInWorld(mTargetCameraForShow);
 	mPlayer->SetIsTargetMode(false);
+	mPlayer->SetShader(L"GBuffer");
+
 	vector<Collider*> monsters0Obstacles = {};
 
-	float startX = 100.0f;
-	float startZ = 100.0f;
+	float startX = 80.0f;
+	float startZ = 80.0f;
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	mbIsInstancingMode = true;
+	int row = 10;
+	int column = 10;
 
-	if (mbIsInstancingMode)
+	mMutantInstanceCount = row * column;
+
+	mInstancingMutants = new InstancingMutants(mMutantInstanceCount, mTerrain); // ModelAnimators
+	mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
+	mInstancingMutants->SetIsFrustumCullingMode(true);
+	mInstanceMutants = mInstancingMutants->GetInstanceObjects(); // InstanceObjectsVector
+
+	for (int z = 0; z < column; z++)
 	{
-		int row = 20;
-		int column = 20;
-
-		mMutantInstanceCount = row * column;
-
-		mInstancingMutants = new InstancingMutants(mMutantInstanceCount, mTerrain); // ModelAnimators
-		mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
-		mInstancingMutants->SetIsFrustumCullingMode(true);
-		mInstanceMutants = mInstancingMutants->GetInstanceObjects(); // InstanceObjectsVector
-
-		for (int z = 0; z < column; z++)
+		for (int x = 0; x < row; x++)
 		{
-			for (int x = 0; x < row; x++)
-			{
-				int monsterIndex = z * row + x;
-				mInstanceMutants[monsterIndex]->SetInstanceIndex(monsterIndex);
-				mInstanceMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
-				mInstanceMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
-				mInstanceMutants[monsterIndex]->SetTerrain(mTerrain, false);
-				mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
-			}
-		}
-	}
-
-	else
-	{
-		int tempRow = 2;
-		int tempColumn = 2;
-
-		for (int i = 0; i < tempRow * tempColumn; i++)
-		{
-			Monster* temp = new Mutant;
-			mMutants.push_back(temp);
-		}
-
-		for (int z = 0; z < tempColumn; z++)
-		{
-			for (int x = 0; x < tempRow; x++)
-			{
-				int monsterIndex = z * tempRow + x;
-				mMutants[monsterIndex]->mTag = to_string(monsterIndex) + "번 몬스터";
-				mMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
-				mMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
-				mMutants[monsterIndex]->SetTerrain(mTerrain, false);
-				mMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
-			}
+			int monsterIndex = z * row + x;
+			mInstanceMutants[monsterIndex]->SetInstanceIndex(monsterIndex);
+			mInstanceMutants[monsterIndex]->mPosition.x = startX + gapWidth * x;
+			mInstanceMutants[monsterIndex]->mPosition.z = startZ + gapHeight * z;
+			mInstanceMutants[monsterIndex]->SetTerrain(mTerrain, false);
+			mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
 		}
 	}
 }
@@ -136,22 +115,45 @@ void MainScene::Update()
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
 
-	if (mbIsInstancingMode)
-	{
-		mInstancingMutants->Update();
-	}
-	else
-	{
-		for (int i = 0; i < mMutants.size(); i++)
-		{
-			mMutants[i]->Update();
-		}
-	}
+
+	mInstancingMutants->Update();
+	
+
 }
 
 void MainScene::PreRender()
 {
+	Environment::Get()->Set(); // SetViewPort
 
+	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
+	{
+	case 0:    // World
+	{
+		mWorldCamera->SetViewBufferToVS();
+		mWorldCamera->SetProjectionBufferToVS();
+	}
+	break;
+
+	case 1:    // Target
+	{
+		mTargetCamera->SetViewBufferToVS();
+		mTargetCamera->SetProjectionBufferToVS();
+	}
+	break;
+
+	default:
+		break;
+	}
+
+	mGBuffer->PreRender();
+
+	mTerrain->GetMaterial()->SetShader(L"GBuffer");
+	mPlayer->SetShader(L"GBuffer");
+	mInstancingMutants->SetShader(L"InstancingGBuffer");
+
+	mTerrain->Render();
+	mPlayer->DeferredRender();
+	mInstancingMutants->Render();
 }
 
 void MainScene::Render()
@@ -167,17 +169,16 @@ void MainScene::Render()
 	{
 	case 0:    // World
 	{
-		mWorldCamera->SetViewBufferToVS();
-		mWorldCamera->SetProjectionBufferToVS();
+		mWorldCamera->SetViewBufferToVS(10);
+		mWorldCamera->SetProjectionBufferToVS(11);
 		mTargetCameraForShow->RenderFrustumCollider();
 	}
 	break;
 
 	case 1:    // Target
 	{
-		mTargetCamera->SetViewBufferToVS();
-		mTargetCamera->SetProjectionBufferToVS();
-		//mTargetCamera->RenderFrustumCollider();
+		mTargetCamera->SetViewBufferToVS(10);
+		mTargetCamera->SetProjectionBufferToVS(11);
 	}
 	break;
 
@@ -185,20 +186,18 @@ void MainScene::Render()
 		break;
 	}
 
-	mTerrain->Render();
-	mPlayer->Render();
+	mGBuffer->SetRenderTargetsToPS();
 
-	if (mbIsInstancingMode)
-	{
-		mInstancingMutants->Render();
-	}
-	else
-	{
-		for (int i = 0; i < mMutants.size(); i++)
-		{
-			mMutants[i]->Render();
-		}
-	}
+	mVertexBuffer->IASet(); // 디폴트 0번.
+	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
+	DEVICECONTEXT->Draw(4, 0);
+	mGBuffer->ClearSRVs();
+
+
+	/*mTerrain->Render();
+	mPlayer->Render();*/
+	//mInstancingMutants->Render();
 }
 
 void MainScene::PostRender()
@@ -206,6 +205,7 @@ void MainScene::PostRender()
 	mPlayer->PostRender();
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
+	mGBuffer->PostRender();
 
 	if (mbIsInstancingMode)
 	{
@@ -243,6 +243,8 @@ void MainScene::PostRender()
 
 	ImGui::End();
 }
+
+
 
 void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함수.
 {

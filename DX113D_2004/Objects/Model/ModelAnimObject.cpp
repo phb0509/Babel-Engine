@@ -11,20 +11,20 @@ ModelAnimObject::~ModelAnimObject()
 
 void ModelAnimObject::Update()
 {
-	UpdateWorld();
+	Transform::UpdateWorld();
 	ModelAnimator::Update();
 }
 
 void ModelAnimObject::Render()
 {
-	UpdateWorld();
-	SetWorldBuffer();
+	Transform::UpdateWorld();
+	Transform::SetWorldBuffer();
 	ModelAnimator::Render();
 }
 
 void ModelAnimObject::DeferredRender()
 {
-	UpdateWorld();
-	SetWorldBuffer();
+	Transform::UpdateWorld();
+	Transform::SetWorldBuffer();
 	ModelAnimator::DeferredRender();
 }

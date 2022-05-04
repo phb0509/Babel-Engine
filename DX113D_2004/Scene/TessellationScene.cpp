@@ -3,6 +3,7 @@
 
 TessellationScene::TessellationScene()
 {
+	mCamera = new Camera();
 	material = new Material(L"TSRect");
 	hullShader = Shader::AddHS(L"TSRect");
 	domainShader = Shader::AddDS(L"TSRect");
@@ -41,7 +42,7 @@ TessellationScene::~TessellationScene()
 
 void TessellationScene::Update()
 {
-	Environment::Get()->Set();
+	
 }
 
 void TessellationScene::PreRender()

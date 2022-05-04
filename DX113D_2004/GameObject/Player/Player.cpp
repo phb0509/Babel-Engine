@@ -81,8 +81,16 @@ void Player::Render()
 		mTargetCameraInWorld->RenderFrustumCollider(); 
 	}*/
 
+	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	ModelAnimator::Render();
+}
+
+void Player::DeferredRender()
+{
+	Transform::UpdateWorld();
+	Transform::SetWorldBuffer();
+	ModelAnimator::DeferredRender();
 }
 
 void Player::move()

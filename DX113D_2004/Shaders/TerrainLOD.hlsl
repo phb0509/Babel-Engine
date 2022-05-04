@@ -68,9 +68,7 @@ bool OutFrustum(float3 center, float3 extent)
 
 #define NUM_CONTROL_POINTS 4
 
-CHullOutput
-    CHS(
-    InputPatch<VertexOutput, NUM_CONTROL_POINTS> input)   // Constant HullShader 제일 먼저 진입하는곳.
+CHullOutput CHS(InputPatch<VertexOutput, NUM_CONTROL_POINTS> input)   // Constant HullShader 제일 먼저 진입하는곳.
 {
     float4 position[4];
     position[0] = mul(input[0].pos, world); // 각 컨트롤 포인트들 월드값으로 변환.
@@ -133,8 +131,8 @@ struct HullOutput
 [outputtopology("triangle_cw")] // cw = clock wise // 시계방향, 다른옵션으로는 ccw // count clock wise // 반시계방향.
 [outputcontrolpoints(4)]
 [patchconstantfunc("CHS")]
-HullOutput HS(InputPatch<VertexOutput, NUM_CONTROL_POINTS> input,
-uint i : SV_OutputControlPointID) // 그냥 HullShader. 값 그대로 DomainShader로 넘긴다.
+
+HullOutput HS(InputPatch<VertexOutput, NUM_CONTROL_POINTS> input, uint i : SV_OutputControlPointID) // 그냥 HullShader. 값 그대로 DomainShader로 넘긴다.
 {
     HullOutput output;
     output.pos = input[i].pos;
@@ -152,8 +150,7 @@ struct DomainOutput
 Texture2D heightMap : register(t0);
 
 [domain("quad")]
-DomainOutput DS(CHullOutput input, float2 uv : SV_DomainLocation,
-const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch) // DomainShader.쪼개진 버텍스들에 대해 각각 수행.
+DomainOutput DS(CHullOutput input, float2 uv : SV_DomainLocation, const OutputPatch<HullOutput, NUM_CONTROL_POINTS> patch) // DomainShader.쪼개진 버텍스들에 대해 각각 수행.
 {
     DomainOutput output;
     

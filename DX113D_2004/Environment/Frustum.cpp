@@ -9,7 +9,8 @@ Frustum::Frustum(float FoV, float aspectRatio, float distanceToNearZ, float dist
 	mFoV(FoV),
 	mAspectRatio(aspectRatio),
 	mDistanceToNearZ(distanceToNearZ),
-	mDistanceToFarZ(distanceToFarZ)
+	mDistanceToFarZ(distanceToFarZ),
+	mbIsTerrainFrustumCulling(false)
 {
 	mProjectionMatrix = XMMatrixPerspectiveFovLH(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 
@@ -32,11 +33,10 @@ void Frustum::Update()
 
 	if (!mbHasInitialized)
 	{
-		initialize();
+		initialize(); // 특정 씬에 종속적인 컬라이더렌더용.
 		mbHasInitialized = true;
 	}
 
-	//mView = mCamera->GetViewMatrix(); // 타겟카메라뷰
 	mProjectionMatrix = mCamera->GetProjectionMatrixInUse();
 	Float4x4 VP;
 	XMStoreFloat4x4(&VP, mView * mProjectionMatrix);
@@ -93,7 +93,7 @@ void Frustum::Update()
 		
 	mEmptyObject->Update();
 	mCollider->Update();
-	//moveFrustumCollider();
+
 }
 
 void Frustum::RenderCollider()
@@ -119,12 +119,8 @@ void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)
 
 void Frustum::initialize()
 {
-	//mEmptyObject->SetParent(GM->GetPlayer()->GetWorld());
-	//float tempScale = mCamera->GetCameraTarget()->mScale.x; // 플레이어 스케일값.
 	float tempScale = GM->GetPlayer()->mScale.x;
-	//float tempScale = 0.05f; // 플레이어 스케일값.
 	tempScale = 1.0f / tempScale;
-	int a = 0;
 
 	mEmptyObject->SetParent(GM->GetPlayer()->GetWorldMatrix());
 
@@ -132,7 +128,6 @@ void Frustum::initialize()
 	mCollider->mScale = { tempScale,tempScale,tempScale };// 플레이어스케일 줄인만큼 자식에서 늘려줘야함.
 	mCollider->mRotation.y += 3.141592f; // 반대로되어있어서 180도 돌려줘야함.
 
-	//mEmptyObject->mPosition.z += mCamera->GetDistanceToTarget();
 	mEmptyObject->mPosition.z += 13.0f;
 }
 
@@ -318,6 +313,67 @@ void Frustum::GetPlanes(Float4* cullings)
 {
 	for (UINT i = 0; i < 6; i++)
 	{
-		XMStoreFloat4(&cullings[i], mPlanes[i]); // 절두체 면을 cullings에 저장.
+		XMStoreFloat4(&cullings[i], mPlanes[i]); // 절두체 각 면을 cullings에 저장.
+	}
+}
+
+void Frustum::GetPlanesForTerrainFrustumCulling(Float4* cullings)
+{
+	Matrix projectionMatrix = XMMatrixPerspectiveFovLH(mCamera->GetFoV(), 1.0f, mCamera->GetDistanceToNearZ(), mCamera->GetDistanceToFarZ());
+
+	Float4x4 VP;
+	XMStoreFloat4x4(&VP, mView * projectionMatrix);
+
+	//Left
+	float a = VP._14 + VP._11;
+	float b = VP._24 + VP._21;
+	float c = VP._34 + VP._31;
+	float d = VP._44 + VP._41;
+	mPlanes[0] = XMVectorSet(a, b, c, d);
+
+	//Right
+	a = VP._14 - VP._11;
+	b = VP._24 - VP._21;
+	c = VP._34 - VP._31;
+	d = VP._44 - VP._41;
+	mPlanes[1] = XMVectorSet(a, b, c, d);
+
+	//Bottom
+	a = VP._14 + VP._12;
+	b = VP._24 + VP._22;
+	c = VP._34 + VP._32;
+	d = VP._44 + VP._42;
+	mPlanes[2] = XMVectorSet(a, b, c, d);
+
+	//Top
+	a = VP._14 - VP._12;
+	b = VP._24 - VP._22;
+	c = VP._34 - VP._32;
+	d = VP._44 - VP._42;
+	mPlanes[3] = XMVectorSet(a, b, c, d);
+
+	//Near
+	a = VP._14 + VP._13;
+	b = VP._24 + VP._23;
+	c = VP._34 + VP._33;
+	d = VP._44 + VP._43;
+	mPlanes[4] = XMVectorSet(a, b, c, d);
+
+	//Far
+	a = VP._14 - VP._13;
+	b = VP._24 - VP._23;
+	c = VP._34 - VP._33;
+	d = VP._44 - VP._43;
+	mPlanes[5] = XMVectorSet(a, b, c, d);
+
+
+	for (UINT i = 0; i < 6; i++)
+	{
+		mPlanes[i] = XMPlaneNormalize(mPlanes[i]);
+	}
+
+	for (UINT i = 0; i < 6; i++)
+	{
+		XMStoreFloat4(&cullings[i], mPlanes[i]); // 절두체 각 면을 cullings에 저장.
 	}
 }

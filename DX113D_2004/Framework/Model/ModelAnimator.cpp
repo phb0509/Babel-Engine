@@ -401,7 +401,6 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 			}
 		}
 
-
 		// SRV 세팅.
 		D3D11_SUBRESOURCE_DATA* subResource = new D3D11_SUBRESOURCE_DATA[clipCount];
 		for (UINT c = 0; c < clipCount; c++)

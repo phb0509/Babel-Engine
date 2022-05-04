@@ -42,6 +42,5 @@ private:
 	wstring heightFile;
 	Texture* heightTexture;
 
-	Frustum* frustum;
 	Camera* mCamera;
 };

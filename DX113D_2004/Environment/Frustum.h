@@ -19,6 +19,7 @@ public:
 	bool ContainBox(Vector3 minBox, Vector3 maxBox);
 
 	void GetPlanes(Float4* cullings);
+	void GetPlanesForTerrainFrustumCulling(Float4* cullings);
 
 	void SetView(Matrix view) { mView = view; }
 	void SetCamera(Camera* camera) { mCamera = camera; }
@@ -48,4 +49,6 @@ private:
 	float mAspectRatio;
 	float mDistanceToNearZ;
 	float mDistanceToFarZ;
+
+	bool mbIsTerrainFrustumCulling;
 };

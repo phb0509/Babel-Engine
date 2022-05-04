@@ -6,11 +6,13 @@ GBuffer::GBuffer()
 	mSpecularRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	mNormalRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
+	mSpecularRenderTargetForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	mRenderTargets.push_back(mDiffuseRenderTarget);
 	mRenderTargets.push_back(mSpecularRenderTarget);
 	mRenderTargets.push_back(mNormalRenderTarget);
 	mRenderTargets.push_back(mDepthRenderTarget);
+	mRenderTargets.push_back(mSpecularRenderTargetForShow);
 
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
 
@@ -22,7 +24,7 @@ GBuffer::GBuffer()
 
 	mShowSRVs[0] = mDepthRenderTarget->GetSRV(); // 렌더타겟의 SRV.
 	mShowSRVs[1] = mDiffuseRenderTarget->GetSRV();
-	mShowSRVs[2] = mSpecularRenderTarget->GetSRV();
+	mShowSRVs[2] = mSpecularRenderTargetForShow->GetSRV();
 	mShowSRVs[3] = mNormalRenderTarget->GetSRV();
 
 	for (UINT i = 0; i < 4; i++)
@@ -47,8 +49,7 @@ GBuffer::~GBuffer()
 
 void GBuffer::PreRender()
 {
-	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 4, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget
-											   // OM에 MRT(MultiRenderTarget) Set.
+	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 5, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget	   
 }
 
 void GBuffer::SetRenderTargetsToPS()
@@ -71,10 +72,10 @@ void GBuffer::ClearSRVs()
 {
 	ID3D11ShaderResourceView* pSRV = NULL;
 
-	DEVICECONTEXT->PSSetShaderResources(3, 1, &pSRV);
-	DEVICECONTEXT->PSSetShaderResources(4, 1, &pSRV);
-	DEVICECONTEXT->PSSetShaderResources(5, 1, &pSRV);
-	DEVICECONTEXT->PSSetShaderResources(6, 1, &pSRV);
+	DEVICECONTEXT->PSSetShaderResources(10, 1, &pSRV);
+	DEVICECONTEXT->PSSetShaderResources(11, 1, &pSRV);
+	DEVICECONTEXT->PSSetShaderResources(12, 1, &pSRV);
+	DEVICECONTEXT->PSSetShaderResources(13, 1, &pSRV);
 }
 
-// 렌더타겟이랑 DSV넘겨주고,'넘겨준놈들의 SRV를' 디퍼드라이팅셰이더에 셋팅. 그리고 그 SRV 렌더.
+

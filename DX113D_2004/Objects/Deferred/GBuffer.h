@@ -21,6 +21,8 @@ private:
 	RenderTarget* mSpecularRenderTarget;
 	RenderTarget* mNormalRenderTarget;
 	RenderTarget* mDepthRenderTarget;
+	RenderTarget* mSpecularRenderTargetForShow;
+
 	DepthStencil* mDepthStencil;
 	vector<RenderTarget*> mRenderTargets;
 	UIImage* mTargetTextures[4];

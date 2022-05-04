@@ -11,7 +11,7 @@ struct PixelInput
     float3 worldPos : POSITION2;
 };
 
-PixelInput VS(VertexUVNormalTangentBlend input)
+PixelInput VS(VertexInstancing input)
 {
     PixelInput output;
     
@@ -19,7 +19,8 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     
     [flatten]
     if (modelType == 2)
-        transform = mul(SkinWorld(input.indices, input.weights), world);
+        transform = mul(SkinWorld(input.index, input.indices, input.weights), input.transform);
+        //transform = mul(SkinWorld(input.indices, input.weights), world);
     else if (modelType == 1)
         transform = mul(BoneWorld(input.indices, input.weights), world);
     else
@@ -44,7 +45,7 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 
 struct PixelOutput
 {
-    float4 diffuse : SV_Target0; 
+    float4 diffuse : SV_Target0;
     float4 specular : SV_Target1;
     float4 normal : SV_Target2;
     float4 depth : SV_Target3; // UITexture¿ë

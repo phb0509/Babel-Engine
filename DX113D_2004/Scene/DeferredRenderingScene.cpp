@@ -29,11 +29,9 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mSpotLight->mTag = "SpotLight";
 
 	
-	
-	//mLightBuffer->Add(mDirectionalLight->GetLightInfo());
 	mLightBuffer->Add(mDirectionalLight);
-	//mLightBuffer->Add(mPointLight);
-	//mLightBuffer->Add(mSpotLight);
+	mLightBuffer->Add(mPointLight);
+	mLightBuffer->Add(mSpotLight);
 
 	// Create Models
 	mGroot = new ModelAnimObject();
@@ -42,11 +40,11 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mGroot->SetShader(L"GBuffer");
 	mGroot->SetMesh("Groot", "Groot.mesh");
 	mGroot->SetMaterial("Groot", "Groot.mat");
-	mGroot->ReadClip("Groot", "Dancing0.clip");
 
 	mGroot->SetDiffuseMap(L"ModelData/Groot/groot_diffuse.png");
-	mGroot->SetSpecularMap(L"ModelData/Groot/groot_glossiness.png");
 	mGroot->SetNormalMap(L"ModelData/Groot/groot_normal_map.png");
+	mGroot->SetSpecularMap(L"ModelData/Groot/groot_glossiness.png");
+	mGroot->ReadClip("Groot", "Dancing0.clip");
 	mGroot->UpdateWorld();
 
 	mPlayer = new ModelAnimObject();
@@ -55,9 +53,9 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mPlayer->SetShader(L"GBuffer");
 	mPlayer->SetMesh("Player", "Player.mesh");
 	mPlayer->SetMaterial("Player", "Player.mat");
-	mPlayer->SetDiffuseMap(L"ModelData/Player/Paladin_diffuse.png");
+	/*mPlayer->SetDiffuseMap(L"ModelData/Player/Paladin_diffuse.png");
 	mPlayer->SetNormalMap(L"ModelData/Player/Paladin_normal.png");
-	mPlayer->SetSpecularMap(L"ModelData/Player/Paladin_specular.png");
+	mPlayer->SetSpecularMap(L"ModelData/Player/Paladin_specular.png");*/
 	mPlayer->ReadClip("Player", "Idle.clip");
 	mPlayer->mPosition = { 10.0f,0.0f,0.0f };
 	mPlayer->UpdateWorld();
@@ -92,11 +90,13 @@ DeferredRenderingScene::~DeferredRenderingScene()
 
 void DeferredRenderingScene::Update()
 {
-	mDirectionalLight->Update();
 	mLightBuffer->Update();
+	mDirectionalLight->Update();
+	mPointLight->Update();
+	mSpotLight->Update();
 
 	mWorldCamera->Update();
-	moveWorldCamera();
+	mWorldCamera->Move();
 
 	mTerrain->Update();
 	mSphere->Update();
@@ -135,7 +135,9 @@ void DeferredRenderingScene::PreRender()
 	mGroot->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
 	mMutant->SetShader(L"GBuffer");
-	//mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // Render Sphere
+	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // Render Sphere
+	mPointLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // Render Sphere
+	mSpotLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer"); // Render Sphere
 	mSphere->GetMaterial()->SetShader(L"GBuffer");
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 
@@ -152,12 +154,11 @@ void DeferredRenderingScene::PreRender()
 void DeferredRenderingScene::Render()
 {
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
-	//Device::Get()->ClearRenderTargetView(Float4(1.0f, 1.0f,  1.0f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); //
-	mWorldCamera->SetViewBufferToPS(10); // 1번 레지스터
-	mWorldCamera->SetProjectionBufferToPS(11); // 2번 레지스터
+	mWorldCamera->SetViewBufferToPS(10); 
+	mWorldCamera->SetProjectionBufferToPS(11); 
 
 	mLightBuffer->SetPSBuffer(0);
 	
@@ -191,43 +192,11 @@ void DeferredRenderingScene::PostRender()
 	mSphere->PostRender();
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
-	//mPointLight->PostRender();
-	//mSpotLight->PostRender();
+	mPointLight->PostRender();
+	mSpotLight->PostRender();
 }
 
 
 
-void DeferredRenderingScene::moveWorldCamera()
-{
-	// Update Position
-	if (KEY_PRESS(VK_RBUTTON))
-	{
-		if (KEY_PRESS('I'))
-			mWorldCamera->mPosition += mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
-		if (KEY_PRESS('K'))
-			mWorldCamera->mPosition -= mWorldCamera->Forward() * mWorldCamera->mMoveSpeed * DELTA;
-		if (KEY_PRESS('J'))
-			mWorldCamera->mPosition -= mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
-		if (KEY_PRESS('L'))
-			mWorldCamera->mPosition += mWorldCamera->Right() * mWorldCamera->mMoveSpeed * DELTA;
-		if (KEY_PRESS('U'))
-			mWorldCamera->mPosition -= mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
-		if (KEY_PRESS('O'))
-			mWorldCamera->mPosition += mWorldCamera->Up() * mWorldCamera->mMoveSpeed * DELTA;
-	}
 
-	mWorldCamera->mPosition += mWorldCamera->Forward() * Control::Get()->GetWheel() * mWorldCamera->mWheelSpeed * DELTA;
-
-	// Update Rotation
-	if (KEY_PRESS(VK_RBUTTON))
-	{
-		Vector3 value = MOUSEPOS - mPreFrameMousePosition;
-
-		mWorldCamera->mRotation.x += value.y * mWorldCamera->mRotationSpeed * DELTA;
-		mWorldCamera->mRotation.y += value.x * mWorldCamera->mRotationSpeed * DELTA;
-	}
-
-	mPreFrameMousePosition = MOUSEPOS;
-	mWorldCamera->SetViewMatrixToBuffer();
-}
 

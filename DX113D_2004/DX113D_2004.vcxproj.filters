@@ -762,6 +762,7 @@
     <FxCompile Include="Shaders\ColorPicking.hlsl" />
     <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
     <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
+    <FxCompile Include="Shaders\InstancingGBuffer.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

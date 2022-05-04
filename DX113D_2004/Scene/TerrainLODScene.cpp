@@ -3,43 +3,65 @@
 
 TerrainLODScene::TerrainLODScene()
 {
-	terrain = new TerrainLOD(L"Textures/HeightMaps/HeightMap.png");
-	rsState = new RasterizerState();
-	rsState->FillMode(D3D11_FILL_WIREFRAME);
+	mLightBuffer = new LightBuffer();
+	mDirectionalLight = new Light();
+	mLightBuffer->Add(mDirectionalLight);
+	mCamera = new Camera();
+	mCamera->mPosition = { 170.0f, 73.0f, -9.2f };
+	mCamera->mRotation = { 0.7f, -1.7f, 0.0f };
+	mCamera->SetIsUsingFrustumCulling(true);
+	
+	
+	mTerrain = new TerrainLOD(L"Textures/HeightMap.png");
+	mTerrain->SetCamera(mCamera);
+
+	mRSState = new RasterizerState();
+	mRSState->FillMode(D3D11_FILL_WIREFRAME);
 }
 
 TerrainLODScene::~TerrainLODScene()
 {
-	delete terrain;
-	delete rsState;
+	delete mTerrain;
+	delete mRSState;
 }
 
 void TerrainLODScene::Update()
 {
-	
+	mLightBuffer->Update();
+	mDirectionalLight->Update();
 
-	terrain->Update();
+	mCamera->Update();
+	mCamera->Move();
+	mTerrain->Update();
 }
 
 void TerrainLODScene::PreRender()
 {
-	Environment::Get()->Set();
-
+	
 }
 
 void TerrainLODScene::Render()
 {
-	Device::Get()->SetRenderTarget(); // SetMainRenderTarget
+	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
+	Device::Get()->ClearDepthStencilView();
+	Device::Get()->SetRenderTarget();
+	Environment::Get()->Set(); //
+	mCamera->SetViewBufferToVS();
+	mCamera->SetProjectionBufferToVS();
 
 
-	Environment::Get()->Set();
-
-
-	rsState->SetState();
-	terrain->Render();
+	mRSState->SetState();
+	mTerrain->Render();
 }
 
 void TerrainLODScene::PostRender()
 {
-	terrain->PostRender();
+	mTerrain->PostRender();
+	mLightBuffer->PostRender();
+	mDirectionalLight->PostRender();
+
+	SpacingRepeatedly(2);
+	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mCamera->mPosition.x, mCamera->mPosition.y, mCamera->mPosition.z);
+	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mCamera->mRotation.x, mCamera->mRotation.y, mCamera->mRotation.z);
+	SpacingRepeatedly(2);
 }

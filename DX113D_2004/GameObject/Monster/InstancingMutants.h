@@ -41,15 +41,17 @@ public:
 	void Render();
 	void PostRender();
 
-	Collider* GetHitCollider(int instanceIndex);
 	void OnDamage(int instanceIndex, float damage);
 	void CheckOnHit(int instanceIndex);
+
+	vector<Monster*> GetInstanceObjects() { return mInstanceObjects; }
 	Collider* GetColliderForAStar(int instanceIndex);
+	Collider* GetHitCollider(int instanceIndex);
 
 	void SetIdle(int instanceIndex);
 	void SetAnimation(int instanceIndex, eAnimationStates value);
 
-	vector<Monster*> GetInstanceObjects() { return mInstanceObjects; }
+
 
 private:
 

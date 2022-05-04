@@ -16,6 +16,7 @@ public:
 	virtual void PreRender() override;
 	virtual void Render() override;
 	virtual void PostRender() override;
+	
 
 private:
 	void printToCSV();
@@ -49,5 +50,7 @@ private:
 	LightBuffer* mLightBuffer;
 	Light* mDirectionalLight;
 
-
+	GBuffer* mGBuffer;
+	Material* mDeferredMaterial;
+	VertexBuffer* mVertexBuffer;
 };

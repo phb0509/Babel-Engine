@@ -5,19 +5,8 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 {
 	//loadBinaryFile(); // 툴에서 셋팅한 컬라이더 불러오기.
 
-	//mRotation.y = XM_PI;
-	//UpdateWorld();
-
-	//mPlayerDetectRange = 15.0f;
-	//mDistanceToPlayerForAttack = 7.0f;
-	//mCurrentState = GetPatrolState();
-
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
-	//ModelAnimators::SetDiffuseMap()
-
-
-	//ModelAnimators::SetNormalMap(L"ModelData/Mutant/Mutant_normal.png");
 
 	ModelAnimators::SetShader(L"Models"); // SetShader하기전에 Mesh랑 Material 먼저 Set해줘야됨.
 
@@ -35,11 +24,6 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
 	}
-
-	for (int i = 0; i < instanceCount; i++)
-	{
-		//ModelAnimators::PlayClip(i, static_cast<UINT>(eAnimationStates::Idle));
-	}
 }
 
 InstancingMutants::~InstancingMutants()
@@ -52,14 +36,6 @@ void InstancingMutants::Update()
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
 		mInstanceObjects[i]->Update();
-	}
-
-	for (int i = 0; i < mInstanceObjects.size(); i++)
-	{
-		//mFrameBuffer->data.tweenDesc[i].cur.clip = static_cast<int>(mInstanceObjects[i]->GetAnimationStates());
-		/*mFrameBuffer->data.tweenDesc[i].cur.clip = mInstanceObjects[i]->GetCurrentClip();
-		mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();*/
-		//mFrameBuffer->data.tweenDesc[i].next.clip = mInstanceObjects[i]->GetNextClip();
 	}
 
 	ModelAnimators::Update();
@@ -153,6 +129,7 @@ void InstancingMutants::SetAnimation(int instanceIndex, eAnimationStates value) 
 		//SetAnimation(1, eAnimationStates::Run);
 	}
 }
+
 
 void InstancingMutants::setAttackEnd(int instanceIndex)
 {

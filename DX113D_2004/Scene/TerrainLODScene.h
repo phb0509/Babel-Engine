@@ -22,4 +22,7 @@ private:
 
 	Player* mPlayer;
 	Sphere* mSphere;
+
+	float terrainY;
+	int mIsWireRender;
 };

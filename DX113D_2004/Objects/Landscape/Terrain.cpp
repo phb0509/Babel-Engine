@@ -92,7 +92,6 @@ bool Terrain::Picking(OUT Vector3* position)
 				p[i] = mVertices[index[i]].position;
 			}
 				
-
 			float distance;
 			if (Intersects(ray.position.data, ray.direction.data, // Intersects는 폴리곤이랑 반직선 충돌검사하는 함수. // DirectCollision.h
 				p[0].data, p[1].data, p[2].data, distance))
@@ -176,12 +175,12 @@ float Terrain::GetTargetPositionY(Vector3 target)
 	index[3] = (mTerrainWidth + 1) * (z + 1) + x + 1;
 
 	Vector3 p[4];
+
 	for (int i = 0; i < 4; i++)
 	{
 		p[i] = mVertices[index[i]].position;
 	}
 		
-
 	float u = target.x - p[0].x;
 	float v = target.z - p[0].z;
 
@@ -203,13 +202,20 @@ float Terrain::GetTargetPositionY(Vector3 target)
 
 void Terrain::createMesh()
 {
-	mTerrainWidth = mHeightMap->GetWidth() - 1;
-	mTerrainHeight = mHeightMap->GetHeight() - 1;
+	vector<Float4> pixels;
+	 
+	if (mHeightMap)
+	{
+		mTerrainWidth = mHeightMap->GetWidth();
+		mTerrainHeight = mHeightMap->GetHeight();
+		pixels = mHeightMap->ReadPixels();
+	}
+	
 
-	vector<Float4> pixels = mHeightMap->ReadPixels();// HeightMap의 픽셀이다. position.y값 셋팅전용 픽셀.
+	
 
 	//Vertices
-	for (UINT z = 0; z <= mTerrainHeight; z++)
+	for (UINT z = 0; z <= mTerrainHeight; z++) // 0~255
 	{
 		for (UINT x = 0; x <= mTerrainWidth; x++)
 		{

@@ -1,7 +1,8 @@
 #include "Framework.h"
 #include "TerrainLODScene.h"
 
-TerrainLODScene::TerrainLODScene()
+TerrainLODScene::TerrainLODScene() :
+	mIsWireRender(1)
 {
 	mLightBuffer = new LightBuffer();
 	mDirectionalLight = new Light();
@@ -41,7 +42,7 @@ TerrainLODScene::TerrainLODScene()
 	mPlayer->SetShader(L"ModelAnimation");
 
 	mSphere = new Sphere(L"Lighting");
-	mSphere->mScale = { 0.3f, 0.3f, 0.3f };
+	mSphere->mScale = { 3.0f, 3.0f, 3.0f };
 
 }
 
@@ -61,6 +62,30 @@ void TerrainLODScene::Update()
 	mLODTerrain->Update();
 	mSphere->Update();
 	//mPlayer->Update();
+
+	terrainY = mLODTerrain->GetTargetPositionY(mSphere->mPosition);
+
+	mSphere->mPosition.y = terrainY;
+
+	if (KEY_PRESS('W'))
+	{
+		mSphere->mPosition.z += 100.0f * DELTA;
+	}
+
+	if (KEY_PRESS('S'))
+	{
+		mSphere->mPosition.z -= 100.0f * DELTA;
+	}
+
+	if (KEY_PRESS('A'))
+	{
+		mSphere->mPosition.x -= 100.0f * DELTA;
+	}
+
+	if (KEY_PRESS('D'))
+	{
+		mSphere->mPosition.x += 100.0f * DELTA;
+	}
 }
 
 void TerrainLODScene::PreRender()
@@ -77,8 +102,17 @@ void TerrainLODScene::Render()
 	mCamera->SetViewBufferToVS();
 	mCamera->SetProjectionBufferToVS();
 
+	if (mIsWireRender)
+	{
+		mRSState->FillMode(D3D11_FILL_WIREFRAME);
+		mRSState->SetState();
+	}
+	else
+	{
+		mRSState->FillMode(D3D11_FILL_SOLID);
+		mRSState->SetState();
+	}
 
-	mRSState->SetState();
 	mLODTerrain->Render();
 	//mPlayer->Render();
 	mSphere->Render();
@@ -95,8 +129,11 @@ void TerrainLODScene::PostRender()
 	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mCamera->mRotation.x, mCamera->mRotation.y, mCamera->mRotation.z);
 	SpacingRepeatedly(2);
 
-
 	SpacingRepeatedly(2);
 	ImGui::InputFloat3("Sphere Position", (float*)&mSphere->mPosition, "%.3f");
 	SpacingRepeatedly(2);
+	ImGui::InputFloat("terrainY", (float*)&terrainY);
+
+	ImGui::RadioButton("SolidFrame", &mIsWireRender, 0); ImGui::SameLine();
+	ImGui::RadioButton("WireFrame", &mIsWireRender, 1);
 }

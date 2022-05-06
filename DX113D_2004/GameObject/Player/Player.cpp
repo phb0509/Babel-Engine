@@ -441,14 +441,12 @@ void Player::setAnimation(State value)
 
 void Player::PostRender()
 {
-	/*ImGui::Begin("Player PostRender");
+	ImGui::Begin("Player PostRender");
 
 	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
 
 	ImGui::InputFloat3("Player Position", (float*)&this->mPosition);
 	SpacingRepeatedly(1);
-	ImGui::InputFloat3("PlayerSword Position", (float*)&mCollidersMap["swordCollider"]->mPosition);
-	SpacingRepeatedly(1);
 
-	ImGui::End();*/
+	ImGui::End();
 }

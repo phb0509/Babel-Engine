@@ -63,7 +63,8 @@ void Light::PostRender()
 		ImGui::Checkbox("Active", (bool*)&mActive);
 		ImGui::SliderInt("Type", (int*)&mType, 0, 3); // 라이트 타입
 		ImGui::SliderFloat3("Direction", (float*)&mDirection, -1, 1); // 라이트 방향
-		ImGui::SliderFloat3("LightPosition", (float*)&this->mPosition, -100, 100); // 라이트 위치
+		//ImGui::SliderFloat3("LightPosition", (float*)&this->mPosition, -100, 100); // 라이트 위치
+		ImGui::InputFloat3("LightPosition", (float*)&this->mPosition); // 라이트 위치
 		ImGui::SliderFloat("LightRange", (float*)&mRange, 0, 100); // 라이트 크기?
 		ImGui::ColorEdit4("LightColor", (float*)&mColor);	// 라이트색깔
 		ImGui::SliderFloat("LightInner", (float*)&mInner, 0, 90);

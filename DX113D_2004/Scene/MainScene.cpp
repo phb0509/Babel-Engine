@@ -115,10 +115,7 @@ void MainScene::Update()
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
 
-
 	mInstancingMutants->Update();
-	
-
 }
 
 void MainScene::PreRender()
@@ -150,10 +147,12 @@ void MainScene::PreRender()
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
 	mInstancingMutants->SetShader(L"InstancingGBuffer");
+	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 
 	mTerrain->Render();
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
+	mDirectionalLight->Render();
 }
 
 void MainScene::Render()
@@ -242,6 +241,8 @@ void MainScene::PostRender()
 	SpacingRepeatedly(2);
 
 	ImGui::End();
+
+	
 }
 
 

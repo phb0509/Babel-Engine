@@ -11,8 +11,6 @@ public:
 	void Render();
 	void PostRender();
 
-	float GetWidth();
-	float GetHeight();
 	float GetTargetPositionY(Vector3 Target);
 
 	void SetCamera(Camera* camera) {mCamera = camera;}
@@ -21,28 +19,33 @@ private:
 	void readHeightData();
 	void createPatchVertex();
 	void createPatchIndex();	
+	void createTempVertices();
 
 private:
 	typedef VertexUV VertexType;
 
 	LODTerrainBuffer* mTerrainBuffer;
 
-	Material* material;
-	Mesh* mesh;
+	Material* mMaterial;
+	Mesh* mMesh;
 
-	HullShader* hullShader;
-	DomainShader* domainShader;
+	HullShader* mHullShader;
+	DomainShader* mDomainShader;
 
-	UINT cellsPerPatch;
+	UINT mCellsPerPatch;
+	UINT mTextureDefaultWidth;
+	UINT mTextureDefaultHeight;
+	UINT mPatchWidth;
+	UINT mPatchHeight;
+	float mFinalWidth;
+	float mFinalHeight;
 
-	UINT width, height;
-	UINT patchWidth, patchHeight;
+	vector<VertexType> mVertices;
+	vector<VertexType> mTempVertices;
+	vector<UINT> mIndices;
 
-	vector<VertexType> vertices;
-	vector<UINT> indices;
-
-	wstring heightFile;
-	Texture* heightTexture;
+	wstring mHeightMapFileName;
+	Texture* mHeightTexture;
 
 	Camera* mCamera;
 };

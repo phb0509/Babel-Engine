@@ -34,6 +34,8 @@ private:
 	float mStandTime;
 
 	Vector3 mPatrolDestPos;
+	float mMaxPatrolWidth;
+	float mMaxPatrolHeight;
 };
 
 

@@ -129,7 +129,7 @@ bool Terrain::ComputePicking(OUT Vector3* position)
 	DEVICECONTEXT->CSSetShaderResources(0, 1, &mStructuredBuffer->GetSRV()); // SRV 셋팅. 읽기전용자원을 넘기기위한 어댑터 설정.
 	DEVICECONTEXT->CSSetUnorderedAccessViews(0, 1, &mStructuredBuffer->GetUAV(), nullptr); // UAV셋팅. 읽고 쓸수있는 자원을 넘기기위한 어댑터 설정.
 
-	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수를 1024로 나눴네? 왜?
+	UINT x = ceil((float)mPolygonCount / 1024.0f); // 폴리곤개수를 1024로 나눴네?
 
 	DEVICECONTEXT->Dispatch(x, 1, 1); // ComputeShader 실행.
 
@@ -165,8 +165,8 @@ float Terrain::GetTargetPositionY(Vector3 target)
 	UINT x = (UINT)target.x;
 	UINT z = (UINT)target.z;
 
-	if (x < 0 || x > mTerrainWidth) return 0.0f;
-	if (z < 0 || z > mTerrainHeight) return 0.0f;
+	if (x < 0 || x >= mTerrainWidth) return 0.0f;
+	if (z < 0 || z >= mTerrainHeight) return 0.0f;
 
 	UINT index[4];
 	index[0] = (mTerrainWidth + 1) * z + x;
@@ -202,18 +202,10 @@ float Terrain::GetTargetPositionY(Vector3 target)
 
 void Terrain::createMesh()
 {
-	vector<Float4> pixels;
+	mTerrainWidth = mHeightMap->GetWidth()-1;
+	mTerrainHeight = mHeightMap->GetHeight()-1;
+	vector<Float4> pixels = mHeightMap->ReadPixels();
 	 
-	if (mHeightMap)
-	{
-		mTerrainWidth = mHeightMap->GetWidth();
-		mTerrainHeight = mHeightMap->GetHeight();
-		pixels = mHeightMap->ReadPixels();
-	}
-	
-
-	
-
 	//Vertices
 	for (UINT z = 0; z <= mTerrainHeight; z++) // 0~255
 	{

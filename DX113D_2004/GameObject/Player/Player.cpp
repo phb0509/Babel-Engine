@@ -72,10 +72,7 @@ void Player::Update()
 
 void Player::Render()
 {
-	for (int i = 0; i < mColliders.size(); i++)
-	{
-		mColliders[i].collider->Render();
-	}
+	RenderColliders();
 
 	/*if (!mbIsTargetMode)
 	{
@@ -343,6 +340,14 @@ void Player::normalAttack()
 	if (mbIsNormalAttack) return;
 	setAnimation(ATTACK);
 	mbIsNormalAttack = true;
+}
+
+void Player::RenderColliders()
+{
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->Render();
+	}
 }
 
 void Player::setColliders()

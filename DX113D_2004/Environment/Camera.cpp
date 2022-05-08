@@ -84,7 +84,7 @@ void Camera::SetViewMatrixToBuffer()
 	mViewBuffer->SetMatrix(mViewMatrix);
 }
 
-void Camera::SetViewBufferToVS(UINT slot)
+void Camera::SetViewBufferToVS(UINT slot) // Default slot1
 {
 	mViewBuffer->SetVSBuffer(slot);
 }
@@ -94,7 +94,7 @@ void Camera::SetViewBufferToPS(UINT slot)
 	mViewBuffer->SetPSBuffer(slot);
 }
 
-void Camera::SetProjectionBufferToVS(UINT slot)
+void Camera::SetProjectionBufferToVS(UINT slot) // Default slot2
 {
 	if (mbIsPerspectiveProjection)
 	{

@@ -48,13 +48,13 @@ MainScene::MainScene() :
 
 	vector<Collider*> monsters0Obstacles = {};
 
-	float startX = 80.0f;
-	float startZ = 80.0f;
+	float startX = 100.0f;
+	float startZ = 100.0f;
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 10;
-	int column = 10;
+	int row = 20;
+	int column = 20;
 
 	mMutantInstanceCount = row * column;
 
@@ -146,6 +146,7 @@ void MainScene::PreRender()
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
+	mPlayer->RenderColliders();
 	mInstancingMutants->SetShader(L"InstancingGBuffer");
 	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 
@@ -192,11 +193,6 @@ void MainScene::Render()
 	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
 	DEVICECONTEXT->Draw(4, 0);
 	mGBuffer->ClearSRVs();
-
-
-	/*mTerrain->Render();
-	mPlayer->Render();*/
-	//mInstancingMutants->Render();
 }
 
 void MainScene::PostRender()
@@ -241,11 +237,7 @@ void MainScene::PostRender()
 	SpacingRepeatedly(2);
 
 	ImGui::End();
-
-	
 }
-
-
 
 void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함수.
 {

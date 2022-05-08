@@ -67,6 +67,7 @@ void Collider::Render()
     mMaterial->SetShader(L"Collider");
     mMaterial->Set();
 
+    Transform::UpdateWorld();
     Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
 
     mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);

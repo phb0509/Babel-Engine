@@ -38,6 +38,8 @@ void PatrolState::Enter(Monster* mMonster)
 void PatrolState::Execute(Monster* monster)
 {
 	mPlayer = GM->Get()->GetPlayer();
+	mMaxPatrolWidth = monster->GetTerrain()->GetSize().x - 1;
+	mMaxPatrolHeight = monster->GetTerrain()->GetSize().y - 1;
 
 	if (!mbIsPatrolMove) // 무브 끝난 이후 체크. 
 	{
@@ -60,18 +62,18 @@ void PatrolState::Execute(Monster* monster)
 		// 정찰목표지점이 맵크기를 벗어날 경우 예외처리.
 		float patrolRangeCorrectionValue = 30.0f;
 
-		if (mPatrolDestPos.x >= monster->GetTerrain()->GetSize().x)
+		if (mPatrolDestPos.x >= mMaxPatrolWidth)
 		{
-			mPatrolDestPos.x = monster->GetTerrain()->GetSize().x - patrolRangeCorrectionValue;
+			mPatrolDestPos.x = mMaxPatrolWidth - patrolRangeCorrectionValue;
 		}
 		else if (mPatrolDestPos.x <= 0.0f)
 		{
 			mPatrolDestPos.x = patrolRangeCorrectionValue;
 		}
 
-		if (mPatrolDestPos.z >= monster->GetTerrain()->GetSize().y)
+		if (mPatrolDestPos.z >= mMaxPatrolHeight)
 		{
-			mPatrolDestPos.z = monster->GetTerrain()->GetSize().y - patrolRangeCorrectionValue;
+			mPatrolDestPos.z = mMaxPatrolHeight - patrolRangeCorrectionValue;
 		}
 		else if (mPatrolDestPos.z <= 0.0f)
 		{

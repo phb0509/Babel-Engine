@@ -47,6 +47,7 @@ public:
 	void Render();
 	void DeferredRender();
 	void PostRender();
+	void RenderColliders();
 
 	void SetTerrain(Terrain* value) { mTerrain = value; mbIsLODTerrain = false; }
 	void SetLODTerrain(TerrainLOD* value) { mLODTerrain = value; mbIsLODTerrain = true; }
@@ -76,6 +77,7 @@ private:
 	void checkNormalAttackCollision();
 	void setAttackEnd();
 	void normalAttack();
+
 
 private:
 	Terrain* mTerrain;

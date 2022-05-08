@@ -192,7 +192,31 @@ void MainScene::Render()
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
 	DEVICECONTEXT->Draw(4, 0);
+
+
 	mGBuffer->ClearSRVs();
+
+	//switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
+	//{
+	//case 0:    // World
+	//{
+	//	mWorldCamera->SetViewBufferToVS(1);
+	//	mWorldCamera->SetProjectionBufferToVS(2);
+	//}
+	//break;
+
+	//case 1:    // Target
+	//{
+	//	mTargetCamera->SetViewBufferToVS(1);
+	//	mTargetCamera->SetProjectionBufferToVS(2);
+	//}
+	//break;
+
+	//default:
+	//	break;
+	//}
+
+	//mPlayer->RenderColliders();
 }
 
 void MainScene::PostRender()

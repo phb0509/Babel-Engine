@@ -3,7 +3,7 @@
 Collider::Collider() : mbIsRender(true)
 {
     mMaterial = new Material(L"Collider");
-    mMaterial->GetBuffer()->data.diffuse = Float4(0, 1, 0, 1);
+    mMaterial->GetBuffer()->data.diffuse = Float4(0.0f, 1.0f, 0.0f, 1.0f);
 }
 
 Collider::~Collider()
@@ -36,7 +36,7 @@ void Collider::Update()
     {
         if (mbIsRender)
         {
-            SetColor({ 0, 1, 0, 1 });
+            SetColor({ 0, 1, 0, 0 });
             mbIsRender = !mbIsRender;
         }
         else
@@ -66,6 +66,7 @@ void Collider::Render()
 {
     mMaterial->SetShader(L"Collider");
     mMaterial->Set();
+    //SetColor({ 0,1,0,0 });
 
     Transform::UpdateWorld();
     Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.

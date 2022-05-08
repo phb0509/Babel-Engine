@@ -99,6 +99,21 @@ float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구
 float4 PS(PixelInput input) : SV_Target
 {
     SurfaceData data = UnpackGBuffer(input.pos.xy);
+        
+    
+    //float4 temp1 = float4(data.color, data.specInt);
+    //float4 temp2 = float4(0.0f, 1.0f, 0.0f, 0.0f);
+    //if (temp1 == temp2)
+    //{
+    //    return float4(0, 1, 0, 1);
+    //}
+    if (data.color.g >= 0.9f)
+    {
+        if (data.specInt <= 0.0001f)
+        {
+            return float4(data.color, data.specInt);
+        }
+    }
     
     Material material;
     material.normal = data.normal;
@@ -107,6 +122,7 @@ float4 PS(PixelInput input) : SV_Target
     material.specularIntensity = float4(data.specInt.xxx, 1.0f);
     material.worldPos = CalcWorldPos(input.uv, data.linearDepth);
     
+
     float4 result = CalcLights(material);
     float4 ambient = CalcAmbient(material);
    

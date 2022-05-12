@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-TerrainLOD::TerrainLOD(wstring heightFile)
-    : mHeightMapFileName(heightFile), 
+TerrainLOD::TerrainLOD(wstring heightFile): 
+    mHeightMapFileName(heightFile), 
     mCellsPerPatch(32) // 한 셀에 들어가는 정점개수? 듬성듬성 나누는 기준. 이 값이 높을수록 처음에 버텍스를 조금만 찍는다.
 {
     mMaterial = new Material(L"TerrainLOD");
@@ -14,8 +14,8 @@ TerrainLOD::TerrainLOD(wstring heightFile)
     createTempVertices();
 
     mTerrainBuffer = new LODTerrainBuffer();
-    mTerrainBuffer->data.cellSpacingU = 1.0f / mTextureDefaultWidth;
-    mTerrainBuffer->data.cellSpacingV = 1.0f / mTextureDefaultHeight;
+    mTerrainBuffer->data.cellSpacingU = 1.0f / mTextureDefaultWidth; // 256
+    mTerrainBuffer->data.cellSpacingV = 1.0f / mTextureDefaultHeight; // 256
 
     mPatchWidth = ((mTextureDefaultWidth - 1) / mCellsPerPatch) + 1; // 듬성듬성 몇개 찍을것인가. 원랜 256개 찍어야하는데 테셀레이션에서 쪼갤꺼니까 여기선 조금만 찍는다. UINT형이라 8나옴.
     mPatchHeight = ((mTextureDefaultHeight - 1) / mCellsPerPatch) + 1;
@@ -36,7 +36,6 @@ TerrainLOD::~TerrainLOD()
 {
     delete mMaterial;
     delete mMesh;
-
     delete mTerrainBuffer;
 }
 
@@ -44,7 +43,7 @@ void TerrainLOD::Update()
 {   
     mCamera->Update();
     mCamera->SetViewToFrustum(mCamera->GetViewMatrix());
-    mCamera->GetFrustum()->GetPlanesForTerrainFrustumCulling(mTerrainBuffer->data.cullings); // 현재 업데이트중인 카메라의 절두체의 6면을 mTerrainBuffer에 넣어준다.
+    //mCamera->GetFrustum()->GetPlanesForTerrainFrustumCulling(mTerrainBuffer->data.cullings); // 현재 업데이트중인 카메라의 절두체의 6면을 mTerrainBuffer에 넣어준다.
 
     UpdateWorld();
 }
@@ -81,8 +80,6 @@ void TerrainLOD::PostRender()
     ImGui::SliderFloat2("Factor", (float*)&mTerrainBuffer->data.factor, 1, 64.0f);
     ImGui::SliderFloat("HeightScale", &mTerrainBuffer->data.heightScale, 0.0f, 100.0f);
 }
-
-
 
 float TerrainLOD::GetTargetPositionY(Vector3 target)
 {
@@ -139,8 +136,8 @@ float TerrainLOD::GetTargetPositionY(Vector3 target)
 
 void TerrainLOD::readHeightData()
 {
-    //mHeightTexture = Texture::Add(mHeightMapFileName);
-    mHeightTexture = Texture::Add(L"Textures/100x100.png");
+    mHeightTexture = Texture::Add(mHeightMapFileName);
+    //mHeightTexture = Texture::Add(L"Textures/100x100.png");
    
     mTextureDefaultWidth = mHeightTexture->GetWidth();
     mTextureDefaultHeight = mHeightTexture->GetHeight();
@@ -148,6 +145,35 @@ void TerrainLOD::readHeightData()
 
 void TerrainLOD::createPatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주기.
 {
+    //float halfWidth = mTextureDefaultWidth * mTerrainBuffer->data.cellSpacing * 0.5f; // 256 * 5 = 1280 * 0.5 = 640   // 반지름.  GetWidth에서  실제 width * cellSpaceing(default 5.0f) 곱해주는데 임의의값. 클수록 그냥 터레인 커지고 뭐 더 많이쪼개고 할듯
+    //float halfHeight = mTextureDefaultHeight * mTerrainBuffer->data.cellSpacing * 0.5f;
+    //// half값 이용하는건 센터를 0,0으로 잡으려고 하는것같다. 어쨌든 cellSpacing값에 의해 터레인크기가 결정된다.
+
+    //float tempWidth = mTextureDefaultWidth * mTerrainBuffer->data.cellSpacing / mPatchWidth; // patchWidth는 듬성듬성 몇개찍을것인가의 값. 8 나옴. 최종적으로 1280 / 8 = 160
+    //float tempHeight = mTextureDefaultHeight * mTerrainBuffer->data.cellSpacing / mPatchHeight;
+
+    //float du = 1.0f / mPatchWidth; // 듬성듬성버텍스 uv값 단위.  1/8
+    //float dv = 1.0f / mPatchHeight;
+
+    //float offsetZ = -(halfHeight - (mPatchHeight - 1) * tempHeight);
+    //float offsetX = halfWidth;
+    //mFinalWidth = -halfWidth + (mPatchWidth - 1) * tempWidth + offsetX;
+    //mFinalHeight = halfHeight + offsetZ;
+
+    //for (UINT z = 0; z < mPatchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 버텍스 사이의 간격이 넓어져서 터레인이 기존에 비해 매우 커짐.
+    //{
+    //    float tempZ = halfHeight - z * tempHeight + offsetZ;
+ 
+    //    for (UINT x = 0; x < mPatchWidth; x++)
+    //    {
+    //        float tempX = -halfWidth + x * tempWidth + offsetX; 
+
+    //        UINT index = mPatchWidth * z + x;
+    //        mVertices[index].position = Vector3(tempX, 0.0f, tempZ); // position.y값은 도메인셰이더에서 적용함.
+    //        mVertices[index].uv = { x * du, z * dv };
+    //    }
+    //}
+
     float halfWidth = mTextureDefaultWidth * mTerrainBuffer->data.cellSpacing * 0.5f; // 256 * 5 = 1280 * 0.5 = 640   // 반지름.  GetWidth에서  실제 width * cellSpaceing(default 5.0f) 곱해주는데 임의의값. 클수록 그냥 터레인 커지고 뭐 더 많이쪼개고 할듯
     float halfHeight = mTextureDefaultHeight * mTerrainBuffer->data.cellSpacing * 0.5f;
     // half값 이용하는건 센터를 0,0으로 잡으려고 하는것같다. 어쨌든 cellSpacing값에 의해 터레인크기가 결정된다.
@@ -158,21 +184,16 @@ void TerrainLOD::createPatchVertex() // 원점이 가운데라는 기준으로 버텍스 찍어주
     float du = 1.0f / mPatchWidth; // 듬성듬성버텍스 uv값 단위.  1/8
     float dv = 1.0f / mPatchHeight;
 
-    float offsetZ = -(halfHeight - (mPatchHeight - 1) * tempHeight);
-    float offsetX = halfWidth;
-    mFinalWidth = -halfWidth + (mPatchWidth - 1) * tempWidth + offsetX;
-    mFinalHeight = halfHeight + offsetZ;
-
-    for (UINT z = 0; z < mPatchHeight; z++) // 듬성버텍스 개수 8개     // 여기서 버텍스포지션값을 크게 잡아서 버텍스 사이의 간격이 넓어져서 터레인이 기존에 비해 매우 커짐.
+    for (UINT z = 0; z < mPatchHeight; z++)
     {
-        float tempZ = halfHeight - z * tempHeight + offsetZ;
- 
+        float tempZ = halfHeight - z * tempHeight;
+
         for (UINT x = 0; x < mPatchWidth; x++)
         {
-            float tempX = -halfWidth + x * tempWidth + offsetX; 
+            float tempX = -halfWidth + x * tempWidth;
 
             UINT index = mPatchWidth * z + x;
-            mVertices[index].position = Vector3(tempX, 0.0f, tempZ); // position.y값은 도메인셰이더에서 적용함.
+            mVertices[index].position = Vector3(tempX, 0.0f, tempZ);
             mVertices[index].uv = { x * du, z * dv };
         }
     }

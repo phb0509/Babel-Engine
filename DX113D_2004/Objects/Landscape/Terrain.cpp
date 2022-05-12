@@ -16,15 +16,34 @@ Terrain::Terrain():
 	mFillMode[1] = new RasterizerState();
 	mFillMode[0]->FillMode(D3D11_FILL_SOLID);
 	mFillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
-	//D3D11_FILL_SOLID
-	//heightMap = Texture::Add(L"Textures/HeightMaps/MyHeightMap.png");
-	//heightMap = Texture::Add(L"Textures/HeightMaps/testtest.png"); // 700 * 500
-	//mHeightMap = Texture::Add(L"Textures/500x500.png"); // 256 * 256
 	mHeightMap = Texture::Add(L"Textures/HeightMap256.png"); // 256 * 256
 
 	createMesh();
+	createComputeData();
+	createNodeMap();
+}
 
-	mComputeShader = Shader::AddCS(L"ComputePicking");	
+Terrain::Terrain(wstring hegihtMapName):
+	mTerrainWidth(10),
+	mTerrainHeight(10),
+	mDistanceBetweenNodes(0.0f, 0.0f),
+	mNodeCount(30, 30)
+{
+	mMaterial = new Material(L"Lighting");
+	mMaterial->SetDiffuseMap(L"Textures/dirt.png");
+	//mMaterial->SetNormalMap(L"Textures/Stones_normal.png");
+
+	mMaterial->GetBuffer()->data.emissive = { 0, 0, 0, 0 };
+
+	mFillMode[0] = new RasterizerState();
+	mFillMode[1] = new RasterizerState();
+	mFillMode[0]->FillMode(D3D11_FILL_SOLID);
+	mFillMode[1]->FillMode(D3D11_FILL_WIREFRAME);
+	mHeightMap = Texture::Add(hegihtMapName); // 256 * 256
+
+	createMesh();
+
+	mComputeShader = Shader::AddCS(L"ComputePicking");
 
 	mStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
 		sizeof(OutputDesc), mPolygonCount); // 구조체, 구조체크기, 구조체개수(폴리곤 개수), 
@@ -162,39 +181,37 @@ bool Terrain::ComputePicking(OUT Vector3* position)
 
 float Terrain::GetTargetPositionY(Vector3 target)
 {
-	UINT x = (UINT)target.x;
-	UINT z = (UINT)target.z;
+	int x = (int)target.x;
+	int z = (int)(mTerrainHeight - target.z - 1);
 
-	if (x < 0 || x >= mTerrainWidth) return 0.0f;
-	if (z < 0 || z >= mTerrainHeight) return 0.0f;
+	if (x < 0 || x >= mTerrainWidth - 1) return 0.0f;
+	if (z < 0 || z >= mTerrainHeight - 1) return 0.0f;
 
 	UINT index[4];
-	index[0] = (mTerrainWidth + 1) * z + x;
-	index[1] = (mTerrainWidth + 1) * (z + 1) + x;
-	index[2] = (mTerrainWidth + 1) * z + x + 1;
-	index[3] = (mTerrainWidth + 1) * (z + 1) + x + 1;
+	index[0] = mTerrainWidth * (z + 1) + x;
+	index[1] = mTerrainWidth * z + x;
+	index[2] = mTerrainWidth * (z + 1) + x + 1;
+	index[3] = mTerrainWidth * z + x + 1;
 
 	Vector3 p[4];
-
-	for (int i = 0; i < 4; i++)
-	{
+	for (UINT i = 0; i < 4; i++)
 		p[i] = mVertices[index[i]].position;
-	}
-		
+
 	float u = target.x - p[0].x;
 	float v = target.z - p[0].z;
 
 	Vector3 result;
-	if (u + v <= 1.0f)
+
+	if (u + v < 1.0f)
 	{
-		result = p[0] + (p[2] - p[0]) * u + (p[1] - p[0]) * v;
+		result = p[0] + ((p[2] - p[0]) * u + (p[1] - p[0]) * v);
 	}
 	else
 	{
 		u = 1.0f - u;
 		v = 1.0f - v;
 
-		result = p[3] + (p[1] - p[3]) * u + (p[2] - p[3]) * v;	
+		result = p[3] + ((p[1] - p[3]) * u + (p[2] - p[3]) * v);
 	}
 
 	return result.y;
@@ -202,38 +219,49 @@ float Terrain::GetTargetPositionY(Vector3 target)
 
 void Terrain::createMesh()
 {
-	mTerrainWidth = mHeightMap->GetWidth()-1;
-	mTerrainHeight = mHeightMap->GetHeight()-1;
-	vector<Float4> pixels = mHeightMap->ReadPixels();
-	 
-	//Vertices
-	for (UINT z = 0; z <= mTerrainHeight; z++) // 0~255
+	vector<Float4> pixels;
+	if (mHeightMap)
 	{
-		for (UINT x = 0; x <= mTerrainWidth; x++)
+		mTerrainWidth = mHeightMap->GetWidth();
+		mTerrainHeight = mHeightMap->GetHeight();
+		pixels = mHeightMap->ReadPixels();
+	}
+	else
+	{
+		mTerrainWidth = 10;
+		mTerrainHeight = 10;
+		pixels.resize(mTerrainWidth * mTerrainHeight);
+	}
+	
+	//Vertices
+	for (UINT z = 0; z < mTerrainHeight; z++) // 0~255
+	{
+		for (UINT x = 0; x < mTerrainWidth; x++)
 		{
 			VertexType vertex;
-			vertex.position = Float3((float)x, 0.0f, (float)z);
-			vertex.uv = Float2(x / (float)mTerrainWidth, 1.0f - z / (float)mTerrainHeight);
+			vertex.position = Float3(x, 0, mTerrainHeight - z - 1);
+			vertex.uv.x = x / (float)mTerrainWidth;
+			vertex.uv.y = z / (float)mTerrainHeight;
 
-			UINT index = (mTerrainWidth + 1) * z + x;
-			vertex.position.y += pixels[index].x * 20.0f; // 걍 값이 정규화되서 너무 작으니까 임의의 값 20.0f를 곱해준것.
+			UINT index = mTerrainWidth * z + x;
+			vertex.position.y = pixels[index].x * 20.0f;
 
-			mVertices.emplace_back(vertex);
+			mVertices.push_back(vertex);
 		}
 	}
 
 	//Indices
-	for (UINT z = 0; z < mTerrainHeight; z++)
+	for (UINT z = 0; z < mTerrainHeight - 1; z++)
 	{
-		for (UINT x = 0; x < mTerrainWidth; x++)
+		for (UINT x = 0; x < mTerrainWidth - 1; x++)
 		{
-			mIndices.emplace_back((mTerrainWidth + 1) * z + x);//0
-			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x);//1
-			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x + 1);//2
-
-			mIndices.emplace_back((mTerrainWidth + 1) * z + x);//0
-			mIndices.emplace_back((mTerrainWidth + 1) * (z + 1) + x + 1);//2
-			mIndices.emplace_back((mTerrainWidth + 1) * z + x + 1);//3
+			mIndices.push_back(mTerrainWidth * z + x);//0            
+			mIndices.push_back(mTerrainWidth * (z + 1) + (x + 1));//2
+			mIndices.push_back(mTerrainWidth * (z + 1) + x);//1
+						  
+			mIndices.push_back(mTerrainWidth * z + x);//0                  
+			mIndices.push_back(mTerrainWidth * z + (x + 1));//3
+			mIndices.push_back(mTerrainWidth * (z + 1) + (x + 1));//2      
 		}
 	}
 	 
@@ -381,4 +409,17 @@ void Terrain::createNodeMap()
 			mNodeMap[i + mNodeCount.x - 1]->AddEdge(mNodeMap[i + 0]);
 		}
 	}
+}
+
+void Terrain::createComputeData()
+{
+	mComputeShader = Shader::AddCS(L"ComputePicking");
+
+	mStructuredBuffer = new ComputeStructuredBuffer(mInput, sizeof(InputDesc), mPolygonCount,
+		sizeof(OutputDesc), mPolygonCount); // 구조체, 구조체크기, 구조체개수(폴리곤 개수), 
+
+	mRayBuffer = new RayBuffer();
+	mOutput = new OutputDesc[mPolygonCount];
+
+	mTypeBuffer = new TypeBuffer();
 }

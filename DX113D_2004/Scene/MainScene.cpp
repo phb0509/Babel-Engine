@@ -121,6 +121,7 @@ void MainScene::Update()
 void MainScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
+	mGBuffer->PreRender();
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
 	{
@@ -128,6 +129,7 @@ void MainScene::PreRender()
 	{
 		mWorldCamera->SetViewBufferToVS();
 		mWorldCamera->SetProjectionBufferToVS();
+		mTargetCameraForShow->RenderFrustumCollider();
 	}
 	break;
 
@@ -142,8 +144,6 @@ void MainScene::PreRender()
 		break;
 	}
 
-	mGBuffer->PreRender();
-
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
 	mPlayer->RenderColliders();
@@ -153,7 +153,7 @@ void MainScene::PreRender()
 	mTerrain->Render();
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
-	mDirectionalLight->Render();
+	//mDirectionalLight->Render();
 }
 
 void MainScene::Render()
@@ -171,7 +171,7 @@ void MainScene::Render()
 	{
 		mWorldCamera->SetViewBufferToVS(10);
 		mWorldCamera->SetProjectionBufferToVS(11);
-		mTargetCameraForShow->RenderFrustumCollider();
+		//mTargetCameraForShow->RenderFrustumCollider();
 	}
 	break;
 

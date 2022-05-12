@@ -21,6 +21,10 @@ ColliderSettingScene::ColliderSettingScene() :
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
 
+	mLightBuffer = new LightBuffer();
+	mDirectionalLight = new Light(LightType::DIRECTIONAL);
+	mLightBuffer->Add(mDirectionalLight);
+
 	// 카메라 설정.
 	mWorldCamera = new Camera();
 	mWorldCamera->mPosition = { -7.3f, 13.96f, -14.15f };
@@ -93,6 +97,9 @@ ColliderSettingScene::~ColliderSettingScene()
 
 void ColliderSettingScene::Update()
 {
+	mLightBuffer->Update();
+	mDirectionalLight->Update();
+
 	mWorldCamera->Update();
 	moveWorldCamera();
 
@@ -183,6 +190,7 @@ void ColliderSettingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
+	mLightBuffer->SetPSBuffer(0);
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 	

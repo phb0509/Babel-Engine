@@ -170,4 +170,6 @@ private:
 	bool mbCheck = false;
 	Vector3 mPreFrameMousePosition;
 	
+	LightBuffer* mLightBuffer;
+	Light* mDirectionalLight;
 };

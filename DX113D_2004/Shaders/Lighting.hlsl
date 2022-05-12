@@ -7,8 +7,8 @@ struct PixelInput
     float3 normal : Normal;
     float3 tangent : Tangent;
     float3 binormal : Binormal;
-    float3 camPos : CamPos;
     float3 worldPos : Position;
+    float3 camPos : CamPos;
 };
 
 PixelInput VS(VertexUVNormalTangentBlend input)
@@ -39,8 +39,8 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
     
-    output.normal = normalize(mul(input.normal, (float3x3) transform));
-    output.tangent = normalize(mul(input.tangent, (float3x3) transform));
+    output.normal = mul(input.normal, (float3x3) transform);
+    output.tangent = mul(input.tangent, (float3x3) transform);
     output.binormal = cross(output.normal, output.tangent);
     
     output.uv = input.uv;
@@ -52,8 +52,8 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-
     float4 sampledDiffuseMap = float4(1, 1, 1, 1);
+    
     if (hasDiffuseMap)
         sampledDiffuseMap = diffuseMap.Sample(samp, input.uv);
     

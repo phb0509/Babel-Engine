@@ -40,11 +40,14 @@ public:
 	void SetIsUsingFrustumCulling(bool value) { mbIsUsingFrustumCulling = value; }
 	void SetIsRenderFrustumCollider(bool value) { mbIsRenderFrustumCollider = value; }
 	void SetProjectionOption(float FoV, float aspectRatio, float distanceToNearZ, float distanceToFarZ);
-	
+	void SetFoV(float fov);
+	void SetAspectRatio(float aspectRatio);
+	void SetDistanceToNearZ(float distanceToNearZ);
+	void SetDistanceToFarZ(float distanceToFarZ);
 
 private:
 	void initialize();
-	void createPerspectiveProjectionBuffer();
+	void createPerspectiveProjectionBuffer(float fov, float aspectRatio, float distanceToNearZ, float distanceToFarZ);
 	void createOrthographicProjectionBuffer();
 
 public:

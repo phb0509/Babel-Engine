@@ -227,7 +227,6 @@ void ModelAnimator::DeferredRender()
 	MeshRender(); // 부모클래스(ModelReader)함수.
 }
 
-
 void ModelAnimator::PostRender()
 {
 

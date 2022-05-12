@@ -14,6 +14,7 @@ public:
 
 private:
 	TerrainLOD* mLODTerrain;
+	Terrain* mTerrain;
 	RasterizerState* mRSState;
 
 	LightBuffer* mLightBuffer;
@@ -23,6 +24,6 @@ private:
 	Player* mPlayer;
 	Sphere* mSphere;
 
-	float terrainY;
+	float mTerrainY;
 	int mIsWireRender;
 };

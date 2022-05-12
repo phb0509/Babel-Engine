@@ -17,7 +17,7 @@ Camera::Camera():
 	mViewBuffer = new ViewBuffer();
 	mFrustum = new Frustum(mFoV,mAspectRatio,mDistanceToNearZ,mDistanceToFarZ);
 
-	createPerspectiveProjectionBuffer();
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 	createOrthographicProjectionBuffer();
 }
 
@@ -127,8 +127,44 @@ void Camera::SetProjectionOption(float FoV, float aspectRatio, float distanceToN
 
 	delete mFrustum;
 	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
-	createPerspectiveProjectionBuffer();
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 	createOrthographicProjectionBuffer();
+}
+
+void Camera::SetFoV(float fov)
+{
+	mFoV = fov;
+
+	delete mFrustum;
+	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+}
+
+void Camera::SetAspectRatio(float aspectRatio)
+{
+	mAspectRatio = aspectRatio;
+
+	delete mFrustum;
+	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+}
+
+void Camera::SetDistanceToNearZ(float distanceToNearZ)
+{
+	mDistanceToNearZ = distanceToNearZ;
+
+	delete mFrustum;
+	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+}
+
+void Camera::SetDistanceToFarZ(float distanceToFarZ)
+{
+	mDistanceToFarZ = distanceToFarZ;
+
+	delete mFrustum;
+	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 }
 
 Ray Camera::ScreenPointToRay(Vector3 pos) // 마우스좌표 받음.
@@ -221,14 +257,14 @@ ProjectionBuffer* Camera::GetProjectionBufferInUse()
 	return mOrthographicProjectionBuffer;
 }
 
-void Camera::createPerspectiveProjectionBuffer()
+void Camera::createPerspectiveProjectionBuffer(float fov,float aspectRatio, float distanceToNearZ, float distanceToFarZ)
 {
 	if (mPerspectiveProjectionBuffer != nullptr)
 	{
 		delete mPerspectiveProjectionBuffer;
 	}
 
-	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(mFoV,mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+	mPerspectiveProjectionMatrix = XMMatrixPerspectiveFovLH(fov, aspectRatio, distanceToNearZ, distanceToFarZ);
 	mPerspectiveProjectionBuffer = new ProjectionBuffer();
 	mPerspectiveProjectionBuffer->SetMatrix(mPerspectiveProjectionMatrix);
 }

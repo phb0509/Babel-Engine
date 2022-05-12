@@ -109,10 +109,7 @@ float4 PS(PixelInput input) : SV_Target
     //}
     if (data.color.g >= 0.9f)
     {
-        if (data.specInt <= 0.0001f)
-        {
-            return float4(data.color, data.specInt);
-        }
+          return float4(data.color, data.specInt);
     }
     
     Material material;

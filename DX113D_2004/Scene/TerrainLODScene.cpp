@@ -2,7 +2,8 @@
 #include "TerrainLODScene.h"
 
 TerrainLODScene::TerrainLODScene() :
-	mIsWireRender(1)
+	mIsWireRender(1),
+	mTerrainY(0.0f)
 {
 	mLightBuffer = new LightBuffer();
 	mDirectionalLight = new Light();
@@ -12,11 +13,15 @@ TerrainLODScene::TerrainLODScene() :
 	mCamera->mPosition = { 7.5f, 117.3f, -81.2f };
 	mCamera->mRotation = { 0.8f, 0.0f, 0.0f };
 	mCamera->SetIsUsingFrustumCulling(true);
-	mCamera->mMoveSpeed = 200.0f;
-	
-	
-	mLODTerrain = new TerrainLOD(L"Textures/HeightMap.png");
+	mCamera->mMoveSpeed = 300.0f;
+	mCamera->SetDistanceToFarZ(10000.0f);
+
+	mLODTerrain = new TerrainLOD(L"Textures/asdfasdf.png");
 	mLODTerrain->SetCamera(mCamera);
+
+	mTerrain = new Terrain(L"Textures/asdfasdf.png");
+	mTerrain->SetCamera(mCamera);
+	mTerrain->mPosition.x = -360.0f;
 
 	mRSState = new RasterizerState();
 	mRSState->FillMode(D3D11_FILL_WIREFRAME);
@@ -43,7 +48,6 @@ TerrainLODScene::TerrainLODScene() :
 
 	mSphere = new Sphere(L"Lighting");
 	mSphere->mScale = { 3.0f, 3.0f, 3.0f };
-
 }
 
 TerrainLODScene::~TerrainLODScene()
@@ -60,12 +64,13 @@ void TerrainLODScene::Update()
 	mCamera->Update();
 	mCamera->Move();
 	mLODTerrain->Update();
+	mTerrain->Update();
 	mSphere->Update();
 	//mPlayer->Update();
 
-	terrainY = mLODTerrain->GetTargetPositionY(mSphere->mPosition);
+	mTerrainY = mLODTerrain->GetTargetPositionY(mSphere->mPosition);
 
-	mSphere->mPosition.y = terrainY;
+	mSphere->mPosition.y = mTerrainY;
 
 	if (KEY_PRESS('W'))
 	{
@@ -86,6 +91,16 @@ void TerrainLODScene::Update()
 	{
 		mSphere->mPosition.x += 100.0f * DELTA;
 	}
+
+	//if (KEY_PRESS('Q'))
+	//{
+	//	mLODTerrain->mScale += 3.0f * DELTA;
+	//}
+
+	//if (KEY_PRESS('E'))
+	//{
+	//	mLODTerrain->mScale -= 3.0f * DELTA;
+	//}
 }
 
 void TerrainLODScene::PreRender()
@@ -101,6 +116,7 @@ void TerrainLODScene::Render()
 	Environment::Get()->Set(); //
 	mCamera->SetViewBufferToVS();
 	mCamera->SetProjectionBufferToVS();
+	mLightBuffer->SetPSBuffer(0);
 
 	if (mIsWireRender)
 	{
@@ -114,6 +130,7 @@ void TerrainLODScene::Render()
 	}
 
 	mLODTerrain->Render();
+	mTerrain->Render();
 	//mPlayer->Render();
 	mSphere->Render();
 }
@@ -132,8 +149,10 @@ void TerrainLODScene::PostRender()
 	SpacingRepeatedly(2);
 	ImGui::InputFloat3("Sphere Position", (float*)&mSphere->mPosition, "%.3f");
 	SpacingRepeatedly(2);
-	ImGui::InputFloat("terrainY", (float*)&terrainY);
+	ImGui::InputFloat("terrainY", (float*)&mTerrainY);
 
 	ImGui::RadioButton("SolidFrame", &mIsWireRender, 0); ImGui::SameLine();
 	ImGui::RadioButton("WireFrame", &mIsWireRender, 1);
+
+
 }

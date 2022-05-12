@@ -63,9 +63,8 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     output.diffuse = float4(sampledDiffuseMap, sampledSpecularMap); // specIntensity = 텍스쳐에서 샘플링한값.
     output.specular = float4(specPowNorm, 0.0f, 0.0f, 1.0f);
     output.normal = float4(mappingedNormal * 0.5f + 0.5f, 1.0f); // 0~1 정규화.
-    output.depth = float4(depthValue, depthValue, depthValue, 1.0f);
-    
-    output.specaulrForShow = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    output.depth = float4(depthValue, depthValue, depthValue, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
+    output.specaulrForShow = float4(0.0f, 0.0f, 0.0f, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
     
     [flatten]
     if (hasSpecularMap)

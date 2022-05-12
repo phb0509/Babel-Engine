@@ -20,6 +20,7 @@ private:
 
 public:
 	Terrain();
+	Terrain(wstring hegihtMapName);
 	~Terrain();
 
 	void Update();	
@@ -40,6 +41,7 @@ private:
 	void createNormal();
 	void createTangent();
 	void createNodeMap();
+	void createComputeData();
 
 private:
 	Material* mMaterial;

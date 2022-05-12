@@ -14,7 +14,6 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mSphere->GetMaterial()->SetNormalMap(L"Textures/Wall_normal.png");
 	mSphere->GetMaterial()->SetSpecularMap(L"Textures/Wall_specular.png");
 	
-
 	mTerrain = new Terrain();
 	mTerrain->SetCamera(mWorldCamera);
 	mLightBuffer = new LightBuffer();
@@ -28,7 +27,6 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mSpotLight = new Light(LightType::SPOT);
 	mSpotLight->mTag = "SpotLight";
 
-	
 	mLightBuffer->Add(mDirectionalLight);
 	mLightBuffer->Add(mPointLight);
 	mLightBuffer->Add(mSpotLight);
@@ -143,6 +141,7 @@ void DeferredRenderingScene::PreRender()
 
 	mGroot->DeferredRender();
 	mPlayer->DeferredRender();
+	//mPlayer->Render();
 	mMutant->DeferredRender();
 
 	mSphere->Render();

@@ -10,66 +10,74 @@ Heap::~Heap()
 
 void Heap::Insert(Node* node)
 {
-    heap.emplace_back(node);
-    UpdateUpper(heap.size() - 1);
+	mHeap.emplace_back(node);
+	UpdateUpper(mHeap.size() - 1);
 }
 
 void Heap::UpdateUpper(int index)
 {
-    int curIndex = index;
-    int parent = (curIndex - 1) / 2;
+	int curIndex = index;
+	int parent = (curIndex - 1) / 2;
 
-    while (curIndex != 0)
-    {
-        if (heap[parent]->mF < heap[curIndex]->mF)
-            break;
+	while (curIndex != 0)
+	{
+		if (mHeap[parent]->mF < mHeap[curIndex]->mF)
+		{
+			break;
+		}
 
-        swap(heap[curIndex], heap[parent]);
+		swap(mHeap[curIndex], mHeap[parent]);
 
-        curIndex = parent;
-        parent = (curIndex - 1) / 2;
-    }
+		curIndex = parent;
+		parent = (curIndex - 1) / 2;
+	}
 }
 
 Node* Heap::DeleteRoot()
 {
-    Node* root = heap.front();
+	Node* root = mHeap.front();
 
-    swap(heap[0], heap.back());
+	swap(mHeap[0], mHeap.back());
 
-    heap.pop_back();
-    UpdateLower(0);
+	mHeap.pop_back();
+	UpdateLower(0);
 
-    return root;
+	return root;
 }
 
 void Heap::UpdateLower(int index)
 {
-    int curIndex = index;
-    int lChild = index * 2 + 1;
-    int rChild = lChild + 1;
-    int minNode = curIndex;
+	int curIndex = index;
+	int lChild = index * 2 + 1;
+	int rChild = lChild + 1;
+	int minNode = curIndex;
 
-    while (true)
-    {
-        if (lChild < heap.size() && heap[lChild]->mF < heap[minNode]->mF)
-            minNode = lChild;
+	while (true)
+	{
+		if (lChild < mHeap.size() && mHeap[lChild]->mF < mHeap[minNode]->mF)
+		{
+			minNode = lChild;
+		}
 
-        if (rChild < heap.size() && heap[rChild]->mF < heap[minNode]->mF)
-            minNode = rChild;
+		if (rChild < mHeap.size() && mHeap[rChild]->mF < mHeap[minNode]->mF)
+		{
+			minNode = rChild;
+		}
 
-        if (minNode == curIndex)
-            break;
+		if (minNode == curIndex)
+		{
+			break;
+		}
 
-        swap(heap[curIndex], heap[minNode]);
+		swap(mHeap[curIndex], mHeap[minNode]);
 
-        curIndex = minNode;
-        lChild = curIndex * 2 + 1;
-        rChild = lChild + 1;
-    }
+		curIndex = minNode;
+		lChild = curIndex * 2 + 1;
+		rChild = lChild + 1;
+	}
 }
 
 void Heap::Clear()
 {
-    heap.clear();
+	mHeap.clear();
 }

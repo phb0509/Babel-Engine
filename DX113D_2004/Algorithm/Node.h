@@ -45,5 +45,5 @@ private:
 	float mG;
 	float mH;
 	Float2 mDistanceBetweenNodes;
-	vector<EdgeInfo*> edges;
+	vector<EdgeInfo*> mEdges;
 };

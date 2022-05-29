@@ -17,7 +17,6 @@ Environment::Environment()
 Environment::~Environment()
 {
 	delete mSamplerState;
-	
 }
 
 void Environment::PostRender()
@@ -28,7 +27,6 @@ void Environment::PostRender()
 
 void Environment::showLightInformation()
 {
-	
 }
 
 void Environment::Set()
@@ -36,6 +34,8 @@ void Environment::Set()
 	SetViewport();
 	mBlendState[0]->SetState();
 	mDepthState[0]->SetState();
+
+	R"(abcdef)";
 }
 
 void Environment::SetViewport(UINT width, UINT height)

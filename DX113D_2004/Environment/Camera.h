@@ -60,7 +60,6 @@ public:
 private:
 	ViewBuffer* mViewBuffer;
 	Matrix mViewMatrix;
-
 	Matrix mPerspectiveProjectionMatrix;
 	Matrix mOrthographicProjectionMatrix;
 

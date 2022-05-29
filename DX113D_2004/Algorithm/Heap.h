@@ -2,8 +2,6 @@
 
 class Heap
 {
-private:
-	vector<Node*> heap;
 
 public:
 	Heap();
@@ -16,4 +14,7 @@ public:
 	void UpdateLower(int index);
 
 	void Clear();
+
+private:
+	vector<Node*> mHeap;
 };

@@ -20,7 +20,7 @@ Node::~Node()
 	if(mObstacle != nullptr)
 		delete mObstacle;
 
-	for (EdgeInfo* edge : edges)
+	for (EdgeInfo* edge : mEdges)
 		delete edge;
 }
 
@@ -67,7 +67,7 @@ void Node::AddEdge(Node* node)
 	edge->index = node->mIndex;
 	edge->edgeCost = Distance(mPosition, node->mPosition);
 
-	edges.emplace_back(edge);
+	mEdges.emplace_back(edge);
 }
 
 Collider* Node::MakeObstacle()

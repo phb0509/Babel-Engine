@@ -1,7 +1,8 @@
 #include "Framework.h"
 
-AStar::AStar(UINT width, UINT height)
-	: mWidth(width), mHeight(height) // 터레인의 각 행,열에 배치할 노드개수.
+AStar::AStar(UINT width, UINT height): 
+	mWidth(width), 
+	mHeight(height) // 터레인의 각 행,열에 배치할 노드개수.
 {
 	mHeap = new Heap();
 }
@@ -290,7 +291,7 @@ float AStar::getDistance(int curIndex, int end)
 
 void AStar::extend(int center, int end)
 {
-	vector<Node::EdgeInfo*> edges = mNodeMap[center]->edges;
+	vector<Node::EdgeInfo*> edges = mNodeMap[center]->mEdges;
 
 	for (UINT i = 0; i < edges.size(); i++)
 	{

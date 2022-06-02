@@ -8,6 +8,7 @@ Node::Node(Vector3 pos, int index, Float2 interval):
 	mVia(-1), 
 	mF(0), mG(0), mH(0), 
 	mState(NONE), 
+	mCollider(nullptr),
 	mObstacle(nullptr)
 {
 	mCollider = new SphereCollider();

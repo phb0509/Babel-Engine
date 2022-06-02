@@ -13,7 +13,7 @@ Reflection::Reflection(Transform* transform)
 	mTargetTexture->mScale = { 300, 300, 1 };
 	mTargetTexture->mPosition = { 150, 150, 0 };
 
-	mCamera = new Camera();
+	mWorldCamera = new Camera();
 }
 
 Reflection::~Reflection()
@@ -22,20 +22,20 @@ Reflection::~Reflection()
 	delete mDepthStencil;
 	delete mReflectionBuffer;
 	delete mTargetTexture;
-	delete mCamera;
+	delete mWorldCamera;
 }
 
 void Reflection::Update()
 {	
-	mCamera->mRotation = mTargetCamera->mRotation;
-	mCamera->mPosition = mTargetCamera->mPosition;
+	mWorldCamera->mRotation = mTargetCamera->mRotation;
+	mWorldCamera->mPosition = mTargetCamera->mPosition;
 
-	mCamera->mRotation.x *= -1.0f;
-	mCamera->mPosition.y = mTransform->mPosition.y * 2.0f - mCamera->mPosition.y;
+	mWorldCamera->mRotation.x *= -1.0f;
+	mWorldCamera->mPosition.y = mTransform->mPosition.y * 2.0f - mWorldCamera->mPosition.y;
 
-	mCamera->SetViewMatrixToBuffer();
+	mWorldCamera->SetViewMatrixToBuffer();
 
-	mReflectionBuffer->SetMatrix(mCamera->GetViewMatrix());
+	mReflectionBuffer->SetMatrix(mWorldCamera->GetViewMatrix());
 }
 
 void Reflection::PreRender()

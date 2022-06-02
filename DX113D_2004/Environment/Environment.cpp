@@ -17,6 +17,18 @@ Environment::Environment()
 Environment::~Environment()
 {
 	delete mSamplerState;
+
+	for (auto temp : mBlendState)
+	{
+		delete temp;
+		temp = nullptr;
+	}
+
+	for (auto temp : mDepthState)
+	{
+		delete temp;
+		temp = nullptr;
+	}
 }
 
 void Environment::PostRender()
@@ -34,8 +46,6 @@ void Environment::Set()
 	SetViewport();
 	mBlendState[0]->SetState();
 	mDepthState[0]->SetState();
-
-	R"(abcdef)";
 }
 
 void Environment::SetViewport(UINT width, UINT height)

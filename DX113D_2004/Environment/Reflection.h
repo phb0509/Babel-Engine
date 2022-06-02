@@ -20,7 +20,7 @@ private:
 	RenderTarget* mRenderTarget;
 	DepthStencil* mDepthStencil;
 
-	Camera* mCamera;
+	Camera* mWorldCamera;
 	Camera* mTargetCamera;
 	class UIImage* mTargetTexture;
 };

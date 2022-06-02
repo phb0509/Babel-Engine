@@ -22,5 +22,4 @@ private:
 	SamplerState* mSamplerState;
 	BlendState* mBlendState[2];
 	DepthStencilState* mDepthState[2];
-
 };

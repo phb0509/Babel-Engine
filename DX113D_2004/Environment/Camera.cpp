@@ -5,7 +5,6 @@ Camera::Camera():
 	mRotationSpeed(2.0f),
 	mWheelSpeed(5.0f),
 	mbIsInitialized(false),
-	mFrustum(nullptr),
 	mDistanceToNearZ(0.1f),
 	mDistanceToFarZ(1000.0f),
 	mAspectRatio(WIN_WIDTH/(float)WIN_HEIGHT),
@@ -23,6 +22,8 @@ Camera::Camera():
 
 Camera::~Camera()
 {
+	delete mPerspectiveProjectionBuffer;
+	delete mOrthographicProjectionBuffer;
 	delete mViewBuffer;
 	delete mFrustum;
 }
@@ -46,8 +47,8 @@ void Camera::Update()
 
 void Camera::Render()
 {
-	
 }
+
 void Camera::PostRender()
 {
 }
@@ -62,8 +63,6 @@ void Camera::RenderFrustumCollider()
 		}
 	}
 }
-
-
 
 void Camera::initialize()
 {

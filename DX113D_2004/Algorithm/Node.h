@@ -30,9 +30,7 @@ public:
 	void AddEdge(Node* node);
 	Collider* MakeObstacle();
 	Collider* GetCollider() { return mCollider; };
-
 	void SetTestNode(bool isCheck) { mbIsCheck = isCheck; };
-
 
 private:
 	Collider* mCollider;

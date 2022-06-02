@@ -21,6 +21,11 @@ Frustum::Frustum(float FoV, float aspectRatio, float distanceToNearZ, float dist
 
 Frustum::~Frustum()
 {
+	delete mCollider;
+	mCollider = nullptr;
+
+	delete mEmptyObject;
+	mEmptyObject = nullptr;
 }
 
 void Frustum::Update()

@@ -9,12 +9,10 @@ Light::Light() :
 	mOuter(65.0f),
 	mLength(50.0f),
 	mActive(true),
-	mSphere(nullptr),
 	mLightBuffer(nullptr),
 	mIndex(0)
 {
 	mSphere = new Sphere(L"Lighting");
-	//mSphere->mScale = { 10.0f,10.0f,10.0f };
 }
 
 Light::Light(LightType lightType):
@@ -26,7 +24,6 @@ Light::Light(LightType lightType):
 	mOuter(65.0f),
 	mLength(50.0f),
 	mActive(true),
-	mSphere(nullptr),
 	mLightBuffer(nullptr),
 	mIndex(0)
 {

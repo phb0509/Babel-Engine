@@ -1,7 +1,7 @@
 #include "Framework.h"
 
-Reflection::Reflection(Transform* transform)
-	: mTransform(transform)
+Reflection::Reflection(Transform* transform) : 
+	mTransform(transform)
 {
 	mRenderTarget = new RenderTarget(2000, 2000);
 	mDepthStencil = new DepthStencil(2000, 2000);

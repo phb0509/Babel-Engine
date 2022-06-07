@@ -10,7 +10,6 @@ Texture2DBuffer::Texture2DBuffer(ID3D11Texture2D* src)
 	mPage = srcDesc.ArraySize;
 	mFormat = srcDesc.Format;
 
-
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
 	desc.Width = mTerrainWidth;

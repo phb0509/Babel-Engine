@@ -26,14 +26,14 @@ private:
 
 private:
 	// Shader로 값을 보내기위한 값들
-	ID3D11Resource* mInput = nullptr;
-	ID3D11ShaderResourceView* mSRV = nullptr;
+	ID3D11Resource* mInput;
+	ID3D11ShaderResourceView* mSRV;
 
 	// Shader에서 값 받아오기위한 값들.
-	ID3D11Resource* mOutput = nullptr;
-	ID3D11UnorderedAccessView* mUAV = nullptr;
+	ID3D11Resource* mOutput;
+	ID3D11UnorderedAccessView* mUAV;
 	
-	ID3D11Resource* mResult = nullptr;
+	ID3D11Resource* mResult;
 
 	UINT mTerrainWidth;
 	UINT mTerrainHeight;

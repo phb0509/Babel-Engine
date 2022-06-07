@@ -1,13 +1,16 @@
 #include "Framework.h"
 
-ComputeStructuredBuffer::ComputeStructuredBuffer(void* inputData, UINT inputStride, UINT inputCount, UINT outputStride, UINT outputCount)
-	: inputData(inputData), inputStride(inputStride), inputCount(inputCount),
-	outputStride(outputStride), outputCount(outputCount)
+ComputeStructuredBuffer::ComputeStructuredBuffer(void* inputData, UINT inputStride, UINT inputCount, UINT outputStride, UINT outputCount) : 
+	mInputData(inputData), 
+	mInputStride(inputStride), 
+	mInputCount(inputCount),
+	mOutputStride(outputStride), 
+	mOutputCount(outputCount)
 {
 	if (outputStride == 0 || outputCount == 0)
 	{
-		this->outputStride = inputStride;
-		this->outputCount = inputCount;
+		this->mOutputStride = inputStride;
+		this->mOutputCount = inputCount;
 	}
 
 	CreateInput();
@@ -18,8 +21,8 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(void* inputData, UINT inputStri
 }
 
 ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputCount): // 구조체크기, 개수
-	outputStride(outputStride),
-	outputCount(outputCount)
+	mOutputStride(outputStride),
+	mOutputCount(outputCount)
 {
 	CreateOutput();
 	CreateUAV();
@@ -28,15 +31,9 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputC
 
 ComputeStructuredBuffer::~ComputeStructuredBuffer()
 {
-	if (input != nullptr)
-	{
-		input->Release();
-	}
-
-	if (srv != nullptr)
-	{
-		srv->Release();
-	}
+	delete mInputData;
+	mInput->Release();
+	mSRV->Release();
 	
 	mUAVbuffer->Release();
 	mUAV->Release();
@@ -50,22 +47,22 @@ void ComputeStructuredBuffer::CreateInput() // 계산셰이더로 넘길 버퍼 설정,생성.
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.ByteWidth = inputStride * inputCount;
+	desc.ByteWidth = mInputStride * mInputCount;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	desc.StructureByteStride = inputStride;
+	desc.StructureByteStride = mInputStride;
 
 	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = inputData;
+	initData.pSysMem = mInputData;
 
 	V(DEVICE->CreateBuffer(&desc, &initData, &buffer));
 
-	input = (ID3D11Resource*)buffer; // ID3D11Buffer* -> ID3D11Resource*
+	mInput = (ID3D11Resource*)buffer; // ID3D11Buffer* -> ID3D11Resource*
 }
 
 void ComputeStructuredBuffer::CreateSRV() // 읽기전용자원.'gpu에서' 읽기전용자원으로 쓰인다. ex)Texture, 버퍼를 셰이더에 넘기기위해 srv로 변환.
 {
-	ID3D11Buffer* buffer = (ID3D11Buffer*)input; // ID3D11Resource  ->  ID3D11Buffer*
+	ID3D11Buffer* buffer = (ID3D11Buffer*)mInput; // ID3D11Resource  ->  ID3D11Buffer*
 
 	D3D11_BUFFER_DESC desc;
 	buffer->GetDesc(&desc); // input의 설정을 desc에 저장. 근데 
@@ -75,9 +72,9 @@ void ComputeStructuredBuffer::CreateSRV() // 읽기전용자원.'gpu에서' 읽기전용자원
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 	srvDesc.BufferEx.FirstElement = 0;
-	srvDesc.BufferEx.NumElements = inputCount;
+	srvDesc.BufferEx.NumElements = mInputCount;
 
-	V(DEVICE->CreateShaderResourceView(buffer, &srvDesc, &srv));
+	V(DEVICE->CreateShaderResourceView(buffer, &srvDesc, &mSRV));
 }
 
 void ComputeStructuredBuffer::CreateOutput() // 계산셰이더에서 계산된 값을 CPU에서 넘겨받을 UAV버퍼설정.
@@ -86,10 +83,10 @@ void ComputeStructuredBuffer::CreateOutput() // 계산셰이더에서 계산된 값을 CPU에
 	
 	D3D11_BUFFER_DESC desc = {};
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.ByteWidth = outputStride * outputCount; // 데이터타입크기 * 개수
+	desc.ByteWidth = mOutputStride * mOutputCount; // 데이터타입크기 * 개수
 	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS; // UAV로 설정.
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	desc.StructureByteStride = outputStride;	// 데이터타입크기(버퍼크기)
+	desc.StructureByteStride = mOutputStride;	// 데이터타입크기(버퍼크기)
 
 	V(DEVICE->CreateBuffer(&desc, nullptr, &buffer)); // buffer에 desc설정 담기.
 
@@ -107,7 +104,7 @@ void ComputeStructuredBuffer::CreateUAV() // gpu에서 계산한 데이터를 다시 담아서
 	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
-	uavDesc.Buffer.NumElements = outputCount;
+	uavDesc.Buffer.NumElements = mOutputCount;
 
 	V(DEVICE->CreateUnorderedAccessView(buffer, &uavDesc, &mUAV));
 }

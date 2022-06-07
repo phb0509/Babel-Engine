@@ -2,45 +2,45 @@
 
 Refraction::Refraction(wstring normalFile)
 {
-	timeBuffer = new TimeBuffer();
+	mTimeBuffer = new TimeBuffer();
 
-	normalMap = Texture::Add(normalFile);
+	mNormalMap = Texture::Add(normalFile);
 
-	renderTarget = new RenderTarget(2000, 2000);
-	depthStencil = new DepthStencil(2000, 2000);
+	mRenderTarget = new RenderTarget(2000, 2000);
+	mDepthStencil = new DepthStencil(2000, 2000);
 
-	targetTexture = new UIImage(L"Texture");
-	targetTexture->SetSRV(renderTarget->GetSRV());
-	targetTexture->mScale = { 300, 300, 1 };
-	targetTexture->mPosition = { 150, 150, 0 };
+	mTargetTexture = new UIImage(L"Texture");
+	mTargetTexture->SetSRV(mRenderTarget->GetSRV());
+	mTargetTexture->mScale = { 300, 300, 1 };
+	mTargetTexture->mPosition = { 150, 150, 0 };
 }
 
 Refraction::~Refraction()
 {
-	delete timeBuffer;
-	delete renderTarget;
-	delete depthStencil;
-	delete targetTexture;
+	delete mTimeBuffer;
+	delete mRenderTarget;
+	delete mDepthStencil;
+	delete mTargetTexture;
 }
 
 void Refraction::Update()
 {
-	timeBuffer->data.time += DELTA;
+	mTimeBuffer->data.time += DELTA;
 }
 
 void Refraction::PreRender()
 {
-	renderTarget->SetDepthStencil(depthStencil);
+	mRenderTarget->SetDepthStencil(mDepthStencil);
 }
 
 void Refraction::Render()
 {
-	timeBuffer->SetPSBuffer(11);
-	normalMap->PSSet(2);
-	DEVICECONTEXT->PSSetShaderResources(11, 1, &renderTarget->GetSRV());
+	mTimeBuffer->SetPSBuffer(11);
+	mNormalMap->PSSet(2);
+	DEVICECONTEXT->PSSetShaderResources(11, 1, &mRenderTarget->GetSRV());
 }
 
 void Refraction::PostRender()
 {
-	targetTexture->Render();
+	mTargetTexture->Render();
 }

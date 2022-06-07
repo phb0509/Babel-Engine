@@ -1,7 +1,9 @@
 #include "Framework.h"
 
-Shadow::Shadow(UINT width, UINT height)
-	: mWidth(width), mHeight(height), mRadius(30)
+Shadow::Shadow(UINT width, UINT height) :
+	mWidth(width), 
+	mHeight(height), 
+	mRadius(30)
 {
 	mRenderTarget = new RenderTarget(width, height);
 	mDepthStencil = new DepthStencil(width, height);
@@ -28,6 +30,9 @@ Shadow::~Shadow()
 
 	delete mViewBuffer;
 	delete mProjectionBuffer;
+
+	delete mQualityBuffer;
+	delete mSizeBuffer;
 }
 
 void Shadow::PreRender()

@@ -10,15 +10,15 @@ IndexBuffer::IndexBuffer(void* data, UINT count)
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = data;
 
-	V(DEVICE->CreateBuffer(&desc, &initData, &buffer));
+	V(DEVICE->CreateBuffer(&desc, &initData, &mBuffer));
 }
 
 IndexBuffer::~IndexBuffer()
 {
-	buffer->Release();
+	mBuffer->Release();
 }
 
 void IndexBuffer::IASet()
 {
-	DEVICECONTEXT->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
+	DEVICECONTEXT->IASetIndexBuffer(mBuffer, DXGI_FORMAT_R32_UINT, 0);
 }

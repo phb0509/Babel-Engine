@@ -2,16 +2,6 @@
 
 class Refraction
 {
-private:
-	TimeBuffer* timeBuffer;
-
-	Texture* normalMap;
-
-	RenderTarget* renderTarget;
-	DepthStencil* depthStencil;
-
-	class UIImage* targetTexture;
-
 public:
 	Refraction(wstring normalFile);
 	~Refraction();
@@ -20,4 +10,14 @@ public:
 	void PreRender();
 	void Render();
 	void PostRender();
+
+private:
+	TimeBuffer* mTimeBuffer;
+
+	Texture* mNormalMap;
+
+	RenderTarget* mRenderTarget;
+	DepthStencil* mDepthStencil;
+
+	class UIImage* mTargetTexture;
 };

@@ -2,12 +2,6 @@
 
 class VertexBuffer
 {
-private:
-	ID3D11Buffer* buffer;
-
-	UINT stride;
-	UINT offset;
-
 public:
 	VertexBuffer(void* data, UINT stride, UINT count, bool isCPUWrite = false);	
 	~VertexBuffer();
@@ -18,6 +12,11 @@ public:
 	void Map(void* data,  UINT dataSize);
 	void UpdateBox(void* data, UINT count, Vector3 pickedPosition, float range, float width, float height);
 	
+	ID3D11Buffer* GetBuffer() { return mBuffer; }
 
-	ID3D11Buffer* GetBuffer() { return buffer; }
+private:
+	ID3D11Buffer* mBuffer;
+
+	UINT mStride;
+	UINT mOffset;
 };

@@ -3,7 +3,6 @@
 AStar::AStar(UINT width, UINT height): 
 	mWidth(width), 
 	mHeight(height), // 터레인의 각 행,열에 배치할 노드개수.
-	mHeap(nullptr),
 	mInterval(0.0f,0.0f)
 {
 	mHeap = new Heap();

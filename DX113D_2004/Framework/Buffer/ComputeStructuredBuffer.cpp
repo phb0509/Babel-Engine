@@ -31,7 +31,6 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputC
 
 ComputeStructuredBuffer::~ComputeStructuredBuffer()
 {
-	delete mInputData;
 	mInput->Release();
 	mSRV->Release();
 	

@@ -123,66 +123,66 @@ void InstancingMutants::setColliders(int instanceIndex)
 
 void InstancingMutants::loadBinaryFile()
 {
-	//BinaryReader binaryReader(L"TextData/Mutant.map");
-	//UINT colliderCount = binaryReader.UInt();
-	//int colliderType;
+	BinaryReader binaryReader(L"TextData/Player.map");
+	UINT colliderCount = binaryReader.UInt();
+	int colliderType;
 
-	//mColliderSRTdatas.resize(colliderCount);
-	//mColliderDatas.resize(colliderCount);
+	mColliderSRTdatas.resize(colliderCount);
+	mColliderDatas.resize(colliderCount);
 
-	//void* ptr1 = (void*)mColliderSRTdatas.data();
+	void* ptr1 = (void*)mColliderSRTdatas.data();
 
-	//for (int i = 0; i < colliderCount; i++)
-	//{
-	//	mColliderDatas[i].colliderName = binaryReader.String();
-	//	mColliderDatas[i].nodeName = binaryReader.String();
-	//	mColliderDatas[i].colliderType = binaryReader.UInt();
-	//}
+	for (int i = 0; i < colliderCount; i++)
+	{
+		mColliderDatas[i].colliderName = binaryReader.String();
+		mColliderDatas[i].nodeName = binaryReader.String();
+		mColliderDatas[i].colliderType = binaryReader.UInt();
+	}
 
-	//binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
+	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
 
-	//for (int i = 0; i < colliderCount; i++)
-	//{
-	//	mColliderDatas[i].position = mColliderSRTdatas[i].position;
-	//	mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
-	//	mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
-	//}
+	for (int i = 0; i < colliderCount; i++)
+	{
+		mColliderDatas[i].position = mColliderSRTdatas[i].position;
+		mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
+		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
+	}
 
-	//// Create Colliders;
-	//for (int i = 0; i < mColliderDatas.size(); i++)
-	//{
-	//	SettedCollider settedCollider;
-	//	Collider* collider = nullptr;
+	// Create Colliders;
+	for (int i = 0; i < mColliderDatas.size(); i++)
+	{
+		SettedCollider settedCollider;
+		Collider* collider = nullptr;
 
-	//	switch (mColliderDatas[i].colliderType)
-	//	{
-	//	case 0: collider = new BoxCollider();
-	//		break;
-	//	case 1: collider = new SphereCollider();
-	//		break;
-	//	case 2: collider = new CapsuleCollider();
-	//		break;
-	//	default:
-	//		break;
-	//	}
+		switch (mColliderDatas[i].colliderType)
+		{
+		case 0: collider = new BoxCollider();
+			break;
+		case 1: collider = new SphereCollider();
+			break;
+		case 2: collider = new CapsuleCollider();
+			break;
+		default:
+			break;
+		}
 
-	//	if (collider != nullptr)
-	//	{
-	//		collider->mTag = mColliderDatas[i].colliderName;
-	//		collider->mPosition = mColliderDatas[i].position;
-	//		collider->mRotation = mColliderDatas[i].rotation;
-	//		collider->mScale = mColliderDatas[i].scale;
+		if (collider != nullptr)
+		{
+			collider->mTag = mColliderDatas[i].colliderName;
+			collider->mPosition = mColliderDatas[i].position;
+			collider->mRotation = mColliderDatas[i].rotation;
+			collider->mScale = mColliderDatas[i].scale;
 
-	//		settedCollider.colliderName = mColliderDatas[i].colliderName;
-	//		settedCollider.nodeName = mColliderDatas[i].nodeName;
-	//		settedCollider.collider = collider;
+			settedCollider.colliderName = mColliderDatas[i].colliderName;
+			settedCollider.nodeName = mColliderDatas[i].nodeName;
+			settedCollider.collider = collider;
 
-	//		mColliders.push_back(settedCollider);
-	//		mCollidersMap[mColliderDatas[i].colliderName] = collider;
-	//	}
-	//}
+			mColliders.push_back(settedCollider);
+			mCollidersMap[mColliderDatas[i].colliderName] = collider;
+		}
+	}
 
-	//binaryReader.CloseReader();
+	binaryReader.CloseReader();
 }
 
 void InstancingMutants::showAnimationStates()

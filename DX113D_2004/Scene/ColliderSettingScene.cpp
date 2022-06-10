@@ -190,6 +190,7 @@ void ColliderSettingScene::Render()
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
 	Environment::Get()->Set(); // SetViewPort
+
 	mLightBuffer->SetPSBuffer(0);
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
@@ -303,8 +304,6 @@ void ColliderSettingScene::renderGizmos()
 		ImGui::InputFloat3("Global Translation", worldTranslation);
 		ImGui::InputFloat3("Glpbal Rptation", worldRotation);
 		ImGui::InputFloat3("Global Scale", worldScale);
-
-		
 
 		SpacingRepeatedly(2);
 
@@ -732,9 +731,9 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 				SpacingRepeatedly(1);
 
-				ImGui::InputFloat3(globalPositionLabel.c_str(), (float*)&collider->mGlobalPosition);
+				/*ImGui::InputFloat3(globalPositionLabel.c_str(), (float*)&collider->mGlobalPosition);
 				ImGui::InputFloat3(globalRotationLabel.c_str(), (float*)&collider->mGlobalRotation);
-				ImGui::InputFloat3(globalScaleLabel.c_str(), (float*)&collider->mGlobalScale);
+				ImGui::InputFloat3(globalScaleLabel.c_str(), (float*)&collider->mGlobalScale);*/
 
 				//if (mCurrentPickedCollider == collider) // 피킹된 컬라이라면
 				//{

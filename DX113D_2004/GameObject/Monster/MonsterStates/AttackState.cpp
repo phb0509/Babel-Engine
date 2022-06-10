@@ -1,7 +1,6 @@
 #include "Framework.h"
 
-AttackState::AttackState():
-	mbIsAttacking(false)
+AttackState::AttackState()
 {
 }
 
@@ -25,4 +24,4 @@ void AttackState::Execute(Monster* monster)
 
 void AttackState::Exit(Monster* mMonster)
 {
-}
+} 

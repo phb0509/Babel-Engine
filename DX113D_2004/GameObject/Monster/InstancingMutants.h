@@ -11,7 +11,7 @@ public:
 	{
 		string colliderName;
 		string nodeName;
-		int colliderType;
+		UINT colliderType;
 
 		Vector3 position;
 		Vector3 rotation;
@@ -61,4 +61,9 @@ private:
 private:
 	vector<Monster*> mInstanceObjects;
 	Terrain* mTerrain;
+
+	vector<TempCollider> mColliderSRTdatas;
+	vector<ColliderData> mColliderDatas;
+	vector<SettedCollider> mColliders;
+	map<string, Collider*> mCollidersMap;
 };

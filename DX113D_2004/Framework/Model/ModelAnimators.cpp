@@ -183,7 +183,7 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 {
 	mDrawCount = 0;
 
-	if (mbIsFrustumCullingMode)
+	if (mbIsFrustumCullingMode) // 
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
@@ -192,6 +192,7 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 
 			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
 			{
+				// 프러스텀범위 안의 인스턴스들.
 				mTransforms[i]->UpdateWorld();
 				mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 				mInstanceData[mDrawCount].instanceIndex = i;
@@ -199,6 +200,7 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 			}
 		}
 	}
+
 	else
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)

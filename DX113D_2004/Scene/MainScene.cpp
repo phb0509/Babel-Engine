@@ -53,8 +53,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 20;
-	int column = 20;
+	int row = 10;
+	int column = 10;
 
 	mMutantInstanceCount = row * column;
 
@@ -193,30 +193,7 @@ void MainScene::Render()
 	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
 	DEVICECONTEXT->Draw(4, 0);
 
-
 	mGBuffer->ClearSRVs();
-
-	//switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
-	//{
-	//case 0:    // World
-	//{
-	//	mWorldCamera->SetViewBufferToVS(1);
-	//	mWorldCamera->SetProjectionBufferToVS(2);
-	//}
-	//break;
-
-	//case 1:    // Target
-	//{
-	//	mTargetCamera->SetViewBufferToVS(1);
-	//	mTargetCamera->SetProjectionBufferToVS(2);
-	//}
-	//break;
-
-	//default:
-	//	break;
-	//}
-
-	//mPlayer->RenderColliders();
 }
 
 void MainScene::PostRender()
@@ -225,6 +202,7 @@ void MainScene::PostRender()
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
 	mGBuffer->PostRender();
+	mInstancingMutants->PostRender();
 
 	if (mbIsInstancingMode)
 	{
@@ -234,7 +212,7 @@ void MainScene::PostRender()
 	ImGui::Begin("Camera Info");
 	ImGui::Text("SelectCamera");
 
-	if (ImGui::Button("TargetCamera")) // 
+	if (ImGui::Button("TargetCamera"))
 	{
 		mMainCamera = eCamera::TargetCamera;
 		mPlayer->SetIsTargetMode(true);

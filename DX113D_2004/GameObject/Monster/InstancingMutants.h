@@ -51,17 +51,14 @@ public:
 	void SetIdle(int instanceIndex);
 	void SetAnimation(int instanceIndex, eAnimationStates value);
 
-
-
 private:
-
 	void setOnDamageEnd(int instanceIndex);
 	void setColliders(int instanceIndex);
 	void setAttackEnd(int instanceIndex);
 	void loadBinaryFile();
+	void showAnimationStates();
 
 private:
-
 	vector<Monster*> mInstanceObjects;
 	Terrain* mTerrain;
 };

@@ -121,7 +121,7 @@ void Monster::setNoneObstaclesTerrain(Vector3 destPos)
 	mPath.insert(mPath.begin(), destPos);
 }
 
-void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
+void Monster::SetRealtimeAStarPath(Vector3 destPos) // AStar 실시간용
 {
 	if (mIsAStarPathUpdate)
 	{
@@ -145,7 +145,7 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 			mPath.insert(mPath.begin(), destPos); // 목표위치를 경로벡터 맨 앞에 넣기. 
 
 			mAStar->MakeDirectPath(mPosition, destPos, mPath); // path벡터에 캐릭터가 다이렉트로 갈수있는 노드 한개만 남는다.
-			mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣어주는구나
+			mPath.insert(mPath.begin(), destPos); //다 삭제됐으니까 다시 넣기.
 
 			UINT pathSize = mPath.size();
 
@@ -213,7 +213,7 @@ void Monster::SetRealtimeAStarPath(Vector3 destPos) // 실시간용.
 			mAStar->SetTestNode(t);
 		}*/
 	}
-}
+} 
 
 void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 {

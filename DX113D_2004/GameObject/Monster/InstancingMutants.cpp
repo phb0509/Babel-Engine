@@ -28,7 +28,6 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 
 InstancingMutants::~InstancingMutants()
 {
-
 }
 
 void InstancingMutants::Update()
@@ -36,7 +35,7 @@ void InstancingMutants::Update()
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
 		mInstanceObjects[i]->Update();
-	}
+	} 
 
 	ModelAnimators::Update();
 }
@@ -52,39 +51,7 @@ void InstancingMutants::Render()
 
 void InstancingMutants::PostRender()
 {
-	ImGui::Begin("Instance Information");
-
-	for (int i = 0; i < mInstanceObjects.size(); i++)
-	{
-		string animationName;
-
-		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationStates()))
-		{
-		case 0:
-			animationName = "Idle";
-			break;
-		case 1:
-			animationName = "Run";
-			break;
-		case 2:
-			animationName = "SmashAttack";
-			break;
-		case 3:
-			animationName = "OnDamage";
-			break;
-		case 4:
-			animationName = "Die";
-			break;
-		}
-
-		string name = to_string(i) + " Mutant State is " + animationName;
-		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
-		ImGui::Text(name.c_str());
-		ImGui::Text(frameBufferValue.c_str());
-		SpacingRepeatedly(2);
-	}
-
-	ImGui::End();
+	showAnimationStates();
 }
 
 void InstancingMutants::OnDamage(int instanceIndex, float damage)
@@ -216,4 +183,41 @@ void InstancingMutants::loadBinaryFile()
 	//}
 
 	//binaryReader.CloseReader();
+}
+
+void InstancingMutants::showAnimationStates()
+{
+	ImGui::Begin("Instance Information");
+
+	for (int i = 0; i < mInstanceObjects.size(); i++)
+	{
+		string animationName;
+
+		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationStates()))
+		{
+		case 0:
+			animationName = "Idle";
+			break;
+		case 1:
+			animationName = "Run";
+			break;
+		case 2:
+			animationName = "SmashAttack";
+			break;
+		case 3:
+			animationName = "OnDamage";
+			break;
+		case 4:
+			animationName = "Die";
+			break;
+		}
+
+		string name = to_string(i) + " Mutant State is " + animationName;
+		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
+		ImGui::Text(name.c_str());
+		ImGui::Text(frameBufferValue.c_str());
+		SpacingRepeatedly(2);
+	}
+
+	ImGui::End();
 }

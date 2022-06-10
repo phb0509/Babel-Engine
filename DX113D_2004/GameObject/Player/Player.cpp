@@ -310,17 +310,14 @@ void Player::checkNormalAttackCollision()
 {
 	if (mbIsNormalAttack) // 공격도중이면.
 	{
-		mMutants = GM->GetMonsters();
-
-		int a = 0;
-		for (int i = 0; i < mMutants.size(); i++)
+		for (int i = 0; i < mMonsters.size(); i++)
 		{
-			if (!(GM->GetHitCheckMap()[mMutants[i]])) // 공격받을수있는 상황이면(한프레임도 아직 공격받지 않았다면
+			if (!(GM->GetHitCheckMap()[mMonsters[i]])) // 공격받을수있는 상황이면(한프레임도 아직 공격받지 않았다면
 			{
-				if (mCollidersMap["swordCollider"]->Collision(mMutants[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
+				if (mCollidersMap["swordCollider"]->Collision(mMonsters[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
 				{
 					//mCollidersMap["swordCollider"]->SetColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
-					mMutants[i]->OnDamage(mNormalAttackDamage);
+					mMonsters[i]->OnDamage(mNormalAttackDamage);
 				}
 			}
 		}

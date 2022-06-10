@@ -31,7 +31,6 @@ public:
 		Collider* collider;
 	};
 
-
 	Mutant();
 	~Mutant();
 

@@ -2,7 +2,8 @@
 
 State::State():
 	mPeriodFuncPointer(nullptr),
-	mPlayer(nullptr)
+	mPlayer(nullptr),
+	mbIsAttacked(false)
 {
 }
 

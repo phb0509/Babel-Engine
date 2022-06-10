@@ -12,6 +12,7 @@ public:
 	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
 	virtual void Render() override;
+
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(float damage) override;
 	virtual void CheckOnHit() override;

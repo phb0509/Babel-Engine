@@ -15,13 +15,12 @@ public:
 	StalkingState();
 	~StalkingState();
 
-	virtual void Enter(Monster* mMonster) override;
-	virtual void Execute(Monster* mMonster) override;
-	virtual void Exit(Monster* mMonster) override;
+	virtual void Enter(Monster* monster) override;
+	virtual void Execute(Monster* monster) override;
+	virtual void Exit(Monster* monster) override;
 
 private:
-	bool mbIsAttack;
-
+	//bool mbIsAttack;
 
 };
 

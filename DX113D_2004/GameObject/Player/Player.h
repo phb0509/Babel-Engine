@@ -55,6 +55,7 @@ public:
 	void SetTargetCamera(Camera* camera) { mTargetCamera = camera; }
 	void SetTargetCameraInWorld(Camera* camera) { mTargetCameraInWorld = camera; }
 	void SetIsTargetMode(bool value) { mbIsTargetMode = value; }
+	void SetMonsters(vector<Monster*> monsters) { mMonsters = monsters; }
 
 private:
 	void initialize();
@@ -78,7 +79,6 @@ private:
 	void setAttackEnd();
 	void normalAttack();
 
-
 private:
 	Terrain* mTerrain;
 	TerrainLOD* mLODTerrain;
@@ -91,7 +91,7 @@ private:
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
 
-	vector<Monster*> mMutants;
+	vector<Monster*> mMonsters;
 	
 	bool mbIsInitialize;
 	bool mbIsNormalAttack;

@@ -14,4 +14,5 @@ public:
 protected:
 	Player* mPlayer;
 	function<void(Transform*, Vector3)> mPeriodFuncPointer;
+	bool mbIsAttacked;
 };

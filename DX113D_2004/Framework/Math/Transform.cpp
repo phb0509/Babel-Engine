@@ -61,8 +61,6 @@ void Transform::UpdateWorld()
 	mWorldBuffer->SetMatrix(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
 }
 
-
-
 void Transform::SetWorldBuffer(UINT slot)
 {
 	mWorldBuffer->SetVSBuffer(slot);

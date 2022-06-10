@@ -30,7 +30,7 @@ void PatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
 	
 }
 
-void PatrolState::Enter(Monster* mMonster)
+void PatrolState::Enter(Monster* monster)
 {
 	Initialize();
 }
@@ -131,7 +131,7 @@ void PatrolState::Execute(Monster* monster)
 	//범위 안 플레이어 있는지 체크.
 	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
 	{
-		monster->SetIsStalk(true);
+		//monster->SetIsStalk(true);
 		monster->ChangeState(monster->GetStalkingState()); // Stalking으로 상태전환.
 	}
 }

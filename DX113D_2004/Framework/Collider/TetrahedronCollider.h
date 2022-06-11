@@ -11,7 +11,6 @@ public:
 	virtual bool SphereCollision(SphereCollider* collider) override;
 	virtual bool CapsuleCollision(CapsuleCollider* collider) override;
 	
-
 private:
 	virtual void createMesh() override;
 	virtual void createMeshForColorPicking() override;

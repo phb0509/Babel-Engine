@@ -35,7 +35,7 @@ Player::Player():
 
 	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
-	loadBinaryFile();
+	loadBinaryCollidersFile();
 	UpdateWorld();
 }
 
@@ -54,10 +54,7 @@ void Player::Update()
 
 	setColliders();
 
-	for (int i = 0; i < mColliders.size(); i++)
-	{
-		mColliders[i].collider->Update();
-	}
+
 
 	updateCamera();
 
@@ -353,45 +350,46 @@ void Player::setColliders()
 	{
 		string nodeName = mColliders[i].nodeName;
 		int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
-		mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->mWorldMatrix;
-		mColliders[i].collider->SetParent(&mColliders[i].matrix);
+		mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->GetWorldMatrixValue(); // 해당 노드의 월드매트릭스.
+		mColliders[i].collider->SetParent(&mColliders[i].matrix); // 컬라이더의 부모를 노드의 월드매트릭스로 지정.
+		mColliders[i].collider->Update();
 	}
 }
 
-void Player::loadBinaryFile()
+void Player::loadBinaryCollidersFile()
 {
 	BinaryReader binaryReader(L"TextData/Player.map");
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;
 
-	mColliderSRTdatas.resize(colliderCount);
-	mColliderDatas.resize(colliderCount);
+	mTempColliderSRTdatas.resize(colliderCount);
+	mTempColliderDatas.resize(colliderCount);
 
-	void* ptr1 = (void*)mColliderSRTdatas.data();
+	void* ptr1 = (void*)mTempColliderSRTdatas.data();
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].colliderName = binaryReader.String();
-		mColliderDatas[i].nodeName = binaryReader.String();
-		mColliderDatas[i].colliderType = binaryReader.UInt();
+		mTempColliderDatas[i].colliderName = binaryReader.String();
+		mTempColliderDatas[i].nodeName = binaryReader.String();
+		mTempColliderDatas[i].colliderType = binaryReader.UInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].position = mColliderSRTdatas[i].position;
-		mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
-		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
+		mTempColliderDatas[i].position = mTempColliderSRTdatas[i].position;
+		mTempColliderDatas[i].rotation = mTempColliderSRTdatas[i].rotation;
+		mTempColliderDatas[i].scale = mTempColliderSRTdatas[i].scale;
 	}
 
 	// Create Colliders;
-	for (int i = 0; i < mColliderDatas.size(); i++)
+	for (int i = 0; i < mTempColliderDatas.size(); i++)
 	{
 		SettedCollider settedCollider;
 		Collider* collider = nullptr;
 
-		switch (mColliderDatas[i].colliderType)
+		switch (mTempColliderDatas[i].colliderType)
 		{
 		case 0: collider = new BoxCollider();
 			break;
@@ -405,17 +403,17 @@ void Player::loadBinaryFile()
 		 
 		if (collider != nullptr)
 		{
-			collider->mTag = mColliderDatas[i].colliderName;
-			collider->mPosition = mColliderDatas[i].position;
-			collider->mRotation = mColliderDatas[i].rotation;
-			collider->mScale = mColliderDatas[i].scale;
+			collider->mTag = mTempColliderDatas[i].colliderName;
+			collider->mPosition = mTempColliderDatas[i].position;
+			collider->mRotation = mTempColliderDatas[i].rotation;
+			collider->mScale = mTempColliderDatas[i].scale;
 
-			settedCollider.colliderName = mColliderDatas[i].colliderName;
-			settedCollider.nodeName = mColliderDatas[i].nodeName;
+			settedCollider.colliderName = mTempColliderDatas[i].colliderName;
+			settedCollider.nodeName = mTempColliderDatas[i].nodeName;
 			settedCollider.collider = collider;
 
 			mColliders.push_back(settedCollider);
-			mCollidersMap[mColliderDatas[i].colliderName] = collider;
+			mCollidersMap[mTempColliderDatas[i].colliderName] = collider;
 		}
 	}
 

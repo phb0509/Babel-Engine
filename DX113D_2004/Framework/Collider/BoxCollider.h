@@ -10,11 +10,11 @@ struct OBB
 
 class BoxCollider : public Collider
 {
-
-
 public:
-	BoxCollider(Vector3 minBox = Vector3(-0.5f, -0.5f, -0.5f),
-		Vector3 maxBox = Vector3(0.5f, 0.5f, 0.5f));
+	BoxCollider(
+		Vector3 minBox = Vector3(-0.5f, -0.5f, -0.5f),
+		Vector3 maxBox = Vector3(0.5f, 0.5f, 0.5f)
+	);
 	~BoxCollider();
 
 	virtual bool RayCollision(IN Ray ray, OUT Contact* contact = nullptr) override;
@@ -22,7 +22,6 @@ public:
 	virtual bool SphereCollision(SphereCollider* collider) override;
 	virtual bool CapsuleCollision(CapsuleCollider* collider) override;
 	
-
 	bool SphereCollision(Vector3 center, float radius);
 
 	Vector3 MinBox();
@@ -34,8 +33,7 @@ private:
 	virtual void createMesh() override;
 	virtual void createMeshForColorPicking() override;
 
-	bool SeperateAxis(Vector3 D, Vector3 axis, OBB box1, OBB box2);
-
+	bool seperateAxis(Vector3 D, Vector3 axis, OBB box1, OBB box2);
 
 private:
 	Vector3 mMinBox;

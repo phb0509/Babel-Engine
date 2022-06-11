@@ -3,7 +3,6 @@
 class SphereCollider : public Collider
 {
 
-
 public:
 	SphereCollider(float radius = 1.0f, UINT stackCount = 15, UINT sliceCount = 30);
 	~SphereCollider();

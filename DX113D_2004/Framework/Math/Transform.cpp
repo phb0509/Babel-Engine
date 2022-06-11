@@ -58,7 +58,7 @@ void Transform::UpdateWorld()
 	XMMatrixDecompose(&mGlobalScale.data, &mGlobalRotation.data,
 		&mGlobalPosition.data, mWorldMatrix);
 
-	mWorldBuffer->SetMatrix(mWorldMatrix); // Matrix값을 전치행렬로 바꿔서 MatrixBuffer에 Set.
+	mWorldBuffer->SetMatrix(mWorldMatrix); 
 }
 
 void Transform::SetWorldBuffer(UINT slot)

@@ -23,7 +23,7 @@ public:
 	void SetWorldBuffer(UINT slot = 0);
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
-	Matrix GetWorldMatrixValue() { return mWorldMatrix; }
+	Matrix& GetWorldMatrixValue() { return mWorldMatrix; }
 	Matrix GetInverseWorldMatrix() { return XMMatrixInverse(nullptr, mWorldMatrix); }
 	Matrix GetLocalWorldMatrix() { return mLocalWorldMatrix; }
 	Matrix* GetParentMatrix() { return mParentMatrix; }

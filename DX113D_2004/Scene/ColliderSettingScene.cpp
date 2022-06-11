@@ -731,9 +731,9 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 				SpacingRepeatedly(1);
 
-				/*ImGui::InputFloat3(globalPositionLabel.c_str(), (float*)&collider->mGlobalPosition);
+				ImGui::InputFloat3(globalPositionLabel.c_str(), (float*)&collider->mGlobalPosition);
 				ImGui::InputFloat3(globalRotationLabel.c_str(), (float*)&collider->mGlobalRotation);
-				ImGui::InputFloat3(globalScaleLabel.c_str(), (float*)&collider->mGlobalScale);*/
+				ImGui::InputFloat3(globalScaleLabel.c_str(), (float*)&collider->mGlobalScale);
 
 				//if (mCurrentPickedCollider == collider) // 피킹된 컬라이라면
 				//{

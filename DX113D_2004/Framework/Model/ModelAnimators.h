@@ -36,6 +36,9 @@ public:
 	void SetIsFrustumCullingMode(bool value) { mbIsFrustumCullingMode = value; }
 	void SetInstanceCount(int instanceCount);
 
+protected:
+	vector<int> mRenderedInstanceIndices;
+
 private:
 	vector<Transform*> mTransforms;
 	//InstanceData mInstanceData[MAX_INSTANCE];

@@ -33,6 +33,15 @@ public:
 		Collider* collider;
 	};
 
+	struct InstanceColliderData
+	{
+		vector<SettedCollider> mColliders;
+		map<string, Collider*> mCollidersMap;
+
+		InstanceColliderData() {};
+		InstanceColliderData(vector<SettedCollider> colliders, map<string, Collider*> collidersMap) : mColliders(colliders), mCollidersMap(collidersMap) {};
+	};
+
 	InstancingMutants(int instanceCount, Terrain* terrain);
 	~InstancingMutants();
 
@@ -53,17 +62,21 @@ public:
 
 private:
 	void setOnDamageEnd(int instanceIndex);
-	void setColliders(int instanceIndex);
+	void setColliders();
 	void setAttackEnd(int instanceIndex);
-	void loadBinaryFile();
+	void renderColliders();
+	void loadBinaryCollidersFile();
 	void showAnimationStates();
 
 private:
+	int mInstanceCount;
 	vector<Monster*> mInstanceObjects;
 	Terrain* mTerrain;
 
-	vector<TempCollider> mColliderSRTdatas;
-	vector<ColliderData> mColliderDatas;
-	vector<SettedCollider> mColliders;
-	map<string, Collider*> mCollidersMap;
+	vector<TempCollider> mTempColliderSRTdatas;
+	vector<ColliderData> mTempColliderDatas;
+	//vector<SettedCollider> mColliders;
+	//map<string, Collider*> mCollidersMap;
+	vector<InstanceColliderData> mInstanceColliderDatas;
+
 };

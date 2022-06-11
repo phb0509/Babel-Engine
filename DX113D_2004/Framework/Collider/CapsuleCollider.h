@@ -15,7 +15,7 @@ public:
 	
 
 	float Radius() { return mRadius * max(GetGlobalScale().x, max(GetGlobalScale().y, GetGlobalScale().z)); }
-	float Height() { return mTerrainHeight * GetGlobalScale().y; }
+	float Height() { return mHeight * GetGlobalScale().y; }
 
 private:
 	virtual void createMesh() override;
@@ -23,7 +23,7 @@ private:
 
 private:
 	float mRadius;
-	float mTerrainHeight;
+	float mHeight;
 
 	UINT mStackCount;
 	UINT mSliceCount;

@@ -73,7 +73,7 @@ private:
 	void rotateTargetCamera();
 
 	void setColliders();
-	void loadBinaryFile();
+	void loadBinaryCollidersFile();
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
 	void setAttackEnd();
@@ -86,8 +86,8 @@ private:
 	Camera* mTargetCamera;
 	Camera* mTargetCameraInWorld; // for Show
 
-	vector<TempCollider> mColliderSRTdatas;
-	vector<ColliderData> mColliderDatas;
+	vector<TempCollider> mTempColliderSRTdatas;
+	vector<ColliderData> mTempColliderDatas;
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
 

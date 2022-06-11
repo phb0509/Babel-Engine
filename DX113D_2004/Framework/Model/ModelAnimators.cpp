@@ -103,7 +103,7 @@ void ModelAnimators::Update()
 		}
 	}	
 
-	UpdateTransforms(); // 컬링 및 인스턴스버퍼 셋팅.
+	UpdateTransforms(); // FrustumCulling and Set InstanceBuffer
 }
 
 void ModelAnimators::Render()
@@ -182,6 +182,7 @@ void ModelAnimators::SetInstanceCount(int instanceCount)
 void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 {
 	mDrawCount = 0;
+	mRenderedInstanceIndices.clear();
 
 	if (mbIsFrustumCullingMode) // 
 	{
@@ -197,6 +198,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 				mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 				mInstanceData[mDrawCount].instanceIndex = i;
 				mDrawCount++;
+
+				mRenderedInstanceIndices.push_back(i); // 실제 렌더될 인스턴스의 인덱스값 저장.
 			}
 		}
 	}
@@ -209,6 +212,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 			mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 			mInstanceData[mDrawCount].instanceIndex = i;
 			mDrawCount++;
+
+			mRenderedInstanceIndices.push_back(i); // 실제 렌더될 인스턴스의 인덱스값 저장.
 		}
 	}
 

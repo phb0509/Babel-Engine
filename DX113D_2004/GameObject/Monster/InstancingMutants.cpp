@@ -1,9 +1,10 @@
 #include "Framework.h"
 
 InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
+	mInstanceCount(instanceCount),
 	mTerrain(terrain)
 {
-	//loadBinaryFile(); // 툴에서 셋팅한 컬라이더 불러오기.
+	loadBinaryCollidersFile(); // 툴에서 셋팅한 컬라이더 불러오기.
 
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
@@ -35,9 +36,10 @@ void InstancingMutants::Update()
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
 		mInstanceObjects[i]->Update();
-	} 
+	}
 
-	ModelAnimators::Update();
+	ModelAnimators::Update(); // Animation Tweening and Frustum Culling
+	setColliders();
 }
 
 void InstancingMutants::PreRender()
@@ -47,11 +49,18 @@ void InstancingMutants::PreRender()
 void InstancingMutants::Render()
 {
 	ModelAnimators::Render();
+	renderColliders();
 }
 
 void InstancingMutants::PostRender()
 {
 	showAnimationStates();
+
+	/*ImGui::Begin("TestWindow");
+	ImGui::InputFloat3("Instance0 Position", (float*)&mInstanceObjects[0]->mPosition);
+	SpacingRepeatedly(2);
+	ImGui::InputFloat3("Body Collider Position", (float*)&mInstanceColliderDatas[0].mColliders[0].collider->mPosition);
+	ImGui::End();*/
 }
 
 void InstancingMutants::OnDamage(int instanceIndex, float damage)
@@ -92,16 +101,28 @@ void InstancingMutants::SetAnimation(int instanceIndex, eAnimationStates value) 
 	if (mInstanceObjects[instanceIndex]->GetAnimationStates() != value)
 	{
 		mInstanceObjects[instanceIndex]->SetAnimation(value);
-		ModelAnimators::PlayClip(instanceIndex,static_cast<UINT>(value));
+		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
 		//SetAnimation(1, eAnimationStates::Run);
 	}
 }
-
 
 void InstancingMutants::setAttackEnd(int instanceIndex)
 {
 	/*mPlayer = GM->Get()->GetPlayer();
 	RotateToDestinationForModel(this, mPlayer->mPosition);*/
+}
+
+void InstancingMutants::renderColliders()
+{
+	for (int i = 0; i < mRenderedInstanceIndices.size(); i++) // 실제 렌더되는 인스턴스들 인덱스
+	{
+		int renderedInstanceIndex = mRenderedInstanceIndices[i];
+
+		for (int j = 0; j < mInstanceColliderDatas[renderedInstanceIndex].mColliders.size(); j++)
+		{
+			mInstanceColliderDatas[renderedInstanceIndex].mColliders[j].collider->Render();
+		}
+	}
 }
 
 Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
@@ -110,84 +131,106 @@ Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬�
 	return nullptr;
 }
 
-void InstancingMutants::setColliders(int instanceIndex)
+void InstancingMutants::setColliders()
 {
-	//for (int i = 0; i < mColliders.size(); i++)
-	//{
-	//	string nodeName = mColliders[i].nodeName;
-	//	int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
-	//	mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->mWorldMatrix;
-	//	mColliders[i].collider->SetParent(&mColliders[i].matrix);
-	//}
+	// 트랜스폼 업데이트는 안보이더라도 업데이트.
+
+	for (int i = 0; i < mInstanceCount; i++) // 실제 렌더되는 인스턴스들 인덱스
+	{
+		for (int j = 0; j < mInstanceColliderDatas[i].mColliders.size(); j++) // 뮤턴트에 셋팅된 컬라이더개수.
+		{
+			string nodeName = mInstanceColliderDatas[i].mColliders[j].nodeName;
+			int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
+			mInstanceColliderDatas[i].mColliders[j].matrix = GetTransformByNode(i,nodeIndex) * mInstanceObjects[i]->GetWorldMatrixValue(); // 노드의 월드행렬. ex) LeftHand
+			mInstanceColliderDatas[i].mColliders[j].collider->SetParent(&mInstanceColliderDatas[i].mColliders[j].matrix);
+			mInstanceColliderDatas[i].mColliders[j].collider->Update();
+		}
+	}
 }
 
-void InstancingMutants::loadBinaryFile()
+void InstancingMutants::loadBinaryCollidersFile()
 {
-	BinaryReader binaryReader(L"TextData/Player.map");
+	BinaryReader binaryReader(L"TextData/Mutant.map");
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;
 
-	mColliderSRTdatas.resize(colliderCount);
-	mColliderDatas.resize(colliderCount);
+	mTempColliderSRTdatas.resize(colliderCount);
+	mTempColliderDatas.resize(colliderCount);
 
-	void* ptr1 = (void*)mColliderSRTdatas.data();
+	void* ptr1 = (void*)mTempColliderSRTdatas.data();
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].colliderName = binaryReader.String();
-		mColliderDatas[i].nodeName = binaryReader.String();
-		mColliderDatas[i].colliderType = binaryReader.UInt();
+		mTempColliderDatas[i].colliderName = binaryReader.String();
+		mTempColliderDatas[i].nodeName = binaryReader.String();
+		mTempColliderDatas[i].colliderType = binaryReader.UInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mColliderDatas[i].position = mColliderSRTdatas[i].position;
-		mColliderDatas[i].rotation = mColliderSRTdatas[i].rotation;
-		mColliderDatas[i].scale = mColliderSRTdatas[i].scale;
+		mTempColliderDatas[i].position = mTempColliderSRTdatas[i].position;
+		mTempColliderDatas[i].rotation = mTempColliderSRTdatas[i].rotation;
+		mTempColliderDatas[i].scale = mTempColliderSRTdatas[i].scale;
 	}
+
+	mInstanceColliderDatas.assign(mInstanceCount, InstanceColliderData()); // 인스턴스개수만큼 초기화.
 
 	// Create Colliders;
-	for (int i = 0; i < mColliderDatas.size(); i++)
+	for (int i = 0; i < mInstanceCount; i++)
 	{
-		SettedCollider settedCollider;
-		Collider* collider = nullptr;
+		vector<SettedCollider> tempSettedCollider;
+		map<string, Collider*> tempCollidersMap;
 
-		switch (mColliderDatas[i].colliderType)
+		for (int j = 0; j < mTempColliderDatas.size(); j++)
 		{
-		case 0: collider = new BoxCollider();
-			break;
-		case 1: collider = new SphereCollider();
-			break;
-		case 2: collider = new CapsuleCollider();
-			break;
-		default:
-			break;
-		}
+			SettedCollider settedCollider;
+			Collider* collider = nullptr;
 
-		if (collider != nullptr)
-		{
-			collider->mTag = mColliderDatas[i].colliderName;
-			collider->mPosition = mColliderDatas[i].position;
-			collider->mRotation = mColliderDatas[i].rotation;
-			collider->mScale = mColliderDatas[i].scale;
+			switch (mTempColliderDatas[j].colliderType)
+			{
+			case 0: collider = new BoxCollider();
+				break;
+			case 1: collider = new SphereCollider();
+				break;
+			case 2: collider = new CapsuleCollider();
+				break;
+			default:
+				break;
+			}
 
-			settedCollider.colliderName = mColliderDatas[i].colliderName;
-			settedCollider.nodeName = mColliderDatas[i].nodeName;
-			settedCollider.collider = collider;
+			if (collider != nullptr)
+			{
+				collider->mTag = mTempColliderDatas[j].colliderName;
+				collider->mPosition = mTempColliderDatas[j].position;
+				collider->mRotation = mTempColliderDatas[j].rotation;
+				collider->mScale = mTempColliderDatas[j].scale;
 
-			mColliders.push_back(settedCollider);
-			mCollidersMap[mColliderDatas[i].colliderName] = collider;
+				settedCollider.colliderName = mTempColliderDatas[j].colliderName;
+				settedCollider.nodeName = mTempColliderDatas[j].nodeName;
+				settedCollider.collider = collider;
+
+				mInstanceColliderDatas[i].mColliders.push_back(settedCollider);
+				mInstanceColliderDatas[i].mCollidersMap[mTempColliderDatas[j].colliderName] = collider;
+				//mColliders.push_back(settedCollider); // vector<SettedCollider>
+				//mCollidersMap[mTempColliderDatas[j].colliderName] = collider; // map<string, Collider*>
+			}
 		}
 	}
+
+	mInstanceColliderDatas;
 
 	binaryReader.CloseReader();
 }
 
 void InstancingMutants::showAnimationStates()
 {
-	ImGui::Begin("Instance Information");
+	ImGui::Begin("Mutants Information");
+
+	ImGui::Text("RenderingMutants After FrustumCulling : %d", mRenderedInstanceIndices.size()); // 컬링 이후 실제 렌더되는 인스턴스뮤턴트 개수.
+
+	SpacingRepeatedly(2);
 
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{

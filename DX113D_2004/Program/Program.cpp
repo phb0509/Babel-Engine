@@ -17,9 +17,9 @@ Program::Program()
 	Create();
 
 	//SceneManager::Get()->Add("export", new ModelExportScene());
-	//SceneManager::Get()->Add("start", new MainScene());
+	SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
-	SceneManager::Get()->Add("start", new ColliderSettingScene());
+	//SceneManager::Get()->Add("start", new ColliderSettingScene());
 	//SceneManager::Get()->Add("start", new ColorPickingScene());
 	//SceneManager::Get()->Add("start", new TerrainEditorScene());
 	//SceneManager::Get()->Add("start", new TessellationScene());

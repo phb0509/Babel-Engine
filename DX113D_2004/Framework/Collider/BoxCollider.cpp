@@ -87,8 +87,8 @@ bool BoxCollider::BoxCollision(BoxCollider* collider)
 
     for(UINT i = 0; i < 3; i++)
     {
-        if (SeperateAxis(D, box1.axis[i], box1, box2)) return false;
-        if (SeperateAxis(D, box2.axis[i], box1, box2)) return false;
+        if (seperateAxis(D, box1.axis[i], box1, box2)) return false;
+        if (seperateAxis(D, box2.axis[i], box1, box2)) return false;
     }
 
     for (UINT i = 0; i < 3; i++)
@@ -104,7 +104,7 @@ bool BoxCollider::BoxCollision(BoxCollider* collider)
         for (UINT j = 0; j < 3; j++)
         {
             Vector3 cross = Vector3::Cross(box1.axis[i], box2.axis[j]);
-            if (SeperateAxis(D, cross, box1, box2)) return false;
+            if (seperateAxis(D, cross, box1, box2)) return false;
         }
     }
 
@@ -312,7 +312,7 @@ void BoxCollider::createMesh()
         mIndices.data(), mIndices.size());
 }
 
-bool BoxCollider::SeperateAxis(Vector3 D, Vector3 axis, OBB box1, OBB box2)
+bool BoxCollider::seperateAxis(Vector3 D, Vector3 axis, OBB box1, OBB box2)
 {
     float distance = abs(Vector3::Dot(D, axis));
 

@@ -360,9 +360,6 @@
     <ClInclude Include="Scene\TestScene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\Monster\InstanceMonster.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject\Monster\InstancingMutants.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -370,6 +367,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Buffer\LightBuffer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\UtilityStructures.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Monster\InstanceMutant.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -692,9 +695,6 @@
     <ClCompile Include="Scene\TestScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\Monster\InstanceMonster.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject\Monster\InstancingMutants.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -702,6 +702,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Buffer\LightBuffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Monster\InstanceMutant.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

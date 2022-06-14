@@ -89,6 +89,10 @@ void Mutant::OnDamage(float damage)
 	mCurrentHP -= 10.0f;
 }
 
+void Mutant::CheckOnDamage(Collider* collider)
+{
+}
+
 void Mutant::CheckOnHit()
 {
 	if (!mbOnHit) return;

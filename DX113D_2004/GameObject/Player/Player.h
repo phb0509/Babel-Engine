@@ -73,7 +73,7 @@ private:
 	void rotateTargetCamera();
 
 	void setColliders();
-	void loadBinaryCollidersFile();
+	void loadBinaryCollidersFile(wstring fileName);
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
 	void setAttackEnd();

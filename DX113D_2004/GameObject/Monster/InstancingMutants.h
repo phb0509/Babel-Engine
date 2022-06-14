@@ -7,41 +7,6 @@ public:
 
 	friend class Player;
 
-	struct ColliderData
-	{
-		string colliderName;
-		string nodeName;
-		UINT colliderType;
-
-		Vector3 position;
-		Vector3 rotation;
-		Vector3 scale;
-	};
-
-	struct TempCollider
-	{
-		Vector3 position;
-		Vector3 rotation;
-		Vector3 scale;
-	};
-
-	struct SettedCollider
-	{
-		string colliderName;
-		string nodeName;
-		Matrix matrix;
-		Collider* collider;
-	};
-
-	struct InstanceColliderData
-	{
-		vector<SettedCollider> mColliders;
-		map<string, Collider*> mCollidersMap;
-
-		InstanceColliderData() {};
-		InstanceColliderData(vector<SettedCollider> colliders, map<string, Collider*> collidersMap) : mColliders(colliders), mCollidersMap(collidersMap) {};
-	};
-
 	InstancingMutants(int instanceCount, Terrain* terrain);
 	~InstancingMutants();
 
@@ -65,7 +30,7 @@ private:
 	void setColliders();
 	void setAttackEnd(int instanceIndex);
 	void renderColliders();
-	void loadBinaryCollidersFile();
+	void loadBinaryCollidersFile(wstring fileName);
 	void showAnimationStates();
 
 private:
@@ -75,8 +40,5 @@ private:
 
 	vector<TempCollider> mTempColliderSRTdatas;
 	vector<ColliderData> mTempColliderDatas;
-	//vector<SettedCollider> mColliders;
-	//map<string, Collider*> mCollidersMap;
 	vector<InstanceColliderData> mInstanceColliderDatas;
-
 };

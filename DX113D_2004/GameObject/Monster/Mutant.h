@@ -42,6 +42,7 @@ public:
 
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(float damage) override;
+	virtual void CheckOnDamage(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 

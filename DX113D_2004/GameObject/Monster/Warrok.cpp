@@ -57,6 +57,10 @@ void Warrok::OnDamage(float damage)
 	mCurrentHP -= 10.0f;
 }
 
+void Warrok::CheckOnDamage(Collider* collider)
+{
+}
+
 void Warrok::CheckOnHit()
 {
 	if (!mbOnHit) return;

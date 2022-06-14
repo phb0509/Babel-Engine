@@ -10,6 +10,7 @@ class OnDamageState;
 class Monster : public Transform , public ModelAnimator
 {
 public:
+
 	Monster();
 	~Monster();
 
@@ -18,6 +19,7 @@ public:
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
+	virtual void CheckOnDamage(Collider* collider) = 0;
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
@@ -41,6 +43,7 @@ public:
 	State* GetCurrentState() { return mCurrentState; }
 	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
+	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
 
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -51,6 +54,7 @@ public:
 	void SetAStarPath(Vector3 destPos);
 	void SetInstanceIndex(int index) { mInstanceIndex = index; }
 	void SetUpperFrameBuffer(FrameBuffer* frameBuffer) { mUpperFrameBuffer = frameBuffer; }
+	void SetInstanceCollider(InstanceColliderData instanceColliderData) { mInstanceColliderData = instanceColliderData; }
 
 	// Test¿ë Getter
 	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
@@ -109,5 +113,5 @@ private:
 	bool mbHasTerrainObstacles;
 
 	int count = 0;
-
+	InstanceColliderData mInstanceColliderData;
 };

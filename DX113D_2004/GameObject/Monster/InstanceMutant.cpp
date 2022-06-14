@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 
-InstanceMonster::InstanceMonster():
+InstanceMutant::InstanceMutant():
 	mbOnHit(false)
 {
 	this->mScale = { 0.05f, 0.05f, 0.05f };
@@ -14,11 +14,11 @@ InstanceMonster::InstanceMonster():
 	mCurrentState = GetPatrolState();
 }
 
-InstanceMonster::~InstanceMonster()
+InstanceMutant::~InstanceMutant()
 {
 }
 
-void InstanceMonster::Update()
+void InstanceMutant::Update()
 {
 	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
@@ -26,38 +26,42 @@ void InstanceMonster::Update()
 	UpdateWorld();
 }
 
-void InstanceMonster::InstanceUpdate()
+void InstanceMutant::InstanceUpdate()
 {
 }
 
-void InstanceMonster::PreRender()
+void InstanceMutant::PreRender()
 {
 }
 
-void InstanceMonster::Render()
+void InstanceMutant::Render()
 {
 
 }
 
-Collider* InstanceMonster::GetHitCollider()
-{
-	return nullptr;
-}
-
-void InstanceMonster::OnDamage(float damage)
-{
-}
-
-void InstanceMonster::CheckOnHit()
-{
-}
-
-Collider* InstanceMonster::GetColliderForAStar()
+Collider* InstanceMutant::GetHitCollider()
 {
 	return nullptr;
 }
 
-void InstanceMonster::SetAnimation(eAnimationStates value) // State에서 SetAnimation하면 여기로 타고와서 실행되는데..
+void InstanceMutant::OnDamage(float damage)
+{
+}
+
+void InstanceMutant::CheckOnDamage(Collider* collider)
+{
+}
+
+void InstanceMutant::CheckOnHit()
+{
+}
+
+Collider* InstanceMutant::GetColliderForAStar()
+{
+	return nullptr;
+}
+
+void InstanceMutant::SetAnimation(eAnimationStates value) // State에서 SetAnimation하면 여기로 타고와서 실행되는데..
 {
 	if (mAnimationState != value)
 	{

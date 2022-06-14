@@ -262,8 +262,10 @@ using namespace states;
 #include "Algorithm/Heap.h"
 #include "Algorithm/AStar.h"
 
+#include "GameObject/UtilityStructures.h"
 
 //Object Header
+
 #include "Objects/Basic/Cube.h"
 #include "Objects/Basic/Sphere.h"
 #include "Objects/Basic/UIImage.h"
@@ -300,7 +302,7 @@ using namespace states;
 #include "GameObject/Monster/Mutant.h"
 #include "GameObject/Monster/Warrok.h"
 #include "GameObject/Player/Player.h"
-#include "GameObject/Monster/InstanceMonster.h"
+#include "GameObject/Monster/InstanceMutant.h"
 #include "GameObject/Monster/InstancingMutants.h"
 
 #include "GameObject/Utility/State.h"

@@ -35,13 +35,16 @@ Player::Player():
 
 	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
-	loadBinaryCollidersFile();
+	loadBinaryCollidersFile(L"Player.map");
 	UpdateWorld();
 }
 
 Player::~Player()
 {
-
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		delete mColliders[i].collider;
+	}
 }
 
 void Player::Update()
@@ -356,8 +359,9 @@ void Player::setColliders()
 	}
 }
 
-void Player::loadBinaryCollidersFile()
+void Player::loadBinaryCollidersFile(wstring fileName)
 {
+	wstring temp = L"TextData/" + fileName;
 	BinaryReader binaryReader(L"TextData/Player.map");
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;

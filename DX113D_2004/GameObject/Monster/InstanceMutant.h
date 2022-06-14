@@ -1,11 +1,11 @@
 #pragma once
 
 
-class InstanceMonster : public Monster
+class InstanceMutant : public Monster
 {
 public:
-	InstanceMonster();
-	~InstanceMonster();
+	InstanceMutant();
+	~InstanceMutant();
 
 	// Monster을(를) 통해 상속됨
 	virtual void Update() override;
@@ -15,6 +15,7 @@ public:
 
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(float damage) override;
+	virtual void CheckOnDamage(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 	virtual void SetAnimation(eAnimationStates value) override;
@@ -24,10 +25,5 @@ private:
 
 
 private:
-	//vector<TempCollider> mColliderSRTdatas;
-	//vector<ColliderData> mColliderDatas;
-	//vector<SettedCollider> mColliders;
-	//map<string, Collider*> mCollidersMap;
-
 	bool mbOnHit;
 };

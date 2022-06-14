@@ -4,7 +4,7 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 	mInstanceCount(instanceCount),
 	mTerrain(terrain)
 {
-	loadBinaryCollidersFile(); // 툴에서 셋팅한 컬라이더 불러오기.
+	loadBinaryCollidersFile(L"Mutant.map"); // 툴에서 셋팅한 컬라이더 불러오기.
 
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
@@ -20,7 +20,8 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 
 	for (int i = 0; i < instanceCount; i++)
 	{
-		Monster* temp = new InstanceMonster();
+		Monster* temp = new InstanceMutant();
+		temp->SetInstanceCollider(mInstanceColliderDatas[i]);
 		temp->SetUpperFrameBuffer(mFrameBuffer);
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
@@ -29,6 +30,11 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 
 InstancingMutants::~InstancingMutants()
 {
+	for (int i = 0; i < mInstanceObjects.size(); i++)
+	{
+		delete mInstanceObjects[i];
+		mInstanceObjects[i] = nullptr;
+	}
 }
 
 void InstancingMutants::Update()
@@ -118,9 +124,9 @@ void InstancingMutants::renderColliders()
 	{
 		int renderedInstanceIndex = mRenderedInstanceIndices[i];
 
-		for (int j = 0; j < mInstanceColliderDatas[renderedInstanceIndex].mColliders.size(); j++)
+		for (int j = 0; j < mInstanceColliderDatas[renderedInstanceIndex].colliders.size(); j++)
 		{
-			mInstanceColliderDatas[renderedInstanceIndex].mColliders[j].collider->Render();
+			mInstanceColliderDatas[renderedInstanceIndex].colliders[j].collider->Render();
 		}
 	}
 }
@@ -137,20 +143,22 @@ void InstancingMutants::setColliders()
 
 	for (int i = 0; i < mInstanceCount; i++) // 실제 렌더되는 인스턴스들 인덱스
 	{
-		for (int j = 0; j < mInstanceColliderDatas[i].mColliders.size(); j++) // 뮤턴트에 셋팅된 컬라이더개수.
+		for (int j = 0; j < mInstanceColliderDatas[i].colliders.size(); j++) // 뮤턴트에 셋팅된 컬라이더개수.
 		{
-			string nodeName = mInstanceColliderDatas[i].mColliders[j].nodeName;
+			string nodeName = mInstanceColliderDatas[i].colliders[j].nodeName;
 			int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
-			mInstanceColliderDatas[i].mColliders[j].matrix = GetTransformByNode(i,nodeIndex) * mInstanceObjects[i]->GetWorldMatrixValue(); // 노드의 월드행렬. ex) LeftHand
-			mInstanceColliderDatas[i].mColliders[j].collider->SetParent(&mInstanceColliderDatas[i].mColliders[j].matrix);
-			mInstanceColliderDatas[i].mColliders[j].collider->Update();
+			mInstanceColliderDatas[i].colliders[j].matrix = GetTransformByNode(i,nodeIndex) * mInstanceObjects[i]->GetWorldMatrixValue(); // 노드의 월드행렬. ex) LeftHand
+			mInstanceColliderDatas[i].colliders[j].collider->SetParent(&mInstanceColliderDatas[i].colliders[j].matrix);
+			mInstanceColliderDatas[i].colliders[j].collider->Update();
 		}
 	}
 }
 
-void InstancingMutants::loadBinaryCollidersFile()
+void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 {
-	BinaryReader binaryReader(L"TextData/Mutant.map");
+	wstring temp = L"TextData/" + fileName;
+	//BinaryReader binaryReader(L"TextData/Mutant.map");
+	BinaryReader binaryReader(temp);
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;
 
@@ -211,15 +219,11 @@ void InstancingMutants::loadBinaryCollidersFile()
 				settedCollider.nodeName = mTempColliderDatas[j].nodeName;
 				settedCollider.collider = collider;
 
-				mInstanceColliderDatas[i].mColliders.push_back(settedCollider);
-				mInstanceColliderDatas[i].mCollidersMap[mTempColliderDatas[j].colliderName] = collider;
-				//mColliders.push_back(settedCollider); // vector<SettedCollider>
-				//mCollidersMap[mTempColliderDatas[j].colliderName] = collider; // map<string, Collider*>
+				mInstanceColliderDatas[i].colliders.push_back(settedCollider);
+				mInstanceColliderDatas[i].collidersMap[mTempColliderDatas[j].colliderName] = collider;
 			}
 		}
 	}
-
-	mInstanceColliderDatas;
 
 	binaryReader.CloseReader();
 }

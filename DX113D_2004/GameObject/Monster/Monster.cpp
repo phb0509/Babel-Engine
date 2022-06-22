@@ -3,7 +3,7 @@
 Monster::Monster() :
 	ModelAnimator(),
 	mDamage(100.0f),
-	mMaxHP(1000.0f),
+	mMaxHP(100.0f),
 	mCurrentHP(0.0f),
 	mAStar(new AStar()),
 	mTerrain(nullptr),
@@ -22,7 +22,7 @@ Monster::Monster() :
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
 	mAnimationState(eAnimationStates::Idle),
-	mFSM(eFSMstates::Patrol),
+	mFSM(eMutantFSMstates::Patrol),
 	mInstanceIndex(0)
 {
 	mCurrentHP = mMaxHP;

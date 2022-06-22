@@ -83,14 +83,15 @@ void Mutant::PostRender()
 
 void Mutant::OnDamage(float damage)
 {
-	mFSM = eFSMstates::OnDamage;
+	mFSM = eMutantFSMstates::OnDamage;
 	mbOnHit = true;
-	GM->SetHitCheckMap(this, true);
+	//GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;
 }
 
-void Mutant::CheckOnDamage(Collider* collider)
+bool Mutant::CheckOnDamage(const Collider* collider)
 {
+	return false;
 }
 
 void Mutant::CheckOnHit()
@@ -108,7 +109,7 @@ Collider* Mutant::GetColliderForAStar() // 몸쪽 컬라이더 넘겨주자.
 void Mutant::setOnDamageEnd()
 {
 	SetAnimation(eAnimationStates::Idle);
-	GM->SetHitCheckMap(this, false);
+	//GM->SetHitCheckMap(this, false);
 	mbOnHit = false;
 }
 

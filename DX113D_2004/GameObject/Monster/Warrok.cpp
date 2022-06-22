@@ -4,7 +4,7 @@
 Warrok::Warrok()
 	: 
 	mAnimation(eAnimationStates::Idle),
-	mFSM(eFSMstates::Patrol),
+	mFSM(eMutantFSMstates::Patrol),
 	mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -51,14 +51,15 @@ void Warrok::PostRender()
 
 void Warrok::OnDamage(float damage)
 {
-	mFSM = eFSMstates::OnDamage;
+	mFSM = eMutantFSMstates::OnDamage;
 	mbOnHit = true;
-	GM->SetHitCheckMap(this, true);
+	//GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;
 }
 
-void Warrok::CheckOnDamage(Collider* collider)
+bool Warrok::CheckOnDamage(const Collider* collider)
 {
+	return false;
 }
 
 void Warrok::CheckOnHit()
@@ -76,7 +77,7 @@ Collider* Warrok::GetColliderForAStar()
 void Warrok::setOnDamageEnd()
 {
 	SetAnimation((eAnimationStates::Idle));
-	GM->SetHitCheckMap(this, false);
+	//GM->SetHitCheckMap(this, false);
 	mbOnHit = false;
 }
 

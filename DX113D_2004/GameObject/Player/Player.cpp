@@ -3,7 +3,7 @@
 Player::Player(): 
 	ModelAnimator(),
 	mbIsInitialize(false),
-	state(IDLE),
+	mAnimationStates(IDLE),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
 	mNormalAttackDamage(10.0f),
@@ -56,15 +56,10 @@ void Player::Update()
 	}
 
 	setColliders();
-
-
-
 	updateCamera();
 
 	move();
 	attack();
-
-	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 
 	Transform::UpdateWorld();
 	ModelAnimator::Update();
@@ -72,13 +67,7 @@ void Player::Update()
 
 void Player::Render()
 {
-	RenderColliders();
-
-	/*if (!mbIsTargetMode)
-	{
-		mTargetCameraInWorld->RenderFrustumCollider(); 
-	}*/
-
+	renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	ModelAnimator::Render();
@@ -86,6 +75,7 @@ void Player::Render()
 
 void Player::DeferredRender()
 {
+	renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	ModelAnimator::DeferredRender();
@@ -109,6 +99,8 @@ void Player::attack()
 	{
 		normalAttack();
 	}
+
+	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 }
 
 void Player::updateCamera()
@@ -141,7 +133,6 @@ void Player::moveInTargetMode() // Player
 		terrainY = mTerrain->GetTargetPositionY(mPosition);
 	}
 	
-
 	mPosition.y = terrainY;
 
 	if (KEY_PRESS('W'))
@@ -308,28 +299,26 @@ void Player::moveTargetCameraInWorld()
 
 void Player::checkNormalAttackCollision()
 {
-	if (mbIsNormalAttack) // 공격도중이면.
+	for (auto monster : mMonsters)
 	{
-		for (int i = 0; i < mMonsters.size(); i++)
+		string monsterName = monster.first;
+
+		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
-			if (!(GM->GetHitCheckMap()[mMonsters[i]])) // 공격받을수있는 상황이면(한프레임도 아직 공격받지 않았다면
+			Monster* monster = mMonsters[monsterName][i];
+
+			if (monster->CheckOnDamage(mCollidersMap["swordCollider"]))
 			{
-				if (mCollidersMap["swordCollider"]->Collision(mMonsters[i]->GetHitCollider())) // 고놈만 충돌ㅇ체크.
-				{
-					//mCollidersMap["swordCollider"]->SetColor(Float4(1.0f, 0.0f, 0.0f, 1.0f));
-					mMonsters[i]->OnDamage(mNormalAttackDamage);
-				}
+				monster->OnDamage(100.0f);
 			}
 		}
 	}
-
 }
 
 void Player::setAttackEnd()
 {
 	setAnimation(IDLE);
 	mbIsNormalAttack = false;
-	//mCollidersMap["swordCollider"]->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void Player::normalAttack()
@@ -339,7 +328,7 @@ void Player::normalAttack()
 	mbIsNormalAttack = true;
 }
 
-void Player::RenderColliders()
+void Player::renderColliders()
 {
 	for (int i = 0; i < mColliders.size(); i++)
 	{
@@ -424,9 +413,13 @@ void Player::loadBinaryCollidersFile(wstring fileName)
 	binaryReader.CloseReader();
 }
 
+void Player::SetMonsters(string name, vector<Monster*> monsters)
+{
+	mMonsters[name] = monsters;
+}
+
 void Player::initialize()
 {
-
 }
 
 void Player::setIdle()
@@ -434,12 +427,12 @@ void Player::setIdle()
 	setAnimation(IDLE);
 }
 
-void Player::setAnimation(State value)
+void Player::setAnimation(eAnimationStates value)
 {
-	if (state != value)
+	if (mAnimationStates != value)
 	{
-		state = value;
-		PlayClip(state);
+		mAnimationStates = value;
+		PlayClip(mAnimationStates);
 	}
 }
 

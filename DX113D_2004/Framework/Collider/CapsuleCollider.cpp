@@ -3,7 +3,7 @@
 CapsuleCollider::CapsuleCollider(float radius, float height, UINT stackCount, UINT sliceCount)
     : mRadius(radius), mHeight(height), mStackCount(stackCount), mSliceCount(sliceCount)
 {
-    mType = eType::CAPSULE;
+    mType = eColliderType::CAPSULE;
     createMesh();
 	createMeshForColorPicking();
 }

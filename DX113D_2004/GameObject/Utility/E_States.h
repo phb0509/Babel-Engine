@@ -12,7 +12,7 @@ namespace states
 		Die,
 	};
 
-	enum class eFSMstates
+	enum class eMutantFSMstates
 	{
 		Patrol,
 		Stalk,
@@ -21,12 +21,11 @@ namespace states
 		Die,
 	};
 
-	enum class eType
+	enum class eColliderType
 	{
 		BOX,
 		SPHERE,
 		CAPSULE,
 		NONE
 	};
-	
 }

@@ -37,7 +37,7 @@ public:
 	void Render();
 
 	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
-	eType GetType() { return mType; }
+	eColliderType GetType() { return mType; }
 	Material* GetMaterial() { return mMaterial; }
 
 
@@ -46,7 +46,7 @@ protected:
 	Mesh* mMesh;
 	Mesh* mMeshForColorPicking;
 
-	eType mType;
+	eColliderType mType;
 
 	vector<Vertex> mVertices;
 	vector<UINT> mIndices;

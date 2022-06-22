@@ -48,8 +48,9 @@ void InstanceMutant::OnDamage(float damage)
 {
 }
 
-void InstanceMutant::CheckOnDamage(Collider* collider)
+bool InstanceMutant::CheckOnDamage(const Collider* collider)
 {
+	return false;
 }
 
 void InstanceMutant::CheckOnHit()

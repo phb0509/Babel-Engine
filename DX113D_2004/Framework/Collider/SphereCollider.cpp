@@ -3,7 +3,7 @@
 SphereCollider::SphereCollider(float radius, UINT stackCount, UINT sliceCount)
     : mRadius(radius), mStackCount(stackCount), mSliceCount(sliceCount)
 {
-    mType = eType::SPHERE;
+    mType = eColliderType::SPHERE;
     createMesh();
 	createMeshForColorPicking();
 }

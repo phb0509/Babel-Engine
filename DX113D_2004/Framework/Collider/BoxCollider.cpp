@@ -3,7 +3,7 @@
 BoxCollider::BoxCollider(Vector3 minBox, Vector3 maxBox)
     : mMinBox(minBox), mMaxBox(maxBox)
 {
-    mType = eType::BOX;
+    mType = eColliderType::BOX;
     createMesh();
     createMeshForColorPicking();
 }

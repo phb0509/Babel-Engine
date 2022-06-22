@@ -46,6 +46,7 @@ MainScene::MainScene() :
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
 
+
 	vector<Collider*> monsters0Obstacles = {};
 
 	float startX = 100.0f;
@@ -75,6 +76,8 @@ MainScene::MainScene() :
 			mInstanceMutants[monsterIndex]->GetAStar()->SetObstacle(monsters0Obstacles);
 		}
 	}
+
+	mPlayer->SetMonsters("Mutant",mInstancingMutants->GetInstanceObjects());
 }
 
 MainScene::~MainScene()
@@ -146,7 +149,6 @@ void MainScene::PreRender()
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
-	mPlayer->RenderColliders();
 	mInstancingMutants->SetShader(L"InstancingGBuffer");
 	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 

@@ -4,14 +4,14 @@ class Player : public ModelAnimator, public Transform
 {
 private:
 
-	enum State
+	enum eAnimationStates
 	{
 		TPOSE,
 		IDLE,
 		RUN,
 		ATTACK,
 		DIE
-	}state;
+	}mAnimationStates;
 
 	struct ColliderData
 	{
@@ -47,7 +47,6 @@ public:
 	void Render();
 	void DeferredRender();
 	void PostRender();
-	void RenderColliders();
 
 	void SetTerrain(Terrain* value) { mTerrain = value; mbIsLODTerrain = false; }
 	void SetLODTerrain(TerrainLOD* value) { mLODTerrain = value; mbIsLODTerrain = true; }
@@ -55,12 +54,12 @@ public:
 	void SetTargetCamera(Camera* camera) { mTargetCamera = camera; }
 	void SetTargetCameraInWorld(Camera* camera) { mTargetCameraInWorld = camera; }
 	void SetIsTargetMode(bool value) { mbIsTargetMode = value; }
-	void SetMonsters(vector<Monster*> monsters) { mMonsters = monsters; }
+	void SetMonsters(string name, vector<Monster*> monsters);
 
 private:
 	void initialize();
 	void setIdle();
-	void setAnimation(State value);
+	void setAnimation(eAnimationStates value);
 	void move();
 	void attack();
 	void updateCamera();
@@ -73,6 +72,7 @@ private:
 	void rotateTargetCamera();
 
 	void setColliders();
+	void renderColliders();
 	void loadBinaryCollidersFile(wstring fileName);
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
@@ -91,7 +91,7 @@ private:
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
 
-	vector<Monster*> mMonsters;
+	map<string, vector<Monster*>> mMonsters;
 	
 	bool mbIsInitialize;
 	bool mbIsNormalAttack;

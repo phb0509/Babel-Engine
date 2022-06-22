@@ -16,13 +16,13 @@ bool Collider::Collision(Collider* collider)
 {    
     switch (collider->mType)
     {
-    case eType::BOX:
+    case eColliderType::BOX:
         return BoxCollision(static_cast<BoxCollider*>(collider));
         break;
-    case eType::SPHERE:
+    case eColliderType::SPHERE:
         return SphereCollision(static_cast<SphereCollider*>(collider));
         break;
-    case eType::CAPSULE:
+    case eColliderType::CAPSULE:
         return CapsuleCollision(static_cast<CapsuleCollider*>(collider));
         break;    
     }

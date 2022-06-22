@@ -19,7 +19,7 @@ public:
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
-	virtual void CheckOnDamage(Collider* collider) = 0;
+	virtual bool CheckOnDamage(const Collider* collider) = 0;
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
@@ -56,9 +56,6 @@ public:
 	void SetUpperFrameBuffer(FrameBuffer* frameBuffer) { mUpperFrameBuffer = frameBuffer; }
 	void SetInstanceCollider(InstanceColliderData instanceColliderData) { mInstanceColliderData = instanceColliderData; }
 
-	// Test¿ë Getter
-	bool GetTestBoolvalue() { return mIsAStarPathUpdate; }
-
 private:
 	void setObstaclesTerrain(Vector3 destPos);
 	void setNoneObstaclesTerrain(Vector3 destPos);
@@ -89,7 +86,7 @@ protected:
 	OnDamageState* mOnDamageState;
 	ModelAnimator* mModelAnimator;
 	eAnimationStates mAnimationState;
-	eFSMstates mFSM;
+	eMutantFSMstates mFSM;
 	int mInstanceIndex;
 	FrameBuffer* mUpperFrameBuffer;
 

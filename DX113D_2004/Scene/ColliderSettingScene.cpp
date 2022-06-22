@@ -1382,13 +1382,13 @@ void ColliderSettingScene::saveAsCSV()
 
 			switch (mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->GetType())
 			{
-			case eType::BOX:
+			case eColliderType::BOX:
 				colliderType = "Box Collider";
 				break;
-			case eType::SPHERE:
+			case eColliderType::SPHERE:
 				colliderType = "Sphere Collider";
 				break;
-			case eType::CAPSULE:
+			case eColliderType::CAPSULE:
 				colliderType = "Capsule Collider";
 				break;
 			}

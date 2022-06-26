@@ -10,6 +10,7 @@ MutantAttackState::~MutantAttackState()
 
 void MutantAttackState::Enter(Monster* monster)
 {
+	monster->SetFSMState(static_cast<int>(eMutantFSMStates::Attack));
 }
 
 void MutantAttackState::Execute(Monster* monster)
@@ -18,8 +19,7 @@ void MutantAttackState::Execute(Monster* monster)
 
 	if (monster->GetDistanceToPlayer() > monster->GetDistanceToPlayerForAttack()) // 캐릭터가 멀어지면
 	{
-		//monster->ChangeState(InstanceMutant::GetStalkingState());
-		monster->ChangeState(monster->GetState(static_cast<int>(eMutantFSMStates::Stalk)));
+		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::Stalk)));
 	}
 }
 

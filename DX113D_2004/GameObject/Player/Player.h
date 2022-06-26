@@ -6,11 +6,11 @@ private:
 
 	enum eAnimationStates
 	{
-		TPOSE,
-		IDLE,
-		RUN,
-		ATTACK,
-		DIE
+		Tpose,
+		Idle,
+		Run,
+		NormalAttack,
+		Die
 	}mAnimationStates;
 
 	struct ColliderData
@@ -59,7 +59,7 @@ public:
 private:
 	void initialize();
 	void setIdle();
-	void setAnimation(eAnimationStates value);
+	void setAnimation(eAnimationStates value, bool isForcingPlay = false);
 	void move();
 	void attack();
 	void updateCamera();

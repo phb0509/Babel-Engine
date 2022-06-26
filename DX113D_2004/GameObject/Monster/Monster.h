@@ -23,8 +23,10 @@ public:
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
-	virtual MonsterState* GetState(int num) = 0;
-	virtual int GetAnimationStates() = 0;
+	virtual MonsterState* GetFSMState(int num) = 0;
+	virtual int GetEnumFSMState() = 0;
+	virtual void SetFSMState(int state) = 0;
+	virtual int GetAnimationState() = 0;
 	virtual void SetAnimation(int value) = 0;
 
 	void MoveToDestUsingAStar(Vector3 dest);
@@ -33,22 +35,19 @@ public:
 	Terrain* GetTerrain() const { return mTerrain; }
 	vector<Vector3>& GetPath() { return mPath; }
 	float GetMoveSpeed() const { return mMoveSpeed; }
-	bool GetIsStalk() const { return mbIsStalk; }
 	float GetDistanceToPlayer();
 	float GetDistanceToPlayerForAttack() const { return mDistanceToPlayerForAttack; }
 	float GetPlayerDetectRange() const { return mPlayerDetectRange; }
 	AStar* GetAStar() { return mAStar; }
 	
-	MonsterState* GetCurrentState() { return mCurrentState; }
+	MonsterState* GetCurrentState() { return mCurrentFSMState; }
 	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
-	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
-	//void SetAnimationStates(eMutantAnimationStates animationStates) { mAnimationState = animationStates; }
 	void SetRealtimeAStarPath(Vector3 destPos);
 	void SetAStarPath(Vector3 destPos);
 	void SetInstanceIndex(int index) { mInstanceIndex = index; }
@@ -70,22 +69,16 @@ protected:
 	Vector3 mDestPos;
 	vector<Vector3> mPath;
 
-	bool mbIsStalk;
-
 	Vector3 mDistanceVector3ToPlayer; // 플레이어까지 거리 x,z만 반영.
 	float mDistanceToPlayer;
 	float mPlayerDetectRange;
 	float mDistanceToPlayerForAttack;
 	float mAStarPathUpdatePeriodTime;
 
-	MonsterState* mCurrentState;
-	/*PatrolState* mPatrolState;
-	StalkingState* mStalkingState;
-	AttackState* mAttackState;
-	OnDamageState* mOnDamageState;*/
+	MonsterState* mCurrentFSMState;
+	int mCurrentEnumFSMState;
 	ModelAnimator* mModelAnimator;
-	//eMutantAnimationStates mAnimationState;
-	//eMutantFSMstates mFSM;
+
 	int mInstanceIndex;
 	FrameBuffer* mUpperFrameBuffer;
 

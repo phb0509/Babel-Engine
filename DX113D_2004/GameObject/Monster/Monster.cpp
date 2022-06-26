@@ -7,7 +7,6 @@ Monster::Monster() :
 	mCurrentHP(0.0f),
 	mAStar(new AStar()),
 	mTerrain(nullptr),
-	mbIsStalk(false),
 	mDistanceToPlayer(0.0f),
 	mPlayerDetectRange(30.0f),
 	mDistanceToPlayerForAttack(20.0f),
@@ -21,16 +20,9 @@ Monster::Monster() :
 	mBeforeTargetPosition(0.0f,0.0f,0.0f),
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
-	//mAnimationState(eMutantAnimationStates::Idle),
-	//mFSM(eMutantFSMstates::Patrol),
 	mInstanceIndex(0)
 {
 	mCurrentHP = mMaxHP;
-	//mPatrolState = new PatrolState();
-	//mStalkingState = new StalkingState();
-	//mAttackState = new AttackState();
-	//mOnDamageState = new OnDamageState();
-
 	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
 	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, this, placeholders::_1, placeholders::_2);
 
@@ -39,10 +31,8 @@ Monster::Monster() :
 
 Monster::~Monster()
 {
-	/*delete mPatrolState;
-	delete mStalkingState;
-	delete mAttackState;
-	delete mOnDamageState;*/
+	delete mAStar;
+	delete mModelAnimator;
 }
 
 void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Update.
@@ -281,9 +271,9 @@ void Monster::SetTerrain(Terrain* terrain, bool hasTerrainObstacles)
 
 void Monster::ChangeState(MonsterState* nextState)
 {
-	mCurrentState->Exit(this);
-	mCurrentState = nextState;
-	mCurrentState->Enter(this);
+	mCurrentFSMState->Exit(this);
+	mCurrentFSMState = nextState;
+	mCurrentFSMState->Enter(this);
 }
 
 

@@ -18,18 +18,23 @@ InstanceMutant::InstanceMutant():
 	mOnDamageState = new MutantOnDamageState();
 	mDieState = new MutantDieState();
 
-	mCurrentState = mPatrolState;
+	mCurrentFSMState = mPatrolState;
 }
 
 InstanceMutant::~InstanceMutant()
 {
+	delete mPatrolState;
+	delete mStalkingState;
+	delete mAttackState;
+	delete mOnDamageState;
+	delete mDieState;
 }
 
 void InstanceMutant::Update()
 {
 	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
-	mCurrentState->Execute(this);
+	mCurrentFSMState->Execute(this);
 	UpdateWorld();
 }
 
@@ -69,13 +74,13 @@ Collider* InstanceMutant::GetColliderForAStar()
 	return nullptr;
 }
 
-int InstanceMutant::GetAnimationStates()
+int InstanceMutant::GetAnimationState()
 {
 	int temp = static_cast<int>(mCurrentAnimationState);
 	return temp;
 }
 
-MonsterState* InstanceMutant::GetState(int num)
+MonsterState* InstanceMutant::GetFSMState(int num)
 {
 	//Patrol,
 	//Stalk,
@@ -98,7 +103,16 @@ MonsterState* InstanceMutant::GetState(int num)
 	default:
 		break;
 	}
-	
+}
+
+int InstanceMutant::GetEnumFSMState()
+{
+	return mCurrentEnumFSMState;
+}
+
+void InstanceMutant::SetFSMState(int state)
+{
+	mCurrentEnumFSMState = state;
 }
 
 void InstanceMutant::SetAnimation(int value) // 
@@ -108,7 +122,6 @@ void InstanceMutant::SetAnimation(int value) //
 	if (mCurrentAnimationState != state)
 	{
 		mCurrentAnimationState = state;
-		//PlayClip(static_cast<int>(mAnimationState));
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(value);
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = 1.0f;
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;

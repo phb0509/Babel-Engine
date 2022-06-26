@@ -3,7 +3,7 @@
 Player::Player(): 
 	ModelAnimator(),
 	mbIsInitialize(false),
-	mAnimationStates(IDLE),
+	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
 	mNormalAttackDamage(10.0f),
@@ -28,8 +28,8 @@ Player::Player():
 	ReadClip("Player", "Attack.clip");
 	ReadClip("Player", "Die.clip");
 
-	SetEndEvent(RUN, bind(&Player::setIdle, this));
-	SetEndEvent(ATTACK, bind(&Player::setAttackEnd, this));
+	SetEndEvent(Run, bind(&Player::setIdle, this));
+	SetEndEvent(NormalAttack, bind(&Player::setAttackEnd, this));
 
 	PlayClip(1);
 
@@ -141,7 +141,7 @@ void Player::moveInTargetMode() // Player
 		mPosition.z += mTargetCameraForward.z * mMoveSpeed * DELTA * 1.0f;
 		mPosition.x += mTargetCameraForward.x * mMoveSpeed * DELTA * 1.0f;
 
-		setAnimation(RUN);
+		setAnimation(Run);
 	}
 
 	if (KEY_PRESS('S'))
@@ -150,7 +150,7 @@ void Player::moveInTargetMode() // Player
 		mPosition.z += mTargetCameraForward.z * -mMoveSpeed * DELTA * 1.0f;
 		mPosition.x += mTargetCameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
-		setAnimation(RUN);
+		setAnimation(Run);
 	}
 
 	if (KEY_PRESS('A'))
@@ -179,7 +179,7 @@ void Player::moveInWorldMode() // Player
 		mPosition.z += -Forward().z * mMoveSpeed * DELTA;
 		mPosition.x += -Forward().x * mMoveSpeed * DELTA;
 
-		setAnimation(RUN);
+		setAnimation(Run);
 	}
 
 	if (KEY_PRESS('S'))
@@ -187,7 +187,7 @@ void Player::moveInWorldMode() // Player
 		mPosition.z -= Forward().z * -mMoveSpeed * DELTA;
 		mPosition.x -= Forward().x * -mMoveSpeed * DELTA;
 
-		setAnimation(RUN);
+		setAnimation(Run);
 	}
 
 	if (KEY_PRESS('A'))
@@ -317,14 +317,14 @@ void Player::checkNormalAttackCollision()
 
 void Player::setAttackEnd()
 {
-	setAnimation(IDLE);
+	setAnimation(Idle);
 	mbIsNormalAttack = false;
 }
 
 void Player::normalAttack()
 {
 	if (mbIsNormalAttack) return;
-	setAnimation(ATTACK);
+	setAnimation(NormalAttack);
 	mbIsNormalAttack = true;
 }
 
@@ -424,12 +424,20 @@ void Player::initialize()
 
 void Player::setIdle()
 {
-	setAnimation(IDLE);
+	setAnimation(Idle);
 }
 
-void Player::setAnimation(eAnimationStates value)
+void Player::setAnimation(eAnimationStates value, bool isForcingPlay)
 {
-	if (mAnimationStates != value)
+	if (!isForcingPlay)
+	{
+		if (mAnimationStates != value)
+		{
+			mAnimationStates = value;
+			PlayClip(mAnimationStates);
+		}
+	}
+	else
 	{
 		mAnimationStates = value;
 		PlayClip(mAnimationStates);

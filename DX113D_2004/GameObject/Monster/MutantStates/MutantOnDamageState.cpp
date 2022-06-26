@@ -8,14 +8,15 @@ MutantOnDamageState::~MutantOnDamageState()
 {
 }
 
-void MutantOnDamageState::Enter(Monster* mMonster)
+void MutantOnDamageState::Enter(Monster* monster)
+{
+	monster->SetFSMState(static_cast<int>(eMutantFSMStates::OnDamage));
+}
+
+void MutantOnDamageState::Execute(Monster* monster)
 {
 }
 
-void MutantOnDamageState::Execute(Monster* mMonster)
-{
-}
-
-void MutantOnDamageState::Exit(Monster* mMonster)
+void MutantOnDamageState::Exit(Monster* monster)
 {
 }

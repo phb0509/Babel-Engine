@@ -55,7 +55,7 @@ MainScene::MainScene() :
 	float gapHeight = 10.0f;
 
 	int row = 10;
-	int column = 10;
+	int column = 5;
 
 	mMutantInstanceCount = row * column;
 

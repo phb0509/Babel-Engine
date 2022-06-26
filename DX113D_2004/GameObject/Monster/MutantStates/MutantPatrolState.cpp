@@ -31,6 +31,7 @@ void MutantPatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
 
 void MutantPatrolState::Enter(Monster* monster)
 {
+	monster->SetFSMState(static_cast<int>(eMutantFSMStates::Patrol));
 	Initialize();
 }
 
@@ -130,7 +131,7 @@ void MutantPatrolState::Execute(Monster* monster)
 	//범위 안 플레이어 있는지 체크.
 	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
 	{
-		monster->ChangeState(monster->GetState(static_cast<int>(eMutantFSMStates::Stalk)));
+		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::Stalk)));
 	}
 }
 

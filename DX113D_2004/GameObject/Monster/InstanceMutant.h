@@ -13,7 +13,6 @@ public:
 	InstanceMutant();
 	~InstanceMutant();
 
-	// Monster을(를) 통해 상속됨
 	virtual void Update() override;
 	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
@@ -24,19 +23,14 @@ public:
 	virtual bool CheckOnDamage(const Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
-	virtual int GetAnimationStates() override;
-	virtual MonsterState* GetState(int num) override;
+	virtual MonsterState* GetFSMState(int num) override;
+	virtual int GetEnumFSMState() override;
+	virtual void SetFSMState(int state) override;
+	virtual int GetAnimationState() override;
 	virtual void SetAnimation(int value) override;
-
-	/*static MutantPatrolState* GetPatrolState() { return mPatrolState; }
-	static MutantStalkingState* GetStalkingState() { return mStalkingState; }
-	static MutantAttackState* GetAttackState() { return mAttackState; }
-	static MutantOnDamageState* GetOnDamageState() { return mOnDamageState; }
-	static MutantDieState* GetDieState() { return mDieState; }*/
 
 private:
 	eMutantAnimationStates mCurrentAnimationState;
-	eMutantFSMStates mCurrentFSMState;
 
 	MutantPatrolState* mPatrolState;
 	MutantStalkingState* mStalkingState;

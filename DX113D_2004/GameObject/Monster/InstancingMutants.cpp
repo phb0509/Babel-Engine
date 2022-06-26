@@ -106,7 +106,7 @@ void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates v
 {
 	int animationState = static_cast<int>(value);
 
-	if (mInstanceObjects[instanceIndex]->GetAnimationStates() != animationState)
+	if (mInstanceObjects[instanceIndex]->GetAnimationState() != animationState)
 	{
 		mInstanceObjects[instanceIndex]->SetAnimation(animationState);
 		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
@@ -240,32 +240,59 @@ void InstancingMutants::showAnimationStates()
 
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
-		string animationName;
+		string currentFSMStateName;
+		string currentAnimationStateName;
 
-		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationStates()))
+		switch (static_cast<UINT>(mInstanceObjects[i]->GetEnumFSMState()))
 		{
 		case 0:
-			animationName = "Idle";
+			currentFSMStateName = "Patrol";
 			break;
 		case 1:
-			animationName = "Run";
+			currentFSMStateName = "Stalk";
 			break;
 		case 2:
-			animationName = "SmashAttack";
+			currentFSMStateName = "Attack";
 			break;
 		case 3:
-			animationName = "OnDamage";
+			currentFSMStateName = "OnDamage";
 			break;
 		case 4:
-			animationName = "Die";
+			currentFSMStateName = "Die";
 			break;
 		}
 
-		string name = to_string(i) + " Mutant State is " + animationName;
+		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationState())) 
+		{
+		case 0:
+			currentAnimationStateName = "Idle";
+			break;
+		case 1:
+			currentAnimationStateName = "Run";
+			break;
+		case 2:
+			currentAnimationStateName = "SmashAttack";
+			break;
+		case 3:
+			currentAnimationStateName = "OnDamage";
+			break;
+		case 4:
+			currentAnimationStateName = "Die";
+			break;
+		}
+
+		string fsmStateStringToPrint = to_string(i) + " Mutant FSMState       : " + currentFSMStateName;
+		string animaionStateStringToPrint = to_string(i) + " Mutant AnimationState : " + currentAnimationStateName;
 		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
-		ImGui::Text(name.c_str());
+
+		ImGui::Separator();
+
+		ImGui::Text(fsmStateStringToPrint.c_str());
+		ImGui::Text(animaionStateStringToPrint.c_str());
 		ImGui::Text(frameBufferValue.c_str());
-		SpacingRepeatedly(2);
+
+		ImGui::Separator();
+		SpacingRepeatedly(3);
 	}
 
 	ImGui::End();

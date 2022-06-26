@@ -10,6 +10,7 @@ MutantStalkingState::~MutantStalkingState()
 
 void MutantStalkingState::Enter(Monster* monster)
 {
+	monster->SetFSMState(static_cast<int>(eMutantFSMStates::Stalk));
 	mPlayer = GM->Get()->GetPlayer();
 	monster->GetPath().clear();
 	//mPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, monster, placeholders::_1, placeholders::_2);
@@ -22,8 +23,7 @@ void MutantStalkingState::Execute(Monster* monster)
 
 	if (monster->GetDistanceToPlayer() <= monster->GetDistanceToPlayerForAttack()) // 공격 사거리 안에 들어오면.
 	{
-		//monster->ChangeState(monster->GetAttackState()); // AttackState로 전환.
-		monster->ChangeState(monster->GetState(static_cast<int>(eMutantFSMStates::Attack)));
+		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::Attack)));
 	}
 }
 

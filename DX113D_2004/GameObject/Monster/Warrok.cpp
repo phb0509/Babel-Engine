@@ -3,8 +3,8 @@
 
 Warrok::Warrok()
 	: 
-	mAnimation(eAnimationStates::Idle),
-	mFSM(eMutantFSMstates::Patrol),
+	mAnimation(eMutantAnimationStates::Idle),
+	mFSM(eMutantFSMStates::Patrol),
 	mbOnHit(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -51,7 +51,7 @@ void Warrok::PostRender()
 
 void Warrok::OnDamage(float damage)
 {
-	mFSM = eMutantFSMstates::OnDamage;
+	mFSM = eMutantFSMStates::OnDamage;
 	mbOnHit = true;
 	//GM->SetHitCheckMap(this, true);
 	mCurrentHP -= 10.0f;
@@ -66,7 +66,7 @@ void Warrok::CheckOnHit()
 {
 	if (!mbOnHit) return;
 
-	SetAnimation((eAnimationStates::OnDamage));
+	SetAnimation(static_cast<int>(eMutantAnimationStates::OnDamage));
 }
 
 Collider* Warrok::GetColliderForAStar()
@@ -76,22 +76,22 @@ Collider* Warrok::GetColliderForAStar()
 
 void Warrok::setOnDamageEnd()
 {
-	SetAnimation((eAnimationStates::Idle));
-	//GM->SetHitCheckMap(this, false);
+	SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 	mbOnHit = false;
 }
 
-
 void Warrok::SetIdle()
 {
-	SetAnimation((eAnimationStates::Idle));
+	SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 }
 
-void Warrok::SetAnimation(eAnimationStates value)
+void Warrok::SetAnimation(int value)
 {
-	if (mAnimation != value)
+	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(value);
+
+	if (mAnimation != state)
 	{
-		mAnimation = value;
+		mAnimation = state;
 		PlayClip(static_cast<int>(mAnimation));
 	}
 }

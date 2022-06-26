@@ -1,7 +1,6 @@
 #include "Framework.h"
-#include "PatrolState.h"
 
-PatrolState::PatrolState() :
+MutantPatrolState::MutantPatrolState() :
 	mPatrolRandomNum(0.0f),
 	mbIsPatrolMove(false),
 	mbIsSetPatrolDest(true),
@@ -11,11 +10,11 @@ PatrolState::PatrolState() :
 {
 }
 
-PatrolState::~PatrolState()
+MutantPatrolState::~MutantPatrolState()
 {
 }
 
-void PatrolState::Initialize()
+void MutantPatrolState::Initialize()
 {
 	mPatrolRandomNum = 0.0f;
 	mbIsPatrolMove = false;
@@ -25,17 +24,17 @@ void PatrolState::Initialize()
 	mPatrolDestPos = { 0.0f,0.0f,0.0f };
 }
 
-void PatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
+void MutantPatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
 {
-	
+
 }
 
-void PatrolState::Enter(Monster* monster)
+void MutantPatrolState::Enter(Monster* monster)
 {
 	Initialize();
 }
 
-void PatrolState::Execute(Monster* monster)
+void MutantPatrolState::Execute(Monster* monster)
 {
 	mPlayer = GM->Get()->GetPlayer();
 	mMaxPatrolWidth = monster->GetTerrain()->GetSize().x - 1;
@@ -91,7 +90,7 @@ void PatrolState::Execute(Monster* monster)
 	}
 
 	else if (!mbIsSetPatrolDest && mbIsPatrolMove) // 실제이동.
-	{		
+	{
 		if (Timer::Get()->GetFPS() > 10) // 초기실행시 FPS값이 순간적으로 1이 되는것에 따른 버그로 인한 예외처리. 
 		{
 			//mMonster->MoveToDestUsingAStar(mPatrolDestPos);
@@ -112,8 +111,8 @@ void PatrolState::Execute(Monster* monster)
 			{
 				monster->MoveToDestination(monster, monster->GetPath().back(), monster->GetMoveSpeed());
 			}
-			
-			monster->SetAnimation(eAnimationStates::Run); // Run.
+
+			monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Run)); // Run.
 		}
 
 		if (fabs(mPatrolDestPos.x - monster->mPosition.x) < 1.0f && // 목표지점 도착하면
@@ -124,18 +123,17 @@ void PatrolState::Execute(Monster* monster)
 			mCurrentTime = Timer::Get()->GetRunTime();
 			mStandTime = mCurrentTime + mPatrolRandomNum;
 
-			monster->SetAnimation(eAnimationStates::Idle);
+			monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 		}
 	}
 
 	//범위 안 플레이어 있는지 체크.
 	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
 	{
-		//monster->SetIsStalk(true);
-		monster->ChangeState(monster->GetStalkingState()); // Stalking으로 상태전환.
+		monster->ChangeState(monster->GetState(static_cast<int>(eMutantFSMStates::Stalk)));
 	}
 }
 
-void PatrolState::Exit(Monster* mMonster)
+void MutantPatrolState::Exit(Monster* mMonster)
 {
 }

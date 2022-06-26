@@ -99,14 +99,16 @@ void InstancingMutants::setOnDamageEnd(int instanceIndex)
 
 void InstancingMutants::SetIdle(int instanceIndex)
 {
-	ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(eAnimationStates::Idle));
+	ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(eMutantAnimationStates::Idle));
 }
 
-void InstancingMutants::SetAnimation(int instanceIndex, eAnimationStates value) // 
+void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates value) // 
 {
-	if (mInstanceObjects[instanceIndex]->GetAnimationStates() != value)
+	int animationState = static_cast<int>(value);
+
+	if (mInstanceObjects[instanceIndex]->GetAnimationStates() != animationState)
 	{
-		mInstanceObjects[instanceIndex]->SetAnimation(value);
+		mInstanceObjects[instanceIndex]->SetAnimation(animationState);
 		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
 		//SetAnimation(1, eAnimationStates::Run);
 	}

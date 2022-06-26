@@ -50,10 +50,10 @@ ColliderSettingScene::ColliderSettingScene() :
 	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
 
 	terrain = new Terrain();
-	mMonster = new Warrok();
 
+	/*mMonster = new Warrok();
 	mMonster->SetTerrain(terrain,false);
-	mMonster->mPosition = { 600,0,600 };
+	mMonster->mPosition = { 600,0,600 };*/
 
 
 	// 처음에 뮤턴트 치기귀찮아서 미리 넣어놓음.
@@ -106,7 +106,7 @@ void ColliderSettingScene::Update()
 	colorPicking();
 
 	terrain->Update();
-	mMonster->Update();
+	//mMonster->Update();
 	//mStandardCube->Update();
 
 	if (KEY_DOWN(VK_LBUTTON))
@@ -195,7 +195,7 @@ void ColliderSettingScene::Render()
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 	
-	mMonster->Render();
+	//mMonster->Render();
 	//mStandardCube->Render();
 	mRSState->SetState();
 

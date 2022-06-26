@@ -37,7 +37,7 @@ public:
 	virtual Collider* GetColliderForAStar() override;
 
 	void SetIdle();
-	void SetAnimation(eAnimationStates value) override;
+	void SetAnimation(int value) override;
 
 
 private:
@@ -62,6 +62,6 @@ private:
 
 	bool mbOnHit;
 
-	eAnimationStates mAnimation;
-	eMutantFSMstates mFSM;
+	eMutantAnimationStates mAnimation;
+	eMutantFSMStates mFSM;
 };

@@ -299,21 +299,23 @@ using namespace states;
 
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"
-#include "GameObject/Monster/Mutant.h"
 #include "GameObject/Monster/Warrok.h"
 #include "GameObject/Player/Player.h"
 #include "GameObject/Monster/InstanceMutant.h"
 #include "GameObject/Monster/InstancingMutants.h"
 
 #include "GameObject/Utility/State.h"
-#include "GameObject/Monster/MonsterStates/PatrolState.h"
-#include "GameObject/Monster/MonsterStates/StalkingState.h"
-#include "GameObject/Monster/MonsterStates/AttackState.h"
-#include "GameObject/Monster/MonsterStates/OnDamageState.h"
+
+#include "GameObject\/Monster\/MutantStates\MutantPatrolState.h"
+#include "GameObject\/Monster\/MutantStates\MutantStalkingState.h"
+#include "GameObject\/Monster\/MutantStates\MutantAttackState.h"
+#include "GameObject\/Monster\/MutantStates\MutantOnDamageState.h"
+#include "GameObject\/Monster\/MutantStates\MutantDieState.h"
 
 
 //Managers
 #include "GameObject/Manager/GameManager.h"
+#include "GameObject\/Manager\StateManager.h"
 
 
 //Scene Header

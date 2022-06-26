@@ -1,10 +1,11 @@
 #pragma once
 
-class AttackState : public State
+
+class MutantAttackState : public MonsterState
 {
 public:
-	AttackState();
-	~AttackState();
+	MutantAttackState();
+	~MutantAttackState();
 
 	// State을(를) 통해 상속됨
 	virtual void Enter(Monster* monster) override;

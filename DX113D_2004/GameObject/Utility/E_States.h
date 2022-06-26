@@ -3,7 +3,7 @@
 
 namespace states
 {
-	enum class eAnimationStates
+	enum class eMutantAnimationStates
 	{
 		Idle,
 		Run,
@@ -12,7 +12,7 @@ namespace states
 		Die,
 	};
 
-	enum class eMutantFSMstates
+	enum class eMutantFSMStates
 	{
 		Patrol,
 		Stalk,

@@ -1,13 +1,13 @@
 #include "Framework.h"
 
-State::State():
+MonsterState::MonsterState():
 	mPeriodFuncPointer(nullptr),
 	mPlayer(nullptr),
 	mbIsAttacked(false)
 {
 }
 
-State::~State()
+MonsterState::~MonsterState()
 {
 
 }

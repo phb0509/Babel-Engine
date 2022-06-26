@@ -85,6 +85,7 @@ void Program::Create()
 	Timer::Get();
 	DirectWrite::Get();
 	GameManager::Get();
+	StateManager::Get();
 
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -95,6 +96,7 @@ void Program::Create()
 
 void Program::Delete()
 {
+	StateManager::Delete();
 	GameManager::Delete();
 	SceneManager::Delete();
 	DirectWrite::Delete();

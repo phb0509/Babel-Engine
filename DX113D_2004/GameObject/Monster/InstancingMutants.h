@@ -21,9 +21,11 @@ public:
 	vector<Monster*> GetInstanceObjects() { return mInstanceObjects; }
 	Collider* GetColliderForAStar(int instanceIndex);
 	Collider* GetHitCollider(int instanceIndex);
+	eMutantAnimationStates GetAnimationStates() { return mAnimationState; }
+	void SetAnimationStates(eMutantAnimationStates animationStates) { mAnimationState = animationStates; }
 
 	void SetIdle(int instanceIndex);
-	void SetAnimation(int instanceIndex, eAnimationStates value);
+	void SetAnimation(int instanceIndex, eMutantAnimationStates value);
 
 private:
 	void setOnDamageEnd(int instanceIndex);
@@ -36,6 +38,8 @@ private:
 private:
 	int mInstanceCount;
 	vector<Monster*> mInstanceObjects;
+	eMutantAnimationStates mAnimationState;
+	eMutantFSMStates mFSM;
 	Terrain* mTerrain;
 
 	vector<TempCollider> mTempColliderSRTdatas;

@@ -17,7 +17,7 @@ ColorPickingScene::ColorPickingScene()
 	mPlayer->SetTerrain(mTerrain);
 
 
-	mMonster = new Mutant();
+	//mMonster = new Mutant();
 	mCube = new Cube();
 	//mCube->mPosition = { 20.0f,0.0f,0.0f };
 	mBoxCollider = new BoxCollider();

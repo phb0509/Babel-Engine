@@ -37,7 +37,6 @@ private:
 	RenderTarget* mPreRenderTargets[1];
 	DepthStencil* mPreRenderTargetDSV;
 
-
 	Vector3 mMouseScreenUVPosition;
 	ComputeShader* mColorPickingComputeShader;
 	ComputeStructuredBuffer* mComputeStructuredBuffer;

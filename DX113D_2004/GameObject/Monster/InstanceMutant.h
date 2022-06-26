@@ -1,6 +1,12 @@
 #pragma once
 
 
+class MutantPatrolState;
+class MutantStalkingState;
+class MutantAttackState;
+class MutantOnDamageState;
+class MutantDieState;
+
 class InstanceMutant : public Monster
 {
 public:
@@ -18,12 +24,25 @@ public:
 	virtual bool CheckOnDamage(const Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
-	virtual void SetAnimation(eAnimationStates value) override;
+	virtual int GetAnimationStates() override;
+	virtual MonsterState* GetState(int num) override;
+	virtual void SetAnimation(int value) override;
 
+	/*static MutantPatrolState* GetPatrolState() { return mPatrolState; }
+	static MutantStalkingState* GetStalkingState() { return mStalkingState; }
+	static MutantAttackState* GetAttackState() { return mAttackState; }
+	static MutantOnDamageState* GetOnDamageState() { return mOnDamageState; }
+	static MutantDieState* GetDieState() { return mDieState; }*/
 
 private:
+	eMutantAnimationStates mCurrentAnimationState;
+	eMutantFSMStates mCurrentFSMState;
 
+	MutantPatrolState* mPatrolState;
+	MutantStalkingState* mStalkingState;
+	MutantAttackState* mAttackState;
+	MutantOnDamageState* mOnDamageState;
+	MutantDieState* mDieState;
 
-private:
 	bool mbOnHit;
 };

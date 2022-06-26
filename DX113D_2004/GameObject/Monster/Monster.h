@@ -1,11 +1,11 @@
 #pragma once
 
 class Player;
-class State;
-class PatrolState;
-class StalkingState;
-class AttackState;
-class OnDamageState;
+class MonsterState;
+//class PatrolState;
+//class StalkingState;
+//class AttackState;
+//class OnDamageState;
 
 class Monster : public Transform , public ModelAnimator
 {
@@ -23,33 +23,32 @@ public:
 	virtual void OnDamage(float damage) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
-	virtual void SetAnimation(eAnimationStates value) = 0;
+	virtual MonsterState* GetState(int num) = 0;
+	virtual int GetAnimationStates() = 0;
+	virtual void SetAnimation(int value) = 0;
 
 	void MoveToDestUsingAStar(Vector3 dest);
-	void ChangeState(State* nextState);
+	void ChangeState(MonsterState* nextState);
 
-	Terrain* GetTerrain()const { return mTerrain; }
+	Terrain* GetTerrain() const { return mTerrain; }
 	vector<Vector3>& GetPath() { return mPath; }
 	float GetMoveSpeed() const { return mMoveSpeed; }
-	bool GetIsStalk()const { return mbIsStalk; }
+	bool GetIsStalk() const { return mbIsStalk; }
 	float GetDistanceToPlayer();
 	float GetDistanceToPlayerForAttack() const { return mDistanceToPlayerForAttack; }
 	float GetPlayerDetectRange() const { return mPlayerDetectRange; }
-	PatrolState* GetPatrolState() { return mPatrolState; }
-	StalkingState* GetStalkingState() { return mStalkingState; }
-	AttackState* GetAttackState() { return mAttackState; }
 	AStar* GetAStar() { return mAStar; }
-	eAnimationStates GetAnimationStates() { return mAnimationState; }
-	State* GetCurrentState() { return mCurrentState; }
+	
+	MonsterState* GetCurrentState() { return mCurrentState; }
 	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
-
+	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetIsStalk(bool value) { mbIsStalk = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
-	void SetAnimationStates(eAnimationStates animationStates) { mAnimationState = animationStates; }
+	//void SetAnimationStates(eMutantAnimationStates animationStates) { mAnimationState = animationStates; }
 	void SetRealtimeAStarPath(Vector3 destPos);
 	void SetAStarPath(Vector3 destPos);
 	void SetInstanceIndex(int index) { mInstanceIndex = index; }
@@ -79,14 +78,14 @@ protected:
 	float mDistanceToPlayerForAttack;
 	float mAStarPathUpdatePeriodTime;
 
-	State* mCurrentState;
-	PatrolState* mPatrolState;
+	MonsterState* mCurrentState;
+	/*PatrolState* mPatrolState;
 	StalkingState* mStalkingState;
 	AttackState* mAttackState;
-	OnDamageState* mOnDamageState;
+	OnDamageState* mOnDamageState;*/
 	ModelAnimator* mModelAnimator;
-	eAnimationStates mAnimationState;
-	eMutantFSMstates mFSM;
+	//eMutantAnimationStates mAnimationState;
+	//eMutantFSMstates mFSM;
 	int mInstanceIndex;
 	FrameBuffer* mUpperFrameBuffer;
 

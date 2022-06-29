@@ -20,7 +20,9 @@ Monster::Monster() :
 	mBeforeTargetPosition(0.0f,0.0f,0.0f),
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
-	mInstanceIndex(0)
+	mInstanceIndex(0),
+	mbIsHitted(false),
+	mbIsInFrustum(false)
 {
 	mCurrentHP = mMaxHP;
 	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);

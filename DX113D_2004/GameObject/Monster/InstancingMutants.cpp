@@ -23,6 +23,9 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 		Monster* temp = new InstanceMutant();
 		temp->SetInstanceCollider(mInstanceColliderDatas[i]);
 		temp->SetUpperFrameBuffer(mFrameBuffer);
+		
+		string tagName = to_string(i) + " Mutant";
+		temp->SetTag(tagName);
 		mInstanceObjects.push_back(temp);
 		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
 	}
@@ -60,41 +63,25 @@ void InstancingMutants::Render()
 
 void InstancingMutants::PostRender()
 {
-	showAnimationStates();
-
-	/*ImGui::Begin("TestWindow");
-	ImGui::InputFloat3("Instance0 Position", (float*)&mInstanceObjects[0]->mPosition);
-	SpacingRepeatedly(2);
-	ImGui::InputFloat3("Body Collider Position", (float*)&mInstanceColliderDatas[0].mColliders[0].collider->mPosition);
-	ImGui::End();*/
+	showInstanceInformation();
 }
 
-void InstancingMutants::OnDamage(int instanceIndex, float damage)
+void InstancingMutants::OnDamage(int instanceIndex, AttackInformation attackInformation)
 {
-	//mFSM = eFSMstates::OnDamage;
-	//mbOnHit = true;
-	//GM->SetHitCheckMap(this, true);
-	//mCurrentHP -= 10.0f;
+
 }
 
 void InstancingMutants::CheckOnHit(int instanceIndex)
 {
-	/*if (!mbOnHit) return;
-
-	SetAnimation(eAnimationStates::OnDamage);*/
 }
 
 Collider* InstancingMutants::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
 {
-	//return mCollidersMap["bodyCollider"];
 	return nullptr;
 }
 
 void InstancingMutants::setOnDamageEnd(int instanceIndex)
 {
-	/*SetAnimation(instanceIndex,eAnimationStates::Idle);
-	GM->SetHitCheckMap(this, false);
-	mbOnHit = false;*/
 }
 
 void InstancingMutants::SetIdle(int instanceIndex)
@@ -110,14 +97,12 @@ void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates v
 	{
 		mInstanceObjects[instanceIndex]->SetAnimation(animationState);
 		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
-		//SetAnimation(1, eAnimationStates::Run);
 	}
 }
 
 void InstancingMutants::setAttackEnd(int instanceIndex)
 {
-	/*mPlayer = GM->Get()->GetPlayer();
-	RotateToDestinationForModel(this, mPlayer->mPosition);*/
+
 }
 
 void InstancingMutants::renderColliders()
@@ -159,7 +144,6 @@ void InstancingMutants::setColliders()
 void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 {
 	wstring temp = L"TextData/" + fileName;
-	//BinaryReader binaryReader(L"TextData/Mutant.map");
 	BinaryReader binaryReader(temp);
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;
@@ -212,7 +196,7 @@ void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 
 			if (collider != nullptr)
 			{
-				collider->mTag = mTempColliderDatas[j].colliderName;
+				collider->SetTag(mTempColliderDatas[j].colliderName);
 				collider->mPosition = mTempColliderDatas[j].position;
 				collider->mRotation = mTempColliderDatas[j].rotation;
 				collider->mScale = mTempColliderDatas[j].scale;
@@ -230,7 +214,7 @@ void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 	binaryReader.CloseReader();
 }
 
-void InstancingMutants::showAnimationStates()
+void InstancingMutants::showInstanceInformation()
 {
 	ImGui::Begin("Mutants Information");
 
@@ -284,11 +268,22 @@ void InstancingMutants::showAnimationStates()
 		string fsmStateStringToPrint = to_string(i) + " Mutant FSMState       : " + currentFSMStateName;
 		string animaionStateStringToPrint = to_string(i) + " Mutant AnimationState : " + currentAnimationStateName;
 		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
+		string bIsCurrentAnimationEnd = "";
 
+		if (mInstanceObjects[i]->GetCurrentAnimationEnd())
+		{
+			bIsCurrentAnimationEnd = "Animation is End";
+		}
+		else
+		{
+			bIsCurrentAnimationEnd = "Animation is Playing...";
+		}
+	
 		ImGui::Separator();
 
 		ImGui::Text(fsmStateStringToPrint.c_str());
 		ImGui::Text(animaionStateStringToPrint.c_str());
+		//ImGui::Text(bIsCurrentAnimationEnd.c_str());
 		ImGui::Text(frameBufferValue.c_str());
 
 		ImGui::Separator();

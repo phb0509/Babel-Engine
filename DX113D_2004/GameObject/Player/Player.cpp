@@ -10,7 +10,8 @@ Player::Player():
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
-	mbIsLODTerrain(false)
+	mbIsLODTerrain(false),
+	mbIsCheckNormalAttackCollision(false)
 {
 	mScale = { 0.05f, 0.05f, 0.05f };
 	mMoveSpeed = 50.0f;
@@ -36,6 +37,7 @@ Player::Player():
 	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
 	loadBinaryCollidersFile(L"Player.map");
+	setAttackInformations();
 	UpdateWorld();
 }
 
@@ -116,7 +118,6 @@ void Player::updateCamera()
 		moveTargetCameraInWorld();
 	}
 }
-
 // Player
 void Player::moveInTargetMode() // Player
 {
@@ -156,13 +157,13 @@ void Player::moveInTargetMode() // Player
 	if (KEY_PRESS('A'))
 	{
 		rotateInTargetMode();
-		mPosition += Right() * mMoveSpeed * DELTA;
+		mPosition += GetRightVector() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
 		rotateInTargetMode();
-		mPosition += Right() * -mMoveSpeed * DELTA;
+		mPosition += GetRightVector() * -mMoveSpeed * DELTA;
 	}
 } 
 
@@ -176,16 +177,16 @@ void Player::moveInWorldMode() // Player
 
 	if (KEY_PRESS('W'))
 	{
-		mPosition.z += -Forward().z * mMoveSpeed * DELTA;
-		mPosition.x += -Forward().x * mMoveSpeed * DELTA;
+		mPosition.z += -GetForwardVector().z * mMoveSpeed * DELTA;
+		mPosition.x += -GetForwardVector().x * mMoveSpeed * DELTA;
 
 		setAnimation(Run);
 	}
 
 	if (KEY_PRESS('S'))
 	{
-		mPosition.z -= Forward().z * -mMoveSpeed * DELTA;
-		mPosition.x -= Forward().x * -mMoveSpeed * DELTA;
+		mPosition.z -= GetForwardVector().z * -mMoveSpeed * DELTA;
+		mPosition.x -= GetForwardVector().x * -mMoveSpeed * DELTA;
 
 		setAnimation(Run);
 	}
@@ -205,12 +206,12 @@ void Player::rotateInTargetMode()
 {
 	float rotationSpeed = 10.0f * DELTA;
 
-	Vector3 temp = Vector3::Cross(mTargetCameraForward, -1 * Forward());
+	Vector3 temp = Vector3::Cross(mTargetCameraForward, -1 * GetForwardVector());
 
 	if (temp.y < 0.0f) // 플레이어 포워드벡터가 카메라포워드벡터의 왼쪽에 있다면. // 즉 오른쪽으로 회전해야한다면
 	{
-		if (CompareFloat(mTargetCameraForward.x, -Forward().x) &&
-			CompareFloat(mTargetCameraForward.z, -Forward().z))
+		if (CompareFloat(mTargetCameraForward.x, -GetForwardVector().x) &&
+			CompareFloat(mTargetCameraForward.z, -GetForwardVector().z))
 		{
 		}
 		else
@@ -221,8 +222,8 @@ void Player::rotateInTargetMode()
 
 	else if (temp.y >= 0.0f)// 왼쪽으로 회전해야 한다면.
 	{
-		if (CompareFloat(mTargetCameraForward.x, -Forward().x) &&
-			CompareFloat(mTargetCameraForward.z, -Forward().z))
+		if (CompareFloat(mTargetCameraForward.x, -GetForwardVector().x) &&
+			CompareFloat(mTargetCameraForward.z, -GetForwardVector().z))
 		{
 		}
 		else
@@ -231,7 +232,6 @@ void Player::rotateInTargetMode()
 		}
 	}
 }
-
 // SettedCamera - TargetCamera
 void Player::moveTargetCamera()
 {
@@ -262,7 +262,7 @@ void Player::moveTargetCamera()
 	mTargetCameraForward = targetCameraForward.Normal();
 
 	Matrix viewMatrix = XMMatrixLookAtLH(mTargetCamera->mPosition.data, targetPosition.data,
-		mTargetCamera->Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
+		mTargetCamera->GetUpVector().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
 
 	// 프러스텀에 뷰버퍼 설정.
 	mTargetCamera->GetViewBuffer()->SetMatrix(viewMatrix);
@@ -279,26 +279,26 @@ void Player::rotateTargetCamera()
 	mPreFrameMousePosition = MOUSEPOS;
 }
 
-
 // SettedCamera - TargetCameraInWorld
 void Player::moveTargetCameraInWorld()
 {
 	Vector3 targetPosition = mPosition;
 	Vector3 beforePosition = mTargetCameraInWorld->mPosition;
 
-	mTargetCameraInWorld->mPosition = mPosition + Forward() * 1.0f; // 타겟오브젝트랑 같은 위치로 세팅.
+	mTargetCameraInWorld->mPosition = mPosition + GetForwardVector() * 1.0f; // 타겟오브젝트랑 같은 위치로 세팅.
 
 	Matrix viewMatrix = XMMatrixLookAtLH(mTargetCameraInWorld->mPosition.data, targetPosition.data,
-		mTargetCameraInWorld->Up().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
+		mTargetCameraInWorld->GetUpVector().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
 
 	// 프러스텀에 뷰버퍼 설정.
 	mTargetCameraInWorld->GetViewBuffer()->SetMatrix(viewMatrix);
 	mTargetCameraInWorld->SetViewToFrustum(viewMatrix);
 }
 
-
 void Player::checkNormalAttackCollision()
 {
+	if (!mbIsNormalAttack) return;
+
 	for (auto monster : mMonsters)
 	{
 		string monsterName = monster.first;
@@ -307,9 +307,9 @@ void Player::checkNormalAttackCollision()
 		{
 			Monster* monster = mMonsters[monsterName][i];
 
-			if (monster->CheckOnDamage(mCollidersMap["swordCollider"]))
+			if (monster->CheckOnDamage(mAttackInformations["NormalAttack"].attackCollider))
 			{
-				monster->OnDamage(100.0f);
+				monster->OnDamage(mAttackInformations["NormalAttack"]);
 			}
 		}
 	}
@@ -348,10 +348,19 @@ void Player::setColliders()
 	}
 }
 
+void Player::setAttackInformations()
+{
+	// 지금은 AttackInformation에 컬라이더 1개만 넣긴 하지만, 공격에따라 여러 컬라이더를 넣어야할 수도 있긴함.
+
+	// NormalAttack
+	AttackInformation normalAttackInformation("NormalAttack", mCollidersMap["swordCollider"], eAttackType::Normal, 100.0f);
+	mAttackInformations[normalAttackInformation.attackName] = normalAttackInformation;
+}
+
 void Player::loadBinaryCollidersFile(wstring fileName)
 {
 	wstring temp = L"TextData/" + fileName;
-	BinaryReader binaryReader(L"TextData/Player.map");
+	BinaryReader binaryReader(temp);
 	UINT colliderCount = binaryReader.UInt();
 	int colliderType;
 
@@ -396,7 +405,7 @@ void Player::loadBinaryCollidersFile(wstring fileName)
 		 
 		if (collider != nullptr)
 		{
-			collider->mTag = mTempColliderDatas[i].colliderName;
+			collider->SetTag(mTempColliderDatas[i].colliderName);
 			collider->mPosition = mTempColliderDatas[i].position;
 			collider->mRotation = mTempColliderDatas[i].rotation;
 			collider->mScale = mTempColliderDatas[i].scale;
@@ -451,7 +460,20 @@ void Player::PostRender()
 	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
 
 	ImGui::InputFloat3("Player Position", (float*)&this->mPosition);
-	SpacingRepeatedly(1);
+	SpacingRepeatedly(3);
+
+	for (auto monster : mMonsters)
+	{
+		string monsterName = monster.first;
+
+		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
+		{
+			Monster* monster = mMonsters[monsterName][i];
+
+			ImGui::Text(monster->GetTag().c_str());
+			SpacingRepeatedly(2);
+		}
+	}
 
 	ImGui::End();
 }

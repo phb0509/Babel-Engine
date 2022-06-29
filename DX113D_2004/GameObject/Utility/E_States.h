@@ -16,7 +16,7 @@ namespace states
 	{
 		Patrol,
 		Stalk,
-		Attack, // 스매쉬어택이든 뭐든, 공격상태면 일단?
+		Attack, 
 		OnDamage,
 		Die,
 	};
@@ -27,5 +27,11 @@ namespace states
 		SPHERE,
 		CAPSULE,
 		NONE
+	};
+
+	enum class eAttackType
+	{
+		Normal,
+		KnockBack
 	};
 }

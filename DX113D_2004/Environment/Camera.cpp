@@ -78,8 +78,8 @@ void Camera::SetViewMatrixToBuffer()
 {
 	Transform::UpdateWorld();
 
-	Vector3 focus = mPosition + Forward();
-	mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data, Up().data); // Ä«¸Þ¶óÀ§Ä¡, Å¸°ÙÀ§Ä¡, Ä«¸Þ¶ó À­º¤ÅÍ
+	Vector3 focus = mPosition + GetForwardVector();
+	mViewMatrix = XMMatrixLookAtLH(mPosition.data, focus.data, GetUpVector().data); // Ä«¸Þ¶óÀ§Ä¡, Å¸°ÙÀ§Ä¡, Ä«¸Þ¶ó À­º¤ÅÍ
 	mViewBuffer->SetMatrix(mViewMatrix);
 }
 
@@ -208,20 +208,20 @@ void Camera::Move()
 	if (KEY_PRESS(VK_RBUTTON))
 	{
 		if (KEY_PRESS('I'))
-			mPosition += Forward() * mMoveSpeed * DELTA;
+			mPosition += GetForwardVector() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('K'))
-			mPosition -= Forward() * mMoveSpeed * DELTA;
+			mPosition -= GetForwardVector() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('J'))
-			mPosition -= Right() * mMoveSpeed * DELTA;
+			mPosition -= GetRightVector() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('L'))
-			mPosition += Right() * mMoveSpeed * DELTA;
+			mPosition += GetRightVector() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('U'))
-			mPosition -= Up() * mMoveSpeed * DELTA;
+			mPosition -= GetUpVector() * mMoveSpeed * DELTA;
 		if (KEY_PRESS('O'))
-			mPosition += Up() * mMoveSpeed * DELTA;
+			mPosition += GetUpVector() * mMoveSpeed * DELTA;
 	}
 
-	mPosition += Forward() * Control::Get()->GetWheel() * mWheelSpeed * DELTA;
+	mPosition += GetForwardVector() * Control::Get()->GetWheel() * mWheelSpeed * DELTA;
 
 	// Update Rotation
 	if (KEY_PRESS(VK_RBUTTON))

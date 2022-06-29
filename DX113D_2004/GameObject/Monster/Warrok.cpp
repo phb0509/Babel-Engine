@@ -49,7 +49,7 @@ void Warrok::PostRender()
 	
 }
 
-void Warrok::OnDamage(float damage)
+void Warrok::OnDamage(AttackInformation attackInformation)
 {
 	mFSM = eMutantFSMStates::OnDamage;
 	mbOnHit = true;

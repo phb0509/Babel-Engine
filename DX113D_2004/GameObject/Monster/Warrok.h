@@ -31,7 +31,7 @@ public:
 	void PostRender();
 
 	virtual Collider* GetHitCollider() override;
-	virtual void OnDamage(float damage) override;
+	virtual void OnDamage(AttackInformation attackInformation) override;
 	virtual bool CheckOnDamage(const Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;

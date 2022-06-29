@@ -19,7 +19,7 @@ public:
 	virtual void Render() override;
 
 	virtual Collider* GetHitCollider() override;
-	virtual void OnDamage(float damage) override;
+	virtual void OnDamage(AttackInformation attackInformation) override;
 	virtual bool CheckOnDamage(const Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
@@ -28,6 +28,8 @@ public:
 	virtual void SetFSMState(int state) override;
 	virtual int GetAnimationState() override;
 	virtual void SetAnimation(int value) override;
+
+	void setStalkingState();
 
 private:
 	eMutantAnimationStates mCurrentAnimationState;

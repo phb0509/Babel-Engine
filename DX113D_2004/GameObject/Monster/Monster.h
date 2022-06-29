@@ -1,11 +1,8 @@
 #pragma once
 
+
 class Player;
 class MonsterState;
-//class PatrolState;
-//class StalkingState;
-//class AttackState;
-//class OnDamageState;
 
 class Monster : public Transform , public ModelAnimator
 {
@@ -20,7 +17,7 @@ public:
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
 	virtual bool CheckOnDamage(const Collider* collider) = 0;
-	virtual void OnDamage(float damage) = 0;
+	virtual void OnDamage(AttackInformation attackInformation) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
 	virtual MonsterState* GetFSMState(int num) = 0;
@@ -39,11 +36,11 @@ public:
 	float GetDistanceToPlayerForAttack() const { return mDistanceToPlayerForAttack; }
 	float GetPlayerDetectRange() const { return mPlayerDetectRange; }
 	AStar* GetAStar() { return mAStar; }
-	
 	MonsterState* GetCurrentState() { return mCurrentFSMState; }
 	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
+	bool GetIsHitted() { return mbIsHitted; }
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -79,8 +76,12 @@ protected:
 	int mCurrentEnumFSMState;
 	ModelAnimator* mModelAnimator;
 
-	int mInstanceIndex;
 	FrameBuffer* mUpperFrameBuffer;
+	int mInstanceIndex;
+	InstanceColliderData mInstanceColliderData;
+	
+	bool mbIsHitted;
+
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;
@@ -102,5 +103,5 @@ private:
 	bool mbHasTerrainObstacles;
 
 	int count = 0;
-	InstanceColliderData mInstanceColliderData;
+
 };

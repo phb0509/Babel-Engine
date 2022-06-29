@@ -15,7 +15,7 @@ public:
 	void Render();
 	void PostRender();
 
-	void OnDamage(int instanceIndex, float damage);
+	void OnDamage(int instanceIndex, AttackInformation attackInformation);
 	void CheckOnHit(int instanceIndex);
 
 	vector<Monster*> GetInstanceObjects() { return mInstanceObjects; }
@@ -33,7 +33,7 @@ private:
 	void setAttackEnd(int instanceIndex);
 	void renderColliders();
 	void loadBinaryCollidersFile(wstring fileName);
-	void showAnimationStates();
+	void showInstanceInformation();
 
 private:
 	int mInstanceCount;

@@ -72,6 +72,7 @@ private:
 	void rotateTargetCamera();
 
 	void setColliders();
+	void setAttackInformations();
 	void renderColliders();
 	void loadBinaryCollidersFile(wstring fileName);
 	void rotateInTargetMode();
@@ -92,7 +93,7 @@ private:
 	map<string, Collider*> mCollidersMap;
 
 	map<string, vector<Monster*>> mMonsters;
-	
+
 	bool mbIsInitialize;
 	bool mbIsNormalAttack;
 	bool mbIsNormalAttackCollide;
@@ -104,4 +105,8 @@ private:
 	float mTargetCameraRotationY;
 	float mTargetCameraRotationX;
 	bool mbIsLODTerrain;
+
+	map<string, AttackInformation> mAttackInformations;
+
+	bool mbIsCheckNormalAttackCollision;
 };

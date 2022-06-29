@@ -19,6 +19,8 @@ InstanceMutant::InstanceMutant():
 	mDieState = new MutantDieState();
 
 	mCurrentFSMState = mPatrolState;
+
+	SetEndEvent(static_cast<int>(eMutantFSMStates::OnDamage), bind(&InstanceMutant::setStalkingState, this));
 }
 
 InstanceMutant::~InstanceMutant()
@@ -54,15 +56,6 @@ void InstanceMutant::Render()
 Collider* InstanceMutant::GetHitCollider()
 {
 	return nullptr;
-}
-
-void InstanceMutant::OnDamage(float damage)
-{
-}
-
-bool InstanceMutant::CheckOnDamage(const Collider* collider)
-{
-	return false;
 }
 
 void InstanceMutant::CheckOnHit()
@@ -127,3 +120,21 @@ void InstanceMutant::SetAnimation(int value) //
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;
 	}
 }
+
+void InstanceMutant::OnDamage(AttackInformation attackInformation)
+{
+	mCurrentHP -= attackInformation.damage;
+	//mInstanceColliderData;
+	
+}
+
+bool InstanceMutant::CheckOnDamage(const Collider* collider)
+{
+	return false;
+}
+
+void InstanceMutant::setStalkingState()
+{
+	ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Stalk)));
+}
+

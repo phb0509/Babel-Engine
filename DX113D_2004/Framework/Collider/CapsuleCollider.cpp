@@ -14,7 +14,7 @@ CapsuleCollider::~CapsuleCollider()
 
 bool CapsuleCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 {
-	Vector3 direction = Up();
+	Vector3 direction = GetUpVector();
 
 	Vector3 pa = GetGlobalPosition() - direction * Height() * 0.5f;
 	Vector3 pb = GetGlobalPosition() + direction * Height() * 0.5f;
@@ -74,7 +74,7 @@ bool CapsuleCollider::RayCollision(IN Ray ray, OUT Contact* contact)
 
 bool CapsuleCollider::BoxCollision(BoxCollider* collider)
 {
-	Vector3 direction = Up();
+	Vector3 direction = GetUpVector();
 	Vector3 startPos = GetGlobalPosition() - direction * Height() * 0.5f;
 
 	Vector3 A = collider->GetGlobalPosition() - startPos;
@@ -90,7 +90,7 @@ bool CapsuleCollider::BoxCollision(BoxCollider* collider)
 
 bool CapsuleCollider::SphereCollision(SphereCollider* collider)
 {
-	Vector3 direction = Up();
+	Vector3 direction = GetUpVector();
 	Vector3 startPos = GetGlobalPosition() - direction * Height() * 0.5f;
 
 	Vector3 A = collider->GetGlobalPosition() - startPos;
@@ -108,12 +108,12 @@ bool CapsuleCollider::SphereCollision(SphereCollider* collider)
 
 bool CapsuleCollider::CapsuleCollision(CapsuleCollider* collider)
 {
-	Vector3 aDirection = Up();
+	Vector3 aDirection = GetUpVector();
 
 	Vector3 aA = GetGlobalPosition() - aDirection * Height() * 0.5f;
 	Vector3 aB = GetGlobalPosition() + aDirection * Height() * 0.5f;
 
-	Vector3 bDirection = collider->Up();
+	Vector3 bDirection = collider->GetUpVector();
 
 	Vector3 bA = collider->GetGlobalPosition() - bDirection * collider->Height() * 0.5f;
 	Vector3 bB = collider->GetGlobalPosition() + bDirection * collider->Height() * 0.5f;

@@ -27,11 +27,11 @@ public:
 
 	int GetCurrentClipFrame() { return mCurrentClipFrame; }
 	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
+	bool GetCurrentAnimationEnd() { return mbIsCurrentAnimationEnd; }
 
 	void PlayAnimation() { mbIsPlayedAnimation = true; }
 	void StopAnimation() { mbIsPlayedAnimation = false; }
 	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
-
 
 	// Model Function
 	void MakeBoneTransform();
@@ -64,6 +64,7 @@ protected:
 	int mCurrentClipFrame;
 	int mCurrentClipFrameCount;
 	bool mbIsPlayedAnimation;
+	bool mbIsCurrentAnimationEnd;
 
 	//Model
 	BoneBuffer* mBoneBuffer;

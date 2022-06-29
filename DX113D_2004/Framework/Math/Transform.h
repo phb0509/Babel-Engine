@@ -27,17 +27,18 @@ public:
 	Matrix GetInverseWorldMatrix() { return XMMatrixInverse(nullptr, mWorldMatrix); }
 	Matrix GetLocalWorldMatrix() { return mLocalWorldMatrix; }
 	Matrix* GetParentMatrix() { return mParentMatrix; }
-
-	void SetParent(Matrix* value) { mParentMatrix = value; }
-
-	Vector3 Forward();
-	Vector3 Up();
-	Vector3 Right();
-
 	Vector3 GetGlobalPosition() { return mGlobalPosition; }
 	Vector3 GetGlobalRotation() { return mGlobalRotation; }
 	Vector3 GetGlobalScale() { return mGlobalScale; }
 	Transform* GetTransform() { return this; }
+	Vector3 GetForwardVector();
+	Vector3 GetUpVector();
+	Vector3 GetRightVector();
+	string GetTag() { return mTag; }
+	Float4 GetHashColor() { return mHashColor; }
+	bool GetIsInFrustum() { return mbIsInFrustum; }
+	void SetParent(Matrix* value) { mParentMatrix = value; }
+
 
 	void RotateToDestinationForModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
 	void RotateToDestinationForNotModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
@@ -47,16 +48,16 @@ public:
 	void ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime); // 경로설정 periodTime마다 한번씩.
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
+
 	void SetHashColorBuffer();
-	Float4 GetHashColor() { return mHashColor; }
+	void SetTag(string tag) { mTag = tag; }
+	void SetIsInFrustum(bool isInFrustum) { mbIsInFrustum = isInFrustum; }
 
 private:
 	void createHashColor();
 
 public:
 	bool mbIsActive;
-
-	string mTag;
 
 	Vector3 mPosition;
 	Vector3 mRotation;
@@ -81,6 +82,8 @@ protected:
 	vector<bool> mIsUpdateStandTimes;
 	vector<float> mNextExecuteTimes;
 	bool mIsAStarPathUpdate;
+	bool mbIsInFrustum;
+	string mTag;
 
 
 private:
@@ -90,5 +93,5 @@ private:
 	RasterizerState* mRSState;
 	ColorBuffer* mHashColorBuffer;
 	Float4 mHashColor;
-	
+
 };

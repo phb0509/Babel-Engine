@@ -19,13 +19,13 @@ DeferredRenderingScene::DeferredRenderingScene()
 	mLightBuffer = new LightBuffer();
 
 	mDirectionalLight = new Light(LightType::DIRECTIONAL);
-	mDirectionalLight->mTag = "DirectionalLight";
+	mDirectionalLight->SetTag("DirectionalLight");
 
 	mPointLight = new Light(LightType::POINT);
-	mPointLight->mTag = "PointLight"; 
+	mPointLight->SetTag("PointLight"); 
 
 	mSpotLight = new Light(LightType::SPOT);
-	mSpotLight->mTag = "SpotLight";
+	mSpotLight->SetTag("SpotLight");
 
 	mLightBuffer->Add(mDirectionalLight);
 	mLightBuffer->Add(mPointLight);

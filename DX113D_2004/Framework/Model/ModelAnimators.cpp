@@ -184,16 +184,18 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 	mDrawCount = 0;
 	mRenderedInstanceIndices.clear();
 
-	if (mbIsFrustumCullingMode) // 
+	if (mbIsFrustumCullingMode) // 프러스텀컬링 기능 활성화일시
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
+			mTransforms[i]->SetIsInFrustum(false);
 			Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix()); // 임의의 컬링용 컬라이더박스 생성 후 세팅.
 			Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
 
 			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
 			{
 				// 프러스텀범위 안의 인스턴스들.
+				mTransforms[i]->SetIsInFrustum(true);
 				mTransforms[i]->UpdateWorld();
 				mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 				mInstanceData[mDrawCount].instanceIndex = i;
@@ -204,10 +206,11 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 		}
 	}
 
-	else
+	else // 프러스텀컬링 기능 비활성화일시
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
+			mTransforms[i]->SetIsInFrustum(false);
 			mTransforms[i]->UpdateWorld();
 			mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());
 			mInstanceData[mDrawCount].instanceIndex = i;

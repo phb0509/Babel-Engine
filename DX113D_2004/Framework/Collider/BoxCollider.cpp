@@ -281,9 +281,9 @@ OBB BoxCollider::GetObb()
 {
     mOBB.position = GetGlobalPosition();
 
-    mOBB.axis[0] = Right();
-    mOBB.axis[1] = Up();
-    mOBB.axis[2] = Forward();
+    mOBB.axis[0] = GetRightVector();
+    mOBB.axis[1] = GetUpVector();
+    mOBB.axis[2] = GetForwardVector();
 
     mOBB.halfSize = (mMinBox - mMaxBox) * 0.5f * GetGlobalScale();
 

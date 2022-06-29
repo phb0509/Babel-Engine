@@ -66,17 +66,17 @@ void Transform::SetWorldBuffer(UINT slot)
 	mWorldBuffer->SetVSBuffer(slot);
 }
 
-Vector3 Transform::Forward()
+Vector3 Transform::GetForwardVector()
 {
 	return XMVector3Normalize(XMVector3TransformNormal(kForward, mWorldMatrix));
 }
 
-Vector3 Transform::Up()
+Vector3 Transform::GetUpVector()
 {
 	return XMVector3Normalize(XMVector3TransformNormal(kUp, mWorldMatrix));
 }
 
-Vector3 Transform::Right()
+Vector3 Transform::GetRightVector()
 {
 	return XMVector3Normalize(XMVector3TransformNormal(kRight, mWorldMatrix));
 }
@@ -85,7 +85,7 @@ void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) 
 {
 	dest = dest - transform->mPosition;
 	dest.Normalize();
-	Vector3 forward = transform->Forward() * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
+	Vector3 forward = transform->GetForwardVector() * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
 	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
 	temp = acos(temp);
 
@@ -106,7 +106,7 @@ void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 des
 {
 	dest = dest - transform->mPosition;
 	dest.Normalize();
-	Vector3 forward = transform->Forward();
+	Vector3 forward = transform->GetForwardVector();
 	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
 	temp = acos(temp);
 

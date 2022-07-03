@@ -29,6 +29,8 @@ void ModelAnimators::Update()
 		mCameraForFrustumCulling->Update();
 	}
 
+	mCompletedAnimInstanceIndices.clear();
+
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
 		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[i];
@@ -42,7 +44,7 @@ void ModelAnimators::Update()
 
 			if (desc.time >= 1.0f)
 			{
-				if (desc.curFrame + desc.time >= clip->mFrameCount)
+				if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
 				{
 					if (mEndEvents[i].count(desc.clip) > 0)
 					{
@@ -53,6 +55,8 @@ void ModelAnimators::Update()
 					{
 						mEndParamEvent[desc.clip](mParam[desc.clip]);
 					}
+
+					mCompletedAnimInstanceIndices.push_back(i);
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;

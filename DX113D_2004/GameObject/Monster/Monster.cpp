@@ -4,7 +4,7 @@ Monster::Monster() :
 	ModelAnimator(),
 	mDamage(100.0f),
 	mMaxHP(100.0f),
-	mCurrentHP(0.0f),
+	mCurHP(0.0f),
 	mAStar(new AStar()),
 	mTerrain(nullptr),
 	mDistanceToPlayer(0.0f),
@@ -21,10 +21,9 @@ Monster::Monster() :
     mCurrentTargetPosition(0.0f,0.0f,0.0f),
 	mbPathSizeCheck(false),
 	mInstanceIndex(0),
-	mbIsHitted(false),
-	mbIsInFrustum(false)
+	mbIsCompletedAnim(false)
 {
-	mCurrentHP = mMaxHP;
+	mCurHP = mMaxHP;
 	mPathUpdatePeriodFuncPointer = bind(&Monster::SetRealtimeAStarPath, this, placeholders::_1);
 	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, this, placeholders::_1, placeholders::_2);
 

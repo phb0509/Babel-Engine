@@ -30,7 +30,7 @@ Player::Player():
 	ReadClip("Player", "Die.clip");
 
 	SetEndEvent(Run, bind(&Player::setIdle, this));
-	SetEndEvent(NormalAttack, bind(&Player::setAttackEnd, this));
+	SetEndEvent(NormalAttack, bind(&Player::setNormalAttackEnd, this));
 
 	PlayClip(1);
 
@@ -305,20 +305,35 @@ void Player::checkNormalAttackCollision()
 
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
-			Monster* monster = mMonsters[monsterName][i];
+			Monster* monster = mMonsters[monsterName][i].monster;
+			bool bWasNormalAttackedBefore = mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"];
 
-			if (monster->CheckOnDamage(mAttackInformations["NormalAttack"].attackCollider))
+			if (!bWasNormalAttackedBefore) // 아직 공격받지 않은 상태면
 			{
-				monster->OnDamage(mAttackInformations["NormalAttack"]);
+				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]))
+				{
+					monster->OnDamage(mAttackInformations["NormalAttack"]);
+					mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"] = true;
+				}
 			}
 		}
 	}
 }
 
-void Player::setAttackEnd()
+void Player::setNormalAttackEnd()
 {
 	setAnimation(Idle);
 	mbIsNormalAttack = false;
+
+	for (auto monster : mMonsters)
+	{
+		string monsterName = monster.first;
+
+		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
+		{
+			mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"] = false;
+		}
+	}
 }
 
 void Player::normalAttack()
@@ -351,10 +366,15 @@ void Player::setColliders()
 void Player::setAttackInformations()
 {
 	// 지금은 AttackInformation에 컬라이더 1개만 넣긴 하지만, 공격에따라 여러 컬라이더를 넣어야할 수도 있긴함.
+	vector<Collider*> temp;
 
 	// NormalAttack
-	AttackInformation normalAttackInformation("NormalAttack", mCollidersMap["swordCollider"], eAttackType::Normal, 100.0f);
+	temp.push_back(mCollidersMap["SwordCollider"]);
+	AttackInformation normalAttackInformation("NormalAttack", temp, eAttackType::Normal, 100.0f);
 	mAttackInformations[normalAttackInformation.attackName] = normalAttackInformation;
+	temp.clear();
+
+	mbIsCheckAttack["NormalAttack"] = false;
 }
 
 void Player::loadBinaryCollidersFile(wstring fileName)
@@ -424,7 +444,13 @@ void Player::loadBinaryCollidersFile(wstring fileName)
 
 void Player::SetMonsters(string name, vector<Monster*> monsters)
 {
-	mMonsters[name] = monsters;
+	for (int i = 0; i < monsters.size(); i++)
+	{
+		MonsterForAttackCheck temp;
+		temp.monster = monsters[i];
+		temp.bIsCheckAttack = mbIsCheckAttack; // setAttackInformations()에서 미리 설정해놓은 값.
+		mMonsters[name].push_back(temp);
+	}
 }
 
 void Player::initialize()
@@ -468,7 +494,7 @@ void Player::PostRender()
 
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
-			Monster* monster = mMonsters[monsterName][i];
+			Monster* monster = mMonsters[monsterName][i].monster;
 
 			ImGui::Text(monster->GetTag().c_str());
 			SpacingRepeatedly(2);

@@ -15,7 +15,8 @@ Transform::Transform(string mTag) :
 	mbIsActive(false),
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
-	mRotationSpeed(10.0f)
+	mRotationSpeed(10.0f),
+	mbIsInFrustum(false)
 {
 	createHashColor();
 

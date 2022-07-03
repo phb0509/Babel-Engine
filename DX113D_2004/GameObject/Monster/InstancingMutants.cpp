@@ -47,7 +47,9 @@ void InstancingMutants::Update()
 		mInstanceObjects[i]->Update();
 	}
 
-	ModelAnimators::Update(); // Animation Tweening and Frustum Culling
+	updateCompletedAnimIndices(false);
+	ModelAnimators::Update(); // Animation Tweening and Frustum Culling        //  여기서 애니메이션끝난 인덱스들 업덷이트하는데..
+	updateCompletedAnimIndices(true);
 	setColliders();
 }
 
@@ -66,30 +68,12 @@ void InstancingMutants::PostRender()
 	showInstanceInformation();
 }
 
-void InstancingMutants::OnDamage(int instanceIndex, AttackInformation attackInformation)
-{
-
-}
-
-void InstancingMutants::CheckOnHit(int instanceIndex)
-{
-}
-
-Collider* InstancingMutants::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
-{
-	return nullptr;
-}
-
-void InstancingMutants::setOnDamageEnd(int instanceIndex)
-{
-}
-
 void InstancingMutants::SetIdle(int instanceIndex)
 {
 	ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(eMutantAnimationStates::Idle));
 }
 
-void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates value) // 
+void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates value) // 안쓰임.
 {
 	int animationState = static_cast<int>(value);
 
@@ -98,11 +82,6 @@ void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates v
 		mInstanceObjects[instanceIndex]->SetAnimation(animationState);
 		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
 	}
-}
-
-void InstancingMutants::setAttackEnd(int instanceIndex)
-{
-
 }
 
 void InstancingMutants::renderColliders()
@@ -116,12 +95,6 @@ void InstancingMutants::renderColliders()
 			mInstanceColliderDatas[renderedInstanceIndex].colliders[j].collider->Render();
 		}
 	}
-}
-
-Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
-{
-	//return mCollidersMap["bodyCollider"];
-	return nullptr;
 }
 
 void InstancingMutants::setColliders()
@@ -224,10 +197,11 @@ void InstancingMutants::showInstanceInformation()
 
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
+		Monster* monster = mInstanceObjects[i];
 		string currentFSMStateName;
 		string currentAnimationStateName;
 
-		switch (static_cast<UINT>(mInstanceObjects[i]->GetEnumFSMState()))
+		switch (static_cast<UINT>(monster->GetEnumFSMState()))
 		{
 		case 0:
 			currentFSMStateName = "Patrol";
@@ -246,7 +220,7 @@ void InstancingMutants::showInstanceInformation()
 			break;
 		}
 
-		switch (static_cast<UINT>(mInstanceObjects[i]->GetAnimationState())) 
+		switch (static_cast<UINT>(monster->GetAnimationState()))
 		{
 		case 0:
 			currentAnimationStateName = "Idle";
@@ -270,7 +244,7 @@ void InstancingMutants::showInstanceInformation()
 		string frameBufferValue = "FrameBufferClipValue : " + to_string(mFrameBuffer->data.tweenDesc[i].cur.clip);
 		string bIsCurrentAnimationEnd = "";
 
-		if (mInstanceObjects[i]->GetCurrentAnimationEnd())
+		if (monster->GetCurrentAnimationEnd())
 		{
 			bIsCurrentAnimationEnd = "Animation is End";
 		}
@@ -287,8 +261,47 @@ void InstancingMutants::showInstanceInformation()
 		ImGui::Text(frameBufferValue.c_str());
 
 		ImGui::Separator();
+
+		string currentHP = to_string
 		SpacingRepeatedly(3);
 	}
 
 	ImGui::End();
+}
+
+void InstancingMutants::updateCompletedAnimIndices(bool value)
+{
+	for (int i = 0; i < mCompletedAnimInstanceIndices.size(); i++)
+	{
+		mInstanceObjects[mCompletedAnimInstanceIndices[i]]->SetIsCompletedAnim(value);
+	}
+}
+
+void InstancingMutants::OnDamage(int instanceIndex, AttackInformation attackInformation)
+{
+
+}
+
+void InstancingMutants::CheckOnHit(int instanceIndex)
+{
+}
+
+Collider* InstancingMutants::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
+{
+	return nullptr;
+}
+
+void InstancingMutants::setOnDamageEnd(int instanceIndex)
+{
+}
+
+void InstancingMutants::setAttackEnd(int instanceIndex)
+{
+
+}
+
+Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
+{
+	//return mCollidersMap["bodyCollider"];
+	return nullptr;
 }

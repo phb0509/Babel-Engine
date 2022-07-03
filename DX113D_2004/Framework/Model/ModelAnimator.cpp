@@ -107,8 +107,6 @@ void ModelAnimator::Update()
 				{
 					if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
 					{
-						//mbIsCurrentAnimationEnd = true;
-
 						if (mEndEvent.count(desc.clip) > 0) // 엔드이벤트가 있으면
 						{
 							mEndEvent[desc.clip]();
@@ -118,10 +116,6 @@ void ModelAnimator::Update()
 						{
 							mEndParamEvent[desc.clip](mParam[desc.clip]);
 						}
-					}
-					else
-					{
-						//mbIsCurrentAnimationEnd = false;
 					}
 
 					desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임

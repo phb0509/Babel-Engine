@@ -69,6 +69,7 @@ public:
 
 protected:
 
+	string mTag;
 	Vector3 mPivot;
 	Matrix mWorldMatrix;
 	Matrix mLocalWorldMatrix;
@@ -83,7 +84,7 @@ protected:
 	vector<float> mNextExecuteTimes;
 	bool mIsAStarPathUpdate;
 	bool mbIsInFrustum;
-	string mTag;
+
 
 
 private:

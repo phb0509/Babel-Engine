@@ -54,10 +54,10 @@ void Warrok::OnDamage(AttackInformation attackInformation)
 	mFSM = eMutantFSMStates::OnDamage;
 	mbOnHit = true;
 	//GM->SetHitCheckMap(this, true);
-	mCurrentHP -= 10.0f;
+	mCurHP -= 10.0f;
 }
 
-bool Warrok::CheckOnDamage(const Collider* collider)
+bool Warrok::CheckIsCollision(Collider* collider)
 {
 	return false;
 }
@@ -85,9 +85,9 @@ void Warrok::SetIdle()
 	SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 }
 
-void Warrok::SetAnimation(int value)
+void Warrok::SetAnimation(int animationState, bool isForcingPlay)
 {
-	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(value);
+	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(animationState);
 
 	if (mAnimation != state)
 	{

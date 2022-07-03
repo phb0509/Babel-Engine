@@ -32,12 +32,12 @@ public:
 
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(AttackInformation attackInformation) override;
-	virtual bool CheckOnDamage(const Collider* collider) override;
+	virtual bool CheckIsCollision(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 
 	void SetIdle();
-	void SetAnimation(int value) override;
+	void SetAnimation(int animationState, bool isForcingPlay = false) override;
 
 
 private:

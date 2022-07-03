@@ -23,7 +23,6 @@ public:
 	Collider* GetHitCollider(int instanceIndex);
 	eMutantAnimationStates GetAnimationStates() { return mAnimationState; }
 	void SetAnimationStates(eMutantAnimationStates animationStates) { mAnimationState = animationStates; }
-
 	void SetIdle(int instanceIndex);
 	void SetAnimation(int instanceIndex, eMutantAnimationStates value);
 
@@ -34,6 +33,7 @@ private:
 	void renderColliders();
 	void loadBinaryCollidersFile(wstring fileName);
 	void showInstanceInformation();
+	void updateCompletedAnimIndices(bool value);
 
 private:
 	int mInstanceCount;

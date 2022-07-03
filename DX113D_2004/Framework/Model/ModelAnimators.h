@@ -38,10 +38,10 @@ public:
 
 protected:
 	vector<int> mRenderedInstanceIndices;
+	vector<int> mCompletedAnimInstanceIndices;
 
 private:
 	vector<Transform*> mTransforms;
-	//InstanceData mInstanceData[MAX_INSTANCE];
 	vector<InstanceData> mInstanceData;
 	VertexBuffer* mInstanceBuffer;
 

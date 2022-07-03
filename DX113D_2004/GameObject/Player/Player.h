@@ -39,6 +39,13 @@ private:
 		Collider* collider;
 	};
 
+	struct MonsterForAttackCheck
+	{
+		Monster* monster;
+		map<string, bool> bIsCheckAttack; // 플레이어 공격이름(ex.NormalAttack) , 피격여부.
+	};
+
+
 public:
 	Player();
 	~Player();
@@ -77,7 +84,7 @@ private:
 	void loadBinaryCollidersFile(wstring fileName);
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
-	void setAttackEnd();
+	void setNormalAttackEnd();
 	void normalAttack();
 
 private:
@@ -92,7 +99,8 @@ private:
 	vector<SettedCollider> mColliders;
 	map<string, Collider*> mCollidersMap;
 
-	map<string, vector<Monster*>> mMonsters;
+	//map<string, vector<Monster*>> mMonsters;
+	map<string, vector<MonsterForAttackCheck>> mMonsters;
 
 	bool mbIsInitialize;
 	bool mbIsNormalAttack;
@@ -109,4 +117,7 @@ private:
 	map<string, AttackInformation> mAttackInformations;
 
 	bool mbIsCheckNormalAttackCollision;
+	map<string, bool> mbIsCheckAttack;
+
+	string mTestString = "";
 };

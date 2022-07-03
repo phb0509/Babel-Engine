@@ -20,7 +20,7 @@ InstanceMutant::InstanceMutant():
 
 	mCurrentFSMState = mPatrolState;
 
-	SetEndEvent(static_cast<int>(eMutantFSMStates::OnDamage), bind(&InstanceMutant::setStalkingState, this));
+	//SetEndEvent(static_cast<int>(eMutantFSMStates::OnDamage), bind(&InstanceMutant::setStalkingState, this));
 }
 
 InstanceMutant::~InstanceMutant()
@@ -108,14 +108,24 @@ void InstanceMutant::SetFSMState(int state)
 	mCurrentEnumFSMState = state;
 }
 
-void InstanceMutant::SetAnimation(int value) // 
+void InstanceMutant::SetAnimation(int animationState, bool isForcingPlay) // 
 {
-	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(value);
+	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(animationState);
 
-	if (mCurrentAnimationState != state)
+	if (!isForcingPlay)
+	{
+		if (mCurrentAnimationState != state)
+		{
+			mCurrentAnimationState = state;
+			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(animationState);
+			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = 1.0f;
+			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;
+		}
+	}
+	else
 	{
 		mCurrentAnimationState = state;
-		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(value);
+		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(animationState);
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = 1.0f;
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;
 	}
@@ -123,13 +133,19 @@ void InstanceMutant::SetAnimation(int value) //
 
 void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
-	mCurrentHP -= attackInformation.damage;
-	//mInstanceColliderData;
-	
+	mCurHP -= attackInformation.damage;
+	ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::OnDamage)));
 }
 
-bool InstanceMutant::CheckOnDamage(const Collider* collider)
+bool InstanceMutant::CheckIsCollision(Collider* collider)
 {
+	Collider* bodyCollider = mInstanceColliderData.collidersMap["bodyCollider"];
+
+	if (bodyCollider->Collision(collider))
+	{
+		return true;
+	}
+	
 	return false;
 }
 

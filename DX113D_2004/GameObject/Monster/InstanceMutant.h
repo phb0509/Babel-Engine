@@ -20,14 +20,14 @@ public:
 
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(AttackInformation attackInformation) override;
-	virtual bool CheckOnDamage(const Collider* collider) override;
+	virtual bool CheckIsCollision(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 	virtual MonsterState* GetFSMState(int num) override;
 	virtual int GetEnumFSMState() override;
 	virtual void SetFSMState(int state) override;
 	virtual int GetAnimationState() override;
-	virtual void SetAnimation(int value) override;
+	virtual void SetAnimation(int animationState, bool isForcingPlay = false) override;
 
 	void setStalkingState();
 

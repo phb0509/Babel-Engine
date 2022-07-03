@@ -7,7 +7,6 @@ class MonsterState;
 class Monster : public Transform , public ModelAnimator
 {
 public:
-
 	Monster();
 	~Monster();
 
@@ -16,7 +15,7 @@ public:
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
-	virtual bool CheckOnDamage(const Collider* collider) = 0;
+	virtual bool CheckIsCollision(Collider* collider) = 0;
 	virtual void OnDamage(AttackInformation attackInformation) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
@@ -24,8 +23,8 @@ public:
 	virtual int GetEnumFSMState() = 0;
 	virtual void SetFSMState(int state) = 0;
 	virtual int GetAnimationState() = 0;
-	virtual void SetAnimation(int value) = 0;
-
+	virtual void SetAnimation(int animationState, bool isForcingPlay = false) = 0;
+	
 	void MoveToDestUsingAStar(Vector3 dest);
 	void ChangeState(MonsterState* nextState);
 
@@ -40,7 +39,9 @@ public:
 	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
-	bool GetIsHitted() { return mbIsHitted; }
+	bool GetIsCompletedAnim() { return mbIsCompletedAnim; }
+	float GetMaxHP() { return mMaxHP; }
+	float GetCurHP() { return mCurHP; }
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -50,6 +51,8 @@ public:
 	void SetInstanceIndex(int index) { mInstanceIndex = index; }
 	void SetUpperFrameBuffer(FrameBuffer* frameBuffer) { mUpperFrameBuffer = frameBuffer; }
 	void SetInstanceCollider(InstanceColliderData instanceColliderData) { mInstanceColliderData = instanceColliderData; }
+	void SetIsCompletedAnim(bool value) { mbIsCompletedAnim = value; }
+	
 
 private:
 	void setObstaclesTerrain(Vector3 destPos);
@@ -58,7 +61,7 @@ private:
 protected:
 	float mDamage;
 	float mMaxHP;
-	float mCurrentHP;
+	float mCurHP;
 
 	Terrain* mTerrain;
 	Player* mPlayer;
@@ -79,9 +82,7 @@ protected:
 	FrameBuffer* mUpperFrameBuffer;
 	int mInstanceIndex;
 	InstanceColliderData mInstanceColliderData;
-	
-	bool mbIsHitted;
-
+	bool mbIsCompletedAnim;
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;

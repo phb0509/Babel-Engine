@@ -29,7 +29,7 @@ struct SettedCollider
 struct InstanceColliderData
 {
 	vector<SettedCollider> colliders;
-	map<string, Collider*> collidersMap; // key : NodeName value : Collider
+	map<string, Collider*> collidersMap; // key : ColliderName value : Collider
 
 	InstanceColliderData() {};
 	InstanceColliderData(vector<SettedCollider> _colliders, map<string, Collider*> _collidersMap) : colliders(_colliders), collidersMap(_collidersMap) {};
@@ -38,11 +38,12 @@ struct InstanceColliderData
 struct AttackInformation
 {
 	string attackName;
-	Collider* attackCollider;
+	//Collider* attackCollider;
+	vector<Collider*> attackColliders; 
 	eAttackType attackType;
 	float damage;
 
 	AttackInformation() {};
-	AttackInformation(string _attackName, Collider* _attackCollider, eAttackType _attackType, float _damage) : 
-		attackName(_attackName), attackCollider(_attackCollider), attackType(_attackType), damage(_damage) {};
+	AttackInformation(string _attackName, vector<Collider*> _attackColliders, eAttackType _attackType, float _damage) : 
+		attackName(_attackName), attackColliders(_attackColliders), attackType(_attackType), damage(_damage) {};
 };

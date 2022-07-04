@@ -33,6 +33,8 @@ void ModelAnimators::Update()
 
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
+		if (!mTransforms[i]->GetIsActive()) continue;
+
 		FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[i];
 
 		{//CurAnimation
@@ -44,7 +46,7 @@ void ModelAnimators::Update()
 
 			if (desc.time >= 1.0f)
 			{
-				if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
+				if (desc.curFrame + desc.time  >= clip->mFrameCount - 1) // 현재 클립재생이 끝나면 
 				{
 					if (mEndEvents[i].count(desc.clip) > 0)
 					{
@@ -192,6 +194,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
+			if (!mTransforms[i]->GetIsActive()) continue;
+
 			mTransforms[i]->SetIsInFrustum(false);
 			Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, *mTransforms[i]->GetWorldMatrix()); // 임의의 컬링용 컬라이더박스 생성 후 세팅.
 			Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, *mTransforms[i]->GetWorldMatrix());
@@ -214,6 +218,8 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 	{
 		for (UINT i = 0; i < mTransforms.size(); i++)
 		{
+			if (!mTransforms[i]->GetIsActive()) continue;
+
 			mTransforms[i]->SetIsInFrustum(false);
 			mTransforms[i]->UpdateWorld();
 			mInstanceData[mDrawCount].worldMatrix = XMMatrixTranspose(*mTransforms[i]->GetWorldMatrix());

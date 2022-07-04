@@ -46,7 +46,7 @@ void ParticleManager::Play(string key, Vector3 position)
 
 	for (Particle* particle : totalParticle[key])
 	{
-		if (!particle->mbIsActive)
+		if (!particle->GetIsActive())
 		{
 			particle->Play(position);
 			return;

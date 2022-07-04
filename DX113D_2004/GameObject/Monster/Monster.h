@@ -42,6 +42,8 @@ public:
 	bool GetIsCompletedAnim() { return mbIsCompletedAnim; }
 	float GetMaxHP() { return mMaxHP; }
 	float GetCurHP() { return mCurHP; }
+	bool GetIsDie() { return mbIsDie; }
+	
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -83,6 +85,8 @@ protected:
 	int mInstanceIndex;
 	InstanceColliderData mInstanceColliderData;
 	bool mbIsCompletedAnim;
+	bool mbIsDie;
+
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;

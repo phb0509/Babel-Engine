@@ -260,9 +260,13 @@ void InstancingMutants::showInstanceInformation()
 		//ImGui::Text(bIsCurrentAnimationEnd.c_str());
 		ImGui::Text(frameBufferValue.c_str());
 
+		string currentHP = to_string((int)monster->GetCurHP()) + " / " + to_string((int)monster->GetMaxHP());
+		ImGui::Text(currentHP.c_str());
+
 		ImGui::Separator();
 
-		string currentHP = to_string
+
+
 		SpacingRepeatedly(3);
 	}
 

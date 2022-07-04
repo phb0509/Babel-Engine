@@ -17,8 +17,8 @@ Monster::Monster() :
 	mBeforeDirVector3(0.0f, 0.0f, 0.0f),
 	mBeforeNode(0.0f, 0.0f, 0.0f),
 	mPathNodesCheckSize(200),
-	mBeforeTargetPosition(0.0f,0.0f,0.0f),
-    mCurrentTargetPosition(0.0f,0.0f,0.0f),
+	mBeforeTargetPosition(0.0f, 0.0f, 0.0f),
+	mCurrentTargetPosition(0.0f, 0.0f, 0.0f),
 	mbPathSizeCheck(false),
 	mInstanceIndex(0),
 	mbIsCompletedAnim(false)

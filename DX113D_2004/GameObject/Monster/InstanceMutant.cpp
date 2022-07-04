@@ -134,7 +134,16 @@ void InstanceMutant::SetAnimation(int animationState, bool isForcingPlay) //
 void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;
-	ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::OnDamage)));
+
+	if (mCurHP <= 0)
+	{
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));
+		mbIsDie = true;
+	}
+	else
+	{
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::OnDamage)));
+	}
 }
 
 bool InstanceMutant::CheckIsCollision(Collider* collider)

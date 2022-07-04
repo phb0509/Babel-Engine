@@ -12,11 +12,11 @@ Transform::Transform(string mTag) :
 	mGlobalScale(1, 1, 1),
 	mPivot(0, 0, 0),
 	mParentMatrix(nullptr),
-	mbIsActive(false),
 	mIsAStarPathUpdate(true),
 	mMoveSpeed(10.0f),
 	mRotationSpeed(10.0f),
-	mbIsInFrustum(false)
+	mbIsInFrustum(false),
+	mbIsActive(true)
 {
 	createHashColor();
 

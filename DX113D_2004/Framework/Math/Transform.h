@@ -37,6 +37,8 @@ public:
 	string GetTag() { return mTag; }
 	Float4 GetHashColor() { return mHashColor; }
 	bool GetIsInFrustum() { return mbIsInFrustum; }
+	bool GetIsActive() { return mbIsActive; }
+
 	void SetParent(Matrix* value) { mParentMatrix = value; }
 
 
@@ -52,13 +54,12 @@ public:
 	void SetHashColorBuffer();
 	void SetTag(string tag) { mTag = tag; }
 	void SetIsInFrustum(bool isInFrustum) { mbIsInFrustum = isInFrustum; }
+	void SetIsActive(bool isActive) { mbIsActive = isActive; }
 
 private:
 	void createHashColor();
 
 public:
-	bool mbIsActive;
-
 	Vector3 mPosition;
 	Vector3 mRotation;
 	Vector3 mScale;
@@ -84,6 +85,7 @@ protected:
 	vector<float> mNextExecuteTimes;
 	bool mIsAStarPathUpdate;
 	bool mbIsInFrustum;
+	bool mbIsActive;
 
 
 

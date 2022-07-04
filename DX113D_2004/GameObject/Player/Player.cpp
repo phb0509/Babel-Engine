@@ -308,7 +308,7 @@ void Player::checkNormalAttackCollision()
 			Monster* monster = mMonsters[monsterName][i].monster;
 			bool bWasNormalAttackedBefore = mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"];
 
-			if (!bWasNormalAttackedBefore) // 아직 공격받지 않은 상태면
+			if (!bWasNormalAttackedBefore && !monster->GetIsDie()) // 아직 공격받지 않은 상태면
 			{
 				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]))
 				{

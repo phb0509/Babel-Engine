@@ -42,6 +42,7 @@
 #define DELTA Timer::Get()->GetElapsedTime()
 
 #define GM GameManager::Get()
+#define DM DebugManager::Get()
 
 #define ASSETSWINDOW 0
 

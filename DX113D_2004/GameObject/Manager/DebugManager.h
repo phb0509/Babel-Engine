@@ -10,8 +10,10 @@ private:
 
 public:
 
+	void AddCollider(Collider* collider);
 ;
 
 private:
 
+	vector<Collider*> mColliders;
 };

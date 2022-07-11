@@ -20,6 +20,6 @@ private:
 private:
 	D3D11_VIEWPORT mViewport;
 	SamplerState* mSamplerState;
-	BlendState* mBlendState[2];
-	DepthStencilState* mDepthState[2];
+	BlendState* mBlendStates[2];
+	DepthStencilState* mDepthStates[2];
 };

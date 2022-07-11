@@ -18,11 +18,11 @@ Reflection::Reflection(Transform* transform) :
 
 Reflection::~Reflection()
 {
-	delete mRenderTarget;
-	delete mDepthStencil;
-	delete mReflectionBuffer;
-	delete mTargetTexture;
-	delete mWorldCamera;
+	GM->SafeDelete(mRenderTarget);
+	GM->SafeDelete(mDepthStencil);
+	GM->SafeDelete(mReflectionBuffer);
+	GM->SafeDelete(mTargetTexture);
+	GM->SafeDelete(mWorldCamera);
 }
 
 void Reflection::Update()

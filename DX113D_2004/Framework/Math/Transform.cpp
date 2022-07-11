@@ -16,7 +16,8 @@ Transform::Transform(string mTag) :
 	mMoveSpeed(10.0f),
 	mRotationSpeed(10.0f),
 	mbIsInFrustum(false),
-	mbIsActive(true)
+	mbIsActive(true),
+	mbIsRender(true)
 {
 	createHashColor();
 
@@ -24,7 +25,6 @@ Transform::Transform(string mTag) :
 	mWorldBuffer = new MatrixBuffer();
 	mHashColorBuffer = new ColorBuffer();
 
-	//mMaterial = new Material(L"Gizmos");
 	mIsUpdateStandTimes.assign(3, true);
 	mNextExecuteTimes.assign(3, -100.0f);
 
@@ -33,8 +33,8 @@ Transform::Transform(string mTag) :
 
 Transform::~Transform()
 {
-	delete mWorldBuffer;
-	//delete mMaterial;
+	GM->SafeDelete(mWorldBuffer);
+	GM->SafeDelete(mRSState);
 }
 
 void Transform::UpdateWorld()

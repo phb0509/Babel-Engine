@@ -41,7 +41,6 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil):
 DepthStencil::~DepthStencil()
 {
 	mDSVTexture->Release();
-
 	mDSV->Release();
 	mSRV->Release();
 }

@@ -17,10 +17,10 @@ Refraction::Refraction(wstring normalFile)
 
 Refraction::~Refraction()
 {
-	delete mTimeBuffer;
-	delete mRenderTarget;
-	delete mDepthStencil;
-	delete mTargetTexture;
+	GM->SafeDelete(mTimeBuffer);
+	GM->SafeDelete(mRenderTarget);
+	GM->SafeDelete(mDepthStencil);
+	GM->SafeDelete(mTargetTexture);
 }
 
 void Refraction::Update()

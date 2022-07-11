@@ -41,8 +41,6 @@ bool GameMath::CompareVector3XZ(Vector3 v1, Vector3 v2)
     return false;
 }
 
-
-
 Vector3 GameMath::ClosestPointOnLineSegment(const Vector3& v1, const Vector3& v2, const Vector3& point)
 {
     Vector3 line = v2 - v1;

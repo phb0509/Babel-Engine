@@ -7,7 +7,7 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-	delete mPlayer;
+	SafeDelete(mPlayer);
 }
 
 void GameManager::ExecuteDropEvents()

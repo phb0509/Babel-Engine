@@ -32,9 +32,6 @@ void ModelMesh::Render(UINT drawCount)
 	mMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexedInstanced(mIndexCount, drawCount, 0, 0, 0);
-
-	mIndexCount;
-	int a = 0; 
 }
 
 void ModelMesh::SetBox(Vector3* minBox, Vector3* maxBox)

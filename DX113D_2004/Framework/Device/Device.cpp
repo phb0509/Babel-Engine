@@ -16,7 +16,6 @@ Device::~Device()
 	swapChain->Release();
 
 	mRenderTargetView->Release();
-	//mDSVtexture->Release();
 }
 
 void Device::CreateDeviceAndSwapchain()

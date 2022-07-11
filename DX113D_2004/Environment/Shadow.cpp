@@ -23,16 +23,13 @@ Shadow::Shadow(UINT width, UINT height) :
 
 Shadow::~Shadow()
 {
-	delete mRenderTarget;
-	delete mDepthStencil;
-
-	delete mDepthMap;
-
-	delete mViewBuffer;
-	delete mProjectionBuffer;
-
-	delete mQualityBuffer;
-	delete mSizeBuffer;
+	GM->SafeDelete(mRenderTarget);
+	GM->SafeDelete(mDepthStencil);
+	GM->SafeDelete(mDepthMap);
+	GM->SafeDelete(mViewBuffer);
+	GM->SafeDelete(mProjectionBuffer);
+	GM->SafeDelete(mQualityBuffer);
+	GM->SafeDelete(mSizeBuffer);
 }
 
 void Shadow::PreRender()

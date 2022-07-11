@@ -58,7 +58,7 @@ void ModelAnimators::Update()
 						mEndParamEvent[desc.clip](mParam[desc.clip]);
 					}
 
-					mCompletedAnimInstanceIndices.push_back(i);
+					mCompletedAnimInstanceIndices.push_back(i); // EndEvent진행할 인스턴스들 따로 모아놓기.
 				}
 
 				desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;

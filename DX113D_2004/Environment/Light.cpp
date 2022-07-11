@@ -33,8 +33,7 @@ Light::Light(LightType lightType):
 
 Light::~Light()
 {
-	delete mSphere;
-	mSphere = nullptr;
+	GM->SafeDelete(mSphere);
 }
 
 void Light::Update()

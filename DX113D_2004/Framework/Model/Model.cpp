@@ -14,7 +14,7 @@ Model::Model() :
 
 Model::~Model()
 {
-	delete mBoneBuffer;
+	GM->SafeDelete(mBoneBuffer);
 	delete[]  mNodeTransforms;
 }
 

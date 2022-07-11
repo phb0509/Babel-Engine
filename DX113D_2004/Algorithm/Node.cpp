@@ -16,12 +16,13 @@ Node::Node(Vector3 pos, int index, Float2 interval):
 
 Node::~Node()
 {
-	delete mCollider;
-	if(mObstacle != nullptr)
-		delete mObstacle;
+	GM->SafeDelete(mCollider);
+	GM->SafeDelete(mObstacle);
 
 	for (EdgeInfo* edge : mEdges)
-		delete edge;
+	{
+		GM->SafeDelete(edge);
+	}
 }
 
 void Node::Render()

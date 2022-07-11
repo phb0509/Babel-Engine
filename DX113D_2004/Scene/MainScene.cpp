@@ -82,13 +82,18 @@ MainScene::MainScene() :
 
 MainScene::~MainScene()
 {
-	delete mTerrain;
+	//delete mTerrain;
+	GM->SafeDelete(mTerrain);
 
 	for (int i = 0; i < mMutants.size(); i++)
 	{
 		delete mMutants[i];
 		mMutants[i] = nullptr;
 	}
+
+	delete mWorldCamera;
+	delete mTargetCamera;
+	delete mTargetCameraForShow;
 }
 
 void MainScene::Update()

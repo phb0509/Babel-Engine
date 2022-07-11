@@ -48,7 +48,7 @@ void InstancingMutants::Update()
 	}
 
 	updateCompletedAnimIndices(false);
-	ModelAnimators::Update(); // Animation Tweening and Frustum Culling        //  여기서 애니메이션끝난 인덱스들 업덷이트하는데..
+	ModelAnimators::Update(); // Animation Tweening and Frustum Culling        //  여기서 애니메이션끝난 인덱스들 업데이트.
 	updateCompletedAnimIndices(true);
 	setColliders();
 }

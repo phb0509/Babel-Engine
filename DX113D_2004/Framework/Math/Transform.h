@@ -69,7 +69,6 @@ public:
 	Vector3 mGlobalScale;
 
 protected:
-
 	string mTag;
 	Vector3 mPivot;
 	Matrix mWorldMatrix;
@@ -86,11 +85,9 @@ protected:
 	bool mIsAStarPathUpdate;
 	bool mbIsInFrustum;
 	bool mbIsActive;
-
-
+	bool mbIsRender;
 
 private:
-
 	// Gizmos
 	Material* mMaterial;
 	RasterizerState* mRSState;

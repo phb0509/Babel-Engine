@@ -6,7 +6,7 @@ Player::Player():
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
-	mNormalAttackDamage(10.0f),
+	mNormalAttackDamage(25.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -370,7 +370,7 @@ void Player::setAttackInformations()
 
 	// NormalAttack
 	temp.push_back(mCollidersMap["SwordCollider"]);
-	AttackInformation normalAttackInformation("NormalAttack", temp, eAttackType::Normal, 100.0f);
+	AttackInformation normalAttackInformation("NormalAttack", temp, eAttackType::Normal, mNormalAttackDamage);
 	mAttackInformations[normalAttackInformation.attackName] = normalAttackInformation;
 	temp.clear();
 

@@ -5,36 +5,34 @@ Environment::Environment()
 	mSamplerState = new SamplerState();
 	mSamplerState->SetState();
 
-	mBlendState[0] = new BlendState();
-	mBlendState[1] = new BlendState();
-	mBlendState[1]->Alpha(true);
+	mBlendStates[0] = new BlendState();
+	mBlendStates[1] = new BlendState();
+	mBlendStates[1]->Alpha(true);
 
-	mDepthState[0] = new DepthStencilState();
-	mDepthState[1] = new DepthStencilState();
-	mDepthState[1]->DepthEnable(false);
+	mDepthStates[0] = new DepthStencilState();
+	mDepthStates[1] = new DepthStencilState();
+	mDepthStates[1]->DepthEnable(false);
 }
 
 Environment::~Environment()
 {
-	delete mSamplerState;
+	GM->SafeDelete(mSamplerState);
 
-	for (auto temp : mBlendState)
+	for (auto blendState : mBlendStates)
 	{
-		delete temp;
-		temp = nullptr;
+		GM->SafeDelete(blendState);
 	}
 
-	for (auto temp : mDepthState)
+	for (auto depthState : mDepthStates)
 	{
-		delete temp;
-		temp = nullptr;
+		GM->SafeDelete(depthState);
 	}
 }
 
 void Environment::PostRender()
 {
 	showLightInformation();
-	mDepthState[1]->SetState();
+	mDepthStates[1]->SetState();
 }
 
 void Environment::showLightInformation()
@@ -44,8 +42,8 @@ void Environment::showLightInformation()
 void Environment::Set()
 {
 	SetViewport();
-	mBlendState[0]->SetState();
-	mDepthState[0]->SetState();
+	mBlendStates[0]->SetState();
+	mDepthStates[0]->SetState();
 }
 
 void Environment::SetViewport(UINT width, UINT height)

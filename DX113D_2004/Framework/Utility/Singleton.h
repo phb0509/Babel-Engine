@@ -1,6 +1,6 @@
 #pragma once
 
-template <typename T>
+template <class T>
 class Singleton
 {
 protected:
@@ -21,5 +21,5 @@ public:
 	}
 };
 
-template<typename T>
+template<class T>
 T* Singleton<T>::instance = nullptr;

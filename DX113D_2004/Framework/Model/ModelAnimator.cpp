@@ -449,7 +449,6 @@ void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 			Matrix animationMatrix;
 			KeyFrame* frame = clip->GetKeyFrame(node->name); // node에 해당하는 키프레임. ex) 왼발에 해당하는 키프레임 144개
 
-
 			if (frame != nullptr) // 프레임이 있다면 animation의 SRT 가져오기.
 			{
 				KeyTransform& transform = frame->transforms[i]; // i번째 프레임의 SRT값

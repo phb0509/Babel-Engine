@@ -16,8 +16,24 @@ public:
 	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
 	void ExecuteDropEvents();
 
+	template<class T>
+	inline void SafeDelete(T* t)
+	{
+		delete t;
+		t = nullptr;
+	}
+
+	template<class T>
+	inline void SafeDeleteArray(T* t)
+	{
+		delete[] t;
+		t = nullptr;
+	}
+
 private:
 	Player* mPlayer;
 	vector<wstring> mDraggedFileList;
 	vector<CallBack> mWindowDropEvents;
 };
+
+

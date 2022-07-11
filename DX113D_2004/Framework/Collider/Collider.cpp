@@ -4,12 +4,13 @@ Collider::Collider() : mbIsRender(true)
 {
     mMaterial = new Material(L"Collider");
     mMaterial->GetBuffer()->data.diffuse = Float4(0.0f, 1.0f, 0.0f, 1.0f);
+
 }
 
 Collider::~Collider()
 {
-    delete mMaterial;
-    delete mMesh;
+    GM->SafeDelete(mMaterial);
+    GM->SafeDelete(mMesh);
 }
 
 bool Collider::Collision(Collider* collider)

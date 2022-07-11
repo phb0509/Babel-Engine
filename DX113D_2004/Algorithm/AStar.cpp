@@ -12,12 +12,10 @@ AStar::~AStar()
 {
 	for (auto node : mNodeMap)
 	{
-		delete node;
-		node = nullptr;
+		GM->SafeDelete(node);
 	}
 		
-	delete mHeap;
-	mHeap = nullptr;
+	GM->SafeDelete(mHeap);
 }
 
 void AStar::Update()

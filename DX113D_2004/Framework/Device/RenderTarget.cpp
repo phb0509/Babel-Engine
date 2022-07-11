@@ -46,7 +46,6 @@ RenderTarget::~RenderTarget()
 	mRTVtexture->Release();
 	mSRV->Release();
 	mRTV->Release();
-	//mRTVtextureForCopy->Release();
 }
 
 void RenderTarget::SetDepthStencil(DepthStencil* depthStencil)

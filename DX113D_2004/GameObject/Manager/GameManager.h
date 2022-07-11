@@ -14,7 +14,7 @@ public:
 	void SetDraggedFileList(vector<wstring>& draggedFileList) { mDraggedFileList = draggedFileList; }
 	vector<wstring>& GetDraggedFileList() { return mDraggedFileList; }
 	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
-	void PlayDropEvents();
+	void ExecuteDropEvents();
 
 private:
 	Player* mPlayer;

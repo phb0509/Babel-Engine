@@ -85,14 +85,14 @@ void Warrok::SetIdle()
 	SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 }
 
-void Warrok::SetAnimation(int animationState, bool isForcingPlay)
+void Warrok::SetAnimation(int animationState, float speed, float takeTime, bool isForcingPlay)
 {
 	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(animationState);
 
 	if (mAnimation != state)
 	{
 		mAnimation = state;
-		PlayClip(static_cast<int>(mAnimation));
+		PlayClip(static_cast<int>(mAnimation),speed,takeTime);
 	}
 }
 

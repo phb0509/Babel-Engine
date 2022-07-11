@@ -375,7 +375,7 @@
     <ClInclude Include="GameObject\Monster\MutantStates\MutantDieState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\Manager\StateManager.h">
+    <ClInclude Include="GameObject\Manager\DebugManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -707,10 +707,10 @@
     <ClCompile Include="GameObject\Monster\MutantStates\MutantDieState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\Manager\StateManager.cpp">
+    <ClCompile Include="GameObject\Monster\MutantStates\MutantAttackState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\Monster\MutantStates\MutantAttackState.cpp">
+    <ClCompile Include="GameObject\Manager\DebugManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

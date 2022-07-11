@@ -191,8 +191,8 @@
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
     <ClInclude Include="Framework\Render\TextureClass.h" />
     <ClInclude Include="GameObject\CDialogEventHandler.h" />
+    <ClInclude Include="GameObject\Manager\DebugManager.h" />
     <ClInclude Include="GameObject\Manager\GameManager.h" />
-    <ClInclude Include="GameObject\Manager\StateManager.h" />
     <ClInclude Include="GameObject\Monster\InstanceMutant.h" />
     <ClInclude Include="GameObject\Monster\InstancingMutants.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
@@ -361,8 +361,8 @@
     <ClCompile Include="Framework\Utility\utility.cpp" />
     <ClCompile Include="Framework\Utility\Xml.cpp" />
     <ClCompile Include="GameObject\CDialogEventHandler.cpp" />
+    <ClCompile Include="GameObject\Manager\DebugManager.cpp" />
     <ClCompile Include="GameObject\Manager\GameManager.cpp" />
-    <ClCompile Include="GameObject\Manager\StateManager.cpp" />
     <ClCompile Include="GameObject\Monster\InstanceMutant.cpp" />
     <ClCompile Include="GameObject\Monster\InstancingMutants.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />

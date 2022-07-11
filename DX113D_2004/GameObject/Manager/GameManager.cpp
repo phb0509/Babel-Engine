@@ -10,7 +10,7 @@ GameManager::~GameManager()
 	delete mPlayer;
 }
 
-void GameManager::PlayDropEvents()
+void GameManager::ExecuteDropEvents()
 {
 	for (int i = 0; i < mWindowDropEvents.size(); i++)
 	{

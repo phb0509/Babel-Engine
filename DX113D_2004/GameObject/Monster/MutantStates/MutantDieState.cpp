@@ -11,7 +11,7 @@ MutantDieState::~MutantDieState()
 void MutantDieState::Enter(Monster* monster)
 {
 	monster->SetFSMState(static_cast<int>(eMutantFSMStates::Die));
-	monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Die), true);
+	monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Die), 3.0f,1.0f,true);
 }
 
 void MutantDieState::Execute(Monster* monster)

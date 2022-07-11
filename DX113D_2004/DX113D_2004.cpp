@@ -209,7 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		SetForegroundWindow(hWnd);
 		GM->Get()->SetDraggedFileList(draggedFiles);
-		GM->Get()->PlayDropEvents();
+		GM->Get()->ExecuteDropEvents();
 	}
 	break;
 

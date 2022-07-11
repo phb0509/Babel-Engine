@@ -37,7 +37,7 @@ public:
 	virtual Collider* GetColliderForAStar() override;
 
 	void SetIdle();
-	void SetAnimation(int animationState, bool isForcingPlay = false) override;
+	void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) override;
 
 
 private:

@@ -108,7 +108,7 @@ void InstanceMutant::SetFSMState(int state)
 	mCurrentEnumFSMState = state;
 }
 
-void InstanceMutant::SetAnimation(int animationState, bool isForcingPlay) // 
+void InstanceMutant::SetAnimation(int animationState, float speed, float takeTime, bool isForcingPlay) 
 {
 	eMutantAnimationStates state = static_cast<eMutantAnimationStates>(animationState);
 
@@ -118,16 +118,16 @@ void InstanceMutant::SetAnimation(int animationState, bool isForcingPlay) //
 		{
 			mCurrentAnimationState = state;
 			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(animationState);
-			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = 1.0f;
-			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;
+			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = speed;
+			mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = takeTime;
 		}
 	}
 	else
 	{
 		mCurrentAnimationState = state;
 		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.clip = static_cast<UINT>(animationState);
-		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = 1.0f;
-		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = 0.2f;
+		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].next.speed = speed;
+		mUpperFrameBuffer->data.tweenDesc[mInstanceIndex].takeTime = takeTime;
 	}
 }
 

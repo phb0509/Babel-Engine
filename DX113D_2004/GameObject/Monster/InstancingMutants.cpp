@@ -265,8 +265,6 @@ void InstancingMutants::showInstanceInformation()
 
 		ImGui::Separator();
 
-
-
 		SpacingRepeatedly(3);
 	}
 

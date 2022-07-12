@@ -1185,7 +1185,7 @@ void ColliderSettingScene::showModelInspector()
 
 		SpacingRepeatedly(2);
 
-		//ImGui::SliderFloat("Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
+		//ImGui::SliderFloat(  "Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
 
 		//SpacingRepeatedly(2);
 

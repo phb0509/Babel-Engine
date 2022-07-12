@@ -15,6 +15,11 @@ void MutantAttackState::Enter(Monster* monster)
 
 void MutantAttackState::Execute(Monster* monster)
 {
+	if (monster->GetIsStartedAnim())
+	{
+		monster->RotateToDestinationForModel(monster, GM->GetPlayer()->mPosition);
+	}
+
 	monster->SetAnimation(static_cast<int>(eMutantAnimationStates::SmashAttack)); // 기본공격.
 
 	if (monster->GetDistanceToPlayer() > monster->GetDistanceToPlayerForAttack()) // 캐릭터가 멀어지면

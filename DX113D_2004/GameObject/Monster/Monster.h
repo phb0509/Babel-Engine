@@ -41,10 +41,10 @@ public:
 	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
 	bool GetIsCompletedAnim() { return mbIsCompletedAnim; }
+	bool GetIsStartedAnim() { return mbIsStartedAnim; }
 	float GetMaxHP() { return mMaxHP; }
 	float GetCurHP() { return mCurHP; }
 	bool GetIsDie() { return mbIsDie; }
-	
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -55,8 +55,8 @@ public:
 	void SetUpperFrameBuffer(FrameBuffer* frameBuffer) { mUpperFrameBuffer = frameBuffer; }
 	void SetInstanceCollider(InstanceColliderData instanceColliderData) { mInstanceColliderData = instanceColliderData; }
 	void SetIsCompletedAnim(bool value) { mbIsCompletedAnim = value; }
+	void SetIsStartedAnim(bool value) { mbIsStartedAnim = value; }
 	
-
 private:
 	void setObstaclesTerrain(Vector3 destPos);
 	void setNoneObstaclesTerrain(Vector3 destPos);
@@ -86,6 +86,7 @@ protected:
 	int mInstanceIndex;
 	InstanceColliderData mInstanceColliderData;
 	bool mbIsCompletedAnim;
+	bool mbIsStartedAnim;
 	bool mbIsDie;
 
 

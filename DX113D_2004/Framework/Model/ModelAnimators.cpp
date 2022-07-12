@@ -30,6 +30,7 @@ void ModelAnimators::Update()
 	}
 
 	mCompletedAnimInstanceIndices.clear();
+	mStartedAnimInstanceIndices.clear();
 
 	for (UINT i = 0; i < mTransforms.size(); i++)
 	{
@@ -43,6 +44,11 @@ void ModelAnimators::Update()
 
 			float time = 1.0f / clip->mFramePerSecond / desc.speed;
 			desc.runningTime += DELTA;
+
+			if (desc.curFrame == 1)
+			{
+				mStartedAnimInstanceIndices.push_back(i);
+			}
 
 			if (desc.time >= 1.0f)
 			{

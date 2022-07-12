@@ -40,6 +40,7 @@ public:
 protected:
 	vector<int> mRenderedInstanceIndices;
 	vector<int> mCompletedAnimInstanceIndices;
+	vector<int> mStartedAnimInstanceIndices;
 	Camera* mCameraForFrustumCulling;
 	Camera* mCurMainCamera;
 

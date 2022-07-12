@@ -45,8 +45,11 @@ void InstancingMutants::Update()
 	}
 
 	updateCompletedAnimIndices(false);
+	updateStartedAnimIndices(false);
 	ModelAnimators::Update(); // Animation Tweening and Frustum Culling        //  여기서 애니메이션끝난 인덱스들 업데이트.
 	updateCompletedAnimIndices(true);
+	updateStartedAnimIndices(true);
+
 	setColliders();
 }
 
@@ -298,31 +301,11 @@ void InstancingMutants::updateCompletedAnimIndices(bool value)
 	}
 }
 
-void InstancingMutants::OnDamage(int instanceIndex, AttackInformation attackInformation)
+void InstancingMutants::updateStartedAnimIndices(bool value)
 {
-
+	for (int i = 0; i < mStartedAnimInstanceIndices.size(); i++)
+	{
+		mInstanceObjects[mStartedAnimInstanceIndices[i]]->SetIsStartedAnim(value);
+	}
 }
 
-void InstancingMutants::CheckOnHit(int instanceIndex)
-{
-}
-
-Collider* InstancingMutants::GetColliderForAStar(int instanceIndex) // 몸쪽 컬라이더 넘겨주자.
-{
-	return nullptr;
-}
-
-void InstancingMutants::setOnDamageEnd(int instanceIndex)
-{
-}
-
-void InstancingMutants::setAttackEnd(int instanceIndex)
-{
-
-}
-
-Collider* InstancingMutants::GetHitCollider(int instanceIndex) // 히트체크용 컬라이더
-{
-	//return mCollidersMap["bodyCollider"];
-	return nullptr;
-}

@@ -44,7 +44,8 @@ public:
 		data.invMatrix = XMMatrixTranspose(temp);
 	}
 
-	Matrix GetInvViewMatrix() { return data.invMatrix; }
+	Matrix GetInvMatrix() { return data.invMatrix; }
+	Matrix GetMatrix() { return data.matrix; }
 };
 
 class ProjectionBuffer : public ConstBuffer

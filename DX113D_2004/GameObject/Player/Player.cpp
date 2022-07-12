@@ -265,6 +265,7 @@ void Player::moveTargetCamera()
 		mTargetCamera->GetUpVector().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
 
 	// 프러스텀에 뷰버퍼 설정.
+	mTargetCamera->SetViewMatrix(viewMatrix);
 	mTargetCamera->GetViewBuffer()->SetMatrix(viewMatrix);
 	mTargetCamera->SetViewToFrustum(viewMatrix);
 }
@@ -291,6 +292,7 @@ void Player::moveTargetCameraInWorld()
 		mTargetCameraInWorld->GetUpVector().data); // 카메라위치 , 타겟위치 , 카메라의 업벡터
 
 	// 프러스텀에 뷰버퍼 설정.
+	mTargetCameraInWorld->SetViewMatrix(viewMatrix);
 	mTargetCameraInWorld->GetViewBuffer()->SetMatrix(viewMatrix);
 	mTargetCameraInWorld->SetViewToFrustum(viewMatrix);
 }

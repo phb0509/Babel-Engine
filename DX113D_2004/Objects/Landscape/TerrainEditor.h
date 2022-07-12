@@ -152,8 +152,6 @@ private:
 
 	VertexShader* mDepthVertexShader;
 	PixelShader* mDepthPixelShader;
-
-	UIImage* mRenderTextures[2];
 	Texture* mTempTexture;
 	Material* mDepthMaterial;
 	

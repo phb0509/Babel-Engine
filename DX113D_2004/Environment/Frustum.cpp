@@ -95,7 +95,6 @@ void Frustum::Update()
 		
 	mEmptyObject->Update();
 	mCollider->Update();
-
 }
 
 void Frustum::RenderCollider()
@@ -106,7 +105,6 @@ void Frustum::RenderCollider()
 
 void Frustum::PostRender()
 {
-
 }
 
 void Frustum::setCollider(float colliderRectSize, float distanceToColliderRect)

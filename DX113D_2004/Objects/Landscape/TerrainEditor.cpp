@@ -74,21 +74,15 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 
 TerrainEditor::~TerrainEditor()
 {
-	delete mMaterial;
-	delete mMesh;
-	delete mRayBuffer;
-	delete mComputePickingStructuredBuffer;
-
-	delete[] mInput;
-	delete[] mOutput;
-
-	delete mBrushBuffer;
-
-	delete mDepthStencil;
-	delete mDepthRenderTarget;
-
-	for (UIImage* texture : mRenderTextures)
-		delete texture;
+	GM->SafeDelete(mMaterial);
+	GM->SafeDelete(mMesh);
+	GM->SafeDelete(mRayBuffer);
+	GM->SafeDelete(mComputePickingStructuredBuffer);
+	GM->SafeDeleteArray(mInput);
+	GM->SafeDeleteArray(mOutput);
+	GM->SafeDelete(mBrushBuffer);
+	GM->SafeDelete(mDepthStencil);
+	GM->SafeDelete(mDepthRenderTarget);
 }
 
 void TerrainEditor::Update()
@@ -241,7 +235,6 @@ void TerrainEditor::PostRender()
 
 	ImGui::End();
 
-
 	ImGui::Begin("TestTest");
 
 	ImGui::InputFloat("depth Value",(float*)&mTestOutputDesc.padding1,0.0f,0.0f,"%.10f");
@@ -300,7 +293,7 @@ void TerrainEditor::computePixelPicking(OUT Vector3* position)
 {
 	mMouseUVBuffer->data.mouseScreenPosition = { mMouseScreenPosition.x,mMouseScreenPosition.y }; // 마우스좌표 uv값
 	mMouseUVBuffer->data.mouseNDCPosition = { mMouseNDCPosition.x,mMouseNDCPosition.y };
-	mMouseUVBuffer->data.invViewMatrix = mCamera->GetViewBuffer()->GetInvViewMatrix();
+	mMouseUVBuffer->data.invViewMatrix = mCamera->GetViewBuffer()->GetInvMatrix();
 	mMouseUVBuffer->data.invProjectionMatrix = mCamera->GetProjectionBufferInUse()->GetInvProjectionMatrix();
 
 	mComputeShader->Set(); // 디바이스에 Set..

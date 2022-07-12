@@ -33,19 +33,21 @@ public:
 	void SetDrawCount(int drawCount) { mDrawCount = drawCount; }
 	void SetBoxForFrustumCulling() { SetBox(&mMinBox, &mMaxBox); }
 	void SetCameraForCulling(Camera* cameraForFrustumCulling) { mCameraForFrustumCulling = cameraForFrustumCulling; }
+	void SetCurMainCamaera(Camera* mainCamera) { mCurMainCamera = mainCamera; }
 	void SetIsFrustumCullingMode(bool value) { mbIsFrustumCullingMode = value; }
 	void SetInstanceCount(int instanceCount);
 
 protected:
 	vector<int> mRenderedInstanceIndices;
 	vector<int> mCompletedAnimInstanceIndices;
+	Camera* mCameraForFrustumCulling;
+	Camera* mCurMainCamera;
 
 private:
 	vector<Transform*> mTransforms;
 	vector<InstanceData> mInstanceData;
 	VertexBuffer* mInstanceBuffer;
 
-	Camera* mCameraForFrustumCulling;
 	UINT mDrawCount;
 
 	Vector3 mMinBox;

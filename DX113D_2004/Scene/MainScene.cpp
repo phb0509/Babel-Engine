@@ -161,6 +161,7 @@ void MainScene::PreRender()
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
 	//mDirectionalLight->Render();
+	DM->Update();
 }
 
 void MainScene::Render()
@@ -226,6 +227,7 @@ void MainScene::PostRender()
 		mTargetCameraForShow->SetIsUsingFrustumCulling(false);
 		mTargetCamera->SetIsUsingFrustumCulling(true);
 		mInstancingMutants->SetCameraForCulling(mTargetCamera);
+		mInstancingMutants->SetCurMainCamaera(mTargetCamera);
 	}
 
 	if (ImGui::Button("WorldCamera"))
@@ -235,6 +237,7 @@ void MainScene::PostRender()
 		mTargetCameraForShow->SetIsUsingFrustumCulling(true);
 		mTargetCamera->SetIsUsingFrustumCulling(false);
 		mInstancingMutants->SetCameraForCulling(mTargetCameraForShow);
+		mInstancingMutants->SetCurMainCamaera(mWorldCamera);
 	}
 
 	SpacingRepeatedly(2);

@@ -313,11 +313,9 @@ using namespace states;
 #include "GameObject\/Monster\/MutantStates\MutantOnDamageState.h"
 #include "GameObject\/Monster\/MutantStates\MutantDieState.h"
 
-
 //Managers
 #include "GameObject/Manager/GameManager.h"
 #include "GameObject/Manager/DebugManager.h"
-
 
 //Scene Header
 #include "Scene/Scene.h"

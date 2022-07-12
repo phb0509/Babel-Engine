@@ -33,11 +33,7 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 
 InstancingMutants::~InstancingMutants()
 {
-	for (int i = 0; i < mInstanceObjects.size(); i++)
-	{
-		delete mInstanceObjects[i];
-		mInstanceObjects[i] = nullptr;
-	}
+	GM->SafeDeleteVector(mInstanceObjects);
 }
 
 void InstancingMutants::Update()
@@ -61,11 +57,33 @@ void InstancingMutants::Render()
 {
 	ModelAnimators::Render();
 	renderColliders();
+	RenderDebugMode();
 }
 
 void InstancingMutants::PostRender()
 {
 	showInstanceInformation();
+}
+
+void InstancingMutants::RenderDebugMode()
+{
+	if (DM->GetIsDebugMode())
+	{
+		for (Monster* monster : mInstanceObjects)
+		{
+			Vector3 screenPos = WorldToScreen(monster->GetGlobalPosition(),mCurMainCamera);
+
+			POINT size = { 200, 100 };
+			RECT rect;
+			rect.left = screenPos.x;
+			rect.top = screenPos.y;
+			rect.right = rect.left + size.x;
+			rect.bottom = rect.top + size.y;
+
+			DirectWrite::Get()->RenderText(ToWString(monster->GetTag()), rect);
+			int a = 0;
+		}
+	}
 }
 
 void InstancingMutants::SetIdle(int instanceIndex)

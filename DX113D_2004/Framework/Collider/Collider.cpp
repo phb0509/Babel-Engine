@@ -65,14 +65,16 @@ void Collider::PreRenderForColorPicking()
 
 void Collider::Render()
 {
-    mMaterial->SetShader(L"Collider");
-    mMaterial->Set();
-    //SetColor({ 0,1,0,0 });
+    if (!DM->GetIsDebugMode())
+    {
+        mMaterial->SetShader(L"Collider");
+        mMaterial->Set();
 
-    //Transform::UpdateWorld();
-    Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
+        //Transform::UpdateWorld();
+        Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
 
-    mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+        mMesh->IASet(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
-    DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+        DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+    }
 }

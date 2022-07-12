@@ -40,6 +40,7 @@ void InstancingMutants::Update()
 {
 	for (int i = 0; i < mInstanceObjects.size(); i++)
 	{
+		if (!mInstanceObjects[i]->GetIsActive()) continue;
 		mInstanceObjects[i]->Update();
 	}
 

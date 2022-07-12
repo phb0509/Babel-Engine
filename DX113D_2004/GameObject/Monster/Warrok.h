@@ -28,14 +28,14 @@ public:
 	virtual void InstanceUpdate() override;
 	virtual void PreRender() override;
 	virtual void Render() override;
-	void PostRender();
-
 	virtual Collider* GetHitCollider() override;
 	virtual void OnDamage(AttackInformation attackInformation) override;
 	virtual bool CheckIsCollision(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
+	virtual void ReActivation() override;
 
+	void PostRender();
 	void SetIdle();
 	void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) override;
 

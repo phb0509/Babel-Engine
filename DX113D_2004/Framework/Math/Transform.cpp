@@ -5,6 +5,7 @@
 Transform::Transform(string mTag) :
 	mTag(mTag),
 	mPosition(0, 0, 0),
+	mLastPosDeactivation(0,0,0),
 	mRotation(0, 0, 0),
 	mScale(1, 1, 1),
 	mGlobalPosition(0, 0, 0),
@@ -17,7 +18,8 @@ Transform::Transform(string mTag) :
 	mRotationSpeed(10.0f),
 	mbIsInFrustum(false),
 	mbIsActive(true),
-	mbIsRender(true)
+	mbIsRender(true),
+	mLastTimeDeactivation(0.0f)
 {
 	createHashColor();
 
@@ -136,7 +138,7 @@ void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)
 {
 	if (mIsUpdateStandTimes[0])
 	{
-		mNextExecuteTimes[0] = Timer::Get()->GetRunTime() + periodTime;
+		mNextExecuteTimes[0] = TIME + periodTime;
 		mIsUpdateStandTimes[0] = false;
 	}
 
@@ -149,7 +151,7 @@ void Transform::ExecuteRotationPeriodFunction(function<void(Transform*, Vector3)
 
 void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime)
 {
-	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[1])
+	if (TIME >= mNextExecuteTimes[1])
 	{
 		funcPointer(param1);
 		mIsUpdateStandTimes[1] = true;
@@ -157,7 +159,7 @@ void Transform::ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, 
 
 	if (mIsUpdateStandTimes[1]) // 초기에는 true
 	{
-		mNextExecuteTimes[1] = Timer::Get()->GetRunTime() + periodTime;
+		mNextExecuteTimes[1] = TIME + periodTime;
 		mIsUpdateStandTimes[1] = false;
 	}
 }
@@ -166,11 +168,11 @@ bool Transform::CheckTime(float periodTime)
 {
 	if (mIsUpdateStandTimes[2])
 	{
-		mNextExecuteTimes[2] = Timer::Get()->GetRunTime() + periodTime;
+		mNextExecuteTimes[2] = TIME + periodTime;
 		mIsUpdateStandTimes[2] = false;
 	}
 
-	if (Timer::Get()->GetRunTime() >= mNextExecuteTimes[2]) // 시간 지나면
+	if (TIME >= mNextExecuteTimes[2]) // 시간 지나면
 	{
 		mIsUpdateStandTimes[2] = true;
 	}

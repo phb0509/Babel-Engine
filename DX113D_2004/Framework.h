@@ -40,6 +40,7 @@
 #define MOUSEPOS Control::Get()->GetMouse()
 
 #define DELTA Timer::Get()->GetElapsedTime()
+#define TIME Timer::Get()->GetRunTime()
 
 #define GM GameManager::Get()
 #define DM DebugManager::Get()

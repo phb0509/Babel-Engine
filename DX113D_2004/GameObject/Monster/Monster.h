@@ -24,6 +24,7 @@ public:
 	virtual void SetFSMState(int state) = 0;
 	virtual int GetAnimationState() = 0;
 	virtual void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) = 0;
+	virtual void ReActivation() = 0;
 	
 	void MoveToDestUsingAStar(Vector3 dest);
 	void ChangeState(MonsterState* nextState);

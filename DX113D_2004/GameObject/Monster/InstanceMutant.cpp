@@ -131,6 +131,14 @@ void InstanceMutant::SetAnimation(int animationState, float speed, float takeTim
 	}
 }
 
+void InstanceMutant::ReActivation()
+{
+	ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Patrol)));
+	mbIsDie = false;
+	mbIsActive = true;
+	mCurHP = mMaxHP;
+}
+
 void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;

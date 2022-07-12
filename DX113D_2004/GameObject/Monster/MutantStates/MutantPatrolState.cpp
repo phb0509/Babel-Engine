@@ -121,7 +121,7 @@ void MutantPatrolState::Execute(Monster* monster)
 		{
 			mbIsPatrolMove = false;
 			mPatrolRandomNum = GameMath::Random(5.0f, 10.0f); // Á¤Âû °£°Ý.
-			mCurrentTime = Timer::Get()->GetRunTime();
+			mCurrentTime = TIME;
 			mStandTime = mCurrentTime + mPatrolRandomNum;
 
 			monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));

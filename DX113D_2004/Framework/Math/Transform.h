@@ -38,9 +38,16 @@ public:
 	Float4 GetHashColor() { return mHashColor; }
 	bool GetIsInFrustum() { return mbIsInFrustum; }
 	bool GetIsActive() { return mbIsActive; }
+	Vector3 GetLastPosDeactivation() { return mLastPosDeactivation; }
+	float GetLastTimeDeactivation() { return mLastTimeDeactivation; }
 
+	void SetHashColorBuffer();
+	void SetTag(string tag) { mTag = tag; }
+	void SetIsInFrustum(bool isInFrustum) { mbIsInFrustum = isInFrustum; }
+	void SetIsActive(bool isActive) { mbIsActive = isActive; }
 	void SetParent(Matrix* value) { mParentMatrix = value; }
-
+	void SetLastPosDeactivation(Vector3 lastPos) { mLastPosDeactivation = lastPos; }
+	void SetLastTimeDeactivation(float lastTime) { mLastTimeDeactivation = lastTime; }
 
 	void RotateToDestinationForModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
 	void RotateToDestinationForNotModel(Transform* transform, Vector3 dest); // 회전시키고자 하는 모델의 transform과 목표지점좌표.
@@ -51,10 +58,7 @@ public:
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
 
-	void SetHashColorBuffer();
-	void SetTag(string tag) { mTag = tag; }
-	void SetIsInFrustum(bool isInFrustum) { mbIsInFrustum = isInFrustum; }
-	void SetIsActive(bool isActive) { mbIsActive = isActive; }
+
 
 private:
 	void createHashColor();
@@ -86,6 +90,8 @@ protected:
 	bool mbIsInFrustum;
 	bool mbIsActive;
 	bool mbIsRender;
+	Vector3 mLastPosDeactivation;
+	float mLastTimeDeactivation;
 
 private:
 	// Gizmos

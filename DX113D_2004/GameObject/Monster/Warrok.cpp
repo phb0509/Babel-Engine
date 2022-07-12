@@ -74,6 +74,10 @@ Collider* Warrok::GetColliderForAStar()
 	return mBodyCollider;
 }
 
+void Warrok::ReActivation()
+{
+}
+
 void Warrok::setOnDamageEnd()
 {
 	SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));

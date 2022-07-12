@@ -21,6 +21,7 @@ public:
 private:
 	void printToCSV();
 	void moveWorldCamera();
+	void executeEvent();
 
 private:
 	Player* mPlayer;

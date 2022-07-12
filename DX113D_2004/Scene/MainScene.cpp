@@ -54,8 +54,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 2;
-	int column = 1;
+	int row = 1;
+	int column = 2;
 
 	mMutantInstanceCount = row * column;
 
@@ -77,7 +77,7 @@ MainScene::MainScene() :
 		}
 	}
 
-	mPlayer->SetMonsters("Mutant",mInstancingMutants->GetInstanceObjects());
+	mPlayer->SetMonsters("Mutant", mInstanceMutants);
 }
 
 MainScene::~MainScene()
@@ -122,8 +122,10 @@ void MainScene::Update()
 
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
-
 	mInstancingMutants->Update();
+	executeEvent();
+
+	DM->Update();
 }
 
 void MainScene::PreRender()
@@ -161,7 +163,6 @@ void MainScene::PreRender()
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
 	//mDirectionalLight->Render();
-	DM->Update();
 }
 
 void MainScene::Render()
@@ -301,6 +302,25 @@ void MainScene::moveWorldCamera()
 
 	mPreFrameMousePosition = MOUSEPOS;
 	mWorldCamera->SetViewMatrixToBuffer();
+}
+
+void MainScene::executeEvent()
+{
+	// Respawn Event
+	for (int i = 0; i < mInstanceMutants.size(); i++)
+	{
+		Monster* monster = mInstanceMutants[i];
+
+		if (!monster->GetIsActive())
+		{
+			if (TIME - monster->GetLastTimeDeactivation() >= 1.0f) // 죽은지 1초 지났으면, 재활성화
+			{
+				monster->mPosition = monster->GetLastPosDeactivation();
+				monster->ReActivation();
+			}
+		}
+	}
+
 }
 
 

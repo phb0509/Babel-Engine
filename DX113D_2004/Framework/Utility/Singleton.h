@@ -3,23 +3,25 @@
 template <class T>
 class Singleton
 {
-protected:
-	static T* instance;
 
 public:
 	static T* Get()
 	{
-		if (instance == nullptr)
-			instance = new T();
+		if (mInstance == nullptr)
+			mInstance = new T();
 
-		return instance;
+		return mInstance;
 	}
 
 	static void Delete()
 	{
-		delete instance;
+		delete mInstance;
 	}
+
+protected:
+	static T* mInstance;
+
 };
 
 template<class T>
-T* Singleton<T>::instance = nullptr;
+T* Singleton<T>::mInstance = nullptr;

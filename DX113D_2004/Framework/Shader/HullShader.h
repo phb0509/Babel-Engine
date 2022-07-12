@@ -2,14 +2,17 @@
 
 class HullShader : public Shader
 {
+
+public:
+	virtual void Set() override;
+
 private:
 	friend class Shader;
-
-	ID3D11HullShader* shader;
 
 	HullShader(wstring file, string entry);
 	~HullShader();
 
-public:
-	virtual void Set() override;
+private:
+	ID3D11HullShader* mShader;
+
 };

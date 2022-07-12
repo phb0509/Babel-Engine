@@ -2,9 +2,6 @@
 
 class BinaryWriter
 {
-private:
-	HANDLE file;
-	DWORD size;
 
 public:
 	BinaryWriter(wstring filePath);
@@ -16,8 +13,11 @@ public:
 	void Float(float data);
 	void String(string data);
 	void Float4x4(XMFLOAT4X4 data);
-
 	void Byte(void* data, UINT dataSize);
-
 	void CloseWriter();
+
+private:
+	HANDLE mFile;
+	DWORD mSize;
+
 };

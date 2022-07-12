@@ -9,13 +9,9 @@ class GeometryShader;
 
 class Shader
 {
-private:
-	static map<wstring, Shader*> totalShader;
-
-protected:
-	ID3DBlob* blob;
-
 public:
+	virtual void Set() = 0;
+
 	static VertexShader* AddVS(wstring file, string entry = "VS");
 	static PixelShader* AddPS(wstring file, string entry = "PS");
 	static ComputeShader* AddCS(wstring file, string entry = "CS");
@@ -25,5 +21,10 @@ public:
 
 	static void Delete();
 
-	virtual void Set() = 0;
+protected:
+	ID3DBlob* mBlob;
+
+private:
+	static map<wstring, Shader*> mTotalShader;
+
 };

@@ -2,14 +2,17 @@
 
 class GeometryShader : public Shader
 {
+
+public:
+	virtual void Set() override;
+
 private:
 	friend class Shader;
-
-	ID3D11GeometryShader* shader;
 
 	GeometryShader(wstring file, string entry);
 	~GeometryShader();
 
-public:
-	virtual void Set() override;
+private:
+	ID3D11GeometryShader* mShader;
+
 };

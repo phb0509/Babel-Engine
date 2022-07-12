@@ -27,7 +27,7 @@ public:
 
 	int GetCurrentClipFrame() { return mCurrentClipFrame; }
 	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
-	bool GetCurrentAnimationEnd() { return mbIsCurrentAnimationEnd; }
+	bool GetCurrentAnimationEnd() { return mbIsEndCurrentAnimation; }
 
 	void PlayAnimation() { mbIsPlayedAnimation = true; }
 	void StopAnimation() { mbIsPlayedAnimation = false; }
@@ -64,10 +64,10 @@ protected:
 	int mCurrentClipFrame;
 	int mCurrentClipFrameCount;
 	bool mbIsPlayedAnimation;
-	bool mbIsCurrentAnimationEnd;
+	bool mbIsEndCurrentAnimation;
 
 	//Model
 	BoneBuffer* mBoneBuffer;
 	map<int, Matrix> mBoneTransforms;
-	Matrix* mNodeTransforms = nullptr;
+	Matrix* mNodeTransformMatrices;
 };

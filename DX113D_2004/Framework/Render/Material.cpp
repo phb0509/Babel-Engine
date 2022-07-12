@@ -36,7 +36,7 @@ Material::Material(VertexShader* vertexShader, PixelShader* pixelShader):
 
 Material::~Material()
 {
-	delete mBuffer;
+	GM->SafeDelete(mBuffer);
 }
 
 void Material::Set()

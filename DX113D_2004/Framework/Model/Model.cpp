@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Model.h"
 
-Model::Model() : 
+Model::Model() :
 	ModelReader()
 {
 	mBoneBuffer = new BoneBuffer();
@@ -9,13 +9,15 @@ Model::Model() :
 	MakeBoneTransform();
 
 	if (!mBones.empty()) // 본없으면, 그냥 정적인 메시면 셰이더에서 BoneWolrd로 계산..
+	{
 		mTypeBuffer->data.values[0] = 1;
+	}
 }
 
 Model::~Model()
 {
 	GM->SafeDelete(mBoneBuffer);
-	delete[]  mNodeTransforms;
+	GM->SafeDeleteArray(mNodeTransforms);
 }
 
 void Model::Render()
@@ -30,7 +32,7 @@ void Model::MakeBoneTransform()
 {
 	mNodeTransforms = new Matrix[mNodes.size()];
 	UINT nodeIndex = 0;
-
+	
 	for (NodeData* node : mNodes)
 	{
 		Matrix parent;

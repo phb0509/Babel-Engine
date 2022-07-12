@@ -2,18 +2,6 @@
 
 class ModelExporter
 {
-private:
-	Assimp::Importer* importer;
-	const aiScene* scene; // assimp에 있는 구조체.
-
-	vector<MaterialData*> materials;
-	vector<MeshData*> meshes;
-	vector<NodeData*> nodes;
-	vector<BoneData*> bones;
-
-	map<string, UINT> boneMap;
-	UINT boneCount;
-
 public:
 	ModelExporter(string selectedFilePath);
 	~ModelExporter();
@@ -37,4 +25,15 @@ public:
 	Clip* ReadClip(aiAnimation* animation);
 	void ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& clipNodes);
 	void WriteClip(Clip* clip, string savePath);
+
+private:
+	Assimp::Importer* mImporter;
+	const aiScene* mScene; // assimp에 있는 구조체.
+
+	vector<MaterialData*> mMaterials;
+	vector<MeshData*> mMeshes;
+	vector<NodeData*> mNodes;
+	vector<BoneData*> mBones;
+	map<string, UINT> mBoneMap;
+	UINT mBoneCount;
 };

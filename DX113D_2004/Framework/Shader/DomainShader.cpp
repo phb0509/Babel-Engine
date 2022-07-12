@@ -8,20 +8,20 @@ DomainShader::DomainShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "ds_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreateDomainShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreateDomainShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
-	blob->Release();
+	mBlob->Release();
 }
 
 DomainShader::~DomainShader()
 {
-	shader->Release();
+	mShader->Release();
 }
 
 void DomainShader::Set()
 {
-	DEVICECONTEXT->DSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->DSSetShader(mShader, nullptr, 0);
 }

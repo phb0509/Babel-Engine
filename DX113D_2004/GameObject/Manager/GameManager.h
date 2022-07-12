@@ -30,6 +30,16 @@ public:
 		t = nullptr;
 	}
 
+	template<class T>
+	inline void SafeDeleteVector(vector<T>& t)
+	{
+		for (int i = 0; i < t.size(); i++)
+		{
+			delete t[i];
+			t[i] = nullptr;
+		}
+	}
+
 private:
 	Player* mPlayer;
 	vector<wstring> mDraggedFileList;

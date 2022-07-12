@@ -2,16 +2,16 @@
 #include "Timer.h"
 
 Timer::Timer()
-	: frameRate(0), frameCount(0), timeElapsed(0), oneSecCount(0),
-	runTime(0), lockFPS(0)
+	: mFrameRate(0), mFrameCount(0), mElapsedTime(0), mOneSecCount(0),
+	mRunTime(0), mLockFPS(0)
 {	
 	//1초동안 CPU의 진동수를 반환하는 함수
-	QueryPerformanceFrequency((LARGE_INTEGER*)&periodFrequency);
+	QueryPerformanceFrequency((LARGE_INTEGER*)&mPeriodFrequency);
 
 	//현재 CPU진동수
-	QueryPerformanceCounter((LARGE_INTEGER*)&lastTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&mLastTime);
 
-	timeScale = 1.0f / (float)periodFrequency;
+	mTimeScale = 1.0f / (float)mPeriodFrequency;
 }
 
 Timer::~Timer()
@@ -20,30 +20,30 @@ Timer::~Timer()
 
 void Timer::Update()
 {
-	QueryPerformanceCounter((LARGE_INTEGER*)&curTime);
-	timeElapsed = (float)(curTime - lastTime) * timeScale;
+	QueryPerformanceCounter((LARGE_INTEGER*)&mCurTime);
+	mElapsedTime = (float)(mCurTime - mLastTime) * mTimeScale;
 
-	if (lockFPS != 0.0f)
+	if (mLockFPS != 0.0f)
 	{
-		while (timeElapsed < (1.0f / lockFPS))
+		while (mElapsedTime < (1.0f / mLockFPS))
 		{
-			QueryPerformanceCounter((LARGE_INTEGER*)&curTime);
-			timeElapsed = (float)(curTime - lastTime) * timeScale;
+			QueryPerformanceCounter((LARGE_INTEGER*)&mCurTime);
+			mElapsedTime = (float)(mCurTime - mLastTime) * mTimeScale;
 		}
 	}
 
-	lastTime = curTime;
+	mLastTime = mCurTime;
 
 	//FPS(Frame Per Second)
-	frameCount++;
-	oneSecCount += timeElapsed;
+	mFrameCount++;
+	mOneSecCount += mElapsedTime;
 
-	if (oneSecCount >= 1.0f)
+	if (mOneSecCount >= 1.0f)
 	{
-		frameRate = frameCount;
-		frameCount = 0;
-		oneSecCount = 0.0f;
+		mFrameRate = mFrameCount;
+		mFrameCount = 0;
+		mOneSecCount = 0.0f;
 	}
 
-	runTime += timeElapsed;
+	mRunTime += mElapsedTime;
 }

@@ -8,20 +8,20 @@ HullShader::HullShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "hs_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreateHullShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreateHullShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
-	blob->Release();
+	mBlob->Release();
 }
 
 HullShader::~HullShader()
 {
-	shader->Release();
+	mShader->Release();
 }
 
 void HullShader::Set()
 {
-	DEVICECONTEXT->HSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->HSSetShader(mShader, nullptr, 0);
 }

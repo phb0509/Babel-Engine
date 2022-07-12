@@ -1,7 +1,7 @@
 #pragma once
 #include "Framework/Math/Vector3.h"
 
-#define KEYMAX 255
+const int KEYMAX = 255;
 
 class Control : public Singleton<Control>
 {
@@ -15,15 +15,9 @@ private:
 		PRESS
 	};
 
-	::byte curState[KEYMAX];
-	::byte oldState[KEYMAX];
-	::byte mapState[KEYMAX];
-
-	Vector3 mousePos;
-	float wheelValue;
-
 	Control();
 	~Control();
+
 public:
 
 	void Update();
@@ -33,8 +27,17 @@ public:
 	bool Press(UINT key) { return mapState[key] == PRESS; }
 
 	Vector3 GetMouse() { return mousePos; }
-	void SetMouse(LPARAM lParam);
-
 	float GetWheel() { return wheelValue; }
+
+	void SetMouse(LPARAM lParam);
 	void SetWheel(float value) { wheelValue = value; }
+
+private:
+	::byte curState[KEYMAX];
+	::byte oldState[KEYMAX];
+	::byte mapState[KEYMAX];
+
+	Vector3 mousePos;
+	float wheelValue;
+
 };

@@ -1,48 +1,48 @@
 #include "Framework.h"
 
 SamplerState::SamplerState()
-	: desc{}, state(nullptr)
+	: mDesc{}, mState(nullptr)
 {
-	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	desc.MinLOD = 0;
-	desc.MaxLOD = D3D11_FLOAT32_MAX;
+	mDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	mDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	mDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	mDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	mDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	mDesc.MinLOD = 0;
+	mDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	Changed();
 }
 
 SamplerState::~SamplerState()
 {
-	state->Release();
+	mState->Release();
 }
 
 void SamplerState::SetState(UINT slot)
 {
-	DEVICECONTEXT->PSSetSamplers(slot, 1, &state);
-	DEVICECONTEXT->DSSetSamplers(slot, 1, &state);
+	DEVICECONTEXT->PSSetSamplers(slot, 1, &mState);
+	DEVICECONTEXT->DSSetSamplers(slot, 1, &mState);
 }
 
 void SamplerState::Filter(D3D11_FILTER value)
 {
-	desc.Filter = value;
+	mDesc.Filter = value;
 	Changed();
 }
 
 void SamplerState::Address(D3D11_TEXTURE_ADDRESS_MODE value)
 {
-	desc.AddressU = value;
-	desc.AddressV = value;
-	desc.AddressW = value;
+	mDesc.AddressU = value;
+	mDesc.AddressV = value;
+	mDesc.AddressW = value;
 	Changed();
 }
 
 void SamplerState::Changed()
 {
-	if (state != nullptr)
-		state->Release();
+	if (mState != nullptr)
+		mState->Release();
 
-	V(DEVICE->CreateSamplerState(&desc, &state));
+	V(DEVICE->CreateSamplerState(&mDesc, &mState));
 }

@@ -1,81 +1,83 @@
 #include "Framework.h"
 
-map<wstring, Shader*> Shader::totalShader;
+map<wstring, Shader*> Shader::mTotalShader;
 
 VertexShader* Shader::AddVS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (VertexShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (VertexShader*)mTotalShader[key];
 
-    totalShader[key] = new VertexShader(file, entry);
+    mTotalShader[key] = new VertexShader(file, entry);
 
-    return (VertexShader*)totalShader[key];
+    return (VertexShader*)mTotalShader[key];
 }
 
 PixelShader* Shader::AddPS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (PixelShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (PixelShader*)mTotalShader[key];
 
-    totalShader[key] = new PixelShader(file, entry);
+    mTotalShader[key] = new PixelShader(file, entry);
 
-    return (PixelShader*)totalShader[key];
+    return (PixelShader*)mTotalShader[key];
 }
 
 ComputeShader* Shader::AddCS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (ComputeShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (ComputeShader*)mTotalShader[key];
 
-    totalShader[key] = new ComputeShader(file, entry);
+    mTotalShader[key] = new ComputeShader(file, entry);
 
-    return (ComputeShader*)totalShader[key];
+    return (ComputeShader*)mTotalShader[key];
 }
 
 HullShader* Shader::AddHS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (HullShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (HullShader*)mTotalShader[key];
 
-    totalShader[key] = new HullShader(file, entry);
+    mTotalShader[key] = new HullShader(file, entry);
 
-    return (HullShader*)totalShader[key];
+    return (HullShader*)mTotalShader[key];
 }
 
 DomainShader* Shader::AddDS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (DomainShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (DomainShader*)mTotalShader[key];
 
-    totalShader[key] = new DomainShader(file, entry);
+    mTotalShader[key] = new DomainShader(file, entry);
 
-    return (DomainShader*)totalShader[key];
+    return (DomainShader*)mTotalShader[key];
 }
 
 GeometryShader* Shader::AddGS(wstring file, string entry)
 {
     wstring key = file + ToWString(entry);
 
-    if (totalShader.count(key) > 0)
-        return (GeometryShader*)totalShader[key];
+    if (mTotalShader.count(key) > 0)
+        return (GeometryShader*)mTotalShader[key];
 
-    totalShader[key] = new GeometryShader(file, entry);
+    mTotalShader[key] = new GeometryShader(file, entry);
 
-    return (GeometryShader*)totalShader[key];
+    return (GeometryShader*)mTotalShader[key];
 }
 
 void Shader::Delete()
 {
-    for (auto shader : totalShader)
-        delete shader.second;
+    for (auto shader : mTotalShader)
+    {
+        GM->SafeDelete(shader.second);
+    }
 }

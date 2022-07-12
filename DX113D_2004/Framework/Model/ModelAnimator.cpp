@@ -6,9 +6,9 @@ ModelAnimator::ModelAnimator() :
 	mSRV(nullptr),
 	mClipTransform(nullptr),
 	mNodeTransform(nullptr),
-	mNodeTransforms(nullptr),
+	mNodeTransformMatrices(nullptr),
 	mbIsPlayedAnimation(true),
-	mbIsCurrentAnimationEnd(false)
+	mbIsEndCurrentAnimation(false)
 {
 	mFrameBuffer = new FrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
@@ -16,9 +16,12 @@ ModelAnimator::ModelAnimator() :
 
 ModelAnimator::~ModelAnimator()
 {
-	delete mFrameBuffer;
-	delete[] mClipTransform;
-	delete[] mNodeTransform;
+	GM->SafeDelete(mFrameBuffer);
+	GM->SafeDeleteArray(mClipTransform);
+	GM->SafeDeleteArray(mNodeTransform);
+	GM->SafeDeleteVector(mClips);
+	GM->SafeDelete(mBoneBuffer);
+	GM->SafeDeleteArray(mNodeTransformMatrices);
 
 	if (mTexture != nullptr)
 	{
@@ -29,12 +32,6 @@ ModelAnimator::~ModelAnimator()
 	{
 		mSRV->Release();
 	}
-
-	for (ModelClip* clip : mClips)
-		delete clip;
-
-	delete mBoneBuffer;
-	delete[] mNodeTransforms;
 }
 
 
@@ -44,7 +41,6 @@ bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 
 	string filePath = "ModelData/" + modelName + "/" + clipFileName;
 
-	//BinaryReader* binaryReader = new BinaryReader(filePath);
 	BinaryReader binaryReader(filePath); // 
 
 	ModelClip* clip = new ModelClip();
@@ -291,7 +287,7 @@ Matrix ModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
 
 void ModelAnimator::MakeBoneTransform()
 {
-	mNodeTransforms = new Matrix[mNodes.size()];
+	mNodeTransformMatrices = new Matrix[mNodes.size()];
 	UINT nodeIndex = 0;
 
 	for (NodeData* node : mNodes)
@@ -302,9 +298,9 @@ void ModelAnimator::MakeBoneTransform()
 		if (parentIndex < 0)
 			parent = XMMatrixIdentity();
 		else
-			parent = mNodeTransforms[parentIndex];
+			parent = mNodeTransformMatrices[parentIndex];
 
-		mNodeTransforms[nodeIndex] = XMLoadFloat4x4(&node->transform) * parent;
+		mNodeTransformMatrices[nodeIndex] = XMLoadFloat4x4(&node->transform) * parent;
 
 		if (mBoneMap.count(node->name) > 0)
 		{
@@ -313,7 +309,7 @@ void ModelAnimator::MakeBoneTransform()
 			Matrix offset = XMLoadFloat4x4(&mBones[boneIndex]->offset);
 
 			//boneBuffer->Add(offset * nodeTransforms[nodeIndex], boneIndex);
-			mBoneTransforms[boneIndex] = offset * mNodeTransforms[nodeIndex];
+			mBoneTransforms[boneIndex] = offset * mNodeTransformMatrices[nodeIndex];
 		}
 
 		nodeIndex++;
@@ -441,11 +437,15 @@ void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 			int parentIndex = node->parent; // 부모 인덱스 받기.
 
 			if (parentIndex < 0)
+			{
 				parent = XMMatrixIdentity(); // 부모가 없다면.(최상단노드)
+			}
 			else
+			{
 				parent = mNodeTransform[index].transform[i][parentIndex]; // 부모가 있다면.
 					// = 0번째 클립의 i번째 프레임의 노드(parentIndex니 부모노드)
-
+			}
+				
 			Matrix animationMatrix;
 			KeyFrame* frame = clip->GetKeyFrame(node->name); // node에 해당하는 키프레임. ex) 왼발에 해당하는 키프레임 144개
 

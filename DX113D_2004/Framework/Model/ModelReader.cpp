@@ -11,12 +11,14 @@ ModelReader::ModelReader():
 ModelReader::~ModelReader()
 {
 	for (auto material : mMaterials)
-		delete material.second;
+	{
+		GM->SafeDelete(material.second);
+	}
+
+	GM->SafeDelete(mTypeBuffer);
+	GM->SafeDelete(mDefaultMaterial);
 
 	deleteDatas();
-
-	delete mTypeBuffer;
-	delete mDefaultMaterial;
 }
 
 void ModelReader::MeshRender()
@@ -175,7 +177,7 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 			r->Byte(&ptr, sizeof(UINT) * count);
 		}
 
-		mesh->CreateMesh(); 
+		mesh->createMesh(); 
 		mMeshes.emplace_back(mesh);
 	}
 

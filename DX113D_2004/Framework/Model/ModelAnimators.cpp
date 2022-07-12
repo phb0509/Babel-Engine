@@ -19,7 +19,7 @@ ModelAnimators::ModelAnimators() :
 
 ModelAnimators::~ModelAnimators()
 {
-    delete mInstanceBuffer;
+	GM->SafeDelete(mInstanceBuffer);
 }
 
 void ModelAnimators::Update()

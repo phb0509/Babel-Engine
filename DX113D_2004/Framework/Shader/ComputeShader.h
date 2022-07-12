@@ -2,14 +2,17 @@
 
 class ComputeShader : public Shader
 {
+
+public:
+	virtual void Set() override;
+
 private:
 	friend class Shader;
-
-	ID3D11ComputeShader* shader;
 
 	ComputeShader(wstring file, string entry);
 	~ComputeShader();
 
-public:
-	virtual void Set() override;
+private:
+	ID3D11ComputeShader* mShader;
+
 };

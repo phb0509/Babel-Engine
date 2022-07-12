@@ -8,20 +8,20 @@ GeometryShader::GeometryShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "gs_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreateGeometryShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreateGeometryShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
-	blob->Release();
+	mBlob->Release();
 }
 
 GeometryShader::~GeometryShader()
 {
-	shader->Release();
+	mShader->Release();
 }
 
 void GeometryShader::Set()
 {
-	DEVICECONTEXT->GSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->GSSetShader(mShader, nullptr, 0);
 }

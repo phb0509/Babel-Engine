@@ -8,7 +8,7 @@ private:
 	ModelMesh();
 	~ModelMesh();
 
-	void CreateMesh();
+	void createMesh();
 	void Render();
 	void Render(UINT drawCount);
 

@@ -70,5 +70,4 @@ private:
 	Texture* mSpecularMap;
 	Texture* mNormalMap;
 	Texture* mBrushMap;
-
 };

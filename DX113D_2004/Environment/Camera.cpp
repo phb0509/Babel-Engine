@@ -22,11 +22,6 @@ Camera::Camera():
 
 Camera::~Camera()
 {
-	delete mPerspectiveProjectionBuffer;
-	delete mOrthographicProjectionBuffer;
-	delete mViewBuffer;
-	delete mFrustum;
-
 	GM->SafeDelete(mPerspectiveProjectionBuffer);
 	GM->SafeDelete(mOrthographicProjectionBuffer);
 	GM->SafeDelete(mViewBuffer);

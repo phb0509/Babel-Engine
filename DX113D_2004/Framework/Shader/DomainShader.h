@@ -2,14 +2,17 @@
 
 class DomainShader : public Shader
 {
+
+public:
+	virtual void Set() override;
+
 private:
 	friend class Shader;
-
-	ID3D11DomainShader* shader;
 
 	DomainShader(wstring file, string entry);
 	~DomainShader();
 
-public:
-	virtual void Set() override;
+private:
+	ID3D11DomainShader* mShader;
+
 };

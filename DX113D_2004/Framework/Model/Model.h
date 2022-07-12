@@ -6,7 +6,6 @@ class Model : public ModelReader
 public:
 	Model();
 	virtual ~Model();
-
 	virtual void Render();
 
 	void MakeBoneTransform();
@@ -14,8 +13,6 @@ public:
 
 	int GetNodeIndex(string name);
 	UINT GetBoneSize() { return mBones.size(); }
-
-
 
 protected:
 	BoneBuffer* mBoneBuffer;

@@ -1,42 +1,42 @@
 #include "Framework.h"
 
 RasterizerState::RasterizerState()
-	: desc{}, state(nullptr)
+	: mDesc{}, mState(nullptr)
 {
-	desc.CullMode = D3D11_CULL_BACK;
-	desc.FillMode = D3D11_FILL_SOLID;
+	mDesc.CullMode = D3D11_CULL_BACK;
+	mDesc.FillMode = D3D11_FILL_SOLID;
 
 	Changed();
 }
 
 RasterizerState::~RasterizerState()
 {
-	state->Release();
+	mState->Release();
 }
 
 void RasterizerState::SetState()
 {
-	DEVICECONTEXT->RSSetState(state);
+	DEVICECONTEXT->RSSetState(mState);
 }
 
 void RasterizerState::FillMode(D3D11_FILL_MODE value)
 {
-	desc.FillMode = value;
+	mDesc.FillMode = value;
 
 	Changed();
 }
 
 void RasterizerState::FrontCounterClockwise(bool value)
 {
-	desc.FrontCounterClockwise = value;
+	mDesc.FrontCounterClockwise = value;
 
 	Changed();
 }
 
 void RasterizerState::Changed()
 {
-	if (state != nullptr)
-		state->Release();
+	if (mState != nullptr)
+		mState->Release();
 
-	V(DEVICE->CreateRasterizerState(&desc, &state));
+	V(DEVICE->CreateRasterizerState(&mDesc, &mState));
 }

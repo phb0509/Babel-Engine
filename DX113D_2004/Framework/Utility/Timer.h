@@ -5,29 +5,31 @@ class Timer : public Singleton<Timer>
 private:
 	friend class Singleton;
 
-	float timeScale;
-	float timeElapsed;
-
-	__int64 curTime;
-	__int64 lastTime;
-	__int64 periodFrequency;
-
-	int frameRate;
-	int frameCount;
-
-	float oneSecCount;
-	float runTime;
-
-	float lockFPS;
-
 	Timer();
 	~Timer();
+
 public:
 	void Update();
 
-	void SetLockFPS(float value) { lockFPS = value; }
+	int GetFPS() { return mFrameRate; }
+	float GetElapsedTime() { return mElapsedTime; }
+	float GetRunTime() { return mRunTime; }
 
-	int GetFPS() { return frameRate; }
-	float GetElapsedTime() { return timeElapsed; }
-	float GetRunTime() { return runTime; }
+	void SetLockFPS(float value) { mLockFPS = value; }
+
+private:
+	float mTimeScale;
+	float mElapsedTime;
+
+	__int64 mCurTime;
+	__int64 mLastTime;
+	__int64 mPeriodFrequency;
+
+	int mFrameRate;
+	int mFrameCount;
+
+	float mOneSecCount;
+	float mRunTime;
+
+	float mLockFPS;
 };

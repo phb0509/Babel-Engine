@@ -1,18 +1,27 @@
 #include "Framework.h"
 
-ModelMesh::ModelMesh()
+ModelMesh::ModelMesh():
+	mIndexCount(0),
+	mIndices(nullptr),
+	mMaterial(nullptr),
+	mMesh(nullptr),
+	mVertexCount(0),
+	mVertices(nullptr)
 {
 }
 
 ModelMesh::~ModelMesh()
 {
-	delete mMesh;
+	//delete mMesh;
+	//delete[] mVertices;
+	//delete[] mIndices;
 
-	delete[] mVertices;
-	delete[] mIndices;
+	GM->SafeDelete(mMesh);
+	GM->SafeDeleteArray(mVertices);
+	GM->SafeDeleteArray(mIndices);
 }
 
-void ModelMesh::CreateMesh()
+void ModelMesh::createMesh()
 {
 	mMesh = new Mesh(mVertices, sizeof(ModelVertex), mVertexCount,
 		mIndices, mIndexCount);

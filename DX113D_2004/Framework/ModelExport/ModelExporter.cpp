@@ -1,24 +1,30 @@
 #include "Framework.h"
 
-ModelExporter::ModelExporter(string selectedFilePath) : boneCount(0) // fileName만 ex) Mutant
+ModelExporter::ModelExporter(string selectedFilePath) : mBoneCount(0) // fileName만 ex) Mutant
 {
-	importer = new Assimp::Importer();
+	mImporter = new Assimp::Importer();
 	
-	scene = importer->ReadFile
+	mScene = mImporter->ReadFile
 	(
 		selectedFilePath,
 		aiProcess_ConvertToLeftHanded | 
 		aiProcessPreset_TargetRealtime_MaxQuality
 	); //FBX파일 리드.
 
-	const char* t = importer->GetErrorString();
+	const char* t = mImporter->GetErrorString();
 
-	assert(scene != nullptr);
+	assert(mScene != nullptr);
 }
 
 ModelExporter::~ModelExporter()
 {
-	delete importer;
+	GM->SafeDelete(mImporter);
+	GM->SafeDelete(mScene);
+
+	GM->SafeDeleteVector(mMaterials);
+	GM->SafeDeleteVector(mMeshes);
+	GM->SafeDeleteVector(mNodes);
+	GM->SafeDeleteVector(mBones);
 }
 
 void ModelExporter::ExportMaterial(string fileNameToCreate, string parentFolderName) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
@@ -31,8 +37,8 @@ void ModelExporter::ExportMaterial(string fileNameToCreate, string parentFolderN
 
 void ModelExporter::ExportMesh(string fileNameToCreate, string parentFolderName)
 {
-	ReadNode(scene->mRootNode, -1, -1);
-	ReadMesh(scene->mRootNode);
+	ReadNode(mScene->mRootNode, -1, -1);
+	ReadMesh(mScene->mRootNode);
 
 	string savePath = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".mesh";
 	WriteMesh(savePath);
@@ -40,9 +46,9 @@ void ModelExporter::ExportMesh(string fileNameToCreate, string parentFolderName)
 
 void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName) // 직접 작성한 파일이름, 폴더이름.
 {
-	for (UINT i = 0; i < scene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
+	for (UINT i = 0; i < mScene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
-		Clip* clip = ReadClip(scene->mAnimations[i]);
+		Clip* clip = ReadClip(mScene->mAnimations[i]);
 		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 뮤턴트폴더에 OnDamage.clip 생성.
 		WriteClip(clip, path);
 	}
@@ -50,9 +56,9 @@ void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName)
 
 void ModelExporter::ReadMaterial()
 {
-	for (UINT i = 0; i < scene->mNumMaterials; i++)
+	for (UINT i = 0; i < mScene->mNumMaterials; i++)
 	{
-		aiMaterial* srcMaterial = scene->mMaterials[i];
+		aiMaterial* srcMaterial = mScene->mMaterials[i];
 		MaterialData* material = new MaterialData();
 
 		material->name = srcMaterial->GetName().C_Str();
@@ -88,7 +94,7 @@ void ModelExporter::ReadMaterial()
 		material->normalMap = file.C_Str();
 		file.Clear();
 
-		materials.emplace_back(material);
+		mMaterials.emplace_back(material);
 	}
 }
 
@@ -103,7 +109,7 @@ void ModelExporter::WriteMaterial(string savePath)
 
 	string folder = GetDirectoryName(savePath);
 
-	for (MaterialData* material : materials)
+	for (MaterialData* material : mMaterials)
 	{
 		XmlElement* node = document->NewElement("Material");
 		root->LinkEndChild(node);
@@ -154,7 +160,7 @@ void ModelExporter::WriteMaterial(string savePath)
 
 		delete material;
 	}
-	materials.clear();
+	mMaterials.clear();
 
 	document->SaveFile(savePath.c_str());
 
@@ -167,7 +173,7 @@ string ModelExporter::CreateTexture(string savePath, string file)
 		return "";
 
 	string fileName = GetFileNameWithoutExtension(file) + ".png";
-	const aiTexture* texture = scene->GetEmbeddedTexture(file.c_str());
+	const aiTexture* texture = mScene->GetEmbeddedTexture(file.c_str());
 
 	string path = savePath + fileName;
 
@@ -208,9 +214,9 @@ void ModelExporter::ReadMesh(aiNode* node)
 		mesh->name = node->mName.C_Str();
 
 		UINT index = node->mMeshes[i];
-		aiMesh* srcMesh = scene->mMeshes[index];
+		aiMesh* srcMesh = mScene->mMeshes[index];
 
-		aiMaterial* material = scene->mMaterials[srcMesh->mMaterialIndex];
+		aiMaterial* material = mScene->mMaterials[srcMesh->mMaterialIndex];
 		mesh->materialName = material->GetName().C_Str();
 
 		UINT startVertex = mesh->vertices.size();
@@ -264,7 +270,7 @@ void ModelExporter::ReadMesh(aiNode* node)
 			}
 		}
 
-		meshes.emplace_back(mesh);
+		mMeshes.emplace_back(mesh);
 	}
 
 	for (UINT i = 0; i < node->mNumChildren; i++)
@@ -282,10 +288,10 @@ void ModelExporter::ReadNode(aiNode* node, int index, int parent)
 	matrix = XMMatrixTranspose(matrix);
 	XMStoreFloat4x4(&nodeData->transform, matrix);
 
-	nodes.emplace_back(nodeData);
+	mNodes.emplace_back(nodeData);
 
 	for (UINT i = 0; i < node->mNumChildren; i++)
-		ReadNode(node->mChildren[i], nodes.size(), index);
+		ReadNode(node->mChildren[i], mNodes.size(), index);
 }
 
 void ModelExporter::ReadBone(aiMesh* mesh, vector<VertexWeights>& vertexWeights)
@@ -295,11 +301,11 @@ void ModelExporter::ReadBone(aiMesh* mesh, vector<VertexWeights>& vertexWeights)
 		UINT boneIndex = 0;
 		string name = mesh->mBones[i]->mName.C_Str();
 
-		if (boneMap.count(name) == 0)
+		if (mBoneMap.count(name) == 0)
 		{
-			boneIndex = boneCount++;
+			boneIndex = mBoneCount++;
 
-			boneMap[name] = boneIndex;
+			mBoneMap[name] = boneIndex;
 
 			BoneData* boneData = new BoneData();
 			boneData->name = name;
@@ -308,11 +314,11 @@ void ModelExporter::ReadBone(aiMesh* mesh, vector<VertexWeights>& vertexWeights)
 			matrix = XMMatrixTranspose(matrix);
 			XMStoreFloat4x4(&boneData->offset, matrix);
 
-			bones.emplace_back(boneData);
+			mBones.emplace_back(boneData);
 		}
 		else
 		{
-			boneIndex = boneMap[name];
+			boneIndex = mBoneMap[name];
 		}
 
 		for (UINT j = 0; j < mesh->mBones[i]->mNumWeights; j++)
@@ -330,9 +336,9 @@ void ModelExporter::WriteMesh(string savePath)
 	BinaryWriter* w = new BinaryWriter(savePath);
 
 	savePath;
-	w->UInt(meshes.size());
+	w->UInt(mMeshes.size());
 
-	for (MeshData* mesh : meshes)
+	for (MeshData* mesh : mMeshes)
 	{
 		w->String(mesh->name);
 		w->String(mesh->materialName);
@@ -345,10 +351,10 @@ void ModelExporter::WriteMesh(string savePath)
 
 		delete mesh;
 	}
-	meshes.clear();
+	mMeshes.clear();
 
-	w->UInt(nodes.size());
-	for (NodeData* node : nodes)
+	w->UInt(mNodes.size());
+	for (NodeData* node : mNodes)
 	{
 		w->Int(node->index);
 		w->String(node->name);
@@ -357,10 +363,10 @@ void ModelExporter::WriteMesh(string savePath)
 
 		delete node;
 	}
-	nodes.clear();
+	mNodes.clear();
 
-	w->UInt(bones.size());
-	for (BoneData* bone : bones)
+	w->UInt(mBones.size());
+	for (BoneData* bone : mBones)
 	{
 		w->String(bone->name);
 		w->Int(bone->index);
@@ -368,7 +374,7 @@ void ModelExporter::WriteMesh(string savePath)
 
 		delete bone;
 	}
-	bones.clear();
+	mBones.clear();
 
 	w->CloseWriter();
 	delete w;
@@ -456,7 +462,7 @@ Clip* ModelExporter::ReadClip(aiAnimation* animation)
 		clipNodes.emplace_back(node); // 우리가 사용할 구조체에 저장.
 	}//Bone
 
-	ReadKeyFrame(clip, scene->mRootNode, clipNodes); // 재귀를 타면서 노드 쭉 내려가면서 키프레임 데이터에 쓴다.
+	ReadKeyFrame(clip, mScene->mRootNode, clipNodes); // 재귀를 타면서 노드 쭉 내려가면서 키프레임 데이터에 쓴다.
 
 	return clip;
 }

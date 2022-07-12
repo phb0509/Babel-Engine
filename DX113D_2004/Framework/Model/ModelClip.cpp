@@ -8,7 +8,9 @@ ModelClip::ModelClip()
 ModelClip::~ModelClip()
 {
 	for (auto frame : mKeyFrames)
-		delete frame.second;
+	{
+		GM->SafeDelete(frame.second);
+	}
 }
 
 KeyFrame* ModelClip::GetKeyFrame(string name)

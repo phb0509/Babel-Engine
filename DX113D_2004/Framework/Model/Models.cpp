@@ -13,11 +13,9 @@ Models::Models() :
 
 Models::~Models()
 {
-    for (Transform* transform : mTransforms)
-        delete transform;
-
-    delete mInstanceBuffer;
-    delete mCameraForFrustumCulling;
+    GM->SafeDeleteVector(mTransforms);
+    GM->SafeDelete(mInstanceBuffer);
+    GM->SafeDelete(mCameraForFrustumCulling);
 }
 
 void Models::Update()

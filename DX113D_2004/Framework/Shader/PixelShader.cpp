@@ -8,20 +8,20 @@ PixelShader::PixelShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "ps_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreatePixelShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreatePixelShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
-	blob->Release();
+	mBlob->Release();
 }
 
 PixelShader::~PixelShader()
 {
-	shader->Release();
+	mShader->Release();
 }
 
 void PixelShader::Set()
 {
-	DEVICECONTEXT->PSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->PSSetShader(mShader, nullptr, 0);
 }

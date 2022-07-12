@@ -2,9 +2,6 @@
 
 class BinaryReader
 {
-private:
-	HANDLE file;
-	DWORD size;
 
 public:
 	BinaryReader(wstring filePath);
@@ -17,6 +14,10 @@ public:
 	string String();
 	XMFLOAT4X4 Float4x4();
 	void Byte(void** data, UINT dataSize);
-
 	void CloseReader();
+
+private:
+	HANDLE mFile;
+	DWORD mSize;
+
 };

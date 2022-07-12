@@ -1,9 +1,9 @@
 #include "Framework.h"
 
-BinaryReader::BinaryReader(wstring filePath)
-    : size(0)
+BinaryReader::BinaryReader(wstring filePath): 
+    mSize(0)
 {
-    file = CreateFile(
+    mFile = CreateFile(
         filePath.c_str(), 
         GENERIC_READ,
         FILE_SHARE_READ,
@@ -11,14 +11,12 @@ BinaryReader::BinaryReader(wstring filePath)
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL, 
         nullptr);
-
-    
 }
 
 BinaryReader::BinaryReader(string filePath)
-    : size(0)
+    : mSize(0)
 {
-    file = CreateFileA(
+    mFile = CreateFileA(
         filePath.c_str(), 
         GENERIC_READ,
         FILE_SHARE_READ, 
@@ -26,32 +24,30 @@ BinaryReader::BinaryReader(string filePath)
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         nullptr);
-
 }
 
 BinaryReader::~BinaryReader()
 {
-   
 }
 
 int BinaryReader::Int()
 {
     int temp;
-    ReadFile(file, &temp, sizeof(int), &size, nullptr);
+    ReadFile(mFile, &temp, sizeof(int), &mSize, nullptr);
     return temp;
 }
 
 UINT BinaryReader::UInt()
 {
     UINT temp;
-    ReadFile(file, &temp, sizeof(UINT), &size, nullptr);
+    ReadFile(mFile, &temp, sizeof(UINT), &mSize, nullptr);
     return temp;
 }
 
 float BinaryReader::Float()
 {
     float temp;
-    ReadFile(file, &temp, sizeof(float), &size, nullptr);
+    ReadFile(mFile, &temp, sizeof(float), &mSize, nullptr);
     return temp;
 }
 
@@ -60,7 +56,7 @@ string BinaryReader::String()
     UINT size = UInt();
 
     char* temp = new char[size + 1];
-    ReadFile(file, temp, sizeof(char) * size, &this->size, nullptr);
+    ReadFile(mFile, temp, sizeof(char) * size, &this->mSize, nullptr);
     temp[size] = '\0';
 
     return temp;
@@ -69,17 +65,17 @@ string BinaryReader::String()
 XMFLOAT4X4 BinaryReader::Float4x4()
 {
     XMFLOAT4X4 temp;
-    ReadFile(file, &temp, sizeof(XMFLOAT4X4), &size, nullptr);    
+    ReadFile(mFile, &temp, sizeof(XMFLOAT4X4), &mSize, nullptr);    
 
     return temp;
 }
 
 void BinaryReader::Byte(void** data, UINT dataSize)
 {
-    ReadFile(file, *data, dataSize, &size, nullptr);
+    ReadFile(mFile, *data, dataSize, &mSize, nullptr);
 }
 
 void BinaryReader::CloseReader()
 {
-    CloseHandle(file);
+    CloseHandle(mFile);
 }

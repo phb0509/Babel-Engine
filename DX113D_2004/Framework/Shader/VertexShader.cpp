@@ -8,42 +8,42 @@ VertexShader::VertexShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "vs_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreateVertexShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreateVertexShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
 	CreateInputLayout();
 
-	blob->Release();
+	mBlob->Release();
 }
 
 VertexShader::~VertexShader()
 {
-	shader->Release();
-	inputLayout->Release();	
+	mShader->Release();
+	mInputLayout->Release();	
 }
 
 void VertexShader::Set()
 {
-	DEVICECONTEXT->IASetInputLayout(inputLayout);
-	DEVICECONTEXT->VSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->IASetInputLayout(mInputLayout);
+	DEVICECONTEXT->VSSetShader(mShader, nullptr, 0);
 }
 
 void VertexShader::CreateInputLayout()
 {
-	D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(),
-		IID_ID3D11ShaderReflection, (void**)&reflection);
+	D3DReflect(mBlob->GetBufferPointer(), mBlob->GetBufferSize(),
+		IID_ID3D11ShaderReflection, (void**)&mReflection);
 
 	D3D11_SHADER_DESC shaderDesc;
-	reflection->GetDesc(&shaderDesc);
+	mReflection->GetDesc(&shaderDesc);
 
 	vector<D3D11_INPUT_ELEMENT_DESC> inputLayouts;
 
 	for (UINT i = 0; i < shaderDesc.InputParameters; i++)
 	{
 		D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
-		reflection->GetInputParameterDesc(i, &paramDesc);
+		mReflection->GetInputParameterDesc(i, &paramDesc);
 
 		D3D11_INPUT_ELEMENT_DESC elementDesc;
 		elementDesc.SemanticName = paramDesc.SemanticName;
@@ -108,7 +108,7 @@ void VertexShader::CreateInputLayout()
 	}
 
 	V(DEVICE->CreateInputLayout(inputLayouts.data(), (UINT)inputLayouts.size(),
-		blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout));
+		mBlob->GetBufferPointer(), mBlob->GetBufferSize(), &mInputLayout));
 	
-	reflection->Release();
+	mReflection->Release();
 }

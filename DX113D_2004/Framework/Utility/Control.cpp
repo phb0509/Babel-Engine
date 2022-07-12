@@ -1,7 +1,10 @@
 #include "Framework.h"
 
-Control::Control()
-	: curState{}, oldState{}, mapState{}, wheelValue(0)
+Control::Control(): 
+	curState{},
+	oldState{}, 
+	mapState{}, 
+	wheelValue(0)
 {		
 }
 

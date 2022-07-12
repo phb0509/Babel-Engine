@@ -8,20 +8,20 @@ ComputeShader::ComputeShader(wstring file, string entry)
 
 	V(D3DCompileFromFile(path.c_str(), nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, entry.c_str(), "cs_5_0",
-		flags, 0, &blob, nullptr));
+		flags, 0, &mBlob, nullptr));
 
-	V(DEVICE->CreateComputeShader(blob->GetBufferPointer(),
-		blob->GetBufferSize(), nullptr, &shader));
+	V(DEVICE->CreateComputeShader(mBlob->GetBufferPointer(),
+		mBlob->GetBufferSize(), nullptr, &mShader));
 
-	blob->Release();
+	mBlob->Release();
 }
 
 ComputeShader::~ComputeShader()
 {
-	shader->Release();
+	mShader->Release();
 }
 
 void ComputeShader::Set()
 {
-	DEVICECONTEXT->CSSetShader(shader, nullptr, 0);
+	DEVICECONTEXT->CSSetShader(mShader, nullptr, 0);
 }

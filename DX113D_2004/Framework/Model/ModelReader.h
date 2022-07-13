@@ -33,6 +33,9 @@ private:
 	void deleteDatas();
 
 protected:
+	map<string, int> mNodeLookupTable;
+
+protected:
 	map<string, Material*> mMaterials;
 	vector<ModelMesh*> mMeshes;
 	vector<NodeData*> mNodes;

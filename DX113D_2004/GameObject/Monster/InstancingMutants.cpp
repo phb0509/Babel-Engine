@@ -46,7 +46,9 @@ void InstancingMutants::Update()
 
 	updateCompletedAnimIndices(false);
 	updateStartedAnimIndices(false);
-	ModelAnimators::Update(); // Animation Tweening and Frustum Culling        //  여기서 애니메이션끝난 인덱스들 업데이트.
+
+	ModelAnimators::Update(); // Animation Tweening and Frustum Culling       
+
 	updateCompletedAnimIndices(true);
 	updateStartedAnimIndices(true);
 
@@ -128,7 +130,7 @@ void InstancingMutants::setColliders()
 		for (int j = 0; j < mInstanceColliderDatas[i].colliders.size(); j++) // 뮤턴트에 셋팅된 컬라이더개수.
 		{
 			string nodeName = mInstanceColliderDatas[i].colliders[j].nodeName;
-			int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
+			int nodeIndex = mNodeLookupTable[nodeName]; // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
 			mInstanceColliderDatas[i].colliders[j].matrix = GetTransformByNode(i,nodeIndex) * mInstanceObjects[i]->GetWorldMatrixValue(); // 노드의 월드행렬. ex) LeftHand
 			mInstanceColliderDatas[i].colliders[j].collider->SetParent(&mInstanceColliderDatas[i].colliders[j].matrix);
 			mInstanceColliderDatas[i].colliders[j].collider->Update();

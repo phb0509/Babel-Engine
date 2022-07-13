@@ -325,33 +325,16 @@ void ColliderSettingScene::renderGizmos()
 
 		ImGuizmo::DecomposeMatrixToComponents(localFloatArray, localTranslation, localRotation, localScale);
 
-
-		//ImGuizmo::RecomposeMatrixFromComponents(worldTranslation, worldRotation, worldScale, objectTransformMatrix);
-
 		mCurrentPickedCollider->mPosition.x = localTranslation[0];
 		mCurrentPickedCollider->mPosition.y = localTranslation[1];
 		mCurrentPickedCollider->mPosition.z = localTranslation[2];
 							
-		//deltaRotation[0] = localRotation[0] - mCurrentPickedCollider->mRotation.x;
-		//deltaRotation[1] = localRotation[1] - mCurrentPickedCollider->mRotation.y;
-		//deltaRotation[2] = localRotation[2] - mCurrentPickedCollider->mRotation.z;
-
-		//mCurrentPickedCollider->mRotation.x = localRotation[0];
-		//mCurrentPickedCollider->mRotation.y = localRotation[1];
-		//mCurrentPickedCollider->mRotation.z = localRotation[2];
-
 		Vector3 radianRotation = Vector3(XMConvertToRadians(localRotation[0]), XMConvertToRadians(localRotation[1]), XMConvertToRadians(localRotation[2]));
 		ImGui::InputFloat3("Local Translation", localTranslation);
 		ImGui::InputFloat3("Local Rotation", (float*)&radianRotation);
 		ImGui::InputFloat3("Local Scale", localScale);
 
 		mCurrentPickedCollider->mRotation = radianRotation;
-
-		//mCube->mRotation = Vector3(XMConvertToRadians(tempRotation[0]), XMConvertToRadians(tempRotation[1]), XMConvertToRadians(tempRotation[2]));
-
-		//mCurrentPickedCollider->mRotation.x += deltaRotation[0];
-		//mCurrentPickedCollider->mRotation.y += deltaRotation[1];
-		//mCurrentPickedCollider->mRotation.z += deltaRotation[2];
 
 		mCurrentPickedCollider->mScale.x = localScale[0];
 		mCurrentPickedCollider->mScale.y = localScale[1];
@@ -629,6 +612,7 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 			if (ImGui::Button("Create Collider"))
 			{
 				if (mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index]) {} // 이미 만들어져있으면 넘기기
+
 				else // 안만들어져있으면 만들어주기.
 				{
 					mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index] = true;

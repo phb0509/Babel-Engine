@@ -358,7 +358,7 @@ void Player::setColliders()
 	for (int i = 0; i < mColliders.size(); i++)
 	{
 		string nodeName = mColliders[i].nodeName;
-		int nodeIndex = GetNodeIndex(nodeName); // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
+		int nodeIndex = mNodeLookupTable[nodeName]; // 반복문돌려서찾는건데 고정값이니까 룩업테이블 따로. 값있으면 바로 쓰고,없으면 그떄 get하면되니까.
 		mColliders[i].matrix = GetTransformByNode(nodeIndex) * this->GetWorldMatrixValue(); // 해당 노드의 월드매트릭스.
 		mColliders[i].collider->SetParent(&mColliders[i].matrix); // 컬라이더의 부모를 노드의 월드매트릭스로 지정.
 		mColliders[i].collider->Update();

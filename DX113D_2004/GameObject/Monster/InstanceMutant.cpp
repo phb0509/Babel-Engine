@@ -25,11 +25,11 @@ InstanceMutant::InstanceMutant():
 
 InstanceMutant::~InstanceMutant()
 {
-	delete mPatrolState;
-	delete mStalkingState;
-	delete mAttackState;
-	delete mOnDamageState;
-	delete mDieState;
+	GM->SafeDelete(mPatrolState);
+	GM->SafeDelete(mStalkingState);
+	GM->SafeDelete(mAttackState);
+	GM->SafeDelete(mOnDamageState);
+	GM->SafeDelete(mDieState);
 }
 
 void InstanceMutant::Update()

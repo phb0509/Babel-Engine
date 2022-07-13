@@ -193,6 +193,7 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 		node->transform = r->Float4x4();
 
 		mNodes.emplace_back(node);
+		mNodeLookupTable[node->name] = node->index;
 	}
 
 	count = r->UInt();
@@ -209,6 +210,8 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 		mBones.emplace_back(bone);
 	}
+
+
 
 	delete r;
 }

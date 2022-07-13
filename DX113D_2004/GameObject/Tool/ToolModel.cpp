@@ -40,12 +40,12 @@ void ToolModel::PostRender()
 
 }
 
-void ToolModel::SetAnimation(int _clipIndex)
+void ToolModel::SetAnimation(int _clipIndex, int speed, int takeTime)
 {
 	if (mClipIndex != _clipIndex)
 	{
 		mClipIndex = _clipIndex;
-		PlayClip(mClipIndex);
+		PlayClip(mClipIndex, speed, takeTime);
 	}
 }
 

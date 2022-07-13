@@ -8,7 +8,8 @@ ModelAnimator::ModelAnimator() :
 	mNodeTransform(nullptr),
 	mNodeTransformMatrices(nullptr),
 	mbIsPlayedAnimation(true),
-	mbIsEndCurrentAnimation(false)
+	mbIsEndCurrentAnimation(false),
+	mCurrentClipIndex(-1)
 {
 	mFrameBuffer = new FrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
@@ -93,74 +94,74 @@ void ModelAnimator::Update()
 			FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
 
 			{ // 현재 클립.
-				FrameBuffer::KeyFrameDesc& desc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
-				ModelClip* clip = mClips[desc.clip]; // desc.clip == clipIndex
+				FrameBuffer::KeyFrameDesc& curDesc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
+				ModelClip* clip = mClips[curDesc.clip]; // desc.clip == clipIndex
 
-				float time = 1.0f / clip->mFramePerSecond / desc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로 다운받음.
-				desc.runningTime += DELTA;
+				float time = 1.0f / clip->mFramePerSecond / curDesc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로 다운받음.
+				curDesc.runningTime += DELTA;
 
-				if (desc.time >= 1.0f)
+				if (curDesc.time >= 1.0f)
 				{
-					if (desc.curFrame + desc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
+					if (curDesc.curFrame + curDesc.time >= clip->mFrameCount) // 현재 클립재생이 끝나면 
 					{
-						if (mEndEvent.count(desc.clip) > 0) // 엔드이벤트가 있으면
+						if (mEndEvent.count(curDesc.clip) > 0) // 엔드이벤트가 있으면
 						{
-							mEndEvent[desc.clip]();
+							mEndEvent[curDesc.clip]();
 						}
 
-						if (mEndParamEvent.count(desc.clip) > 0)
+						if (mEndParamEvent.count(curDesc.clip) > 0)
 						{
-							mEndParamEvent[desc.clip](mParam[desc.clip]);
+							mEndParamEvent[curDesc.clip](mParam[curDesc.clip]);
 						}
 					}
 
-					desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
-					desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
-					desc.runningTime = 0.0f;
+					curDesc.curFrame = (curDesc.curFrame + 1) % clip->mFrameCount; // 현재 프레임
+					curDesc.nextFrame = (curDesc.curFrame + 1) % clip->mFrameCount; // 다음 프레임.
+					curDesc.runningTime = 0.0f;
 
-					mCurrentClipFrame = desc.curFrame; // 씬에서 ImGui로 렌더하려고 따로 저장해놓는거.
+					mCurrentClipFrame = curDesc.curFrame; // 씬에서 ImGui로 렌더하려고 따로 저장해놓는거.
 					mCurrentClipFrameCount = clip->mFrameCount;
 				}
 
-				desc.time = desc.runningTime / time;
+				curDesc.time = curDesc.runningTime / time;
 			}
 
 			{ // 다음 클립
-				FrameBuffer::KeyFrameDesc& desc = tweenDesc.next;
+				FrameBuffer::KeyFrameDesc& nextDesc = tweenDesc.next;
 
-				if (desc.clip > -1) // 다음클립이 있으면?
+				if (nextDesc.clip > -1) // 다음클립이 있으면?
 				{
-					ModelClip* clip = mClips[desc.clip];
+					ModelClip* clip = mClips[nextDesc.clip];
 
 					tweenDesc.runningTime += DELTA;
 					tweenDesc.tweenTime = tweenDesc.runningTime / tweenDesc.takeTime;
 
 					if (tweenDesc.tweenTime >= 1.0f)
 					{
-						tweenDesc.cur = desc;
+						tweenDesc.cur = nextDesc;
 						tweenDesc.runningTime = 0.0f;
 						tweenDesc.tweenTime = 0.0f;
 
-						desc.runningTime = 0.0f;
-						desc.curFrame = 0;
-						desc.nextFrame = 0;
-						desc.time = 0.0f;
-						desc.clip = -1;
+						nextDesc.runningTime = 0.0f;
+						nextDesc.curFrame = 0;
+						nextDesc.nextFrame = 0;
+						nextDesc.time = 0.0f;
+						nextDesc.clip = -1;
 					}
 
 					else
 					{
-						float time = 1.0f / clip->mFramePerSecond / desc.speed;
-						desc.runningTime += DELTA;
+						float time = 1.0f / clip->mFramePerSecond / nextDesc.speed;
+						nextDesc.runningTime += DELTA;
 
-						if (desc.time >= 1.0f)
+						if (nextDesc.time >= 1.0f)
 						{
-							desc.curFrame = (desc.curFrame + 1) % clip->mFrameCount;
-							desc.nextFrame = (desc.curFrame + 1) % clip->mFrameCount;
-							desc.runningTime = 0.0f;
+							nextDesc.curFrame = (nextDesc.curFrame + 1) % clip->mFrameCount;
+							nextDesc.nextFrame = (nextDesc.curFrame + 1) % clip->mFrameCount;
+							nextDesc.runningTime = 0.0f;
 						}
 
-						desc.time = desc.runningTime / time;
+						nextDesc.time = nextDesc.runningTime / time;
 					}
 				}
 			}

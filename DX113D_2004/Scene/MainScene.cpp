@@ -156,7 +156,7 @@ void MainScene::PreRender()
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
-	mInstancingMutants->SetShader(L"InstancingGBuffer");
+	mInstancingMutants->SetShader(L"InstancingMutantsGBuffer");
 	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 
 	mTerrain->Render();

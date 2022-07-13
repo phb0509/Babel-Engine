@@ -10,7 +10,7 @@ public:
 	void Update();
 	void Render();
 	void PostRender();
-	void SetAnimation(int index);
+	void SetAnimation(int index, int speed = 1.0f, int takeTime = 0.2f);
 
 	void SetIsSkinnedMesh(bool isSkinnedMesh) { mbIsSkinnedMesh = isSkinnedMesh; }
 	bool GetIsSkinnedMesh() { return mbIsSkinnedMesh; }

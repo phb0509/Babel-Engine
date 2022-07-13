@@ -719,13 +719,10 @@ void ColliderSettingScene::showColliderEditorWindow()
 				ImGui::InputFloat3(globalRotationLabel.c_str(), (float*)&collider->mGlobalRotation);
 				ImGui::InputFloat3(globalScaleLabel.c_str(), (float*)&collider->mGlobalScale);
 
-				//if (mCurrentPickedCollider == collider) // 피킹된 컬라이라면
-				//{
-				//	updatePickedColliderMatrix(); // 바로 업데이트해줘야 기즈모트랜스폼에 반영됨.
-				//}
-
 				SpacingRepeatedly(2);
+
 				ImGui::Separator();
+
 				SpacingRepeatedly(2);
 			}
 		}
@@ -1111,10 +1108,11 @@ void ColliderSettingScene::showModelInspector()
 				if (ImGui::Selectable(buf, selected == i))
 				{
 					selected = i;
-					//mCurrentModel->PlayClip(i, 1.0f, 0.2f);
-					mCurrentModel->PlayClip(i, mCurrentClipSpeed, mCurrentClipSpeed);
+
+					mCurrentModel->PlayClip(i, mCurrentClipSpeed, mCurrentClipTakeTime);
 				}
 			}
+
 			ImGui::TreePop();
 		}
 
@@ -1136,7 +1134,6 @@ void ColliderSettingScene::showModelInspector()
 					if (GetExtension(mDraggedFileName) == "clip")
 					{
 						mCurrentModel->SetClip(mCurrentModel->GetName(), mDraggedFileName);
-						int a = 0;
 					}
 				}
 				ImGui::EndDragDropTarget();
@@ -1162,20 +1159,20 @@ void ColliderSettingScene::showModelInspector()
 		SpacingRepeatedly(2);
 
 		static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
-		//int frame = mCurrentModel->GetCurrentClipFrame();
-		//int t = mCurrentModel->GetFrameBuffer()->data.tweenDesc[0].cur.curFrame;
 
 		ImGui::SliderInt("Animation Frame", &mCurrentModel->GetFrameBuffer()->data.tweenDesc[0].cur.curFrame, 0, mCurrentModel->GetCurrentClipFrameCount(), "%d", flags);
 
 		SpacingRepeatedly(2);
 
-		//ImGui::SliderFloat(  "Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
+		ImGui::SliderFloat("Animation Speed", &mCurrentClipSpeed, 0, 10, "%f", flags);
+		mCurrentModel->SetCurClipSpeed(mCurrentClipSpeed);
 
-		//SpacingRepeatedly(2);
+		SpacingRepeatedly(2);
 
-		//ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
+		ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
+		mCurrentModel->SetClipTakeTime(mCurrentClipTakeTime);
 
-		//SpacingRepeatedly(2);
+		SpacingRepeatedly(2);
 	}
 
 	SpacingRepeatedly(2);

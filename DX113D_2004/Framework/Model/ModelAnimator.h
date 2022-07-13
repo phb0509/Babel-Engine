@@ -15,23 +15,28 @@ public:
 
 	bool ReadClip(string modelName, string clipFileName);
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
+
+
+	Matrix GetTransformByNode(int nodeIndex);
+	Matrix GetTransformByNode(UINT instance, int nodeIndex);
+	const vector<string>& GetClipNames() { return mClipNames; }
+	const vector<ModelClip*>& GetClips() { return mClips; }
+	int GetCurrentClipIndex() { return mCurrentClipIndex; }
+	int GetCurrentClipFrame() { return mCurrentClipFrame; }
+	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
+	bool GetCurrentAnimationEnd() { return mbIsEndCurrentAnimation; }
+	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
+
+	void SetCurClipSpeed(int speed) { mFrameBuffer->data.tweenDesc[0].cur.speed = speed; }
+	void SetClipTakeTime(int takeTime) { mFrameBuffer->data.tweenDesc[0].takeTime = takeTime; }
 	void SetEndEvent(UINT clip, CallBack Event) { mEndEvent[clip] = Event; }
 	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }
 	void SetParam(UINT clip, int value) { mParam[clip] = value; }
 
-	Matrix GetTransformByNode(int nodeIndex);
-	Matrix GetTransformByNode(UINT instance, int nodeIndex);
-	
-	const vector<string>& GetClipNames() { return mClipNames; }
-	const vector<ModelClip*>& GetClips() { return mClips; }
-
-	int GetCurrentClipFrame() { return mCurrentClipFrame; }
-	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
-	bool GetCurrentAnimationEnd() { return mbIsEndCurrentAnimation; }
 
 	void PlayAnimation() { mbIsPlayedAnimation = true; }
 	void StopAnimation() { mbIsPlayedAnimation = false; }
-	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
+
 
 	// Model Function
 	void MakeBoneTransform();
@@ -60,7 +65,8 @@ protected:
 	map<UINT, CallBack> mEndEvent;
 	map<UINT, CallBackParam> mEndParamEvent;
 	map<UINT, int> mParam;
-	
+
+	int mCurrentClipIndex;
 	int mCurrentClipFrame;
 	int mCurrentClipFrameCount;
 	bool mbIsPlayedAnimation;

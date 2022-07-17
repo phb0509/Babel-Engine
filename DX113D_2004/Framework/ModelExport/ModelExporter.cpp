@@ -18,8 +18,8 @@ ModelExporter::ModelExporter(string selectedFilePath) : mBoneCount(0) // fileNam
 
 ModelExporter::~ModelExporter()
 {
-	GM->SafeDelete(mImporter);
-	GM->SafeDelete(mScene);
+	//GM->SafeDelete(mImporter);
+	//GM->SafeDelete(mScene);
 
 	GM->SafeDeleteVector(mMaterials);
 	GM->SafeDeleteVector(mMeshes);
@@ -49,7 +49,7 @@ void ModelExporter::ExportClip(string fileNameToCreate, string parentFolderName)
 	for (UINT i = 0; i < mScene->mNumAnimations; i++) // 보통 애니메이션 하나씩 따로하니까 값은 1이긴함.
 	{
 		Clip* clip = ReadClip(mScene->mAnimations[i]);
-		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 뮤턴트폴더에 OnDamage.clip 생성.
+		string path = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".clip"; // 새로 생성한 폴더에 name.clip으로 저장.
 		WriteClip(clip, path);
 	}
 }
@@ -529,7 +529,6 @@ void ModelExporter::WriteClip(Clip* clip, string savePath)
 	for (KeyFrame* keyFrame : clip->keyFrame)
 	{
 		w->String(keyFrame->boneName);
-
 		w->UInt(keyFrame->transforms.size());
 		w->Byte(keyFrame->transforms.data(), sizeof(KeyTransform) * keyFrame->transforms.size());
 

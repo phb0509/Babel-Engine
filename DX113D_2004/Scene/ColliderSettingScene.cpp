@@ -788,7 +788,7 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 		SpacingRepeatedly(3);
 
-		if (ImGui::Button("Select File..."))
+		if (ImGui::Button("Select File...")) // Open FileDialog.
 		{
 			mSelectedFilePath = OpenFileDialog();
 		}
@@ -1172,6 +1172,8 @@ void ColliderSettingScene::showModelInspector()
 		ImGui::SliderFloat("Animation TakeTime", &mCurrentClipTakeTime, 0, 10, "%f", flags);
 		mCurrentModel->SetClipTakeTime(mCurrentClipTakeTime);
 
+		/*mCurrentClipSpeed = 1.0f;
+		mCurrentClipTakeTime = 0.2f;*/
 		SpacingRepeatedly(2);
 	}
 

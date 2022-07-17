@@ -118,7 +118,7 @@ void Player::updateCamera()
 		moveTargetCameraInWorld();
 	}
 }
-// Player
+
 void Player::moveInTargetMode() // Player
 {
 	if (mbIsNormalAttack) return;

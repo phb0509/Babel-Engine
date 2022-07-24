@@ -38,7 +38,7 @@ void UIImage::Update()
 void UIImage::Render() // PostRender에다가 한단말이지
 {
 	UpdateWorld();
-	mMesh->IASet();
+	mMesh->SetIA();
 	SetWorldBuffer(); // 0번에
 	mViewBuffer->SetVSBuffer(1);
 	mProjectionBuffer->SetVSBuffer(2);

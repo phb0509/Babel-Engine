@@ -15,8 +15,6 @@ private:
 	void moveWorldCamera();
 private:
 	TerrainEditor* mTerrainEditor = nullptr;
-	SkyBox* skyBox = nullptr;
-	Cube* cube = nullptr;
 
 	RasterizerState* mRasterizerState = nullptr;
 	Camera* mWorldCamera;

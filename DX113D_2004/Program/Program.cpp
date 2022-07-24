@@ -1,24 +1,18 @@
 #include "Framework.h"
 
 
-
-#include "Scene/ModelExportScene.h"
-#include "Scene/TessellationScene.h"
-#include "Scene/TerrainLODScene.h"
-#include "Scene/DeferredRenderingScene.h"
 #include "Scene/MainScene.h"
 #include "Scene/ColliderSettingScene.h"
 #include "Scene/MapToolScene.h"
-#include "Scene/ColorPickingScene.h"
-#include "Scene/TestScene.h";
+
 
 Program::Program()
 {
 	Create();
 
-	SceneManager::Get()->Add("start", new MainScene());
+	//SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
-	//SceneManager::Get()->Add("start", new ColliderSettingScene());
+	SceneManager::Get()->Add("start", new ColliderSettingScene());
 
 	SceneManager::Get()->AddScene("start");
 }

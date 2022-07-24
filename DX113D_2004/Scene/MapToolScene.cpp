@@ -19,9 +19,9 @@ MapToolScene::MapToolScene()
 
 MapToolScene::~MapToolScene()
 {
-	delete mTerrainEditor;
-	delete mRasterizerState;
-	//delete skyBox;
+	GM->SafeDelete(mTerrainEditor);
+	GM->SafeDelete(mRasterizerState);
+	GM->SafeDelete(mWorldCamera);
 }
 
 void MapToolScene::Update()

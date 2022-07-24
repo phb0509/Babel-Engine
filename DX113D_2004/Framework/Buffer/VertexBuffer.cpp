@@ -35,7 +35,7 @@ VertexBuffer::~VertexBuffer()
 	mBuffer->Release();
 }
 
-void VertexBuffer::IASet(UINT slot)
+void VertexBuffer::SetIA(UINT slot)
 {
 	DEVICECONTEXT->IASetVertexBuffers(slot, 1, &mBuffer, &mStride, &mOffset);
 }

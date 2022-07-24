@@ -51,7 +51,7 @@ void Water::SetRefraction()
 
 void Water::Render()
 {
-	mesh->IASet();
+	mesh->SetIA();
 
 	SetWorldBuffer();
 

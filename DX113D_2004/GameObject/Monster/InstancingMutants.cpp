@@ -75,7 +75,7 @@ void InstancingMutants::RenderDebugMode()
 {
 	if (DM->GetIsDebugMode())
 	{
-		for (Monster* monster : mInstanceObjects)
+		/*for (Monster* monster : mInstanceObjects)
 		{
 			Vector3 screenPos = WorldToScreen(monster->GetGlobalPosition(),mCurMainCamera);
 
@@ -88,7 +88,7 @@ void InstancingMutants::RenderDebugMode()
 
 			DirectWrite::Get()->RenderText(ToWString(monster->GetTag()), rect);
 			int a = 0;
-		}
+		}*/
 	}
 }
 

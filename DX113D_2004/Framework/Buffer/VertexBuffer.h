@@ -6,7 +6,7 @@ public:
 	VertexBuffer(void* data, UINT stride, UINT count, bool isCPUWrite = false);	
 	~VertexBuffer();
 
-	void IASet(UINT slot = 0);
+	void SetIA(UINT slot = 0);
 
 	void Update(void* data, UINT count);
 	void Map(void* data,  UINT dataSize);

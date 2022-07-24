@@ -143,8 +143,10 @@ Vector3 AStar::FindCloseNodePosition(Vector3 pos)
 	for (UINT i = 0; i < mNodeMap.size(); i++)
 	{
 		if (mNodeMap[i]->mState == Node::OBSTACLE)
+		{
 			continue;
-
+		}
+			
 		float distance = Distance(pos, mNodeMap[i]->mPosition);
 
 		if (distance < minDistance)

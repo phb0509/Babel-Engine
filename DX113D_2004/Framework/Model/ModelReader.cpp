@@ -309,7 +309,6 @@ void ModelReader::SetBox(Vector3* minBox, Vector3* maxBox)
 	}
 }
 
-
 void ModelReader::deleteDatas()
 {
 	for (int i = 0; i < mMeshes.size(); i++)
@@ -360,9 +359,4 @@ void ModelReader::SetMaterial(string folderName, string fileName)
 			mMeshes[i]->mMaterial = mMaterials[mMeshes[i]->mMaterialName];
 		}
 	}
-	
-	mMeshes;
-	mMaterials;
-	int a = 0;
-
 }

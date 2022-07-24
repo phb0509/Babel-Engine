@@ -128,7 +128,7 @@ void ModelAnimators::Render()
 	mFrameBuffer->SetVSBuffer(4);
 	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // Set TransformTexture
 
-	mInstanceBuffer->IASet(1);
+	mInstanceBuffer->SetIA(1);
 
 	MeshRender(mDrawCount);
 }

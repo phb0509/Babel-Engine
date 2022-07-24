@@ -14,7 +14,7 @@ MutantPatrolState::~MutantPatrolState()
 {
 }
 
-void MutantPatrolState::Initialize()
+void MutantPatrolState::initialize()
 {
 	mPatrolRandomNum = 0.0f;
 	mbIsPatrolMove = false;
@@ -24,15 +24,10 @@ void MutantPatrolState::Initialize()
 	mPatrolDestPos = { 0.0f,0.0f,0.0f };
 }
 
-void MutantPatrolState::SetPatrolTargetPoint(Vector3& patrolTargetPoint)
-{
-
-}
-
 void MutantPatrolState::Enter(Monster* monster)
 {
 	monster->SetFSMState(static_cast<int>(eMutantFSMStates::Patrol));
-	Initialize();
+	initialize();
 }
 
 void MutantPatrolState::Execute(Monster* monster)
@@ -40,6 +35,12 @@ void MutantPatrolState::Execute(Monster* monster)
 	mPlayer = GM->Get()->GetPlayer();
 	mMaxPatrolWidth = monster->GetTerrain()->GetSize().x - 1;
 	mMaxPatrolHeight = monster->GetTerrain()->GetSize().y - 1;
+
+	//범위 안 플레이어 있는지 체크.
+	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
+	{
+		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::Stalk)));
+	}
 
 	if (!mbIsPatrolMove) // 무브 끝난 이후 체크. 
 	{
@@ -79,9 +80,6 @@ void MutantPatrolState::Execute(Monster* monster)
 		{
 			mPatrolDestPos.z = patrolRangeCorrectionValue;
 		}
-
-		//mbIsSetPatrolDest = false;
-		//mbIsPatrolMove = true;
 
 		mPatrolDestPos = monster->GetAStar()->FindCloseNodePosition(mPatrolDestPos); // 목표좌표에서 가장 가까운 노드위치 리턴.그런데 굳이??
 
@@ -127,14 +125,9 @@ void MutantPatrolState::Execute(Monster* monster)
 			monster->SetAnimation(static_cast<int>(eMutantAnimationStates::Idle));
 		}
 	}
-
-	//범위 안 플레이어 있는지 체크.
-	if (monster->GetDistanceToPlayer() <= monster->GetPlayerDetectRange()) // 플레이어가 거리 안에 있으면.
-	{
-		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::Stalk)));
-	}
 }
 
 void MutantPatrolState::Exit(Monster* mMonster)
 {
+	initialize();
 }

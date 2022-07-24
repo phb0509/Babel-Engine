@@ -50,7 +50,7 @@ void TerrainLOD::Update()
 
 void TerrainLOD::Render()
 {
-    mMesh->IASet(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+    mMesh->SetIA(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 
     mWorldBuffer->SetHSBuffer(0);
     mWorldBuffer->SetDSBuffer(0);

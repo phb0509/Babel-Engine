@@ -76,7 +76,7 @@ void QuadTreeTerrain::RenderNode(Node* node)
     if (count != 0)
         return;
 
-    node->mesh->IASet();
+    node->mesh->SetIA();
     
     mWorldBuffer->SetVSBuffer(0);
     material->Set();

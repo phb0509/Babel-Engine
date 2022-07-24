@@ -389,6 +389,7 @@ Clip* ModelExporter::ReadClip(aiAnimation* animation)
 	clip->duration = 0.0f;
 
 	vector<ClipNode> clipNodes;
+
 	for (UINT i = 0; i < animation->mNumChannels; i++) // 애니메이션의 Node정보. 즉, Bone 정보들이 들어있다.
 	{
 		aiNodeAnim* srcNode = animation->mChannels[i];
@@ -486,6 +487,7 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 		}
 
 		KeyTransform keyTransform;
+
 		if (clipNode == nullptr) // 일치하는 본이 없다면
 		{
 			// 새로 채워준다.
@@ -494,11 +496,11 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 
 			Vector3 S, T;
 			Vector4 R;
+
 			XMMatrixDecompose(&S.data, &R, &T.data, transform);
 			keyTransform.scale = S;
 			XMStoreFloat4(&keyTransform.rotation, R);
 			keyTransform.position = T;
-
 			keyTransform.time = (float)i;
 		}
 		else // 일치하는 본이 있다면
@@ -507,10 +509,13 @@ void ModelExporter::ReadKeyFrame(Clip* clip, aiNode* node, vector<ClipNode>& cli
 		}
 		keyFrame->transforms.emplace_back(keyTransform);
 	}
+
 	clip->keyFrame.emplace_back(keyFrame);
 
 	for (UINT i = 0; i < node->mNumChildren; i++) // 재귀
+	{
 		ReadKeyFrame(clip, node->mChildren[i], clipNodes);
+	}
 }
 
 void ModelExporter::WriteClip(Clip* clip, string savePath)
@@ -523,7 +528,6 @@ void ModelExporter::WriteClip(Clip* clip, string savePath)
 	w->Float(clip->duration);
 	w->Float(clip->tickPerSecond);
 	w->UInt(clip->frameCount);
-
 	w->UInt(clip->keyFrame.size());
 
 	for (KeyFrame* keyFrame : clip->keyFrame)

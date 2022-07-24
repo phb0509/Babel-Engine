@@ -26,7 +26,7 @@ void Billboard::Update()
 void Billboard::Render()
 {
 	SetWorldBuffer();
-	mMesh->IASet();
+	mMesh->SetIA();
 	mMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexed(6, 0, 0);

@@ -3,11 +3,9 @@
 
 
 ColliderSettingScene::ColliderSettingScene() :
-	mModel(nullptr),
 	mCurrentModel(nullptr),
 	mCurrentModelIndex(0),
 	mBeforeModelIndex(0),
-	mExtractor(nullptr),
 	mbIsDropEvent(false),
 	mbIsWireFrame(true),
 	mDraggedFileName(""),
@@ -49,7 +47,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mRSStateForColorPicking = new RasterizerState();
 	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
 
-	terrain = new Terrain();
+	mTerrain = new Terrain();
 
 	/*mMonster = new Warrok();
 	mMonster->SetTerrain(terrain,false);
@@ -81,18 +79,26 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	mOutputBuffer = new ColorPickingOutputBuffer[1];
 
-	mStandardCube = new Cube();
 }
 
 ColliderSettingScene::~ColliderSettingScene()
 {
-	for (int i = 0; i < mModels.size(); i++)
-	{
-		if (mModels[i] != nullptr)
-		{
-			delete mModels[i];
-		}
-	}
+	GM->SafeDelete(mWorldCamera);
+	GM->SafeDelete(mCurrentModel);
+	GM->SafeDeleteVector(mModels);
+	GM->SafeDeleteVector(mNodes);
+	GM->SafeDelete(mRSState);
+	GM->SafeDelete(mRSStateForColorPicking);
+	GM->SafeDelete(mMonster);
+	GM->SafeDelete(mTerrain);
+	GM->SafeDelete(mPreRenderTargets[0]);
+	GM->SafeDelete(mPreRenderTargetDSV);
+	//GM->SafeDelete(mColorPickingComputeShader);
+	//GM->SafeDelete(mComputeStructuredBuffer);
+	GM->SafeDelete(mInputBuffer);
+	GM->SafeDelete(mOutputBuffer);
+	GM->SafeDelete(mLightBuffer);
+	GM->SafeDelete(mDirectionalLight);
 }
 
 void ColliderSettingScene::Update()
@@ -105,9 +111,7 @@ void ColliderSettingScene::Update()
 
 	colorPicking();
 
-	terrain->Update();
-	//mMonster->Update();
-	//mStandardCube->Update();
+	mTerrain->Update();
 
 	if (KEY_DOWN(VK_LBUTTON))
 	{
@@ -195,8 +199,6 @@ void ColliderSettingScene::Render()
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 	
-	//mMonster->Render();
-	//mStandardCube->Render();
 	mRSState->SetState();
 
 	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
@@ -437,7 +439,7 @@ void ColliderSettingScene::selectModel() // perFrame
 	showCreateModelButton();
 	SpacingRepeatedly(3);
 
-	if (mModels.size() != 0) // ToolModel 할당 되어야 실행. 하이어라키 렌더해야되니까...
+	if (mModels.size() != 0) // ToolModel 할당 되어야 실행. 하이어라키 렌더해야해서
 	{
 		// 모델 변경여부와 상관없이 계속 초기화시켜줘야하는 곳.
 
@@ -1515,7 +1517,7 @@ void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToC
 		}
 	}
 
-	delete exporter;
+	GM->SafeDelete(exporter);
 }
 
 void ColliderSettingScene::playAssetsWindowDropEvent()

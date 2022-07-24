@@ -69,12 +69,10 @@ private:
 	void updatePickedColliderMatrix();
 	void initPickedColliderMatrix();
 	void renderGizmos();
-
 	void moveWorldCamera();
 
 private:
 	Camera* mWorldCamera;
-	ToolModel* mModel;
 	ToolModel* mCurrentModel;
 
 	string mProjectPath;
@@ -104,7 +102,6 @@ private:
 	map<string, Texture*> mExtensionPreviewImages;
 	Collider* mNodeCollider;
 
-	ModelExporter* mExtractor;
 	int mExportSettingIndex;
 
 	bool mbIsExportMesh;
@@ -131,7 +128,7 @@ private:
 	string mDroppedFileName;
 	
 	Monster* mMonster;
-	Terrain* terrain;
+	Terrain* mTerrain;
 	
 	bool mbIsDropped;
 	int mSelectedIndexFromAssets = -1;
@@ -158,8 +155,6 @@ private:
 	float matrixTranslation[3] = {};
 	float matrixRotation[3] = {};
 	float matrixScale[3] = {};
-
-	Cube* mStandardCube;
 
 	Matrix mPickedColliderParentMatrix;
 

@@ -16,6 +16,7 @@ MainScene::MainScene() :
 
 	mLightBuffer = new LightBuffer();
 	mDirectionalLight = new Light(LightType::DIRECTIONAL);
+	mDirectionalLight->SetTag("Directional Light1");
 	mLightBuffer->Add(mDirectionalLight);
 
 	mWorldCamera = new Camera();
@@ -46,7 +47,6 @@ MainScene::MainScene() :
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
 
-
 	vector<Collider*> monsters0Obstacles = {};
 
 	float startX = 100.0f;
@@ -54,8 +54,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 1;
-	int column = 2;
+	int row = 5;
+	int column = 5;
 
 	mMutantInstanceCount = row * column;
 
@@ -82,18 +82,11 @@ MainScene::MainScene() :
 
 MainScene::~MainScene()
 {
-	//delete mTerrain;
 	GM->SafeDelete(mTerrain);
-
-	for (int i = 0; i < mMutants.size(); i++)
-	{
-		delete mMutants[i];
-		mMutants[i] = nullptr;
-	}
-
-	delete mWorldCamera;
-	delete mTargetCamera;
-	delete mTargetCameraForShow;
+	GM->SafeDeleteVector(mMutants);
+	GM->SafeDelete(mWorldCamera);
+	GM->SafeDelete(mTargetCamera);
+	GM->SafeDelete(mTargetCameraForShow);
 }
 
 void MainScene::Update()
@@ -197,7 +190,7 @@ void MainScene::Render()
 
 	mGBuffer->SetRenderTargetsToPS();
 
-	mVertexBuffer->IASet(); // 디폴트 0번.
+	mVertexBuffer->SetIA(); // 디폴트 0번.
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
 	DEVICECONTEXT->Draw(4, 0);
@@ -313,7 +306,7 @@ void MainScene::executeEvent()
 
 		if (!monster->GetIsActive())
 		{
-			if (TIME - monster->GetLastTimeDeactivation() >= 1.0f) // 죽은지 1초 지났으면, 재활성화
+			if (TIME - monster->GetLastTimeDeactivation() >= 5.0f) // 죽은지 1초 지났으면, 재활성화
 			{
 				monster->mPosition = monster->GetLastPosDeactivation();
 				monster->ReActivation();

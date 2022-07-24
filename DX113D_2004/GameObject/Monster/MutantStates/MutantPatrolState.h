@@ -13,8 +13,7 @@ public:
 	virtual void Exit(Monster* monster) override;
 
 private:
-	void Initialize();
-	void SetPatrolTargetPoint(Vector3& patrolTargetPoint);
+	void initialize();
 
 private:
 	float mPatrolRandomNum; // Patrol¿ë ·£´ý°ª.

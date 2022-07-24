@@ -18,7 +18,7 @@ IndexBuffer::~IndexBuffer()
 	mBuffer->Release();
 }
 
-void IndexBuffer::IASet()
+void IndexBuffer::SetIA()
 {
 	DEVICECONTEXT->IASetIndexBuffer(mBuffer, DXGI_FORMAT_R32_UINT, 0);
 }

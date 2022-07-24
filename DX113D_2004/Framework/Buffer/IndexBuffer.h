@@ -7,7 +7,7 @@ public:
 	IndexBuffer(void* data, UINT count);
 	~IndexBuffer();
 
-	void IASet();	
+	void SetIA();	
 
 private:
 	ID3D11Buffer* mBuffer;

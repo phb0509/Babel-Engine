@@ -147,7 +147,7 @@ void TerrainEditor::PreRender()
 
 void TerrainEditor::Render()
 {
-	mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
+	mMesh->SetIA(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 
 	mWorldBuffer->SetVSBuffer(0);
 	mBrushBuffer->SetPSBuffer(10);
@@ -455,9 +455,9 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 		break;
 	}
 
-	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
+	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
 	//mMesh->UpdateVertex(mVertices.data(), mVertices.size()); // // 벡터주소,원소개수
-	mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight); // // 벡터주소,원소개수
+	//mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight); // // 벡터주소,원소개수
 }
 
 void TerrainEditor::paintBrush(Vector3 position)
@@ -513,9 +513,9 @@ void TerrainEditor::paintBrush(Vector3 position)
 		break;
 	}
 
-	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
+	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
 	//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
-	mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight);
+	//mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight);
 }
 
 bool TerrainEditor::checkMouseMove()

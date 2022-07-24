@@ -22,7 +22,7 @@ void Cube::Update()
 
 void Cube::Render()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 
 	SetWorldBuffer();
 
@@ -38,7 +38,7 @@ void Cube::SetShader(wstring file)
 
 void Cube::SetMesh()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 
 	mMaterial->Set();
 

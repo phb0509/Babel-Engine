@@ -31,7 +31,6 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputC
 
 ComputeStructuredBuffer::~ComputeStructuredBuffer()
 {
-	mInput->Release();
 	mSRV->Release();
 	
 	mUAVbuffer->Release();

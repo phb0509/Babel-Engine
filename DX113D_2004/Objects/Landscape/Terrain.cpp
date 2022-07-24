@@ -80,7 +80,7 @@ void Terrain::Update()
 
 void Terrain::Render()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 
 	mWorldBuffer->SetVSBuffer(0);	
 	mTypeBuffer->SetVSBuffer(5);

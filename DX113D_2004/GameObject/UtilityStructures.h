@@ -38,7 +38,6 @@ struct InstanceColliderData
 struct AttackInformation
 {
 	string attackName;
-	//Collider* attackCollider;
 	vector<Collider*> attackColliders; 
 	eAttackType attackType;
 	float damage;

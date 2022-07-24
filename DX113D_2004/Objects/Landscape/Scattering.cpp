@@ -66,7 +66,7 @@ void Scattering::PreRender()
 {
 	RenderTarget::ClearAndSetWithDSV(mRenderTargets, 2, mDepthStencil);
 
-	mQuadBuffer->IASet();
+	mQuadBuffer->SetIA();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	mTargetBuffer->SetPSBuffer(10);
@@ -77,7 +77,7 @@ void Scattering::PreRender()
 
 void Scattering::Render()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 
 	DEVICECONTEXT->PSSetShaderResources(10, 1, &mRenderTargets[0]->GetSRV());
 	DEVICECONTEXT->PSSetShaderResources(11, 1, &mRenderTargets[1]->GetSRV());

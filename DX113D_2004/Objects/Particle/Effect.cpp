@@ -149,7 +149,7 @@ void Effect::Update()
 
 void Effect::Render()
 {
-	mesh->IASet();
+	mesh->SetIA();
 
 	buffer->SetVSBuffer(10);
 

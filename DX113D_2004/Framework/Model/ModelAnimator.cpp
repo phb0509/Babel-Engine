@@ -251,8 +251,10 @@ Matrix ModelAnimator::GetTransformByNode(int nodeIndex)
 	FrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[0].next;
 
 	if (nextDesc.clip == -1)
+	{
 		return curClip;
-
+	}
+		
 	cur = mNodeTransform[nextDesc.clip].transform[nextDesc.curFrame][nodeIndex];
 	next = mNodeTransform[nextDesc.clip].transform[nextDesc.nextFrame][nodeIndex];
 
@@ -276,8 +278,10 @@ Matrix ModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
 	FrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[instance].next;
 
 	if (nextDesc.clip == -1)
+	{
 		return curClip;
-
+	}
+		
 	cur = mNodeTransform[nextDesc.clip].transform[nextDesc.curFrame][nodeIndex];
 	next = mNodeTransform[nextDesc.clip].transform[nextDesc.nextFrame][nodeIndex];
 
@@ -322,7 +326,6 @@ void ModelAnimator::MakeBoneTransform()
 	{
 		mBoneBuffer->Add(iter->second, iter->first);
 	}
-
 }
 
 void ModelAnimator::SetBoneTransforms() // 

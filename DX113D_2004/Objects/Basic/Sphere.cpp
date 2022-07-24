@@ -24,7 +24,7 @@ void Sphere::Update()
 
 void Sphere::Render()
 {
-	mesh->IASet();
+	mesh->SetIA();
 	SetWorldBuffer();
 	material->Set();
 

@@ -42,7 +42,7 @@ void Models::Update()
 
 void Models::Render()
 {
-    mInstanceBuffer->IASet(1);
+    mInstanceBuffer->SetIA(1);
     SetBoneTransforms();
     mBoneBuffer->SetVSBuffer(3);
 

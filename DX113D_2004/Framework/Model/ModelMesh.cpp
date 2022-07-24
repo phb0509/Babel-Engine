@@ -29,7 +29,7 @@ void ModelMesh::createMesh()
 
 void ModelMesh::Render()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 	mMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexed(mIndexCount, 0, 0);
@@ -37,7 +37,7 @@ void ModelMesh::Render()
 
 void ModelMesh::Render(UINT drawCount)
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 	mMaterial->Set();
 
 	DEVICECONTEXT->DrawIndexedInstanced(mIndexCount, drawCount, 0, 0, 0);
@@ -65,5 +65,5 @@ void ModelMesh::SetBox(Vector3* minBox, Vector3* maxBox)
 
 void ModelMesh::IASet()
 {
-	mMesh->IASet();
+	mMesh->SetIA();
 }

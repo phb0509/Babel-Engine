@@ -38,7 +38,7 @@ void Particle::Render()
 	depthState[1]->SetState();
 
 	SetWorldBuffer();
-	vertexBuffer->IASet();
+	vertexBuffer->SetIA();
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	mCamera->GetViewBuffer()->SetGSBuffer(1);

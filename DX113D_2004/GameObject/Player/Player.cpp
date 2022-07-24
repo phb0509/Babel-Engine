@@ -6,7 +6,7 @@ Player::Player():
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
-	mNormalAttackDamage(25.0f),
+	mNormalAttackDamage(34.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -45,7 +45,7 @@ Player::~Player()
 {
 	for (int i = 0; i < mColliders.size(); i++)
 	{
-		delete mColliders[i].collider;
+		GM->SafeDelete(mColliders[i].collider);
 	}
 }
 

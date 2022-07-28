@@ -204,6 +204,7 @@
     <ClInclude Include="GameObject\Monster\Warrok.h" />
     <ClInclude Include="GameObject\Player\Player.h" />
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
+    <ClInclude Include="GameObject\UI\UserInterface.h" />
     <ClInclude Include="GameObject\UtilityStructures.h" />
     <ClInclude Include="GameObject\Utility\E_States.h" />
     <ClInclude Include="GameObject\Utility\State.h" />

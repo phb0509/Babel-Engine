@@ -21,7 +21,6 @@ GBuffer::GBuffer()
 	mSRVs[2] = mSpecularRenderTarget->GetSRV();
 	mSRVs[3] = mNormalRenderTarget->GetSRV();
 
-
 	mShowSRVs[0] = mDepthRenderTarget->GetSRV(); // ·»´õÅ¸°ÙÀÇ SRV.
 	mShowSRVs[1] = mDiffuseRenderTarget->GetSRV();
 	mShowSRVs[2] = mSpecularRenderTargetForShow->GetSRV();
@@ -30,21 +29,27 @@ GBuffer::GBuffer()
 	for (UINT i = 0; i < 4; i++)
 	{
 		mTargetTextures[i] = new UIImage(L"Texture"); //UIImage ¹è¿­.
-		mTargetTextures[i]->mPosition = { 100 + (float)i * 300, 100, 0 };
-		mTargetTextures[i]->mScale = { 300.0f, 300.0f, 300.0f };
 		mTargetTextures[i]->SetSRV(mShowSRVs[i]); // ¶ç¿ï srv(ÀÌ¹ÌÁö)
+		mTargetTextures[i]->mScale = { 200.0f, 200.0f, 200.0f };
 	}
+
+	float textureSize = 200.0f; // 
+	float offsetY = 100.0f;
+	float offsetX = 0.0f;
+
+	mTargetTextures[0]->mPosition = { 100.0f, WIN_HEIGHT / 2 + textureSize / 2 + offsetY, 0 }; // depth
+	mTargetTextures[1]->mPosition = { 300.0f, WIN_HEIGHT / 2 + textureSize / 2 + offsetY, 0 }; // diffuse
+	mTargetTextures[2]->mPosition = { 100.0f, WIN_HEIGHT / 2 - textureSize / 2 + offsetY, 0 }; // specular
+	mTargetTextures[3]->mPosition = { 300.0f, WIN_HEIGHT / 2 - textureSize / 2 + offsetY, 0 }; // normal
 }
 
 GBuffer::~GBuffer()
 {
-	delete mDiffuseRenderTarget;
-	delete mSpecularRenderTarget;
-	delete mNormalRenderTarget;
-	delete mDepthStencil;
-
-	for (UIImage* texture : mTargetTextures)
-		delete texture;
+	GM->SafeDelete(mDiffuseRenderTarget);
+	GM->SafeDelete(mSpecularRenderTarget);
+	GM->SafeDelete(mNormalRenderTarget);
+	GM->SafeDelete(mDepthStencil);
+	GM->SafeDeleteArray(mTargetTextures);
 }
 
 void GBuffer::PreRender()

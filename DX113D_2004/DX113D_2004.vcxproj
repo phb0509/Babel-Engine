@@ -204,6 +204,7 @@
     <ClInclude Include="GameObject\Monster\Warrok.h" />
     <ClInclude Include="GameObject\Player\Player.h" />
     <ClInclude Include="GameObject\Tool\ToolModel.h" />
+    <ClInclude Include="GameObject\UI\PlayerStatusBar.h" />
     <ClInclude Include="GameObject\UI\UserInterface.h" />
     <ClInclude Include="GameObject\UtilityStructures.h" />
     <ClInclude Include="GameObject\Utility\E_States.h" />
@@ -369,6 +370,7 @@
     <ClCompile Include="GameObject\Monster\Warrok.cpp" />
     <ClCompile Include="GameObject\Player\Player.cpp" />
     <ClCompile Include="GameObject\Tool\ToolModel.cpp" />
+    <ClCompile Include="GameObject\UI\PlayerStatusBar.cpp" />
     <ClCompile Include="GameObject\Utility\State.cpp" />
     <ClCompile Include="Objects\Basic\Cube.cpp" />
     <ClCompile Include="Objects\Basic\EmptyObject.cpp" />
@@ -496,6 +498,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Grid.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\HPBar.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

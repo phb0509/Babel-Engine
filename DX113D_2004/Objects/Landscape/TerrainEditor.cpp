@@ -36,12 +36,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mDepthRenderTarget = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM);
 	mRenderTargets[0] = mDepthRenderTarget;
 
-	////mRenderTargetSRVs[0] = mDepthRenderTarget->GetSRV();
-	//mRenderTargetSRVs[0] = mRenderTargets[0]->GetSRV(); // mDepthRenderTarget->GetSRV()
-	//mRenderTargetSRVs[1] = mDepthStencil->GetSRV();
-
-	//mTempTexture = Texture::AddUsingSRV(mRenderTargetSRVs[0]);
-
 	createMesh(); // 적용할 HeightMap 기준으로 mTerrainWidth와 mTerrainHeight 결정.
 
 	mbIsUVPicking = true;

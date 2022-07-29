@@ -211,13 +211,13 @@ void Transform::SetTag(string tag)
 
 	mTagMap[tag]++;
 
-	if (count != 0)
+	if (count == 0)
 	{
-		tagName = tag + "(" + to_string(count) + ")";
+		tagName = tag;
 	}
 	else
 	{
-		tagName = tag;
+		tagName = tag + "(" + to_string(count) + ")";
 	}
 
 	this->mTag = tagName;

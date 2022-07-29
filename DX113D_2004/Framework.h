@@ -301,6 +301,7 @@ using namespace states;
 // GameObject
 
 #include "GameObject/UI/UserInterface.h"
+#include "GameObject/UI/PlayerStatusBar.h"
 
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"

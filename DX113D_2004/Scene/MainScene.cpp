@@ -235,12 +235,10 @@ void MainScene::PostRender()
 	}
 
 	SpacingRepeatedly(2);
-	ImGui::Text("WorldCameraPosition : %.1f,  %.1f,  %.1f", mWorldCamera->mPosition.x, mWorldCamera->mPosition.y, mWorldCamera->mPosition.z);
 	mWorldCamera->PostTransformRender();
 	SpacingRepeatedly(2);
 	ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
 	SpacingRepeatedly(2);
-	ImGui::InputFloat3("Player Position", (float*)&mPlayer->mPosition, "%.3f");
 	mPlayer->PostTransformRender();
 	SpacingRepeatedly(2);
 
@@ -301,7 +299,11 @@ void MainScene::moveWorldCamera()
 
 void MainScene::executeEvent()
 {
-	// Respawn Event
+	respawnMonster();
+}
+
+void MainScene::respawnMonster()
+{
 	for (int i = 0; i < mInstanceMutants.size(); i++)
 	{
 		Monster* monster = mInstanceMutants[i];
@@ -315,7 +317,6 @@ void MainScene::executeEvent()
 			}
 		}
 	}
-
 }
 
 

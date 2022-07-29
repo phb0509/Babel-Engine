@@ -363,6 +363,9 @@
     <ClInclude Include="GameObject\UI\UserInterface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\UI\PlayerStatusBar.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX113D_2004.cpp">
@@ -680,6 +683,9 @@
     <ClCompile Include="GameObject\Manager\DebugManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\UI\PlayerStatusBar.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX113D_2004.rc">
@@ -739,6 +745,7 @@
     <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
     <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
     <FxCompile Include="Shaders\InstancingMutantsGBuffer.hlsl" />
+    <FxCompile Include="Shaders\HPBar.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

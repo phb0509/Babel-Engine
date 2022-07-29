@@ -9,12 +9,13 @@ public:
 	virtual void Update();
 	virtual void Render();
 	
-
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->mSRV = srv; }
+	void SetWidthRatio(float widthRatio) { mWidthRatio = widthRatio; }
+	void SetHeightRatio(float heightRatio) { mHeightRatio = heightRatio; }
 
 private:
-	void CreateMesh();
-	void CreateVP();
+	void createMesh();
+	void createViewBuffer();
 
 protected:
 	Material* mMaterial;
@@ -30,4 +31,7 @@ protected:
 
 	BlendState* mBlendStates[2];
 	DepthStencilState* mDepthMode[2];
+
+	float mWidthRatio;
+	float mHeightRatio;
 };

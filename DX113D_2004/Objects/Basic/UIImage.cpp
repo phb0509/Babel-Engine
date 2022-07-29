@@ -1,10 +1,12 @@
 #include "Framework.h"
 
-UIImage::UIImage(wstring shaderFile)
+UIImage::UIImage(wstring shaderFile):
+	mWidthRatio(1.0f),
+	mHeightRatio(1.0f)
 {
 	mMaterial = new Material(shaderFile);
-	CreateMesh();	
-	CreateVP();
+	createMesh();	
+	createViewBuffer();
 
 	mBlendStates[0] = new BlendState();
 	mBlendStates[1] = new BlendState();
@@ -54,7 +56,7 @@ void UIImage::Render() // PostRender에다가 한단말이지
 	mDepthMode[0]->SetState();
 }
 
-void UIImage::CreateMesh()
+void UIImage::createMesh()
 {
 	VertexUV vertices[4];
 	vertices[0].position = { -0.5f, -0.5f, 0.0f };
@@ -75,7 +77,7 @@ void UIImage::CreateMesh()
 	mMesh = new Mesh(vertices, sizeof(VertexUV), 4, indices, 6);
 }
 
-void UIImage::CreateVP()
+void UIImage::createViewBuffer()
 {
 	mViewMatrix = XMMatrixIdentity();
 	mOrthographicMatrix = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);

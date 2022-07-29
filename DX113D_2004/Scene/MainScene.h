@@ -22,6 +22,7 @@ private:
 	void printToCSV();
 	void moveWorldCamera();
 	void executeEvent();
+	void respawnMonster();
 
 private:
 	Player* mPlayer;

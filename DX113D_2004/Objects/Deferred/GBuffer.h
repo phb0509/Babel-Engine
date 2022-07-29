@@ -4,7 +4,6 @@ class GBuffer
 {
 
 public:
-
 	GBuffer();
 	~GBuffer();
 
@@ -16,7 +15,6 @@ public:
 	void ClearSRVs();
 
 private:
-
 	RenderTarget* mDiffuseRenderTarget;
 	RenderTarget* mSpecularRenderTarget;
 	RenderTarget* mNormalRenderTarget;

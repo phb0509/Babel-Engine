@@ -21,6 +21,8 @@ public:
 
 	void UpdateWorld();
 	void SetWorldBuffer(UINT slot = 0);
+	void PostTransformRender();
+
 
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
 	Matrix& GetWorldMatrixValue() { return mWorldMatrix; }
@@ -42,7 +44,7 @@ public:
 	float GetLastTimeDeactivation() { return mLastTimeDeactivation; }
 
 	void SetHashColorBuffer();
-	void SetTag(string tag) { mTag = tag; }
+	void SetTag(string tag);
 	void SetIsInFrustum(bool isInFrustum) { mbIsInFrustum = isInFrustum; }
 	void SetIsActive(bool isActive) { mbIsActive = isActive; }
 	void SetParent(Matrix* value) { mParentMatrix = value; }
@@ -57,8 +59,6 @@ public:
 	void ExecuteAStarUpdateFunction(function<void(Vector3)> funcPointer, Vector3 param1, float periodTime); // 경로설정 periodTime마다 한번씩.
 
 	bool CheckTime(float periodTime); // periodTime 지났는지 체크.
-
-
 
 private:
 	void createHashColor();
@@ -99,5 +99,6 @@ private:
 	RasterizerState* mRSState;
 	ColorBuffer* mHashColorBuffer;
 	Float4 mHashColor;
+	static map<string, int> mTagMap;
 
 };

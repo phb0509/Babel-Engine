@@ -13,6 +13,7 @@ Player::Player():
 	mbIsLODTerrain(false),
 	mbIsCheckNormalAttackCollision(false)
 {
+	SetTag("Player");
 	mScale = { 0.05f, 0.05f, 0.05f };
 	mMoveSpeed = 50.0f;
 	mRotationSpeed = 5.0f;

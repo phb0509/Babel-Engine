@@ -1,6 +1,6 @@
 #include "Framework.h"
 
-
+map<string, int> Transform::mTagMap = { {"UnTagged",0} };
 
 Transform::Transform(string mTag) :
 	mTag(mTag),
@@ -21,6 +21,7 @@ Transform::Transform(string mTag) :
 	mbIsRender(true),
 	mLastTimeDeactivation(0.0f)
 {
+	SetTag("UnTagged");
 	createHashColor();
 
 	mWorldMatrix = XMMatrixIdentity();
@@ -67,6 +68,17 @@ void Transform::UpdateWorld()
 void Transform::SetWorldBuffer(UINT slot)
 {
 	mWorldBuffer->SetVSBuffer(slot);
+}
+
+void Transform::PostTransformRender()
+{
+	string beginName = mTag + " Transform";
+
+	ImGui::Begin(beginName.c_str());
+	ImGui::SliderFloat3("Position" , (float*)&mPosition, -2000.0f, 2000.0f, "%.3f");
+	ImGui::SliderFloat3("Rotation", (float*)&mRotation, -1.0f, 1.0f, "%.3f");
+	ImGui::SliderFloat3("Scale", (float*)&mScale, 0.0f, 1000.0f, "%.3f");
+	ImGui::End();
 }
 
 Vector3 Transform::GetForwardVector()
@@ -185,6 +197,30 @@ void Transform::SetHashColorBuffer()
 {
 	mHashColorBuffer->SetMatrix(mHashColor); // 별도의 렌더타겟에 그릴 오브젝트의 해쉬컬러.
 	mHashColorBuffer->SetVSBuffer(10);
+}
+
+void Transform::SetTag(string tag)
+{
+	int count = 0;
+	string tagName = "";
+
+	for (int i = 0; i < mTagMap[tag]; i++)
+	{
+		count++;
+	}
+
+	mTagMap[tag]++;
+
+	if (count != 0)
+	{
+		tagName = tag + "(" + to_string(count) + ")";
+	}
+	else
+	{
+		tagName = tag;
+	}
+
+	this->mTag = tagName;
 }
 
 void Transform::createHashColor()

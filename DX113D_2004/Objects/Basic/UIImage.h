@@ -8,6 +8,7 @@ public:
 
 	virtual void Update();
 	virtual void Render();
+	
 
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->mSRV = srv; }
 

@@ -73,7 +73,6 @@ static const float2 TEXCOORD[4] =
 void GS(point VertexOutput input[1], inout TriangleStream<PixelInput> output)
 {
     float3 camPos = invView._41_42_43;
-    
     float3 up = normalize(-input[0].velocity);
     float3 forward = camPos - input[0].pos;    
     forward = normalize(forward);

@@ -1,5 +1,12 @@
 #include "Header.hlsli"
 
+cbuffer ratioBuffer : register(b10)
+{
+    float widthRatio;
+    float heightRatio;
+    float2 pad;
+};
+
 struct PixelInput
 {
     float4 pos : SV_Position;
@@ -13,7 +20,6 @@ PixelInput VS(VertexUV input)
     output.pos = mul(input.pos, world);
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
-    
     output.uv = input.uv;
     
     return output;
@@ -21,5 +27,12 @@ PixelInput VS(VertexUV input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-    return diffuseMap.Sample(samp, input.uv) * mDiffuse;
+    float4 test = diffuseMap.Sample(samp, input.uv);
+
+    if (input.uv.x >= widthRatio)
+    {
+        test.a = 0.0f;
+    }
+
+    return test;
 }

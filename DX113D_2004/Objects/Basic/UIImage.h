@@ -28,9 +28,10 @@ protected:
 
 	ViewBuffer* mViewBuffer;
 	ProjectionBuffer* mProjectionBuffer;
+	TextureBuffer* mTextureBuffer;
 
-	BlendState* mBlendStates[2];
-	DepthStencilState* mDepthMode[2];
+	vector<BlendState*> mBlendStates;
+	vector<DepthStencilState*> mDepthModes;
 
 	float mWidthRatio;
 	float mHeightRatio;

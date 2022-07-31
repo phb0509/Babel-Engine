@@ -745,7 +745,7 @@
     <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
     <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
     <FxCompile Include="Shaders\InstancingMutantsGBuffer.hlsl" />
-    <FxCompile Include="Shaders\HPBar.hlsl" />
+    <FxCompile Include="Shaders\VariableTexture.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

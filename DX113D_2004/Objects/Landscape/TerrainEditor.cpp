@@ -54,7 +54,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	boxLeft = 0;
 	boxRight = 249999;
 
-
 	mPlayer = new ModelAnimObject();
 	mPlayer->mScale = { 0.05f, 0.05f, 0.05f };
 	mPlayer->mPosition.x = -3.0f;

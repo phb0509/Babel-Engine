@@ -123,24 +123,11 @@ Texture2D specularMap : register(t1);
 Texture2D normalMap : register(t2);
 Texture2D brushMap : register(t7);
 
-//Texture2D<float> depthTexture : register(t3);
-//Texture2D depthTexture : register(t3);
-//Texture2D diffuseTexture : register(t4);
-//Texture2D specularTexture : register(t5);
-//Texture2D normalTexture : register(t6);
-
 //VertexLayouts
 struct Vertex
 {
     float4 pos : Position;    
 };
-
-//struct VertexColor 
-//{
-//    float4 pos : Position;
-//    float4 color : Color;
-//    float4 colorForPicking : ColorForPicking;
-//};
 
 struct VertexColor
 {

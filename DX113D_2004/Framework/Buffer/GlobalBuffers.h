@@ -323,7 +323,6 @@ public:
 	struct Data
 	{
 		float time = 0.0f;
-
 		float padding[3];
 	}data;
 
@@ -356,5 +355,23 @@ public:
 
 	EffectBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
+	}
+};
+
+class TextureBuffer : public ConstBuffer
+{
+public:
+	struct Data
+	{
+		float widthRatio;
+		float heightRatio;
+		Float2 padding;
+	}data;
+
+	TextureBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.widthRatio = 1.0f;
+		data.heightRatio = 1.0f;
+		float padding[2] = { 0.0f,0.0f };
 	}
 };

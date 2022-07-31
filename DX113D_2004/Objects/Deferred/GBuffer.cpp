@@ -30,7 +30,7 @@ GBuffer::GBuffer()
 	{
 		mTargetTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
 		mTargetTextures[i]->SetSRV(mShowSRVs[i]); // 띄울 srv(이미지)
-		mTargetTextures[i]->mScale = { 200.0f, 200.0f, 200.0f };
+		mTargetTextures[i]->mScale = { 200.0f, 200.0f, 0.0f };
 	}
 
 	float textureSize = 200.0f; // 

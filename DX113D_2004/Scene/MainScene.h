@@ -26,6 +26,7 @@ private:
 
 private:
 	Player* mPlayer;
+	PlayerStatusBar* mPlayerStatusBar;
 	Monster* mMonster;
 	Terrain* mTerrain;
 	vector<Monster*> mMutants;

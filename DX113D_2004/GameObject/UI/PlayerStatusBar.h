@@ -10,12 +10,22 @@ public:
 	virtual void Show() override;
 	virtual void Update() override;
 	virtual void Render() override;
+	void PostRender();
 
 private:
-	UIImage* mBackGround;
-	UIImage* mHPBar;
-	UIImage* mMPBar;
+	Texture* mBackGroundTexture;
+	Texture* mHPBarTexture;
+	Texture* mMPBarTexture;
 
-	float mCurrentHP;
+	UIImage* mBackGroundUI;
+	UIImage* mHPBarUI;
+	UIImage* mMPBarUI;
+
+	float mCurHP;
 	float mMaxHP;
+	float mHPRate;
+
+	float mCurMP;
+	float mMaxMP;
+	float mMPRate;
 };

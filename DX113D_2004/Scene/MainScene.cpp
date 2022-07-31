@@ -46,6 +46,7 @@ MainScene::MainScene() :
 	mPlayer->SetTargetCameraInWorld(mTargetCameraForShow);
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
+	mPlayerStatusBar = new PlayerStatusBar();
 
 	vector<Collider*> monsters0Obstacles = {};
 
@@ -115,6 +116,7 @@ void MainScene::Update()
 
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
+	mPlayerStatusBar->Update();
 	mInstancingMutants->Update();
 	executeEvent();
 
@@ -205,6 +207,10 @@ void MainScene::PostRender()
 	mDirectionalLight->PostRender();
 	mGBuffer->PostRender();
 	mInstancingMutants->PostRender();
+
+	mPlayerStatusBar->Render();
+	mPlayerStatusBar->PostRender();
+	mPlayerStatusBar->PostTransformRender();
 
 	if (mbIsInstancingMode)
 	{

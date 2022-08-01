@@ -210,7 +210,7 @@ void MainScene::PostRender()
 	mInstancingMutants->PostRender();
 
 	mPlayerStatusBar->Render();
-	mPlayerStatusBar->PostRender(); // mPlayerStatusBar 하위 UI 3개 PostTransformRedner.
+	//mPlayerStatusBar->PostRender(); // mPlayerStatusBar 하위 UI 3개 PostTransformRedner.
 	mPlayerStatusBar->PostTransformRender();
 
 	if (mbIsInstancingMode)

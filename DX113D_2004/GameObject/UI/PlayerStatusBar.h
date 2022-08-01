@@ -28,4 +28,7 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
+
+	Vector3 mStandPosition;
+	float mScaleOffset;
 };

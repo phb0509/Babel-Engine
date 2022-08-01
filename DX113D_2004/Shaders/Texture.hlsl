@@ -20,9 +20,6 @@ PixelInput VS(VertexUV input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-    float4 test = diffuseMap.Sample(samp, input.uv);
-    //float4 test = { 0.0f, 0.0f, 0.0f, 1.0f };
-    //test.a = 0.5f;
-    
-    return test;
+    float4 color = diffuseMap.Sample(samp, input.uv);
+    return color;
 }

@@ -33,7 +33,7 @@ public:
 	void SetDrawCount(int drawCount) { mDrawCount = drawCount; }
 	void SetBoxForFrustumCulling() { SetBox(&mMinBox, &mMaxBox); }
 	void SetCameraForCulling(Camera* cameraForFrustumCulling) { mCameraForFrustumCulling = cameraForFrustumCulling; }
-	void SetCurMainCamaera(Camera* mainCamera) { mCurMainCamera = mainCamera; }
+	void SetCurMainCamera(Camera* mainCamera) { mCurMainCamera = mainCamera; }
 	void SetIsFrustumCullingMode(bool value) { mbIsFrustumCullingMode = value; }
 	void SetInstanceCount(int instanceCount);
 

@@ -46,8 +46,7 @@ MainScene::MainScene() :
 	mPlayer->SetTargetCameraInWorld(mTargetCameraForShow);
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
-	mPlayerStatusBar = new PlayerStatusBar();
-	mPlayerStatusBar->mPosition = { 521.0f, 244.0f,0.0f };
+
 
 	vector<Collider*> monsters0Obstacles = {};
 
@@ -117,7 +116,6 @@ void MainScene::Update()
 
 	mTerrain->Update();
 	mPlayer->Update(); // Update TargetCameraInWorld
-	mPlayerStatusBar->Update();
 	mInstancingMutants->Update();
 	executeEvent();
 
@@ -204,14 +202,12 @@ void MainScene::Render()
 void MainScene::PostRender()
 {
 	mPlayer->PostRender();
+	mPlayer->UIRender();
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
 	mGBuffer->PostRender();
 	mInstancingMutants->PostRender();
-
-	mPlayerStatusBar->Render();
-	//mPlayerStatusBar->PostRender(); // mPlayerStatusBar ÇÏÀ§ UI 3°³ PostTransformRedner.
-	mPlayerStatusBar->PostTransformRender();
+	
 
 	if (mbIsInstancingMode)
 	{
@@ -228,7 +224,7 @@ void MainScene::PostRender()
 		mTargetCameraForShow->SetIsUsingFrustumCulling(false);
 		mTargetCamera->SetIsUsingFrustumCulling(true);
 		mInstancingMutants->SetCameraForCulling(mTargetCamera);
-		mInstancingMutants->SetCurMainCamaera(mTargetCamera);
+		mInstancingMutants->SetCurMainCamera(mTargetCamera);
 	}
 
 	if (ImGui::Button("WorldCamera"))
@@ -238,7 +234,7 @@ void MainScene::PostRender()
 		mTargetCameraForShow->SetIsUsingFrustumCulling(true);
 		mTargetCamera->SetIsUsingFrustumCulling(false);
 		mInstancingMutants->SetCameraForCulling(mTargetCameraForShow);
-		mInstancingMutants->SetCurMainCamaera(mWorldCamera);
+		mInstancingMutants->SetCurMainCamera(mWorldCamera);
 	}
 
 	SpacingRepeatedly(2);

@@ -11,9 +11,11 @@ public:
 	~Monster();
 
 	virtual void Update() = 0;
+	virtual void UIUpdate();
 	virtual void InstanceUpdate() = 0;
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
+	virtual void UIRender();
 	virtual Collider* GetHitCollider() = 0;
 	virtual bool CheckIsCollision(Collider* collider) = 0;
 	virtual void OnDamage(AttackInformation attackInformation) = 0;
@@ -45,6 +47,7 @@ public:
 	float GetMaxHP() { return mMaxHP; }
 	float GetCurHP() { return mCurHP; }
 	bool GetIsDie() { return mbIsDie; }
+	Texture* GetPortraitTexture() { return mPortraitTexture; }
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
@@ -56,6 +59,7 @@ public:
 	void SetInstanceCollider(InstanceColliderData instanceColliderData) { mInstanceColliderData = instanceColliderData; }
 	void SetIsCompletedAnim(bool value) { mbIsCompletedAnim = value; }
 	void SetIsStartedAnim(bool value) { mbIsStartedAnim = value; }
+	void SetPortraitTexture(Texture* texture);
 	
 private:
 	void setObstaclesTerrain(Vector3 destPos);
@@ -89,6 +93,7 @@ protected:
 	bool mbIsStartedAnim;
 	bool mbIsDie;
 
+	MonsterStatusBar* mStatusBar;
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;
@@ -109,6 +114,5 @@ private:
 	bool mbPathSizeCheck;
 	bool mbHasTerrainObstacles;
 
-	int count = 0;
-
+	Texture* mPortraitTexture;
 };

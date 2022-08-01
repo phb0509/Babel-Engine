@@ -11,7 +11,7 @@ public:
 	void SetCamera(Camera* camera) { mCamera = camera; }
 
 private:
-	void CreateMesh();
+	void createMesh();
 
 public:
 	Material* mMaterial;

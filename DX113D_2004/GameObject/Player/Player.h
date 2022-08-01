@@ -54,6 +54,7 @@ public:
 	void Render();
 	void DeferredRender();
 	void PostRender();
+	void UIRender();
 
 	void SetTerrain(Terrain* value) { mTerrain = value; mbIsLODTerrain = false; }
 	void SetLODTerrain(TerrainLOD* value) { mLODTerrain = value; mbIsLODTerrain = true; }
@@ -120,4 +121,8 @@ private:
 	map<string, bool> mbIsCheckAttack;
 
 	string mTestString = "";
+
+	// UI
+	PlayerStatusBar* mStatusBar;
+
 };

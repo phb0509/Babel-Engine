@@ -1,10 +1,10 @@
 #pragma once
 
-class PlayerStatusBar : public UserInterface
+class MonsterStatusBar : public UserInterface
 {
 public:
-	PlayerStatusBar();
-	~PlayerStatusBar();
+	MonsterStatusBar();
+	~MonsterStatusBar();
 
 	virtual void Hide() override;
 	virtual void Show() override;
@@ -12,18 +12,18 @@ public:
 	virtual void Render() override;
 	void PostRender();
 
+	void SetCamera(Camera* camera);
+	void SetPortraitTexture(Texture* portraitTexture) { mPortraitTexture = portraitTexture; }
+
 private:
 	Texture* mBackGroundTexture;
 	Texture* mHPBarTexture;
 	Texture* mMPBarTexture;
 	Texture* mPortraitTexture;
-	Texture* mPortraitBackGroundTexture;
 
 	UIImage* mBackGroundUI;
 	UIImage* mHPBarUI;
 	UIImage* mMPBarUI;
-	UIImage* mPortraitUI;
-	UIImage* mPortraitBackGroundUI;
 
 	float mCurHP;
 	float mMaxHP;
@@ -35,4 +35,5 @@ private:
 
 	Vector3 mStandPosition;
 	float mStandScaleOffset;
+	Camera* mCamera;
 };

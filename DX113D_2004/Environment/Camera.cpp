@@ -31,7 +31,6 @@ Camera::~Camera()
 void Camera::Update()
 {
 	Transform::UpdateWorld();
-	//SetViewMatrixToBuffer();
 
 	if (!mbIsInitialized)
 	{
@@ -126,6 +125,7 @@ void Camera::SetProjectionOption(float FoV, float aspectRatio, float distanceToN
 
 	delete mFrustum;
 	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
+
 	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 	createOrthographicProjectionBuffer();
 }

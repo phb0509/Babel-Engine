@@ -21,7 +21,6 @@ Player::Player():
 
 	SetMesh("Player", "Player.mesh");
 	SetMaterial("Player", "Player.mat");
-
 	SetShader(L"ModelAnimation");
 
 	ReadClip("Player", "TPose.clip");
@@ -40,6 +39,10 @@ Player::Player():
 	loadBinaryCollidersFile(L"Player.map");
 	setAttackInformations();
 	UpdateWorld();
+
+	mStatusBar = new PlayerStatusBar();
+	mStatusBar->mPosition = { 521.0f, 244.0f,0.0f };
+	
 }
 
 Player::~Player()
@@ -48,6 +51,8 @@ Player::~Player()
 	{
 		GM->SafeDelete(mColliders[i].collider);
 	}
+
+	GM->SafeDelete(mStatusBar);
 }
 
 void Player::Update()
@@ -57,6 +62,8 @@ void Player::Update()
 		initialize();
 		mbIsInitialize = true;
 	}
+
+	mStatusBar->Update();
 
 	setColliders();
 	updateCamera();
@@ -505,4 +512,11 @@ void Player::PostRender()
 	}
 
 	ImGui::End();
+
+	mStatusBar->PostRender();
+}
+
+void Player::UIRender()
+{
+	mStatusBar->Render();
 }

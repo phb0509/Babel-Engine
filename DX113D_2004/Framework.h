@@ -3,21 +3,28 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN
 
-//#define WIN_WIDTH 1280
-//#define WIN_HEIGHT 720
 
-#define WIN_WIDTH 1850
-#define WIN_HEIGHT 900
 
-#define CENTER_X WIN_WIDTH * 0.5f
-#define CENTER_Y WIN_HEIGHT * 0.5f
+// 반드시 16:9 비율을 유지할 것.
 
-#define WIN_START_X 100
-#define WIN_START_Y 100
+const static int MAIN_WIN_WIDTH = 1600;
+const static int MAIN_WIN_HEIGHT = 900;
+const static int WIN_WIDTH = 1600;
+const static int WIN_HEIGHT = 900;
 
-#define MAX_BONE 500 // 인스턴스오브젝트 각각의 최대 노드개수.
-#define MAX_FRAME_KEY 600
-#define MAX_INSTANCE 600
+
+//#define WIN_WIDTH 1920
+//#define WIN_HEIGHT 1080
+
+const static int CENTER_X = WIN_WIDTH * 0.5f;
+const static int CENTER_Y = WIN_HEIGHT * 0.5f;
+
+const static int WIN_START_X = 100;
+const static int WIN_START_Y = 100;
+
+const static int MAX_BONE = 500; // 인스턴스오브젝트 각각의 최대 노드개수.
+const static int MAX_FRAME_KEY = 600;
+const static int MAX_INSTANCE = 600;
 
 #define LERP(s, e, t) s + (e - s) * t
 //#define LERP(s, e, t) s * (1 - t) + e * t
@@ -302,6 +309,7 @@ using namespace states;
 
 #include "GameObject/UI/UserInterface.h"
 #include "GameObject/UI/PlayerStatusBar.h"
+#include "GameObject/UI/MonsterStatusBar.h"
 
 #include "GameObject/Tool/ToolModel.h"
 #include "GameObject/Monster/Monster.h"

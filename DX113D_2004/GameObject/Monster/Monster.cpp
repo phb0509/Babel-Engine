@@ -52,6 +52,11 @@ void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Upda
 	}
 }
 
+void Monster::SetPortraitTexture(Texture* texture)
+{
+	
+}
+
 void Monster::setObstaclesTerrain(Vector3 destPos)
 {
 	Ray ray;
@@ -224,12 +229,7 @@ void Monster::MoveToDestUsingAStar(Vector3 dest) // 실시간용
 			mTargetNode = mBeforeNode;
 			mTargetNodeDirVector3 = mBeforeDirVector3;
 
-			
 			mPathNodesCheck[mPath.size() - 1] = true;
-
-			char buff[100];
-			sprintf_s(buff, "mIsAStarPathUpdate : %d  Count : %d\n", mIsAStarPathUpdate, count++);
-			OutputDebugStringA(buff);
 		}
 
 		MoveToDestination(this, mTargetNode, mMoveSpeed);
@@ -278,7 +278,12 @@ void Monster::ChangeState(MonsterState* nextState)
 	mCurrentFSMState->Enter(this);
 }
 
+void Monster::UIUpdate()
+{
+	mStatusBar->Update();
+}
 
-
-
-
+void Monster::UIRender()
+{
+	mStatusBar->Render();
+}

@@ -9,7 +9,7 @@ Snow::Snow() : Particle(L"Textures/Effect/Snow.png")
 
 	Create();
 
-	blendState[1]->Alpha(true);
+	blendState[1]->SetAlpha(true);
 }
 
 Snow::~Snow()

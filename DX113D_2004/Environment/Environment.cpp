@@ -7,7 +7,7 @@ Environment::Environment()
 
 	mBlendStates[0] = new BlendState();
 	mBlendStates[1] = new BlendState();
-	mBlendStates[1]->Alpha(true);
+	mBlendStates[1]->SetAlpha(true);
 
 	mDepthStates[0] = new DepthStencilState();
 	mDepthStates[1] = new DepthStencilState();

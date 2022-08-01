@@ -13,7 +13,6 @@ PixelInput VS(VertexUV input)
     output.pos = mul(input.pos, world);
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
-    
     output.uv = input.uv;
     
     return output;
@@ -21,5 +20,9 @@ PixelInput VS(VertexUV input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-    return diffuseMap.Sample(samp, input.uv) * mDiffuse;
+    float4 test = diffuseMap.Sample(samp, input.uv);
+    //float4 test = { 0.0f, 0.0f, 0.0f, 1.0f };
+    //test.a = 0.5f;
+    
+    return test;
 }

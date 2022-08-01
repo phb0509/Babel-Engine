@@ -62,9 +62,9 @@ void Effect::Reset()
 		indices, data.maxParticles * 6, true);
 
 	if (data.type == EffectData::BlendType::ADDITIVE)
-		blendState[1]->Additive();
+		blendState[1]->SetAdditive();
 	else
-		blendState[1]->Alpha(true);
+		blendState[1]->SetAlpha(true);
 }
 
 void Effect::Add(Vector3& position)

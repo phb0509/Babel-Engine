@@ -10,7 +10,7 @@ Particle::Particle(wstring diffuseFile)
 
 	blendState[0] = new BlendState();
 	blendState[1] = new BlendState();
-	blendState[1]->Additive();
+	blendState[1]->SetAdditive();
 
 	depthState[0] = new DepthStencilState();
 	depthState[1] = new DepthStencilState();

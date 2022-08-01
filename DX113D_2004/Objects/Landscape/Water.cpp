@@ -12,7 +12,7 @@ Water::Water(float radius) : radius(radius)
 
 	blendState[0] = new BlendState();
 	blendState[1] = new BlendState();
-	blendState[1]->Alpha(true);
+	blendState[1]->SetAlpha(true);
 }
 
 Water::~Water()

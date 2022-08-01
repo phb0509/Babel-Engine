@@ -9,7 +9,7 @@ Rain::Rain()
 	buffer = new RainBuffer;
 	Create();
 
-	blendState[1]->Alpha(true);	
+	blendState[1]->SetAlpha(true);	
 }
 
 Rain::~Rain()

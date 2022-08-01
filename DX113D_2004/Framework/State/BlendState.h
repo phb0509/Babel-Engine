@@ -8,10 +8,10 @@ public:
 	~BlendState();
 
 	void SetState();
-	void Alpha(bool value);
-	void AlphaToCoverage(bool value);
-	void Additive();
-	void Changed();
+	void SetAlpha(bool value);
+	void SetAlphaToCoverage(bool value);
+	void SetAdditive();
+	void Change();
 
 private:
 	ID3D11BlendState* mState;

@@ -47,6 +47,7 @@ MainScene::MainScene() :
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
 	mPlayerStatusBar = new PlayerStatusBar();
+	mPlayerStatusBar->mPosition = { 521.0f, 244.0f,0.0f };
 
 	vector<Collider*> monsters0Obstacles = {};
 
@@ -209,7 +210,7 @@ void MainScene::PostRender()
 	mInstancingMutants->PostRender();
 
 	mPlayerStatusBar->Render();
-	mPlayerStatusBar->PostRender();
+	mPlayerStatusBar->PostRender(); // mPlayerStatusBar ÇÏÀ§ UI 3°³ PostTransformRedner.
 	mPlayerStatusBar->PostTransformRender();
 
 	if (mbIsInstancingMode)

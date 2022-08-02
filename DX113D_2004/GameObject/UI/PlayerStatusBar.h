@@ -12,6 +12,14 @@ public:
 	virtual void Render() override;
 	void PostRender();
 
+	void SetMaxHP(float maxHP) { mMaxHP = maxHP; }
+	void SetCurHP(float curHP) { mCurHP = curHP; }
+	void SetHPRate(float hpRate) { mHPRate = hpRate; }
+
+	void SetMaxMP(float maxMP) { mMaxMP = maxMP; }
+	void SetCurMP(float curMP) { mCurMP = curMP; }
+	void SetMPRate(float mpRate) { mHPRate = mpRate; }
+
 private:
 	Texture* mBackGroundTexture;
 	Texture* mHPBarTexture;
@@ -32,7 +40,5 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
-
-	Vector3 mStandPosition;
 	float mStandScaleOffset;
 };

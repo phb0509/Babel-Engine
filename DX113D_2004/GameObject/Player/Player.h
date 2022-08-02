@@ -122,6 +122,14 @@ private:
 
 	string mTestString = "";
 
+	float mMaxHP;
+	float mCurHP;
+	float mHPRate;
+
+	float mMaxMP;
+	float mCurMP;
+	float mMPRate;
+
 	// UI
 	PlayerStatusBar* mStatusBar;
 

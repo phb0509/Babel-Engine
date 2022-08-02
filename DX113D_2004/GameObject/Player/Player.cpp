@@ -11,7 +11,13 @@ Player::Player():
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
 	mbIsLODTerrain(false),
-	mbIsCheckNormalAttackCollision(false)
+	mbIsCheckNormalAttackCollision(false),
+	mMaxHP(100.0f),
+	mCurHP(100.0f),
+	mHPRate(1.0f),
+	mMaxMP(100.0f),
+	mCurMP(100.0f),
+	mMPRate(1.0f)
 {
 	SetTag("Player");
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -41,7 +47,8 @@ Player::Player():
 	UpdateWorld();
 
 	mStatusBar = new PlayerStatusBar();
-	mStatusBar->mPosition = { 521.0f, 244.0f,0.0f };
+	mStatusBar->SetTag("PlayerStatusBar");
+	
 	
 }
 
@@ -513,7 +520,7 @@ void Player::PostRender()
 
 	ImGui::End();
 
-	mStatusBar->PostRender();
+	mStatusBar->PostTransformRender();
 }
 
 void Player::UIRender()

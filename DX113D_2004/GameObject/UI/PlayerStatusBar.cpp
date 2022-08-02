@@ -56,38 +56,46 @@ PlayerStatusBar::PlayerStatusBar() :
 	mPortraitBackGroundUI->mScale = { textureWidth * mStandScaleOffset, textureHeight * mStandScaleOffset , 0.0f };
 
 	// 최상위객체 시작지점. 고정값. 고정윈도우크기(1600,900)를 기준으로하는 시작지점.
-	mStandPosition.x = 312.75f;
-	mStandPosition.y = 110.25f;
+	this->mPosition.x = 312.75f;
+	this->mPosition.y = 110.25f;
+	this->mPosition.z = 0.0f;
 
 	// Offset값 적용.
-	mBackGroundUI->mPosition = mStandPosition;
-	mHPBarUI->mPosition = { mStandPosition.x + 101.2f * mStandScaleOffset , mStandPosition.y + 42.73f * mStandScaleOffset, 0.0f };
-	mMPBarUI->mPosition = { mStandPosition.x + 52.0f * mStandScaleOffset, mStandPosition.y - 13.3f * mStandScaleOffset, 0.0f };
-	mPortraitUI->mPosition = { mStandPosition.x - 216.0f * mStandScaleOffset, mStandPosition.y - 2.67f * mStandScaleOffset, 0.0f };
+	mBackGroundUI->mPosition = this->mPosition;
+	mHPBarUI->mPosition = { this->mPosition.x + 101.2f * mStandScaleOffset , this->mPosition.y + 42.73f * mStandScaleOffset, 0.0f };
+	mMPBarUI->mPosition = { this->mPosition.x + 52.0f * mStandScaleOffset, this->mPosition.y - 13.3f * mStandScaleOffset, 0.0f };
+	mPortraitUI->mPosition = { this->mPosition.x - 216.0f * mStandScaleOffset, this->mPosition.y - 2.67f * mStandScaleOffset, 0.0f };
 	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
 }
 
 PlayerStatusBar::~PlayerStatusBar()
 {
-	GM->SafeDelete(mBackGroundUI);
 	GM->SafeDelete(mHPBarUI);
 	GM->SafeDelete(mMPBarUI);
+	GM->SafeDelete(mPortraitBackGroundUI);
 	GM->SafeDelete(mPortraitUI);
+	GM->SafeDelete(mBackGroundUI);
 }
 
 void PlayerStatusBar::Update()
 {
+	mBackGroundUI->mPosition = this->mPosition;
+	mHPBarUI->mPosition = { this->mPosition.x + 101.2f * mStandScaleOffset , this->mPosition.y + 42.73f * mStandScaleOffset, 0.0f };
+	mMPBarUI->mPosition = { this->mPosition.x + 52.0f * mStandScaleOffset, this->mPosition.y - 13.3f * mStandScaleOffset, 0.0f };
+	mPortraitUI->mPosition = { this->mPosition.x - 216.0f * mStandScaleOffset, this->mPosition.y - 2.67f * mStandScaleOffset, 0.0f };
+	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
+
 	mHPRate = mCurHP / mMaxHP;
 	mHPBarUI->SetWidthRatio(mHPRate);
 	mMPBarUI->SetWidthRatio(mMPRate);
 
 	UpdateWorld();
-	mBackGroundUI->Update();
+
 	mHPBarUI->Update();
 	mMPBarUI->Update();
-	mPortraitUI->Update();
 	mPortraitBackGroundUI->Update();
-	
+	mPortraitUI->Update();
+	mBackGroundUI->Update();
 }
 
 void PlayerStatusBar::Render()
@@ -101,11 +109,11 @@ void PlayerStatusBar::Render()
 
 void PlayerStatusBar::PostRender()
 {
-	mBackGroundUI->PostTransformRender();
-	mHPBarUI->PostTransformRender();
-	mMPBarUI->PostTransformRender();
-	mPortraitUI->PostTransformRender();
-	mPortraitBackGroundUI->PostTransformRender();
+	//mBackGroundUI->PostTransformRender();
+	//mHPBarUI->PostTransformRender();
+	//mMPBarUI->PostTransformRender();
+	//mPortraitUI->PostTransformRender();
+	//mPortraitBackGroundUI->PostTransformRender();
 }
 
 void PlayerStatusBar::Hide()

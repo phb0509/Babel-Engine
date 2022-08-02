@@ -31,7 +31,10 @@ float4 PS(PixelInput input) : SV_Target
 
     if (input.uv.x >= widthRatio)
     {
-        test.a = 0.0f;
+        if (test.a != 0)
+        {
+            test = float4(0.0f, 0.0f, 0.0f, 1.0f);
+        }  
     }
 
     return test;

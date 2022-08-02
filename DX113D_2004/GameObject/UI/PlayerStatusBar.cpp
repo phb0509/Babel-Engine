@@ -2,13 +2,13 @@
 
 
 PlayerStatusBar::PlayerStatusBar() :
-    mCurHP(1.0f),
-    mMaxHP(1.0f),
-    mHPRate(1.0f),
-    mCurMP(1.0f),
-    mMaxMP(1.0f),
-    mMPRate(1.0f),
-    mStandScaleOffset(1.0f)
+	mCurHP(1.0f),
+	mMaxHP(1.0f),
+	mHPRate(1.0f),
+	mCurMP(1.0f),
+	mMaxMP(1.0f),
+	mMPRate(1.0f),
+	mStandScaleOffset(1.0f)
 {
 	mBackGroundTexture = Texture::Add(L"UI_Resource/Player_Status/Status_BackGround.png");
 	mHPBarTexture = Texture::Add(L"UI_Resource/Player_Status/HP_Bar.png");
@@ -24,8 +24,7 @@ PlayerStatusBar::PlayerStatusBar() :
 	mBackGroundUI->SetSRV(mBackGroundTexture->GetSRV());
 	mBackGroundUI->SetTag("PlayerStatusBarBackGround");
 	mBackGroundUI->mScale = { textureWidth * mStandScaleOffset,textureHeight * mStandScaleOffset ,0.0f };
-	
-	//mHPBarUI = new UIImage(L"VariableTexture");
+
 	mHPBarUI = new UIImage(L"VariableTexture");
 	mHPBarUI->SetSRV(mHPBarTexture->GetSRV());
 	mHPBarUI->SetTag("PlayerHPBar");
@@ -33,7 +32,6 @@ PlayerStatusBar::PlayerStatusBar() :
 	textureHeight = mHPBarTexture->GetHeight();
 	mHPBarUI->mScale = { textureWidth * mStandScaleOffset,textureHeight * mStandScaleOffset ,0.0f };
 
-	//mMPBarUI = new UIImage(L"VariableTexture");
 	mMPBarUI = new UIImage(L"VariableTexture");
 	mMPBarUI->SetSRV(mMPBarTexture->GetSRV());
 	mMPBarUI->SetTag("PlayerMPBar");
@@ -68,6 +66,8 @@ PlayerStatusBar::PlayerStatusBar() :
 	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
 }
 
+
+
 PlayerStatusBar::~PlayerStatusBar()
 {
 	GM->SafeDelete(mHPBarUI);
@@ -84,6 +84,7 @@ void PlayerStatusBar::Update()
 	mMPBarUI->mPosition = { this->mPosition.x + 52.0f * mStandScaleOffset, this->mPosition.y - 13.3f * mStandScaleOffset, 0.0f };
 	mPortraitUI->mPosition = { this->mPosition.x - 216.0f * mStandScaleOffset, this->mPosition.y - 2.67f * mStandScaleOffset, 0.0f };
 	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
+
 
 	mHPRate = mCurHP / mMaxHP;
 	mHPBarUI->SetWidthRatio(mHPRate);
@@ -109,16 +110,15 @@ void PlayerStatusBar::Render()
 
 void PlayerStatusBar::PostRender()
 {
-	//mBackGroundUI->PostTransformRender();
-	//mHPBarUI->PostTransformRender();
-	//mMPBarUI->PostTransformRender();
-	//mPortraitUI->PostTransformRender();
-	//mPortraitBackGroundUI->PostTransformRender();
+	mBackGroundUI->PostTransformRender();
+	mHPBarUI->PostTransformRender();
+	mMPBarUI->PostTransformRender();
+	mPortraitUI->PostTransformRender();
+	mPortraitBackGroundUI->PostTransformRender();
 }
 
 void PlayerStatusBar::Hide()
 {
-	
 }
 
 void PlayerStatusBar::Show()

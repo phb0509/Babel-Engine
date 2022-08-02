@@ -48,8 +48,6 @@ Player::Player():
 
 	mStatusBar = new PlayerStatusBar();
 	mStatusBar->SetTag("PlayerStatusBar");
-	
-	
 }
 
 Player::~Player()
@@ -521,6 +519,7 @@ void Player::PostRender()
 	ImGui::End();
 
 	mStatusBar->PostTransformRender();
+	mStatusBar->PostRender();
 }
 
 void Player::UIRender()

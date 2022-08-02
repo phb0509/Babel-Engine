@@ -41,4 +41,19 @@ private:
 	float mMaxMP;
 	float mMPRate;
 	float mStandScaleOffset;
+
+	
+	Vector3 testPosition;
+
+	Texture* mMonsterBackGroundTexture;
+	Texture* mMonsterHPBarTexture;
+	Texture* mMonsterMPBarTexture;
+	Texture* mMonsterPortraitTexture;
+	Texture* mMonsterPortraitBackGroundTexture;
+			  
+	UIImage* mMonsterBackGroundUI;
+	UIImage* mMonsterHPBarUI;
+	UIImage* mMonsterMPBarUI;
+	UIImage* mMonsterPortraitUI;
+	UIImage* mMonsterPortraitBackGroundUI;
 };

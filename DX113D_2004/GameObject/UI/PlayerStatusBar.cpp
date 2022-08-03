@@ -18,7 +18,7 @@ PlayerStatusBar::PlayerStatusBar() :
 
 	float textureWidth = mBackGroundTexture->GetWidth();
 	float textureHeight = mBackGroundTexture->GetHeight();
-	mStandScaleOffset = 3 / 4.0f * WIN_WIDTH / MAIN_WIN_WIDTH;
+	mStandScaleOffset = 3/4.0f * WIN_WIDTH / MAIN_WIN_WIDTH;
 
 	mBackGroundUI = new UIImage(L"Texture");
 	mBackGroundUI->SetSRV(mBackGroundTexture->GetSRV());
@@ -53,7 +53,7 @@ PlayerStatusBar::PlayerStatusBar() :
 	textureHeight = mPortraitBackGroundTexture->GetHeight();
 	mPortraitBackGroundUI->mScale = { textureWidth * mStandScaleOffset, textureHeight * mStandScaleOffset , 0.0f };
 
-	// 최상위객체 시작지점. 고정값. 고정윈도우크기(1600,900)를 기준으로하는 시작지점.
+	// 최상위객체 시작지점. 고정값. 고정윈도우크기(1280,720)를 기준으로하는 시작지점.
 	this->mPosition.x = 312.75f;
 	this->mPosition.y = 110.25f;
 	this->mPosition.z = 0.0f;

@@ -24,29 +24,31 @@ private:
 
 	
 private:
+	// Texture
 	Texture* mBackGroundTexture;
 	Texture* mHPBarTexture;
 	Texture* mMPBarTexture;
 	Texture* mPortraitTexture;
 	Texture* mPortraitBackGroundTexture;
 
+	// UIImage
 	UIImage* mBackGroundUI;
 	UIImage* mHPBarUI;
 	UIImage* mMPBarUI;
 	UIImage* mPortraitUI;
 	UIImage* mPortraitBackGroundUI;
 
-	//mHPBarUI->Render();
-	//mMPBarUI->Render();
-	//mPortraitBackGroundUI->Render();
-	//mPortraitUI->Render();
-	//mBackGroundUI->Render();
-
+	// TextureSize
 	pair<float, float> mBackGroundTextureSize;
 	pair<float, float> mHPBarTextureSize;
 	pair<float, float> mMPBarTextureSize;
 	pair<float, float> mPortraitTextureSize;
 	pair<float, float> mPortraitBackGroundTextureSize;
+
+	// Offset
+	pair<float, float> mHPBarUIPositionOffset;
+	pair<float, float> mMPBarUIPositionOffset;
+	pair<float, float> mPortraitUIPositionOffset;
 
 	float mCurHP;
 	float mMaxHP;
@@ -55,20 +57,4 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
-	float mStandScaleOffsetX;
-	float mStandScaleOffsetY;
-
-	Vector3 testPosition;
-
-	Texture* mMonsterBackGroundTexture;
-	Texture* mMonsterHPBarTexture;
-	Texture* mMonsterMPBarTexture;
-	Texture* mMonsterPortraitTexture;
-	Texture* mMonsterPortraitBackGroundTexture;
-			  
-	UIImage* mMonsterBackGroundUI;
-	UIImage* mMonsterHPBarUI;
-	UIImage* mMonsterMPBarUI;
-	UIImage* mMonsterPortraitUI;
-	UIImage* mMonsterPortraitBackGroundUI;
 };

@@ -7,9 +7,7 @@ PlayerStatusBar::PlayerStatusBar() :
 	mHPRate(1.0f),
 	mCurMP(1.0f),
 	mMaxMP(1.0f),
-	mMPRate(1.0f),
-	mStandScaleOffsetX(1.0f),
-	mStandScaleOffsetY(1.0f)
+	mMPRate(1.0f)
 {
 	mBackGroundTexture = Texture::Add(L"UI_Resource/Player_Status/Status_BackGround.png");
 	mHPBarTexture = Texture::Add(L"UI_Resource/Player_Status/HP_Bar.png");
@@ -46,9 +44,12 @@ PlayerStatusBar::PlayerStatusBar() :
 	mPortraitBackGroundUI->SetTag("PortraitBackGroundUI");
 	mPortraitBackGroundTextureSize = make_pair(mPortraitBackGroundTexture->GetWidth(), mPortraitBackGroundTexture->GetHeight());
 	mPortraitBackGroundUI->mScale = { mPortraitBackGroundTextureSize.first, mPortraitBackGroundTextureSize.second, 0.0f };
+
+	// Offset
+	mHPBarUIPositionOffset = make_pair(294.737f, 147.368f);
+	mMPBarUIPositionOffset = make_pair(307.0f, 100.465f);
+	mPortraitUIPositionOffset = make_pair(70.0f, 0.0f);
 }
-
-
 
 PlayerStatusBar::~PlayerStatusBar()
 {
@@ -67,9 +68,9 @@ void PlayerStatusBar::Update()
 	Vector3 standScale = this->mScale;
 
 	mBackGroundUI->mPosition = standPosition;
-	mHPBarUI->mPosition = { standPosition.x + 294.737f * standScale.x, standPosition.y + 147.368f * standScale.y, 0.0f };
-	mMPBarUI->mPosition = { standPosition.x + 307.0f * standScale.x, standPosition.y + 100.465f * standScale.y, 0.0f };
-	mPortraitUI->mPosition = { standPosition.x + 70.0f * standScale.x, standPosition.y, 0.0f };
+	mHPBarUI->mPosition = { standPosition.x + mHPBarUIPositionOffset.first * standScale.x, standPosition.y + mHPBarUIPositionOffset.second * standScale.y, 0.0f };
+	mMPBarUI->mPosition = { standPosition.x + mMPBarUIPositionOffset.first * standScale.x, standPosition.y + mMPBarUIPositionOffset.second * standScale.y, 0.0f };
+	mPortraitUI->mPosition = { standPosition.x + mPortraitUIPositionOffset.first *standScale.x, standPosition.y, 0.0f };
 	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
 
 	

@@ -16,14 +16,30 @@ public:
 	void SetPortraitTexture(Texture* portraitTexture) { mPortraitTexture = portraitTexture; }
 
 private:
+	// Texture
 	Texture* mBackGroundTexture;
 	Texture* mHPBarTexture;
 	Texture* mMPBarTexture;
 	Texture* mPortraitTexture;
+	Texture* mPortraitBackGroundTexture;
 
+	// UIImage
 	UIImage* mBackGroundUI;
 	UIImage* mHPBarUI;
 	UIImage* mMPBarUI;
+	UIImage* mPortraitUI;
+	UIImage* mPortraitBackGroundUI;
+
+	// TextureSize
+	pair<float, float> mBackGroundTextureSize;
+	pair<float, float> mHPBarTextureSize;
+	pair<float, float> mMPBarTextureSize;
+	pair<float, float> mPortraitTextureSize;
+	pair<float, float> mPortraitBackGroundTextureSize;
+
+	// Offset
+	pair<float, float> mHPBarUIPositionOffset;
+	pair<float, float> mMPBarUIPositionOffset;
 
 	float mCurHP;
 	float mMaxHP;
@@ -32,8 +48,8 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
+	float mStandScaleOffsetX;
+	float mStandScaleOffsetY;
 
-	Vector3 mStandPosition;
-	float mStandScaleOffset;
 	Camera* mCamera;
 };

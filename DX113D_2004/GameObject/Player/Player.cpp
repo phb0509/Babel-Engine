@@ -48,6 +48,9 @@ Player::Player():
 
 	mStatusBar = new PlayerStatusBar();
 	mStatusBar->SetTag("PlayerStatusBar");
+
+	mTestBar = new MonsterStatusBar();
+	mTestBar->SetTag("MonsterStatusBar");
 }
 
 Player::~Player()
@@ -69,6 +72,7 @@ void Player::Update()
 	}
 
 	mStatusBar->Update();
+	mTestBar->Update();
 
 	setColliders();
 	updateCamera();
@@ -518,11 +522,15 @@ void Player::PostRender()
 
 	ImGui::End();
 
-	mStatusBar->PostTransformRender();
-	mStatusBar->PostRender();
+	/*mStatusBar->PostTransformRender();
+	mStatusBar->PostRender();*/
+
+	mTestBar->PostTransformRender();
+	mTestBar->PostRender();
 }
 
 void Player::UIRender()
 {
-	mStatusBar->Render();
+	//mStatusBar->Render();
+	mTestBar->Render();
 }

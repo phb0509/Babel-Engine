@@ -85,10 +85,16 @@ void UIImage::Render()
 void UIImage::createMesh()
 {
 	VertexUV vertices[4];
-	vertices[0].position = { -0.5f, -0.5f, 0.0f };
-	vertices[1].position = { -0.5f, +0.5f, 0.0f };
-	vertices[2].position = { +0.5f, -0.5f, 0.0f };
-	vertices[3].position = { +0.5f, +0.5f, 0.0f };
+	//vertices[0].position = { -0.5f, -0.5f, 0.0f };
+	//vertices[1].position = { -0.5f, +0.5f, 0.0f };
+	//vertices[2].position = { +0.5f, -0.5f, 0.0f };
+	//vertices[3].position = { +0.5f, +0.5f, 0.0f };
+
+
+	vertices[0].position = {  0.0f,  0.0f, 0.0f };
+	vertices[1].position = {  0.0f, +1.0f, 0.0f };
+	vertices[2].position = { +1.0f,  0.0f, 0.0f };
+	vertices[3].position = { +1.0f, +1.0f, 0.0f };
 
 	vertices[0].uv = { 0, 1 };
 	vertices[1].uv = { 0, 0 };

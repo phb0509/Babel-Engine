@@ -75,9 +75,13 @@ void Transform::PostTransformRender()
 	string beginName = mTag + " Transform";
 
 	ImGui::Begin(beginName.c_str());
-	ImGui::SliderFloat3("Position" , (float*)&mPosition, 0, 1200, "%.3f");
+	ImGui::SliderFloat3("Translation" , (float*)&mPosition, 0, 1200, "%.3f");
 	ImGui::SliderFloat3("Rotation", (float*)&mRotation, -1.0f, 1.0f, "%.3f");
 	ImGui::SliderFloat3("Scale", (float*)&mScale, 0.0f, 1000.0f, "%.3f");
+	SpacingRepeatedly(1);
+	ImGui::InputFloat3("Input Translation", (float*)&mPosition);
+	ImGui::InputFloat3("Input Rptation", (float*)&mRotation);
+	ImGui::InputFloat3("Input Scale", (float*)&mScale);
 	ImGui::End();
 }
 

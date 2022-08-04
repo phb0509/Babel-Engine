@@ -5,15 +5,15 @@
 
 
 
-//const static int MAIN_WIN_WIDTH = 1600;
-//const static int MAIN_WIN_HEIGHT = 900;
-//const static int WIN_WIDTH = 1600;
-//const static int WIN_HEIGHT = 900;
-
 const static int MAIN_WIN_WIDTH = 1280;
 const static int MAIN_WIN_HEIGHT = 720;
-const static int WIN_WIDTH = 550;
-const static int WIN_HEIGHT = 300;
+const static int WIN_WIDTH = 1600;
+const static int WIN_HEIGHT = 900;
+
+//const static int MAIN_WIN_WIDTH = 1280;
+//const static int MAIN_WIN_HEIGHT = 720;
+//const static int WIN_WIDTH = 1280;
+//const static int WIN_HEIGHT = 720;
 
 //#define WIN_WIDTH 1920
 //#define WIN_HEIGHT 1080

@@ -21,6 +21,9 @@ public:
 	void SetMPRate(float mpRate) { mHPRate = mpRate; }
 
 private:
+
+	
+private:
 	Texture* mBackGroundTexture;
 	Texture* mHPBarTexture;
 	Texture* mMPBarTexture;
@@ -33,6 +36,18 @@ private:
 	UIImage* mPortraitUI;
 	UIImage* mPortraitBackGroundUI;
 
+	//mHPBarUI->Render();
+	//mMPBarUI->Render();
+	//mPortraitBackGroundUI->Render();
+	//mPortraitUI->Render();
+	//mBackGroundUI->Render();
+
+	pair<float, float> mBackGroundTextureSize;
+	pair<float, float> mHPBarTextureSize;
+	pair<float, float> mMPBarTextureSize;
+	pair<float, float> mPortraitTextureSize;
+	pair<float, float> mPortraitBackGroundTextureSize;
+
 	float mCurHP;
 	float mMaxHP;
 	float mHPRate;
@@ -40,9 +55,9 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
-	float mStandScaleOffset;
+	float mStandScaleOffsetX;
+	float mStandScaleOffsetY;
 
-	
 	Vector3 testPosition;
 
 	Texture* mMonsterBackGroundTexture;

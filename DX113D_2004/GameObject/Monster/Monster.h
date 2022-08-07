@@ -11,11 +11,9 @@ public:
 	~Monster();
 
 	virtual void Update() = 0;
-	virtual void UIUpdate();
 	virtual void InstanceUpdate() = 0;
 	virtual void PreRender() = 0;
 	virtual void Render() = 0;
-	virtual void UIRender();
 	virtual Collider* GetHitCollider() = 0;
 	virtual bool CheckIsCollision(Collider* collider) = 0;
 	virtual void OnDamage(AttackInformation attackInformation) = 0;
@@ -28,6 +26,9 @@ public:
 	virtual void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) = 0;
 	virtual void ReActivation() = 0;
 	
+	virtual void UIUpdate();
+	virtual void UIRender();
+
 	void MoveToDestUsingAStar(Vector3 dest);
 	void ChangeState(MonsterState* nextState);
 
@@ -60,6 +61,7 @@ public:
 	void SetIsCompletedAnim(bool value) { mbIsCompletedAnim = value; }
 	void SetIsStartedAnim(bool value) { mbIsStartedAnim = value; }
 	void SetPortraitTexture(Texture* texture);
+	void SetCurMainCamera(Camera* mainCamera);
 	
 private:
 	void setObstaclesTerrain(Vector3 destPos);
@@ -70,6 +72,7 @@ protected:
 	float mMaxHP;
 	float mCurHP;
 
+	Camera* mCurMainCamera;
 	Terrain* mTerrain;
 	Player* mPlayer;
 	AStar* mAStar;

@@ -17,7 +17,7 @@ Camera::Camera():
 	mFrustum = new Frustum(mFoV,mAspectRatio,mDistanceToNearZ,mDistanceToFarZ);
 
 	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
-	createOrthographicProjectionBuffer();
+	createOrthographicProjectionBuffer(mDistanceToNearZ, mDistanceToFarZ);
 }
 
 Camera::~Camera()
@@ -127,7 +127,7 @@ void Camera::SetProjectionOption(float FoV, float aspectRatio, float distanceToN
 	mFrustum = new Frustum(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
 
 	createPerspectiveProjectionBuffer(mFoV, mAspectRatio, mDistanceToNearZ, mDistanceToFarZ);
-	createOrthographicProjectionBuffer();
+	createOrthographicProjectionBuffer(mDistanceToNearZ, mDistanceToFarZ);
 }
 
 void Camera::SetFoV(float fov)
@@ -268,14 +268,14 @@ void Camera::createPerspectiveProjectionBuffer(float fov,float aspectRatio, floa
 	mPerspectiveProjectionBuffer->SetMatrix(mPerspectiveProjectionMatrix);
 }
 
-void Camera::createOrthographicProjectionBuffer()
+void Camera::createOrthographicProjectionBuffer(float distanceToNearZ, float distanceToFarZ)
 {
 	if (mOrthographicProjectionBuffer != nullptr)
 	{
 		delete mOrthographicProjectionBuffer;
 	}
 
-	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 0.01f, 1000.0f);
+	mOrthographicProjectionMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, distanceToNearZ, distanceToFarZ);
 	mOrthographicProjectionBuffer = new ProjectionBuffer();
 	mOrthographicProjectionBuffer->SetMatrix(mOrthographicProjectionMatrix);
 }

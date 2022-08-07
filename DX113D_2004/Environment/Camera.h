@@ -48,7 +48,7 @@ public:
 private:
 	void initialize();
 	void createPerspectiveProjectionBuffer(float fov, float aspectRatio, float distanceToNearZ, float distanceToFarZ);
-	void createOrthographicProjectionBuffer();
+	void createOrthographicProjectionBuffer(float distanceToNearZ, float distanceToFarZ);
 
 public:
 	float mMoveSpeed;

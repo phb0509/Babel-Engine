@@ -132,6 +132,4 @@ private:
 
 	// UI
 	PlayerStatusBar* mStatusBar;
-	MonsterStatusBar* mTestBar;
-
 };

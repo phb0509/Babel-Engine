@@ -30,6 +30,8 @@ public:
 	virtual void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) override;
 	virtual void ReActivation() override;
 
+	
+private:
 	void setStalkingState();
 
 private:

@@ -14,6 +14,7 @@ public:
 	void PreRender();
 	void Render();
 	void PostRender();
+	void UIRender();
 	void RenderDebugMode();
 
 	vector<Monster*> GetInstanceObjects() { return mInstanceObjects; }
@@ -22,7 +23,7 @@ public:
 	void SetAnimationStates(eMutantAnimationStates animationStates) { mAnimationState = animationStates; }
 	void SetIdle(int instanceIndex);
 	void SetAnimation(int instanceIndex, eMutantAnimationStates value);
-	void SetCamera(Camera* camera) { mCamera = camera; }
+	void SetCurMainCamera(Camera* mainCamera);
 
 private:
 	void setColliders();
@@ -33,7 +34,6 @@ private:
 	void updateStartedAnimIndices(bool value);
 
 private:
-	Camera* mCamera;
 	int mInstanceCount;
 	vector<Monster*> mInstanceObjects;
 	eMutantAnimationStates mAnimationState;

@@ -55,13 +55,14 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 5;
-	int column = 5;
+	int row = 1;
+	int column = 1;
 
 	mMutantInstanceCount = row * column;
 
 	mInstancingMutants = new InstancingMutants(mMutantInstanceCount, mTerrain); // ModelAnimators
 	mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default´Â ÀÏ´Ü WorldMode.
+	mInstancingMutants->SetCurMainCamera(mWorldCamera);
 	mInstancingMutants->SetIsFrustumCullingMode(true);
 	mInstanceMutants = mInstancingMutants->GetInstanceObjects(); // InstanceObjectsVector
 
@@ -207,13 +208,8 @@ void MainScene::PostRender()
 	mDirectionalLight->PostRender();
 	mGBuffer->PostRender();
 	mInstancingMutants->PostRender();
+	mInstancingMutants->UIRender();
 	
-
-	if (mbIsInstancingMode)
-	{
-		mInstancingMutants->PostRender();
-	}
-
 	ImGui::Begin("Camera Info");
 	ImGui::Text("SelectCamera");
 

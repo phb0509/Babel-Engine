@@ -10,8 +10,8 @@ Billboard::Billboard(wstring diffuseFile)
 
 Billboard::~Billboard()
 {
-	delete mMaterial;
-	delete mMesh;
+	GM->SafeDelete(mMaterial);
+	GM->SafeDelete(mMesh);
 }
 
 void Billboard::Update()

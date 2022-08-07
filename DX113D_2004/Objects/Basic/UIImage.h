@@ -8,24 +8,28 @@ public:
 
 	virtual void Update();
 	virtual void Render();
+	void RenderTargetUI();
 	
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->mSRV = srv; }
 	void SetWidthRatio(float widthRatio) { mWidthRatio = widthRatio; }
 	void SetHeightRatio(float heightRatio) { mHeightRatio = heightRatio; }
 	void SetIsUsedUI(bool isUsed) { mbIsUsedUI = isUsed; }
-	void SetIsTargetMode(bool isTargetMode) { mbIsTargetMode = isTargetMode; }
-	void SetCamera(Camera* camera) { mCamera = camera; }
+	void SetCurMainCamera(Camera* mainCamera) { mCurMainCamera = mainCamera; }
 
 private:
 	void createMesh();
-	void createTargetBuffer();
+	void createMainUIBuffer();
+	void createTargetUIBuffer();
 
 protected:
 	Material* mMaterial;
 	Mesh* mMesh;
 	ID3D11ShaderResourceView* mSRV;
 
-	Camera* mCamera;
+	Camera* mCurMainCamera;
+
+	ViewBuffer* mMainViewBuffer;
+	ProjectionBuffer* mMainProjectionBuffer;
 
 	ViewBuffer* mTargetViewBuffer;
 	ProjectionBuffer* mTargetProjectionBuffer;
@@ -38,6 +42,4 @@ protected:
 	float mHeightRatio;
 
 	bool mbIsUsedUI;
-	bool mbIsTargetMode;
-	
 };

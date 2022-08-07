@@ -29,12 +29,14 @@ Monster::Monster() :
 	mRotationPeriodFuncPointer = bind(&Transform::RotateToDestinationForModel, this, placeholders::_1, placeholders::_2);
 
 	mPathNodesCheck.assign(true, mPathNodesCheckSize);
+	mStatusBar = new MonsterStatusBar();
 }
 
 Monster::~Monster()
 {
-	delete mAStar;
-	delete mModelAnimator;
+	GM->SafeDelete(mAStar);
+	GM->SafeDelete(mModelAnimator);
+	GM->SafeDelete(mStatusBar);
 }
 
 void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Update.
@@ -55,6 +57,12 @@ void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Upda
 void Monster::SetPortraitTexture(Texture* texture)
 {
 	
+}
+
+void Monster::SetCurMainCamera(Camera* mainCamera)
+{
+	mCurMainCamera = mainCamera; 
+	mStatusBar->SetCurMainCamera(mainCamera);
 }
 
 void Monster::setObstaclesTerrain(Vector3 destPos)
@@ -280,6 +288,9 @@ void Monster::ChangeState(MonsterState* nextState)
 
 void Monster::UIUpdate()
 {
+	//mStatusBar->mPosition = { this->mPosition.x, this->mPosition.y + 5.0f, this->mPosition.z };
+	//mStatusBar->mPosition = WorldToScreen(this->mPosition, mCurMainCamera);
+	mStatusBar->mPosition = this->mPosition;
 	mStatusBar->Update();
 }
 

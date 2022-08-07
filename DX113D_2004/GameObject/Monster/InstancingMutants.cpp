@@ -23,11 +23,10 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 		Monster* temp = new InstanceMutant();
 		temp->SetInstanceCollider(mInstanceColliderDatas[i]);
 		temp->SetUpperFrameBuffer(mFrameBuffer);
-		
 		string tagName = to_string(i) + " Mutant";
 		temp->SetTag(tagName);
 		mInstanceObjects.push_back(temp);
-		ModelAnimators::AddTransform(mInstanceObjects[i]->GetTransform());
+		ModelAnimators::AddTransform(temp->GetTransform());
 	}
 }
 
@@ -71,6 +70,16 @@ void InstancingMutants::PostRender()
 	showInstanceInformation();
 }
 
+void InstancingMutants::UIRender()
+{
+	for (int i = 0; i < mRenderedInstanceIndices.size(); i++) // 실제 렌더되는 인스턴스들 인덱스
+	{
+		int renderedInstanceIndex = mRenderedInstanceIndices[i];
+
+		mInstanceObjects[renderedInstanceIndex]->UIRender();
+	}
+}
+
 void InstancingMutants::RenderDebugMode()
 {
 	if (DM->GetIsDebugMode())
@@ -105,6 +114,16 @@ void InstancingMutants::SetAnimation(int instanceIndex, eMutantAnimationStates v
 	{
 		mInstanceObjects[instanceIndex]->SetAnimation(animationState);
 		ModelAnimators::PlayClip(instanceIndex, static_cast<UINT>(value));
+	}
+}
+
+void InstancingMutants::SetCurMainCamera(Camera* mainCamera)
+{
+	mCurMainCamera = mainCamera; 
+	
+	for (Monster* monster : mInstanceObjects)
+	{
+		monster->SetCurMainCamera(mainCamera);
 	}
 }
 

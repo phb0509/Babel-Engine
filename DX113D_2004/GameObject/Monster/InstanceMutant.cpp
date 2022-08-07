@@ -30,6 +30,7 @@ InstanceMutant::~InstanceMutant()
 	GM->SafeDelete(mAttackState);
 	GM->SafeDelete(mOnDamageState);
 	GM->SafeDelete(mDieState);
+
 }
 
 void InstanceMutant::Update()
@@ -38,6 +39,8 @@ void InstanceMutant::Update()
 
 	mCurrentFSMState->Execute(this);
 	UpdateWorld();
+
+	UIUpdate();
 }
 
 void InstanceMutant::InstanceUpdate()

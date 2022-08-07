@@ -12,8 +12,11 @@ public:
 	virtual void Render() override;
 	void PostRender();
 
-	void SetCamera(Camera* camera);
-	void SetPortraitTexture(Texture* portraitTexture) { mPortraitTexture = portraitTexture; }
+	void SetCurMainCamera(Camera* mainCamera);
+	void SetPortraitTexture(Texture* portraitTexture);
+
+private:
+	void initialize();
 
 private:
 	// Texture
@@ -51,5 +54,6 @@ private:
 	float mStandScaleOffsetX;
 	float mStandScaleOffsetY;
 
-	Camera* mCamera;
+	Camera* mCurMainCamera;
+	bool mbIsInitialize;
 };

@@ -49,6 +49,8 @@ PlayerStatusBar::PlayerStatusBar() :
 	mHPBarUIPositionOffset = make_pair(294.737f, 147.368f);
 	mMPBarUIPositionOffset = make_pair(307.0f, 100.465f);
 	mPortraitUIPositionOffset = make_pair(70.0f, 0.0f);
+
+	this->mScale *= 0.6f;
 }
 
 PlayerStatusBar::~PlayerStatusBar()
@@ -62,8 +64,6 @@ PlayerStatusBar::~PlayerStatusBar()
 
 void PlayerStatusBar::Update()
 {
-	//mStandScaleOffsetX = this->mScale.x * WIN_WIDTH / MAIN_WIN_WIDTH;
-	//mStandScaleOffsetY = this->mScale.y * WIN_HEIGHT / MAIN_WIN_HEIGHT;
 	Vector3 standPosition = this->mPosition;
 	Vector3 standScale = this->mScale;
 

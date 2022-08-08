@@ -43,4 +43,6 @@ private:
 	vector<TempCollider> mTempColliderSRTdatas;
 	vector<ColliderData> mTempColliderDatas;
 	vector<InstanceColliderData> mInstanceColliderDatas;
+
+	Vector3 mUIOffset;
 };

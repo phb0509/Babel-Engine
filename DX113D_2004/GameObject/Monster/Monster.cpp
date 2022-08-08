@@ -56,7 +56,7 @@ void Monster::SetAStarPath(Vector3 destPos) // 목표지점으로 경로설정. mPath Upda
 
 void Monster::SetPortraitTexture(Texture* texture)
 {
-	
+	mStatusBar->SetPortraitTexture(texture);
 }
 
 void Monster::SetCurMainCamera(Camera* mainCamera)
@@ -288,13 +288,17 @@ void Monster::ChangeState(MonsterState* nextState)
 
 void Monster::UIUpdate()
 {
-	//mStatusBar->mPosition = { this->mPosition.x, this->mPosition.y + 5.0f, this->mPosition.z };
-	//mStatusBar->mPosition = WorldToScreen(this->mPosition, mCurMainCamera);
-	mStatusBar->mPosition = this->mPosition;
+	Vector3 prevPosition = { mPosition.x, mPosition.y + 8.0f, mPosition.z };
+
+	Vector3 screenPosition = WorldToScreen(prevPosition, mCurMainCamera);
+	
+	mStatusBar->mPosition = screenPosition + mUIOffset;
 	mStatusBar->Update();
 }
 
 void Monster::UIRender()
 {
 	mStatusBar->Render();
+	//mStatusBar->PostTransformRender();
+	//mStatusBar->PostRender();
 }

@@ -6,7 +6,7 @@ Player::Player():
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
-	mNormalAttackDamage(34.0f),
+	mNormalAttackDamage(1.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -225,8 +225,7 @@ void Player::rotateInTargetMode()
 	{
 		if (CompareFloat(mTargetCameraForward.x, -GetForwardVector().x) &&
 			CompareFloat(mTargetCameraForward.z, -GetForwardVector().z))
-		{
-		}
+		{}
 		else
 		{
 			mRotation.y += rotationSpeed;
@@ -237,18 +236,18 @@ void Player::rotateInTargetMode()
 	{
 		if (CompareFloat(mTargetCameraForward.x, -GetForwardVector().x) &&
 			CompareFloat(mTargetCameraForward.z, -GetForwardVector().z))
-		{
-		}
+		{}
 		else
 		{
 			mRotation.y -= rotationSpeed;
 		}
 	}
 }
+
 // SettedCamera - TargetCamera
 void Player::moveTargetCamera()
 {
-	mTargetCamera->mRotation = { 0.0f,0.0f,0.0f };
+	//m TargetCamera->mRotation = { 0.25f,0.25f,0.0f };
 	rotateTargetCamera();
 
 	Matrix targetCameraRotMatrixY = XMMatrixRotationY(mTargetCameraRotationY); // rotY는 FollowControl에서 마우스x좌표값 이동절대값에 따라 크기조절. 걍 rotY만큼 이동량 조절.

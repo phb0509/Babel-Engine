@@ -8,19 +8,17 @@
 const static int MAIN_WIN_WIDTH = 1280;
 const static int MAIN_WIN_HEIGHT = 720;
 
-
 const static int WIN_WIDTH = 1280;
 const static int WIN_HEIGHT = 720;
 
 //const static int WIN_WIDTH = 1600;
 //const static int WIN_HEIGHT = 900;
 
-
 const static int CENTER_X = WIN_WIDTH * 0.5f;
 const static int CENTER_Y = WIN_HEIGHT * 0.5f;
 
-const static int WIN_START_X = 100;
-const static int WIN_START_Y = 100;
+const static int WIN_START_X = 20;
+const static int WIN_START_Y = 20;
 
 const static int MAX_BONE = 500; // 인스턴스오브젝트 각각의 최대 노드개수.
 const static int MAX_FRAME_KEY = 600;

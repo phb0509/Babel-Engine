@@ -18,15 +18,18 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 	ModelAnimators::ReadClip("Mutant", "Die.clip"); // Mutant와 순서 동일하게.
 	ModelAnimators::SetBoxForFrustumCulling();
 
+	mUIOffset = { -170.0f, 0.0f, 0.0f };
+
 	for (int i = 0; i < instanceCount; i++)
 	{
-		Monster* temp = new InstanceMutant();
-		temp->SetInstanceCollider(mInstanceColliderDatas[i]);
-		temp->SetUpperFrameBuffer(mFrameBuffer);
+		Monster* monster = new InstanceMutant();
+		monster->SetInstanceCollider(mInstanceColliderDatas[i]);
+		monster->SetUpperFrameBuffer(mFrameBuffer);
 		string tagName = to_string(i) + " Mutant";
-		temp->SetTag(tagName);
-		mInstanceObjects.push_back(temp);
-		ModelAnimators::AddTransform(temp->GetTransform());
+		monster->SetTag(tagName);
+		mInstanceObjects.push_back(monster);
+		ModelAnimators::AddTransform(monster->GetTransform());
+		monster->SetPortraitTexture(Texture::Add(L"UI_Resource/Monster_Status/Mutant_Portrait.png"));
 	}
 }
 
@@ -41,6 +44,7 @@ void InstancingMutants::Update()
 	{
 		if (!mInstanceObjects[i]->GetIsActive()) continue;
 		mInstanceObjects[i]->Update();
+		mInstanceObjects[i]->SetUIOffset(mUIOffset);
 	}
 
 	updateCompletedAnimIndices(false);
@@ -68,6 +72,7 @@ void InstancingMutants::Render()
 void InstancingMutants::PostRender()
 {
 	showInstanceInformation();
+	ImGui::InputFloat3("Global Translation", (float*)&mUIOffset);
 }
 
 void InstancingMutants::UIRender()
@@ -305,6 +310,8 @@ void InstancingMutants::showInstanceInformation()
 
 		string currentHP = to_string((int)monster->GetCurHP()) + " / " + to_string((int)monster->GetMaxHP());
 		ImGui::Text(currentHP.c_str());
+
+		//monster->PostTransformRender();
 
 		ImGui::Separator();
 

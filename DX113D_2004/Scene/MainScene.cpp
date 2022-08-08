@@ -27,6 +27,8 @@ MainScene::MainScene() :
 	mTargetCamera = new Camera();
 	mTargetCamera->SetTag("TargetCamera");
 	mTargetCamera->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.5f, 200.0f);
+	//mTargetCamera->SetProjectionOption(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f);
+
 	mTargetCamera->SetIsUsingFrustumCulling(true);
 	mTargetCamera->SetIsRenderFrustumCollider(true);
 
@@ -47,7 +49,6 @@ MainScene::MainScene() :
 	mPlayer->SetIsTargetMode(false);
 	mPlayer->SetShader(L"GBuffer");
 
-
 	vector<Collider*> monsters0Obstacles = {};
 
 	float startX = 100.0f;
@@ -55,8 +56,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 1;
-	int column = 1;
+	int row = 3;
+	int column = 3;
 
 	mMutantInstanceCount = row * column;
 
@@ -207,6 +208,7 @@ void MainScene::PostRender()
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
 	mGBuffer->PostRender();
+
 	mInstancingMutants->PostRender();
 	mInstancingMutants->UIRender();
 	
@@ -235,6 +237,8 @@ void MainScene::PostRender()
 
 	SpacingRepeatedly(2);
 	mWorldCamera->PostTransformRender();
+	SpacingRepeatedly(2);
+	mTargetCamera->PostTransformRender();
 	SpacingRepeatedly(2);
 	ImGui::Text("MousePosition : %d, %d", (int)MOUSEPOS.x, (int)MOUSEPOS.y);
 	SpacingRepeatedly(2);

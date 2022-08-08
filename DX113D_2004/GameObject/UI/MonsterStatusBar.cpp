@@ -10,6 +10,7 @@ MonsterStatusBar::MonsterStatusBar() :
 	mMPRate(1.0f),
 	mbIsInitialize(false)
 {
+	this->SetTag("MonsterStatusBar");
 	mBackGroundTexture = Texture::Add(L"UI_Resource/Monster_Status/Status_BackGround.png");
 	mHPBarTexture = Texture::Add(L"UI_Resource/Monster_Status/HP_Bar.png");
 	mMPBarTexture = Texture::Add(L"UI_Resource/Monster_Status/MP_Bar.png");
@@ -52,7 +53,7 @@ MonsterStatusBar::MonsterStatusBar() :
 	mHPBarUIPositionOffset = make_pair(230.0f * scaleOffset, 133.0f * scaleOffset);
 	mMPBarUIPositionOffset = make_pair(240.0f * scaleOffset, 87.8f * scaleOffset);
 
-	this->mScale *= 0.05f;
+	this->mScale *= 0.4f;
 }
 
 MonsterStatusBar::~MonsterStatusBar()
@@ -71,7 +72,7 @@ void MonsterStatusBar::Update()
 
 	/*if (!mbIsInitialize)
 	{
-		initialize();
+		initialize();     
 		mbIsInitialize = true;
 	}*/
 

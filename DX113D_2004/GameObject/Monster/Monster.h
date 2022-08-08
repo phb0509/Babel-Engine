@@ -62,6 +62,7 @@ public:
 	void SetIsStartedAnim(bool value) { mbIsStartedAnim = value; }
 	void SetPortraitTexture(Texture* texture);
 	void SetCurMainCamera(Camera* mainCamera);
+	void SetUIOffset(Vector3& offset) { mUIOffset = offset; }
 	
 private:
 	void setObstaclesTerrain(Vector3 destPos);
@@ -118,4 +119,5 @@ private:
 	bool mbHasTerrainObstacles;
 
 	Texture* mPortraitTexture;
+	Vector3 mUIOffset;
 };

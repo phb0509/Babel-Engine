@@ -54,15 +54,20 @@ Vector3 GameMath::WorldToScreen(const Vector3& worldPos, Camera* camera)
 {
     Vector3 screenPos;
 
-    Matrix cameraViewMatrix = camera->GetViewBuffer()->GetMatrix();
-    Matrix cameraProjctionMatirx = camera->GetProjectionMatrixInUse();
+ /* Matrix cameraViewMatrix = XMMatrixInverse(nullptr, camera->GetWorldMatrixValue());
+    Matrix cameraProjctionMatirx = camera->GetProjectionMatrixInUse();*/
+
+    //Matrix cameraViewMatrix = XMMatrixInverse(nullptr, camera->GetWorldMatrixValue());
+    Matrix cameraViewMatrix = camera->GetViewMatrix();
+    Matrix cameraProjctionMatirx = camera->GetProjectionMatrixInUse(); 
+    //Matrix cameraProjctionMatirx = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 1000.0f);
+
 
     screenPos = XMVector3TransformCoord(worldPos.data, cameraViewMatrix);
     screenPos = XMVector3TransformCoord(screenPos.data, cameraProjctionMatirx);
 
     //NDC°ø°£ ÁÂÇ¥(-1 ~ 1) -> È­¸éÁÂÇ¥(0 ~ WIN_WIDTH)
 
-    screenPos.y *= -1;
     screenPos = (screenPos + 1.0f) * 0.5f;
     screenPos.x *= WIN_WIDTH;
     screenPos.y *= WIN_HEIGHT;

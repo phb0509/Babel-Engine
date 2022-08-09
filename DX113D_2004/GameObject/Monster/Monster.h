@@ -72,6 +72,7 @@ protected:
 	float mDamage;
 	float mMaxHP;
 	float mCurHP;
+	float mHPRate;
 
 	Camera* mCurMainCamera;
 	Terrain* mTerrain;

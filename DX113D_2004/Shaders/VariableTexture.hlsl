@@ -1,6 +1,6 @@
 #include "Header.hlsli"
 
-cbuffer ratioBuffer : register(b10)
+cbuffer TextureBuffer : register(b6)
 {
     float widthRatio;
     float heightRatio;
@@ -27,15 +27,15 @@ PixelInput VS(VertexUV input)
 
 float4 PS(PixelInput input) : SV_Target
 {
-    float4 test = diffuseMap.Sample(samp, input.uv);
+    float4 color = diffuseMap.Sample(samp, input.uv);
 
     if (input.uv.x >= widthRatio)
     {
-        if (test.a != 0)
+        if (color.a != 0)
         {
-            test = float4(0.0f, 0.0f, 0.0f, 1.0f);
+            color = float4(0.0f, 0.0f, 0.0f, 1.0f);
         }  
     }
 
-    return test;
+    return color;
 }

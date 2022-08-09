@@ -23,7 +23,6 @@ public:
 	void SetWorldBuffer(UINT slot = 0);
 	void PostTransformRender();
 
-
 	Matrix* GetWorldMatrix() { return &mWorldMatrix; }
 	Matrix& GetWorldMatrixValue() { return mWorldMatrix; }
 	Matrix GetInverseWorldMatrix() { return XMMatrixInverse(nullptr, mWorldMatrix); }

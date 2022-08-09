@@ -33,7 +33,6 @@ public:
 	void SetEndParamEvent(UINT clip, CallBackParam Event) { mEndParamEvent[clip] = Event; }
 	void SetParam(UINT clip, int value) { mParam[clip] = value; }
 
-
 	void PlayAnimation() { mbIsPlayedAnimation = true; }
 	void StopAnimation() { mbIsPlayedAnimation = false; }
 

@@ -7,8 +7,7 @@ MonsterStatusBar::MonsterStatusBar() :
 	mHPRate(1.0f),
 	mCurMP(1.0f),
 	mMaxMP(1.0f),
-	mMPRate(1.0f),
-	mbIsInitialize(false)
+	mMPRate(1.0f)
 {
 	this->SetTag("MonsterStatusBar");
 	mBackGroundTexture = Texture::Add(L"UI_Resource/Monster_Status/Status_BackGround.png");
@@ -67,15 +66,6 @@ MonsterStatusBar::~MonsterStatusBar()
 
 void MonsterStatusBar::Update()
 {
-	//mStandScaleOffsetX = this->mScale.x * WIN_WIDTH / MAIN_WIN_WIDTH;
-	//mStandScaleOffsetY = this->mScale.y * WIN_HEIGHT / MAIN_WIN_HEIGHT;
-
-	/*if (!mbIsInitialize)
-	{
-		initialize();     
-		mbIsInitialize = true;
-	}*/
-
 	Vector3 standPosition = this->mPosition;
 	Vector3 standScale = this->mScale;
 
@@ -91,7 +81,6 @@ void MonsterStatusBar::Update()
 	mPortraitUI->mScale = { mPortraitTextureSize.first * standScale.x, mPortraitTextureSize.second * standScale.y, 0.0f };
 	mPortraitBackGroundUI->mScale = { mPortraitBackGroundTextureSize.first * standScale.x, mPortraitBackGroundTextureSize.second * standScale.y, 0.0f };
 
-	mHPRate = mCurHP / mMaxHP;
 	mHPBarUI->SetWidthRatio(mHPRate);
 	mMPBarUI->SetWidthRatio(mMPRate);
 
@@ -138,13 +127,10 @@ void MonsterStatusBar::SetPortraitTexture(Texture* portraitTexture)
 	mPortraitUI->SetSRV(mPortraitTexture->GetSRV());
 }
 
-void MonsterStatusBar::initialize()
+void MonsterStatusBar::SetHPRate(float hpRate)
 {
-	mBackGroundUI->SetParent(this->GetWorldMatrix());
-	mHPBarUI->SetParent(this->GetWorldMatrix());
-	mMPBarUI->SetParent(this->GetWorldMatrix());
-	mPortraitUI->SetParent(this->GetWorldMatrix());
-	mPortraitBackGroundUI->SetParent(this->GetWorldMatrix());
+	mHPRate = hpRate;
+	mHPBarUI->SetWidthRatio(mHPRate);
 }
 
 void MonsterStatusBar::Hide()

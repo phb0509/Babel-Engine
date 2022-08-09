@@ -15,8 +15,16 @@ public:
 	void SetCurMainCamera(Camera* mainCamera);
 	void SetPortraitTexture(Texture* portraitTexture);
 
+	void SetMaxHP(float maxHP) { mMaxHP = maxHP; }
+	void SetCurHP(float curHP) { mCurHP = curHP; }
+	void SetHPRate(float hpRate);
+
+	void SetMaxMP(float maxMP) { mMaxMP = maxMP; }
+	void SetCurMP(float curMP) { mCurMP = curMP; }
+	void SetMPRate(float mpRate) { mHPRate = mpRate; }
+
 private:
-	void initialize();
+
 
 private:
 	// Texture
@@ -44,6 +52,8 @@ private:
 	pair<float, float> mHPBarUIPositionOffset;
 	pair<float, float> mMPBarUIPositionOffset;
 
+
+
 	float mCurHP;
 	float mMaxHP;
 	float mHPRate;
@@ -51,9 +61,6 @@ private:
 	float mCurMP;
 	float mMaxMP;
 	float mMPRate;
-	float mStandScaleOffsetX;
-	float mStandScaleOffsetY;
 
 	Camera* mCurMainCamera;
-	bool mbIsInitialize;
 };

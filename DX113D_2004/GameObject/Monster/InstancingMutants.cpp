@@ -80,7 +80,7 @@ void InstancingMutants::UIRender()
 	for (int i = 0; i < mRenderedInstanceIndices.size(); i++) // 실제 렌더되는 인스턴스들 인덱스
 	{
 		int renderedInstanceIndex = mRenderedInstanceIndices[i];
-
+		
 		mInstanceObjects[renderedInstanceIndex]->UIRender();
 	}
 }
@@ -310,6 +310,10 @@ void InstancingMutants::showInstanceInformation()
 
 		string currentHP = to_string((int)monster->GetCurHP()) + " / " + to_string((int)monster->GetMaxHP());
 		ImGui::Text(currentHP.c_str());
+
+		string tag = monster->GetTag() + " Position";
+
+		ImGui::InputFloat3(tag.c_str(), (float*)&monster->mPosition);
 
 		//monster->PostTransformRender();
 

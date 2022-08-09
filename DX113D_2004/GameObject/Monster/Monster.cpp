@@ -302,3 +302,5 @@ void Monster::UIRender()
 	mStatusBar->PostTransformRender();
 	//mStatusBar->PostRender();
 }
+
+

@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 
-InstanceMutant::InstanceMutant():
+InstanceMutant::InstanceMutant(): // 디폴트체력 100.
 	mbOnHit(false)
 {
 	this->mScale = { 0.05f, 0.05f, 0.05f };
@@ -20,6 +20,9 @@ InstanceMutant::InstanceMutant():
 
 	mCurrentFSMState = mPatrolState;
 
+	mStatusBar->SetMaxHP(mMaxHP);
+	mStatusBar->SetCurHP(mCurHP);
+	
 	//SetEndEvent(static_cast<int>(eMutantFSMStates::OnDamage), bind(&InstanceMutant::setStalkingState, this));
 }
 
@@ -30,7 +33,6 @@ InstanceMutant::~InstanceMutant()
 	GM->SafeDelete(mAttackState);
 	GM->SafeDelete(mOnDamageState);
 	GM->SafeDelete(mDieState);
-
 }
 
 void InstanceMutant::Update()
@@ -140,13 +142,22 @@ void InstanceMutant::ReActivation()
 	mbIsDie = false;
 	mbIsActive = true;
 	mCurHP = mMaxHP;
+	mHPRate = mCurHP / mMaxHP;
+	mStatusBar->SetCurHP(mCurHP);
+	mStatusBar->SetHPRate(mHPRate);
 }
 
 void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;
-
-	if (mCurHP <= 0)
+	
+	if (mCurHP <= 0) mCurHP = 0.0f;
+	
+	mHPRate = mCurHP / mMaxHP;
+	mStatusBar->SetCurHP(mCurHP);
+	mStatusBar->SetHPRate(mHPRate);
+	
+	if (mCurHP == 0.0f)
 	{
 		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));
 		mbIsDie = true;

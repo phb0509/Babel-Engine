@@ -6,7 +6,7 @@ Player::Player():
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
-	mNormalAttackDamage(1.0f),
+	mNormalAttackDamage(34.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -33,10 +33,13 @@ Player::Player():
 	ReadClip("Player", "Idle.clip");
 	ReadClip("Player", "Run.clip");
 	ReadClip("Player", "Attack.clip");
+	ReadClip("Player", "Kick.clip");
 	ReadClip("Player", "Die.clip");
+
 
 	SetEndEvent(Run, bind(&Player::setIdle, this));
 	SetEndEvent(NormalAttack, bind(&Player::setNormalAttackEnd, this));
+	SetEndEvent(KickAttack, bind(&Player::setIdle, this));
 
 	PlayClip(1);
 
@@ -78,6 +81,13 @@ void Player::Update()
 
 	Transform::UpdateWorld();
 	ModelAnimator::Update();
+
+
+
+	if (KEY_DOWN('U'))
+	{
+		mbIsNormalAttack = false;
+	}
 }
 
 void Player::Render()
@@ -114,6 +124,11 @@ void Player::attack()
 	{
 		normalAttack();
 	}
+
+	/*if (KEY_DOWN(VK_RBUTTON))
+	{
+		kickAttack();
+	}*/
 
 	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 }
@@ -355,6 +370,11 @@ void Player::normalAttack()
 	if (mbIsNormalAttack) return;
 	setAnimation(NormalAttack);
 	mbIsNormalAttack = true;
+}
+
+void Player::kickAttack()
+{
+	setAnimation(KickAttack);
 }
 
 void Player::renderColliders()

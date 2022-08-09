@@ -43,7 +43,7 @@ public:
 private:
 	Player* mPlayer;
 	vector<wstring> mDraggedFileList;
-	vector<CallBack> mWindowDropEvents;
+	vector<CallBack> mWindowDropEvents; 
 };
 
 

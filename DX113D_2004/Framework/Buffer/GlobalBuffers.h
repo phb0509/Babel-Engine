@@ -115,12 +115,7 @@ struct LightInfo
 		length = 50;
 		active = 1;
 	}
-
 };
-
-
-
-
 
 class RayBuffer : public ConstBuffer
 {

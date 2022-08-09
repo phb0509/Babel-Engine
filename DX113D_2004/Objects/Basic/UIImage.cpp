@@ -45,7 +45,7 @@ void UIImage::Render()
 	mMesh->SetIA();
 	SetWorldBuffer(); // 0번에
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
-	mTextureBuffer->SetPSBuffer(10);
+	mTextureBuffer->SetPSBuffer(6);
 
 	mMaterial->Set();
 
@@ -68,6 +68,9 @@ void UIImage::Render()
 		mBlendStates[1]->SetState();
 		mDepthModes[0]->SetState();
 	}
+
+	ID3D11ShaderResourceView* nullSRV = NULL;
+	DEVICECONTEXT->PSSetShaderResources(0, 1, &nullSRV);
 }
 
 void UIImage::RenderTargetUI()
@@ -75,7 +78,7 @@ void UIImage::RenderTargetUI()
 	mMesh->SetIA();
 	SetWorldBuffer(); // 0번에
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
-	mTextureBuffer->SetPSBuffer(10);
+	mTextureBuffer->SetPSBuffer(6);
 
 	mMaterial->Set();
 
@@ -101,6 +104,9 @@ void UIImage::RenderTargetUI()
 		mBlendStates[1]->SetState();
 		mDepthModes[0]->SetState();
 	}
+
+	ID3D11ShaderResourceView* nullSRV = NULL;
+	DEVICECONTEXT->PSSetShaderResources(0, 1, &nullSRV);
 }
 
 void UIImage::createMesh()

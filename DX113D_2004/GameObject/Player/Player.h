@@ -10,6 +10,7 @@ private:
 		Idle,
 		Run,
 		NormalAttack,
+		KickAttack,
 		Die
 	}mAnimationStates;
 
@@ -86,7 +87,9 @@ private:
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
 	void setNormalAttackEnd();
-	void normalAttack();
+
+	void normalAttack(); // 기본공격 
+	void kickAttack(); // 넉백
 
 private:
 	Terrain* mTerrain;

@@ -89,10 +89,6 @@ Vector3 Transform::GetForwardVector()
 {
 	Vector3 temp = XMVector3Normalize(XMVector3TransformNormal(kForward, mWorldMatrix));
 
-	char buff[200];
-	sprintf_s(buff, "1¹ø  GetForwardVector.x : %f   GetForwardVector.y : %f   GetForwrdVector.z : %f \n\n", temp.x, temp.y, temp.z);
-	OutputDebugStringA(buff);
-
 	return temp;
 }
 
@@ -120,7 +116,7 @@ void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) 
 	{
 		dotValue = -0.99f;
 	}
-
+	 
 	if (dotValue >= 1.0f)
 	{
 		dotValue = 0.99f;

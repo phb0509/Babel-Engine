@@ -39,7 +39,7 @@ void InstanceMutant::Update()
 {
 	mPosition.y = mTerrain->GetTargetPositionY(mPosition);
 
-	mCurrentFSMState->Execute(this);
+	//mCurrentFSMState->Execute(this);
 	UpdateWorld();
 
 	UIUpdate();

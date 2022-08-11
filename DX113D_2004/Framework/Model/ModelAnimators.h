@@ -11,7 +11,6 @@ private:
 		UINT instanceIndex;
 	};
 
-
 public:
 	ModelAnimators();
 	~ModelAnimators();
@@ -42,6 +41,11 @@ protected:
 	vector<int> mStartedAnimInstanceIndices;
 	Camera* mCameraForFrustumCulling;
 	Camera* mCurMainCamera;
+	float mZsortingCycle;
+	float mStandZsortingTime;
+	bool mbIsZsortingTimeUpdate;
+	vector<Monster*> mZsortedObjects;
+	
 
 private:
 	vector<Transform*> mTransforms;

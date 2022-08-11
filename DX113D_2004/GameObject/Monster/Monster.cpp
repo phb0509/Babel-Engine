@@ -289,18 +289,18 @@ void Monster::ChangeState(MonsterState* nextState)
 void Monster::UIUpdate()
 {
 	Vector3 prevPosition = { mPosition.x, mPosition.y + 8.0f, mPosition.z };
-
 	Vector3 screenPosition = WorldToScreen(prevPosition, mCurMainCamera);
 	
 	mStatusBar->mPosition = screenPosition + mUIOffset;
+	mStatusBar->mPosition.z = this->mPosition.z;
 	mStatusBar->Update();
 }
 
 void Monster::UIRender()
 {
 	mStatusBar->Render();
-	//mStatusBar->PostTransformRender();
-	//mStatusBar->PostRender();
+	/*mStatusBar->PostTransformRender();
+	mStatusBar->PostRender();*/
 }
 
 

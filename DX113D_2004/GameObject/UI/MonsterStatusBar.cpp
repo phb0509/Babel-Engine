@@ -86,11 +86,12 @@ void MonsterStatusBar::Update()
 
 	UpdateWorld();
 
+	mBackGroundUI->Update();
 	mHPBarUI->Update();
 	mMPBarUI->Update();
 	mPortraitBackGroundUI->Update();
 	mPortraitUI->Update();
-	mBackGroundUI->Update();
+
 }
 
 void MonsterStatusBar::Render()

@@ -1,5 +1,16 @@
 #include "Framework.h"
 
+
+bool compare(Monster* a, Monster* b)
+{
+	Vector3 targetPosition = GM->GetPlayer()->mPosition;
+
+	float aLength = (a->mPosition - targetPosition).Length();
+	float bLength = (b->mPosition - targetPosition).Length();
+
+	return aLength > bLength;
+}
+
 InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 	mInstanceCount(instanceCount),
 	mTerrain(terrain)
@@ -72,16 +83,24 @@ void InstancingMutants::Render()
 void InstancingMutants::PostRender()
 {
 	showInstanceInformation();
-	ImGui::InputFloat3("Global Translation", (float*)&mUIOffset);
+	//ImGui::InputFloat3("Global Translation", (float*)&mUIOffset);
 }
 
 void InstancingMutants::UIRender()
 {
+	mZsortedObjects.clear();
+
 	for (int i = 0; i < mRenderedInstanceIndices.size(); i++) // 실제 렌더되는 인스턴스들 인덱스
 	{
 		int renderedInstanceIndex = mRenderedInstanceIndices[i];
-		
-		mInstanceObjects[renderedInstanceIndex]->UIRender();
+		mZsortedObjects.push_back(mInstanceObjects[renderedInstanceIndex]); // 실제렌더되는 오브젝트들 모아놓기.
+	}     
+
+	sort(mZsortedObjects.begin(), mZsortedObjects.end(), compare);
+	
+	for (int i = 0; i < mZsortedObjects.size(); i++)
+	{
+		mZsortedObjects[i]->UIRender();
 	}
 }
 

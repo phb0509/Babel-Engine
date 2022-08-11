@@ -4,7 +4,10 @@ ModelAnimators::ModelAnimators() :
 	ModelAnimator(), 
 	mCameraForFrustumCulling(nullptr),
 	mDrawCount(0),
-	mbIsFrustumCullingMode(false)
+	mbIsFrustumCullingMode(false),
+	mZsortingCycle(0.5f),
+	mStandZsortingTime(0.0f),
+	mbIsZsortingTimeUpdate(false)
 {
 	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
@@ -211,8 +214,6 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 
 			Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, worldMatrix); // 임의의 컬링용 컬라이더박스 생성 후 세팅.
 			Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, worldMatrix);
-
-			int a = 0;
 
 			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
 			{

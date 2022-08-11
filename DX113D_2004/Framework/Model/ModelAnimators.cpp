@@ -205,9 +205,14 @@ void ModelAnimators::UpdateTransforms() // 컬링 및 인스턴스버퍼 세팅.
 			mTransforms[i]->SetIsInFrustum(false);
 
 			Matrix worldMatrix = *mTransforms[i]->GetWorldMatrix();
+			Vector3 tempPosition = mTransforms[i]->mPosition;
+			Vector3 tempRotation = mTransforms[i]->mRotation;
+			Vector3 tempScale = mTransforms[i]->mScale;
 
 			Vector3 worldMin = XMVector3TransformCoord(mMinBox.data, worldMatrix); // 임의의 컬링용 컬라이더박스 생성 후 세팅.
 			Vector3 worldMax = XMVector3TransformCoord(mMaxBox.data, worldMatrix);
+
+			int a = 0;
 
 			if (mCameraForFrustumCulling->GetFrustum()->ContainBox(worldMin, worldMax)) // 프러스텀 컬링.
 			{

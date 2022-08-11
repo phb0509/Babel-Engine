@@ -311,10 +311,16 @@ void InstancingMutants::showInstanceInformation()
 		string currentHP = to_string((int)monster->GetCurHP()) + " / " + to_string((int)monster->GetMaxHP());
 		ImGui::Text(currentHP.c_str());
 
-		string tag = monster->GetTag() + " Position";
+		string tagPosition = monster->GetTag() + " Position";
+		string tagRotation = monster->GetTag() + " Rotation";
+		string tagScale = monster->GetTag() + " Scale";
 
-		ImGui::InputFloat3(tag.c_str(), (float*)&monster->mPosition);
-
+		ImGui::InputFloat3(tagPosition.c_str(), (float*)&monster->mPosition);
+		SpacingRepeatedly(1);
+		ImGui::InputFloat3(tagRotation.c_str(), (float*)&monster->mRotation);
+		SpacingRepeatedly(1);
+		ImGui::InputFloat3(tagScale.c_str(), (float*)&monster->mScale);
+		SpacingRepeatedly(1);
 		//monster->PostTransformRender();
 
 		ImGui::Separator();

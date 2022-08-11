@@ -97,6 +97,9 @@ void MainScene::Update()
 	mLightBuffer->Update();
 	mDirectionalLight->Update();
 
+
+
+
 	switch (static_cast<int>(mMainCamera))
 	{
 	case 0:    // World

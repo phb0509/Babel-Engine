@@ -104,7 +104,9 @@ void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) 
 {
 	dest = dest - transform->mPosition;
 	dest.Normalize();
-	Vector3 forward = transform->GetForwardVector() * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
+
+	Vector3 tempForward = transform->GetForwardVector();
+	Vector3 forward = tempForward * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
 	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
 	temp = acos(temp);
 
@@ -119,6 +121,15 @@ void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) 
 	{
 		transform->mRotation.y += temp;
 	}
+
+	bool check = false;
+
+	if (isnan(mRotation.y))
+	{
+		check = true;
+	}
+
+	assert(!check && "mRotation.y is Nan!!!!");
 }
 
 void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 dest)

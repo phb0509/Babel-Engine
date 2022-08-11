@@ -299,7 +299,7 @@ void Monster::UIUpdate()
 void Monster::UIRender()
 {
 	mStatusBar->Render();
-	mStatusBar->PostTransformRender();
+	//mStatusBar->PostTransformRender();
 	//mStatusBar->PostRender();
 }
 

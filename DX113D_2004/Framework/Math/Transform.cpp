@@ -87,7 +87,13 @@ void Transform::PostTransformRender()
 
 Vector3 Transform::GetForwardVector()
 {
-	return XMVector3Normalize(XMVector3TransformNormal(kForward, mWorldMatrix));
+	Vector3 temp = XMVector3Normalize(XMVector3TransformNormal(kForward, mWorldMatrix));
+
+	char buff[200];
+	sprintf_s(buff, "1번  GetForwardVector.x : %f   GetForwardVector.y : %f   GetForwrdVector.z : %f \n\n", temp.x, temp.y, temp.z);
+	OutputDebugStringA(buff);
+
+	return temp;
 }
 
 Vector3 Transform::GetUpVector()
@@ -102,34 +108,46 @@ Vector3 Transform::GetRightVector()
 
 void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) // 회전시키고자 하는 transform과 목표지점벡터. 
 {
-	dest = dest - transform->mPosition;
-	dest.Normalize();
+	dest = dest - transform->mPosition; // y값이 0인상태.
+	dest.Normalize(); // 정규화
 
 	Vector3 tempForward = transform->GetForwardVector();
-	Vector3 forward = tempForward * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
-	float temp = Vector3::Dot(forward, dest); // 얼마나 회전할지.
-	temp = acos(temp);
 
-	Vector3 tempDirection = Vector3::Cross(forward, dest); // 어디로 회전할지.
+	Vector3 forward = tempForward * -1.0f; // 모델 포워드 거꾸로 되어있어서 -1 곱
+	float dotValue = Vector3::Dot(forward, dest); // 얼마나 회전할지.  
+
+	if (dotValue < -1.0f)
+	{
+		dotValue = -0.99f;
+	}
+
+	if (dotValue >= 1.0f)
+	{
+		dotValue = 0.99f;
+	}
+
+	dotValue = acos(dotValue);
+
+	Vector3 tempDirection = Vector3::Cross(forward, dest); // 어디로 회전할지 
 
 	if (tempDirection.y < 0.0f) // 목표지점디렉션이 포워드벡터보다 왼쪽에 있으면
 	{
-		transform->mRotation.y -= temp;
+		transform->mRotation.y -= dotValue;
 	}
 
 	else if (tempDirection.y >= 0.0f) // 디렉션이 포워드벡터보다 오른쪽에 있으면
 	{
-		transform->mRotation.y += temp;
+		transform->mRotation.y += dotValue;
 	}
 
 	bool check = false;
 
-	if (isnan(mRotation.y))
+	if (isnan(tempForward.x) || isnan(tempForward.y) || isnan(tempForward.z))
 	{
 		check = true;
 	}
 
-	assert(!check && "mRotation.y is Nan!!!!");
+	assert(!check && "mRotation.y is Nan!!!!");      
 }
 
 void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 dest)

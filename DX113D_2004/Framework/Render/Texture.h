@@ -17,7 +17,7 @@ public:
 	UINT GetWidth() { return mWidth; }
 	UINT GetHeight() { return mHeight; }
 
-	ID3D11ShaderResourceView*& GetSRV() { return srv; }
+	ID3D11ShaderResourceView*& GetSRV() { return mSRV; }
 	ID3D11Texture2D* GetTexture() { return mTexture; }
 
 private:
@@ -28,8 +28,8 @@ private:
 	void getImages();
 
 private:
-	ScratchImage image;
-	ID3D11ShaderResourceView* srv;
+	ScratchImage mImage;
+	ID3D11ShaderResourceView* mSRV;
 	ID3D11Texture2D* mTexture;
 	UINT mWidth;
 	UINT mHeight;

@@ -4,8 +4,8 @@ map<wstring, Texture*> Texture::totalTexture;
 map<ID3D11ShaderResourceView*, Texture*> Texture::totalSRVTexture;
 
 Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image) : 
-    srv(srv), 
-    image(move(image))
+    mSRV(srv), 
+    mImage(move(image))
 {
     mWidth = image.GetMetadata().width;
     mHeight = image.GetMetadata().height;
@@ -40,14 +40,14 @@ Texture::Texture(ID3D11ShaderResourceView* srv, ScratchImage& image) :
 }
 
 Texture::Texture(ID3D11ShaderResourceView* srv)
-    : srv(srv)
+    : mSRV(srv)
 {
    
 }
 
 Texture::~Texture()
 {
-    srv->Release();
+    mSRV->Release();
 }
 
 Texture* Texture::Add(wstring file)
@@ -129,18 +129,18 @@ void Texture::Delete()
 
 void Texture::PSSet(UINT slot)
 {
-    DEVICECONTEXT->PSSetShaderResources(slot, 1, &srv);
+    DEVICECONTEXT->PSSetShaderResources(slot, 1, &mSRV);
 }
 
 void Texture::DSSet(UINT slot)
 {
-    DEVICECONTEXT->DSSetShaderResources(slot, 1, &srv);
+    DEVICECONTEXT->DSSetShaderResources(slot, 1, &mSRV);
 }
 
 void Texture::getImages()
 {
-    uint8_t* colors = image.GetPixels();
-    UINT size = image.GetPixelsSize(); // 각 픽셀은 rgba값을 가지고있으니 픽셀수 * 4한 결과값 나옴.
+    uint8_t* colors = mImage.GetPixels();
+    UINT size = mImage.GetPixelsSize(); // 각 픽셀은 rgba값을 가지고있으니 픽셀수 * 4한 결과값 나옴.
 
     vector<Float4> result(size / 4); // 픽셀수만큼..
 
@@ -165,8 +165,8 @@ void Texture::getImages()
 
 vector<Float4> Texture::ReadPixels()
 {
-    uint8_t* colors = image.GetPixels();
-    UINT size = image.GetPixelsSize(); // 각 픽셀은 rgba값을 가지고있으니 픽셀수 * 4한 결과값 나옴.
+    uint8_t* colors = mImage.GetPixels();
+    UINT size = mImage.GetPixelsSize(); // 각 픽셀은 rgba값을 가지고있으니 픽셀수 * 4한 결과값 나옴.
     float scale = 1.0f / 255.0f;
     vector<Float4> result(size / 4); // 픽셀수만큼..
 

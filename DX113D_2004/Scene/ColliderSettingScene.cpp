@@ -37,6 +37,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
 	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
 	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
+	mExtensionPreviewImages["FBX"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
 	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
 	mExtensionPreviewImages["default"] = Texture::Add(L"ModelData/DefaultImage.png");
 

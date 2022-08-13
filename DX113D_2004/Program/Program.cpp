@@ -10,8 +10,8 @@ Program::Program()
 {
 	Create();
 
-	//SceneManager::Get()->Add("start", new ColliderSettingScene());
-	SceneManager::Get()->Add("start", new MainScene());
+	SceneManager::Get()->Add("start", new ColliderSettingScene());
+	//SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
 
 

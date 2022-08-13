@@ -189,6 +189,7 @@
     <ClInclude Include="Framework\Buffer\Texture2DBuffer.h" />
     <ClInclude Include="Framework\Collider\FrustumCollider.h" />
     <ClInclude Include="Framework\Collider\TetrahedronCollider.h" />
+    <ClInclude Include="Framework\Model\PlayerModelAnimator.h" />
     <ClInclude Include="Framework\Render\TextureClass.h" />
     <ClInclude Include="GameObject\CDialogEventHandler.h" />
     <ClInclude Include="GameObject\Manager\DebugManager.h" />
@@ -333,6 +334,7 @@
     <ClCompile Include="Framework\Model\ModelReader.cpp" />
     <ClCompile Include="Framework\Model\ModelMesh.cpp" />
     <ClCompile Include="Framework\Model\Models.cpp" />
+    <ClCompile Include="Framework\Model\PlayerModelAnimator.cpp" />
     <ClCompile Include="Framework\Render\Material.cpp" />
     <ClCompile Include="Framework\Render\Mesh.cpp" />
     <ClCompile Include="Framework\Buffer\VertexBuffer.cpp" />
@@ -500,6 +502,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\Grid.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shaders\PlayerModelAnimation.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

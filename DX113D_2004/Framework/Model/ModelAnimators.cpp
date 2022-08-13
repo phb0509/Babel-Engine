@@ -1,7 +1,9 @@
 #include "Framework.h"
 
-ModelAnimators::ModelAnimators() : 
-	ModelAnimator(), 
+
+ModelAnimators::ModelAnimators(int instanceCount, int boneCount, int frameKeyCount) :
+	ModelAnimator(instanceCount,boneCount,frameKeyCount),
+	mCurMainCamera(nullptr),
 	mCameraForFrustumCulling(nullptr),
 	mDrawCount(0),
 	mbIsFrustumCullingMode(false),
@@ -9,7 +11,7 @@ ModelAnimators::ModelAnimators() :
 	mStandZsortingTime(0.0f),
 	mbIsZsortingTimeUpdate(false)
 {
-	for (int i = 0; i < MAX_INSTANCE; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
+	for (int i = 0; i < instanceCount; i++) // 인스턴싱할 월드행렬과 인덱스번호 셋팅.
 	{
 		InstanceData temp;
 		temp.worldMatrix = XMMatrixIdentity();
@@ -17,7 +19,7 @@ ModelAnimators::ModelAnimators() :
 		mInstanceData.push_back(temp);
 	}
 
-    mInstanceBuffer = new VertexBuffer(mInstanceData.data(), sizeof(InstanceData), MAX_INSTANCE);
+	mInstanceBuffer = new VertexBuffer(mInstanceData.data(), sizeof(InstanceData), instanceCount);
 }
 
 ModelAnimators::~ModelAnimators()

@@ -369,6 +369,9 @@
     <ClInclude Include="GameObject\UI\MonsterStatusBar.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\Model\PlayerModelAnimator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX113D_2004.cpp">
@@ -692,6 +695,9 @@
     <ClCompile Include="GameObject\UI\MonsterStatusBar.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Model\PlayerModelAnimator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX113D_2004.rc">
@@ -752,6 +758,7 @@
     <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
     <FxCompile Include="Shaders\InstancingMutantsGBuffer.hlsl" />
     <FxCompile Include="Shaders\VariableTexture.hlsl" />
+    <FxCompile Include="Shaders\PlayerModelAnimation.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

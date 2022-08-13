@@ -198,7 +198,8 @@ public:
 	}
 };
 
-class FrameBuffer : public ConstBuffer
+
+class PlayerFrameBuffer : public ConstBuffer
 {
 public:
 	struct KeyFrameDesc
@@ -233,12 +234,67 @@ public:
 	};
 
 	struct Data
-	{		
-		TweenDesc tweenDesc[MAX_INSTANCE];
+	{
+		TweenDesc tweenDesc[1];
 	}data;
 
-	FrameBuffer() : ConstBuffer(&data, sizeof(Data))
+	PlayerFrameBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
+	}
+};
+
+
+class FrameBuffer : public ConstBuffer
+{
+public:
+	struct KeyFrameDesc
+	{
+		int clip = 0;
+		int curFrame = 0;
+		int nextFrame = 0;
+		float time = 0.0f;
+
+		float runningTime = 0.0f;
+		float speed = 1.0f;
+		float padding[2];
+	};
+
+	struct TweenDesc // 현재동작->다음동작으로 lerp해서 부드럽게 넘겨주기 위한 구조체.
+	{
+		float takeTime; // 총 걸리는 시간
+		float tweenTime;
+		float runningTime;
+		float padding;
+
+		KeyFrameDesc cur; // 현재 동작
+		KeyFrameDesc next; // 다음 동작
+
+		TweenDesc() : takeTime(0.5f), tweenTime(0.5f), runningTime(0.0f)
+		{
+			cur.clip = 0;
+			next.clip = -1;
+		}
+	};
+
+	struct Data
+	{		
+		//TweenDesc tweenDesc[MAX_INSTANCE];
+		//TweenDesc* tweenDesc;
+
+		vector<TweenDesc> tweenDesc;
+	}data;
+
+	/*FrameBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.tweenDesc = new TweenDesc[MAX_INSTANCE];
+		ConstBuffer::ReAllocData(data.tweenDesc, MAX_INSTANCE);
+	}*/
+
+	FrameBuffer(int instanceCount) : ConstBuffer(&data, sizeof(Data))
+	{
+		data.tweenDesc.resize(instanceCount);
+		ConstBuffer::ReAllocData(data.tweenDesc.data(), sizeof(Data));
+		//ConstBuffer(&data, sizeof(Data))
 	}
 };
 

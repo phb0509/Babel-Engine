@@ -25,6 +25,22 @@ void ConstBuffer::Update()
 	DEVICECONTEXT->Unmap(mBuffer, 0);
 }
 
+void ConstBuffer::ReAllocData(void* data, UINT dataSize) 
+{
+	mBuffer->Release();
+
+	mData = data;
+	mDataSize = dataSize;
+
+	D3D11_BUFFER_DESC desc = {};
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.ByteWidth = dataSize;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	V(DEVICE->CreateBuffer(&desc, nullptr, &mBuffer));
+}
+
 void ConstBuffer::SetVSBuffer(UINT slot)
 {
 	Update();

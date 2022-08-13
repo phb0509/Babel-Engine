@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 Monster::Monster() :
-	ModelAnimator(),
+	ModelAnimator(1,MAX_BONE,MAX_FRAME_KEY),
 	mDamage(100.0f),
 	mMaxHP(100.0f),
 	mCurHP(0.0f),

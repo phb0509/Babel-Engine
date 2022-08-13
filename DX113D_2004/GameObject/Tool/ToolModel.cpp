@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 ToolModel::ToolModel(string name) : 
-	ModelAnimator(),
+	ModelAnimator(1,MAX_BONE,MAX_FRAME_KEY),
 	mClipIndex(0), 
 	mCurrentClipIndex(0),
 	mName("")

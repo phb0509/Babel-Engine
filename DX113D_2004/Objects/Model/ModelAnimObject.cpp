@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 ModelAnimObject::ModelAnimObject()
-	: ModelAnimator()
+	: ModelAnimator(1,MAX_BONE,MAX_FRAME_KEY)
 {
 }
 

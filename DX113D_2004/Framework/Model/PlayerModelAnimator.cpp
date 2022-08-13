@@ -1,7 +1,6 @@
 #include "Framework.h"
 
-
-ModelAnimator::ModelAnimator(int instanceCount, int boneCount, int frameKeyCount):
+PlayerModelAnimator::PlayerModelAnimator() :
 	ModelReader(),
 	mTexture(nullptr),
 	mSRV(nullptr),
@@ -10,16 +9,13 @@ ModelAnimator::ModelAnimator(int instanceCount, int boneCount, int frameKeyCount
 	mNodeTransformMatrices(nullptr),
 	mbIsPlayedAnimation(true),
 	mbIsEndCurrentAnimation(false),
-	mCurrentClipIndex(-1),
-	mInstanceCount(instanceCount),
-	mBoneCount(boneCount),
-	mFrameKeyCount(frameKeyCount)
+	mCurrentClipIndex(-1)
 {
-	mFrameBuffer = new FrameBuffer(instanceCount);
+	mFrameBuffer = new PlayerFrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
 }
 
-ModelAnimator::~ModelAnimator()
+PlayerModelAnimator::~PlayerModelAnimator()
 {
 	GM->SafeDelete(mFrameBuffer);
 	GM->SafeDeleteArray(mClipTransform);
@@ -40,7 +36,7 @@ ModelAnimator::~ModelAnimator()
 }
 
 
-bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포함한 파일명.
+bool PlayerModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포함한 파일명.
 {
 	mClipNames.push_back(GetFileNameWithoutExtension(clipFileName));
 
@@ -89,16 +85,16 @@ bool ModelAnimator::ReadClip(string modelName, string clipFileName) // 확장자 포
 	return true;
 }
 
-void ModelAnimator::Update()
+void PlayerModelAnimator::Update()
 {
 	if (mClips.size() != 0) // ModelAnimation
 	{
 		if (mbIsPlayedAnimation)
 		{
-			FrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
+			PlayerFrameBuffer::TweenDesc& tweenDesc = mFrameBuffer->data.tweenDesc[0]; //인스턴스용 아니니까 셰이더에 1개체씩만 넘기면 되니까 0번째.
 
 			{ // 현재 클립.
-				FrameBuffer::KeyFrameDesc& curDesc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
+				PlayerFrameBuffer::KeyFrameDesc& curDesc = tweenDesc.cur; // 현재 Clip에 대한 KeyFrameDesc
 				ModelClip* clip = mClips[curDesc.clip]; // desc.clip == clipIndex
 
 				float time = 1.0f / clip->mFramePerSecond / curDesc.speed; // speed가 1.0f면 1/30초. 믹사모에서 다운받을때 그냥 30으로 다운받음.
@@ -131,7 +127,7 @@ void ModelAnimator::Update()
 			}
 
 			{ // 다음 클립
-				FrameBuffer::KeyFrameDesc& nextDesc = tweenDesc.next;
+				PlayerFrameBuffer::KeyFrameDesc& nextDesc = tweenDesc.next;
 
 				if (nextDesc.clip > -1) // 다음클립이 있으면?
 				{
@@ -174,17 +170,17 @@ void ModelAnimator::Update()
 }
 
 
-void ModelAnimator::Render()
+void PlayerModelAnimator::Render()
 {
 	if (mClips.size() != 0) // ModelAnimation
 	{
-		SetShader(L"ModelAnimation");
+		SetShader(L"PlayerModelAnimation");
 
 		if (mTexture == nullptr)
 		{
 			CreateTexture(); // TransformMapTexture.
 		}
-		
+
 		mFrameBuffer->SetVSBuffer(4);
 		DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
 	}
@@ -200,10 +196,10 @@ void ModelAnimator::Render()
 		mBoneBuffer->SetVSBuffer(3);
 	}
 
-	MeshRender(); // 부모클래스(ModelReader)함수.
+	ModelReader::MeshRender(); 
 }
 
-void ModelAnimator::DeferredRender()
+void PlayerModelAnimator::DeferredRender()
 {
 	if (mClips.size() != 0) // ModelAnimation
 	{
@@ -211,7 +207,7 @@ void ModelAnimator::DeferredRender()
 		{
 			CreateTexture(); // TransformMapTexture.
 		}
-			
+
 		mFrameBuffer->SetVSBuffer(4);
 		DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
 	}
@@ -228,37 +224,37 @@ void ModelAnimator::DeferredRender()
 	MeshRender(); // 부모클래스(ModelReader)함수.
 }
 
-void ModelAnimator::PostRender()
+void PlayerModelAnimator::PostRender()
 {
 
 }
 
-void ModelAnimator::PlayClip(UINT clip, float speed, float takeTime)
+void PlayerModelAnimator::PlayClip(UINT clip, float speed, float takeTime)
 {
 	mFrameBuffer->data.tweenDesc[0].next.clip = clip;
 	mFrameBuffer->data.tweenDesc[0].next.speed = speed;
 	mFrameBuffer->data.tweenDesc[0].takeTime = takeTime;
 }
 
-Matrix ModelAnimator::GetTransformByNode(int nodeIndex)
+Matrix PlayerModelAnimator::GetTransformByNode(int nodeIndex)
 {
 	if (mNodeTransform == nullptr)
 		return XMMatrixIdentity();
 
-	FrameBuffer::KeyFrameDesc& curDesc = mFrameBuffer->data.tweenDesc[0].cur;
+	PlayerFrameBuffer::KeyFrameDesc& curDesc = mFrameBuffer->data.tweenDesc[0].cur;
 
 	Matrix cur = mNodeTransform[curDesc.clip].transform[curDesc.curFrame][nodeIndex];
 	Matrix next = mNodeTransform[curDesc.clip].transform[curDesc.nextFrame][nodeIndex];
 
 	Matrix curClip = LERP(cur, next, curDesc.time);
 
-	FrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[0].next;
+	PlayerFrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[0].next;
 
 	if (nextDesc.clip == -1)
 	{
 		return curClip;
 	}
-		
+
 	cur = mNodeTransform[nextDesc.clip].transform[nextDesc.curFrame][nodeIndex];
 	next = mNodeTransform[nextDesc.clip].transform[nextDesc.nextFrame][nodeIndex];
 
@@ -267,25 +263,25 @@ Matrix ModelAnimator::GetTransformByNode(int nodeIndex)
 	return LERP(curClip, nextClip, mFrameBuffer->data.tweenDesc[0].tweenTime);
 }
 
-Matrix ModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
+Matrix PlayerModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
 {
 	if (mNodeTransform == nullptr)
 		return XMMatrixIdentity();
 
-	FrameBuffer::KeyFrameDesc& curDesc = mFrameBuffer->data.tweenDesc[instance].cur;
+	PlayerFrameBuffer::KeyFrameDesc& curDesc = mFrameBuffer->data.tweenDesc[instance].cur;
 
 	Matrix cur = mNodeTransform[curDesc.clip].transform[curDesc.curFrame][nodeIndex];
 	Matrix next = mNodeTransform[curDesc.clip].transform[curDesc.nextFrame][nodeIndex];
 
 	Matrix curClip = LERP(cur, next, curDesc.time);
 
-	FrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[instance].next;
+	PlayerFrameBuffer::KeyFrameDesc& nextDesc = mFrameBuffer->data.tweenDesc[instance].next;
 
 	if (nextDesc.clip == -1)
 	{
 		return curClip;
 	}
-		
+
 	cur = mNodeTransform[nextDesc.clip].transform[nextDesc.curFrame][nodeIndex];
 	next = mNodeTransform[nextDesc.clip].transform[nextDesc.nextFrame][nodeIndex];
 
@@ -294,7 +290,7 @@ Matrix ModelAnimator::GetTransformByNode(UINT instance, int nodeIndex)
 	return LERP(curClip, nextClip, mFrameBuffer->data.tweenDesc[instance].tweenTime);
 }
 
-void ModelAnimator::MakeBoneTransform()
+void PlayerModelAnimator::MakeBoneTransform()
 {
 	mNodeTransformMatrices = new Matrix[mNodes.size()];
 	UINT nodeIndex = 0;
@@ -332,7 +328,7 @@ void ModelAnimator::MakeBoneTransform()
 	}
 }
 
-void ModelAnimator::SetBoneTransforms() // 
+void PlayerModelAnimator::SetBoneTransforms() // 
 {
 	//for (auto bone : mBoneTransforms)
 	//{
@@ -347,7 +343,7 @@ void ModelAnimator::SetBoneTransforms() //
 	}*/
 }
 
-void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
+void PlayerModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 {
 	UINT clipCount = mClips.size();
 
@@ -376,8 +372,8 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 
 	{//Create Texture
 		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = mBoneCount * 4; // 4픽셀당 행렬 1개 (행렬 1개 = 64바이트, 픽셀당 16바이트씩 해서 64바이트)
-		desc.Height = mFrameKeyCount;
+		desc.Width = PLAYER_MAX_BONE * 4; // 4픽셀당 행렬 1개 (행렬 1개 = 64바이트, 픽셀당 16바이트씩 해서 64바이트)
+		desc.Height = PLAYER_MAX_FRAME_KEY;
 		desc.ArraySize = clipCount; // 클립 개수만큼
 		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 픽셀당 16바이트.
 		desc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -385,32 +381,34 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 		desc.MipLevels = 1;
 		desc.SampleDesc.Count = 1;
 
-		UINT pageSize = sizeof(Matrix) * mBoneCount * mFrameKeyCount; // 한 클립의 전체 데이터 크기.
+		UINT pageSize = sizeof(Matrix) * PLAYER_MAX_BONE * PLAYER_MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
+		//UINT pageSize =  MAX_BONE * sizeof(Matrix) * MAX_FRAME_KEY; // 한 클립의 전체 데이터 크기.
 
-		void* p = VirtualAlloc(nullptr, pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE); // 용량이 너무 크면 데이터복사가 안되기 때문에 가상으로 '이정도 쓸거라'고 잡아놓는것
+		void* p = VirtualAlloc(nullptr, (SIZE_T)pageSize * clipCount, MEM_RESERVE, PAGE_READWRITE); // 용량이 너무 크면 데이터복사가 안되기 때문에 가상으로 '이정도 쓸거라'고 잡아놓는것
 																							// 전체클립데이터(n개의 클립데이터) 크기 잡아놓은것.
 
 		for (UINT c = 0; c < clipCount; c++) // 모델 클립 개수만큼, 메모리용량은 전체클립크기로 잡아놨지만 너무 크기떄문에 한클립씩 메모리복사.
 		{
 			UINT start = c * pageSize; // 페이지의 시작
 
-			for (UINT y = 0; y < mFrameKeyCount; y++) // 전체 키프레임만큼
+			for (UINT y = 0; y < PLAYER_MAX_FRAME_KEY; y++) // 전체 키프레임만큼
 			{
-				void* temp = (BYTE*)p + mBoneCount * y * sizeof(Matrix) + start; // 한줄의 시작
+				void* temp = (BYTE*)p + PLAYER_MAX_BONE * y * sizeof(Matrix) + start; // 한줄의 시작
 
-				VirtualAlloc(temp, mBoneCount * sizeof(Matrix), MEM_COMMIT, PAGE_READWRITE); // MEM_COMMIT : temp에 쓰겠다고 커밋함(아직 쓴건 아님) PAGE_READWRITE용도로 사용.
-				memcpy(temp, mClipTransform[c].transform[y], mBoneCount * sizeof(Matrix)); // 실제로 써주는 부분.
+				VirtualAlloc(temp, PLAYER_MAX_BONE * sizeof(Matrix), MEM_COMMIT, PAGE_READWRITE); // MEM_COMMIT : temp에 쓰겠다고 커밋함(아직 쓴건 아님) PAGE_READWRITE용도로 사용.
+				memcpy(temp, mClipTransform[c].transform[y], PLAYER_MAX_BONE * sizeof(Matrix)); // 실제로 써주는 부분.
 			}
 		}
 
 		// SRV 세팅.
 		D3D11_SUBRESOURCE_DATA* subResource = new D3D11_SUBRESOURCE_DATA[clipCount];
+
 		for (UINT c = 0; c < clipCount; c++)
 		{
 			void* temp = (BYTE*)p + c * pageSize;
 
 			subResource[c].pSysMem = temp;
-			subResource[c].SysMemPitch = mBoneCount * sizeof(Matrix);
+			subResource[c].SysMemPitch = PLAYER_MAX_BONE * sizeof(Matrix);
 			subResource[c].SysMemSlicePitch = pageSize;
 		}
 		V(DEVICE->CreateTexture2D(&desc, subResource, &mTexture));
@@ -430,7 +428,7 @@ void ModelAnimator::CreateTexture() //본트랜스폼 넘기기용.
 	}
 }
 
-void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
+void PlayerModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 {
 	ModelClip* clip = mClips[index]; // 클립 가져오기
 
@@ -452,7 +450,7 @@ void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 				parent = mNodeTransform[index].transform[i][parentIndex]; // 부모가 있다면.
 					// = 0번째 클립의 i번째 프레임의 노드(parentIndex니 부모노드)
 			}
-				
+
 			Matrix animationMatrix;
 			KeyFrame* frame = clip->GetKeyFrame(node->name); // node에 해당하는 키프레임. ex) 왼발에 해당하는 키프레임 144개
 
@@ -490,7 +488,7 @@ void ModelAnimator::CreateClipTransform(UINT index) // index of ModelClips
 	}
 }
 
-void ModelAnimator::ExecuteSetMeshEvent()
+void PlayerModelAnimator::ExecuteSetMeshEvent()
 {
 	if (mBoneBuffer != nullptr)
 	{

@@ -1,7 +1,7 @@
 #include "Framework.h"
 
 Player::Player(): 
-	ModelAnimator(),
+	PlayerModelAnimator(),
 	mbIsInitialize(false),
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
@@ -85,7 +85,8 @@ void Player::Update()
 	attack();
 
 	Transform::UpdateWorld();
-	ModelAnimator::Update();
+	PlayerModelAnimator::Update();
+	//ModelAnimator::Update();
 
 	if (KEY_DOWN('U'))
 	{
@@ -99,7 +100,8 @@ void Player::Render()
 	renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
-	ModelAnimator::Render();
+	PlayerModelAnimator::Render();
+	//ModelAnimator::Render();
 }
 
 void Player::DeferredRender()
@@ -107,7 +109,8 @@ void Player::DeferredRender()
 	renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
-	ModelAnimator::DeferredRender();
+	PlayerModelAnimator::DeferredRender();
+	//ModelAnimator::DeferredRender();
 }
 
 void Player::move()
@@ -188,14 +191,14 @@ void Player::moveInTargetMode() // Player
 
 	if (KEY_PRESS('A'))
 	{
-		setAnimation(LeftWalk,1.0f,0.4f);
+		setAnimation(LeftWalk,1.0f,0.05f);
 		rotateInTargetMode();
 		mPosition += GetRightVector() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
-		setAnimation(RightWalk,1.0f,0.4f);
+		setAnimation(RightWalk,1.0f,0.05f);
 		rotateInTargetMode();
 		mPosition += GetRightVector() * -mMoveSpeed * DELTA;
 	}

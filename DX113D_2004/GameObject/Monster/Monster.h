@@ -40,8 +40,8 @@ public:
 	float GetPlayerDetectRange() const { return mPlayerDetectRange; }
 	AStar* GetAStar() { return mAStar; }
 	MonsterState* GetCurrentState() { return mCurrentFSMState; }
-	int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
-	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }
+	/*int GetCurrentClip() { return mFrameBuffer->data.tweenDesc[0].cur.clip; }
+	int GetNextClip() { return mFrameBuffer->data.tweenDesc[0].next.clip; }*/
 	InstanceColliderData GetInstanceColliderData() { return mInstanceColliderData; }
 	bool GetIsCompletedAnim() { return mbIsCompletedAnim; }
 	bool GetIsStartedAnim() { return mbIsStartedAnim; }

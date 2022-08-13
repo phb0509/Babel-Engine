@@ -1,11 +1,11 @@
 #pragma once
 
-class ModelAnimator : public ModelReader
+class PlayerModelAnimator : public ModelReader
 {
 
 public:
-	ModelAnimator(int instanceCount, int boneCount, int frameKeyCount);
-	virtual ~ModelAnimator();
+	PlayerModelAnimator();
+	virtual ~PlayerModelAnimator();
 
 	virtual void Update();
 	virtual void Render();
@@ -16,6 +16,7 @@ public:
 	bool ReadClip(string modelName, string clipFileName);
 	void PlayClip(UINT clip, float speed = 1.0f, float takeTime = 0.2f);
 
+
 	Matrix GetTransformByNode(int nodeIndex);
 	Matrix GetTransformByNode(UINT instance, int nodeIndex);
 	const vector<string>& GetClipNames() { return mClipNames; }
@@ -24,7 +25,7 @@ public:
 	int GetCurrentClipFrame() { return mCurrentClipFrame; }
 	int GetCurrentClipFrameCount() { return mCurrentClipFrameCount; }
 	bool GetCurrentAnimationEnd() { return mbIsEndCurrentAnimation; }
-	FrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
+	PlayerFrameBuffer* GetFrameBuffer() { return mFrameBuffer; }
 
 	void SetCurClipSpeed(int speed) { mFrameBuffer->data.tweenDesc[0].cur.speed = speed; }
 	void SetClipTakeTime(int takeTime) { mFrameBuffer->data.tweenDesc[0].takeTime = takeTime; }
@@ -50,7 +51,7 @@ protected:
 
 
 protected:
-	FrameBuffer* mFrameBuffer;
+	PlayerFrameBuffer* mFrameBuffer;
 	ClipTransform* mClipTransform;
 	ClipTransform* mNodeTransform;
 
@@ -74,8 +75,4 @@ protected:
 	BoneBuffer* mBoneBuffer;
 	map<int, Matrix> mBoneTransforms;
 	Matrix* mNodeTransformMatrices;
-
-	int mInstanceCount;
-	int mBoneCount;
-	int mFrameKeyCount;
 };

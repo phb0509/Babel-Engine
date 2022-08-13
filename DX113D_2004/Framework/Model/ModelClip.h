@@ -4,6 +4,7 @@ class ModelClip
 {
 private:
 	friend class ModelAnimator;
+	friend class PlayerModelAnimator;
 	friend class ModelAnimators;
 
 public:

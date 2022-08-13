@@ -12,6 +12,7 @@ bool compare(Monster* a, Monster* b)
 }
 
 InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
+	ModelAnimators(instanceCount),
 	mInstanceCount(instanceCount),
 	mTerrain(terrain)
 {

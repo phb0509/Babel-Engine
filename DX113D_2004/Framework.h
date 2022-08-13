@@ -20,9 +20,20 @@ const static int CENTER_Y = WIN_HEIGHT * 0.5f;
 const static int WIN_START_X = 20;
 const static int WIN_START_Y = 20;
 
+
+// Player
+const static int PLAYER_MAX_BONE = 100;
+const static int PLAYER_MAX_FRAME_KEY = 200;
+
+
+// instancing
 const static int MAX_BONE = 500; // 인스턴스오브젝트 각각의 최대 노드개수.
 const static int MAX_FRAME_KEY = 600;
 const static int MAX_INSTANCE = 600;
+
+//const static int MAX_BONE = 200; // 인스턴스오브젝트 각각의 최대 노드개수.
+//const static int MAX_FRAME_KEY = 300;
+//const static int MAX_INSTANCE = 100;
 
 #define LERP(s, e, t) s + (e - s) * t
 //#define LERP(s, e, t) s * (1 - t) + e * t
@@ -254,6 +265,7 @@ using namespace states;
 #include "Framework/Model/Models.h"
 #include "Framework/Model/ModelClip.h"
 #include "Framework/Model/ModelAnimator.h"
+#include "Framework/Model/PlayerModelAnimator.h"
 #include "Framework/Model/ModelAnimators.h"
 
 #include "Environment/Light.h"

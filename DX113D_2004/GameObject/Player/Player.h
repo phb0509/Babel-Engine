@@ -1,6 +1,6 @@
 #pragma once
 
-class Player : public ModelAnimator, public Transform
+class Player : public PlayerModelAnimator, public Transform
 {
 private:
 

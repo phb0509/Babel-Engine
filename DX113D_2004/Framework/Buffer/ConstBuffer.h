@@ -8,6 +8,7 @@ protected:
 	virtual ~ConstBuffer();
 
 	void Update();
+	void ReAllocData(void* data, UINT dataSize);
 
 public:
 	void SetVSBuffer(UINT slot);

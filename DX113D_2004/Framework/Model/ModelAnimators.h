@@ -12,7 +12,7 @@ private:
 	};
 
 public:
-	ModelAnimators();
+	ModelAnimators(int instanceCount = MAX_INSTANCE, int boneCount = MAX_BONE, int frameKeyCount = MAX_FRAME_KEY);
 	~ModelAnimators();
 
 	void Update() override;

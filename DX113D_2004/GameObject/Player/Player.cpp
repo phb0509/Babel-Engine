@@ -32,12 +32,17 @@ Player::Player():
 	ReadClip("Player", "TPose.clip");
 	ReadClip("Player", "Idle.clip");
 	ReadClip("Player", "Run.clip");
+	ReadClip("Player", "LeftWalk.clip");
+	ReadClip("Player", "RightWalk.clip");
+	ReadClip("Player", "BackWalk.clip");
 	ReadClip("Player", "Attack.clip");
 	ReadClip("Player", "Kick.clip");
 	ReadClip("Player", "Die.clip");
 
-
 	SetEndEvent(Run, bind(&Player::setIdle, this));
+	SetEndEvent(LeftWalk, bind(&Player::setIdle, this));
+	SetEndEvent(RightWalk, bind(&Player::setIdle, this));
+	SetEndEvent(BackWalk, bind(&Player::setIdle, this));
 	SetEndEvent(NormalAttack, bind(&Player::setNormalAttackEnd, this));
 	SetEndEvent(KickAttack, bind(&Player::setIdle, this));
 
@@ -82,12 +87,11 @@ void Player::Update()
 	Transform::UpdateWorld();
 	ModelAnimator::Update();
 
-
-
 	if (KEY_DOWN('U'))
 	{
 		mbIsNormalAttack = false;
 	}
+
 }
 
 void Player::Render()
@@ -179,17 +183,19 @@ void Player::moveInTargetMode() // Player
 		mPosition.z += mTargetCameraForward.z * -mMoveSpeed * DELTA * 1.0f;
 		mPosition.x += mTargetCameraForward.x * -mMoveSpeed * DELTA * 1.0f;
 
-		setAnimation(Run);
+		setAnimation(BackWalk);
 	}
 
 	if (KEY_PRESS('A'))
 	{
+		setAnimation(LeftWalk,1.0f,0.4f);
 		rotateInTargetMode();
 		mPosition += GetRightVector() * mMoveSpeed * DELTA;
 	}
 
 	if (KEY_PRESS('D'))
 	{
+		setAnimation(RightWalk,1.0f,0.4f);
 		rotateInTargetMode();
 		mPosition += GetRightVector() * -mMoveSpeed * DELTA;
 	}
@@ -496,20 +502,20 @@ void Player::setIdle()
 	setAnimation(Idle);
 }
 
-void Player::setAnimation(eAnimationStates value, bool isForcingPlay)
+void Player::setAnimation(eAnimationStates value, float speed, float takeTime, bool isForcingPlay)
 {
 	if (!isForcingPlay)
 	{
 		if (mAnimationStates != value)
 		{
 			mAnimationStates = value;
-			PlayClip(mAnimationStates);
+			PlayClip(mAnimationStates, speed, takeTime);
 		}
 	}
 	else
 	{
 		mAnimationStates = value;
-		PlayClip(mAnimationStates);
+		PlayClip(mAnimationStates, speed, takeTime);
 	}
 }
 

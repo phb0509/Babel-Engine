@@ -9,6 +9,9 @@ private:
 		Tpose,
 		Idle,
 		Run,
+		LeftWalk,
+		RightWalk,
+		BackWalk,
 		NormalAttack,
 		KickAttack,
 		Die
@@ -68,7 +71,7 @@ public:
 private:
 	void initialize();
 	void setIdle();
-	void setAnimation(eAnimationStates value, bool isForcingPlay = false);
+	void setAnimation(eAnimationStates value, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false);
 	void move();
 	void attack();
 	void updateCamera();

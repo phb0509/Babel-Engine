@@ -13,7 +13,7 @@ Collider::~Collider()
     GM->SafeDelete(mMesh);
 }
 
-bool Collider::Collision(Collider* collider)
+bool Collider::Collision(Collider* collider) // ¸Å°³º¯¼ö´Â Ä®. Áö±Ý this´Â Ä¸½¶
 {    
     switch (collider->mType)
     {

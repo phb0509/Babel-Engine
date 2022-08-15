@@ -1,4 +1,4 @@
 ColliderName,,NodeName,,ColliderType,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
 
-bodyCollider,,Mutant:Spine,,Capsule Collider,,0.000,10.000,0.000,, 0.000,0.000,0.000,, 30.000,30.000,30.000
-smashAttackCollider,,Mutant:LeftHand,,Box Collider,,40.000,0.000,-10.000,, 0.000,0.000,0.000,, 60.000,20.000,20.000
+bodyCollider,,Mutant:Spine,,Box Collider,,0.000,10.000,0.000,, 0.000,0.000,0.000,, 50.000,100.000,50.000
+smashAttackCollider,,Mutant:LeftHand,,Box Collider,,40.000,0.000,-10.000,, 0.000,0.000,0.000,, 30.000,30.000,30.000

@@ -46,9 +46,8 @@ private:
 	struct MonsterForAttackCheck
 	{
 		Monster* monster;
-		map<string, bool> bIsCheckAttack; // 플레이어 공격이름(ex.NormalAttack) , 피격여부.
+		map<string, bool> isCheckAttackMap; // 플레이어 공격이름(ex.NormalAttack) , 피격여부.
 	};
-
 
 public:
 	Player();

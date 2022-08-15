@@ -6,7 +6,7 @@ Player::Player():
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
 	mbIsNormalAttackCollide(false),
-	mNormalAttackDamage(34.0f),
+	mNormalAttackDamage(9.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -86,13 +86,11 @@ void Player::Update()
 
 	Transform::UpdateWorld();
 	PlayerModelAnimator::Update();
-	//ModelAnimator::Update();
 
 	if (KEY_DOWN('U'))
 	{
 		mbIsNormalAttack = false;
 	}
-
 }
 
 void Player::Render()
@@ -344,14 +342,15 @@ void Player::checkNormalAttackCollision()
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
 			Monster* monster = mMonsters[monsterName][i].monster;
-			bool bWasNormalAttackedBefore = mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"];
+			bool bWasNormalAttackedBefore = mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"];
 
-			if (!bWasNormalAttackedBefore && !monster->GetIsDie()) // 아직 공격받지 않은 상태면
+			if (!bWasNormalAttackedBefore && !(monster->GetIsDie())) // 아직 공격받지 않은 상태면,, // 여기까지는 문제 없는듯.
 			{
-				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]))
+				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0])) // 충돌됐다면
 				{
+					bool temp = monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]);
 					monster->OnDamage(mAttackInformations["NormalAttack"]);
-					mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"] = true;
+					mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = true;
 				}
 			}
 		}
@@ -369,7 +368,7 @@ void Player::setNormalAttackEnd()
 
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
-			mMonsters[monsterName][i].bIsCheckAttack["NormalAttack"] = false;
+			mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = false;
 		}
 	}
 }
@@ -491,7 +490,7 @@ void Player::SetMonsters(string name, vector<Monster*> monsters)
 	{
 		MonsterForAttackCheck temp;
 		temp.monster = monsters[i];
-		temp.bIsCheckAttack = mbIsCheckAttack; // setAttackInformations()에서 미리 설정해놓은 값.
+		temp.isCheckAttackMap = mbIsCheckAttack; // setAttackInformations()에서 미리 설정해놓은 값.
 		mMonsters[name].push_back(temp);
 	}
 }
@@ -526,10 +525,12 @@ void Player::PostRender()
 {
 	ImGui::Begin("Player PostRender");
 
-	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
-
 	ImGui::InputFloat3("Player Position", (float*)&this->mPosition);
 	SpacingRepeatedly(3);
+
+	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
+
+	SpacingRepeatedly(2);
 
 	for (auto monster : mMonsters)
 	{
@@ -539,14 +540,19 @@ void Player::PostRender()
 		{
 			Monster* monster = mMonsters[monsterName][i].monster;
 
-			ImGui::Text(monster->GetTag().c_str());
+			string tag = monster->GetTag();
+			string temp = tag + " is NormalAttacked?  :  " + to_string((int)mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"]);
+
+			ImGui::Text(temp.c_str());
 			SpacingRepeatedly(2);
 		}
 	}
 
+	//mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"]
+
 	ImGui::End();
 
-	mStatusBar->PostTransformRender();
+	//mStatusBar->PostTransformRender();
 	//mStatusBar->PostRender();
 }
 

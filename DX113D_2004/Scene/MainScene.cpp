@@ -56,8 +56,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 3;
-	int column = 3;
+	int row = 1;
+	int column = 1;
 
 	mMutantInstanceCount = row * column;
 
@@ -96,9 +96,6 @@ void MainScene::Update()
 {
 	mLightBuffer->Update();
 	mDirectionalLight->Update();
-
-
-
 
 	switch (static_cast<int>(mMainCamera))
 	{

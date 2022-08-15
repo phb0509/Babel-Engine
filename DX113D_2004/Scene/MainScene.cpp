@@ -56,12 +56,12 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 5;
-	int column = 5;
+	int row = 3;
+	int column = 3;
 
 	mMutantInstanceCount = row * column;
 
-	mInstancingMutants = new InstancingMutants(mMutantInstanceCount, mTerrain); // ModelAnimators
+	mInstancingMutants = new InstancingMutants(mMutantInstanceCount,200,200, mTerrain); // ModelAnimators
 	mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default´Â ÀÏ´Ü WorldMode.
 	mInstancingMutants->SetCurMainCamera(mWorldCamera);
 	mInstancingMutants->SetIsFrustumCullingMode(true);

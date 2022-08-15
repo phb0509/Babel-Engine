@@ -29,7 +29,7 @@ const static int PLAYER_MAX_FRAME_KEY = 200;
 // instancing
 const static int MAX_BONE = 500; // 인스턴스오브젝트 각각의 최대 노드개수.
 const static int MAX_FRAME_KEY = 600;
-const static int MAX_INSTANCE = 600;
+const static int MAX_INSTANCE = 200;
 
 //const static int MAX_BONE = 200; // 인스턴스오브젝트 각각의 최대 노드개수.
 //const static int MAX_FRAME_KEY = 300;

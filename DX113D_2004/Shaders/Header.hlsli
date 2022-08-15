@@ -1,6 +1,6 @@
 #define MAX_BONE 256
 #define MAX_LIGHT 10
-#define MAX_INSTANCE 600
+#define MAX_INSTANCE 200
 
 //VertexShaderBuffer
 cbuffer World : register(b0)
@@ -20,7 +20,7 @@ cbuffer Projection : register(b2)
     matrix invProjection;
 }
 
-cbuffer Bone : register(b3)
+cbuffer Bone : register(b3) // staticMesh용
 {
     matrix bones[MAX_BONE];        
 }
@@ -50,7 +50,7 @@ struct TweenFrame
 
 cbuffer Frame : register(b4)
 {
-    TweenFrame tweenFrame[MAX_INSTANCE]; // 개당 80byte.
+   TweenFrame tweenFrame[MAX_INSTANCE]; // 개당 80byte.
 }
 
 cbuffer ModelType : register(b5)

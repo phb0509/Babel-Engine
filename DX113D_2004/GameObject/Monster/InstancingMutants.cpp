@@ -11,8 +11,8 @@ bool compare(Monster* a, Monster* b)
 	return aLength > bLength;
 }
 
-InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
-	ModelAnimators(instanceCount),
+InstancingMutants::InstancingMutants(int instanceCount, int nodeCount, int frameKeyCount, Terrain* terrain) :
+	ModelAnimators(instanceCount, nodeCount, frameKeyCount),
 	mInstanceCount(instanceCount),
 	mTerrain(terrain)
 {
@@ -21,7 +21,7 @@ InstancingMutants::InstancingMutants(int instanceCount, Terrain* terrain) :
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
 
-	ModelAnimators::SetShader(L"Models"); // SetShaderÇÏ±âÀü¿¡ Mesh¶û Material ¸ÕÀú SetÇØÁà¾ßµÊ.
+	ModelAnimators::SetShader(L"InstancingMutants"); // SetShaderÇÏ±âÀü¿¡ Mesh¶û Material ¸ÕÀú SetÇØÁà¾ßµÊ.
 
 	ModelAnimators::ReadClip("Mutant", "Idle.clip");
 	ModelAnimators::ReadClip("Mutant", "Run.clip");

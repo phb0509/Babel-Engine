@@ -173,7 +173,6 @@ void ModelAnimator::Update()
 	}
 }
 
-
 void ModelAnimator::Render()
 {
 	if (mClips.size() != 0) // ModelAnimation

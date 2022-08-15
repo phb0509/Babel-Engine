@@ -7,7 +7,7 @@ public:
 
 	friend class Player;
 
-	InstancingMutants(int instanceCount, Terrain* terrain);
+	InstancingMutants(int instanceCount, int nodeCount, int frameKeyCount, Terrain* terrain);
 	~InstancingMutants();
 
 	void Update();

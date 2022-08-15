@@ -759,6 +759,7 @@
     <FxCompile Include="Shaders\InstancingMutantsGBuffer.hlsl" />
     <FxCompile Include="Shaders\VariableTexture.hlsl" />
     <FxCompile Include="Shaders\PlayerModelAnimation.hlsl" />
+    <FxCompile Include="Shaders\InstancingMutants.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

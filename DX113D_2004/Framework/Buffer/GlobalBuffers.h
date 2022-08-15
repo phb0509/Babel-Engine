@@ -279,22 +279,17 @@ public:
 	struct Data
 	{		
 		//TweenDesc tweenDesc[MAX_INSTANCE];
-		//TweenDesc* tweenDesc;
-
+		//TweenDesc tweenDesc[100];
 		vector<TweenDesc> tweenDesc;
 	}data;
 
-	/*FrameBuffer() : ConstBuffer(&data, sizeof(Data))
-	{
-		data.tweenDesc = new TweenDesc[MAX_INSTANCE];
-		ConstBuffer::ReAllocData(data.tweenDesc, MAX_INSTANCE);
-	}*/
-
 	FrameBuffer(int instanceCount) : ConstBuffer(&data, sizeof(Data))
 	{
-		data.tweenDesc.resize(instanceCount);
-		ConstBuffer::ReAllocData(data.tweenDesc.data(), sizeof(Data));
-		//ConstBuffer(&data, sizeof(Data))
+	/*	data.tweenDesc.resize(instanceCount);
+		ConstBuffer::ReAllocData(data.tweenDesc.data(), sizeof(TweenDesc) * instanceCount);*/
+
+		data.tweenDesc.resize(MAX_INSTANCE); // 일단 최대값으로 해놓는것. 나중에 셰이더까지 수정해서 유동적이게 하려면 알아서..
+		ConstBuffer::ReAllocData(data.tweenDesc.data(), sizeof(TweenDesc) * MAX_INSTANCE);
 	}
 };
 

@@ -1,6 +1,6 @@
 #include "Framework.h"
 
-BinaryReader::BinaryReader(wstring filePath): 
+BinaryReader::BinaryReader(wstring filePath, bool& isSuccessedLoadFile):
     mSize(0)
 {
     mFile = CreateFile(
@@ -11,10 +11,19 @@ BinaryReader::BinaryReader(wstring filePath):
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL, 
         nullptr);
+
+    if (mFile == INVALID_HANDLE_VALUE)
+    {
+        isSuccessedLoadFile = false;
+    }
+    else
+    {
+        isSuccessedLoadFile = true;
+    }
 }
 
-BinaryReader::BinaryReader(string filePath)
-    : mSize(0)
+BinaryReader::BinaryReader(string filePath, bool& isSuccessedLoadFile) : 
+    mSize(0)
 {
     mFile = CreateFileA(
         filePath.c_str(), 
@@ -24,36 +33,71 @@ BinaryReader::BinaryReader(string filePath)
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         nullptr);
+
+    if (mFile == INVALID_HANDLE_VALUE)
+    {
+        isSuccessedLoadFile = false;
+    }
+    else
+    {
+        isSuccessedLoadFile = true;
+    }
+}
+
+BinaryReader::BinaryReader(wstring filePath) :
+    mSize(0)
+{
+    mFile = CreateFile(
+        filePath.c_str(),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        0,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
+}
+
+BinaryReader::BinaryReader(string filePath):
+    mSize(0)
+{
+    mFile = CreateFileA(
+        filePath.c_str(),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        0,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
 }
 
 BinaryReader::~BinaryReader()
 {
 }
 
-int BinaryReader::Int()
+int BinaryReader::ReadInt()
 {
     int temp;
     ReadFile(mFile, &temp, sizeof(int), &mSize, nullptr);
     return temp;
 }
 
-UINT BinaryReader::UInt()
+UINT BinaryReader::ReadUInt()
 {
     UINT temp;
     ReadFile(mFile, &temp, sizeof(UINT), &mSize, nullptr);
     return temp;
 }
 
-float BinaryReader::Float()
+float BinaryReader::ReadFloat()
 {
     float temp;
     ReadFile(mFile, &temp, sizeof(float), &mSize, nullptr);
     return temp;
 }
 
-string BinaryReader::String()
+string BinaryReader::ReadString()
 {
-    UINT size = UInt();
+    UINT size = ReadUInt();
 
     char* temp = new char[size + 1];
     ReadFile(mFile, temp, sizeof(char) * size, &this->mSize, nullptr);
@@ -62,7 +106,7 @@ string BinaryReader::String()
     return temp;
 }
 
-XMFLOAT4X4 BinaryReader::Float4x4()
+XMFLOAT4X4 BinaryReader::ReadFloat4x4()
 {
     XMFLOAT4X4 temp;
     ReadFile(mFile, &temp, sizeof(XMFLOAT4X4), &mSize, nullptr);    
@@ -78,4 +122,23 @@ void BinaryReader::Byte(void** data, UINT dataSize)
 void BinaryReader::CloseReader()
 {
     CloseHandle(mFile);
+}
+
+bool BinaryReader::CheckSameFile(wstring filePath)
+{
+    mFile = CreateFile(
+        filePath.c_str(),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        0,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
+
+    if (mFile == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+
+    return true;
 }

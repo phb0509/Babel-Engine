@@ -57,13 +57,13 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	// 처음에 뮤턴트 치기귀찮아서 미리 넣어놓음.
 
-	/*string tempName = "Mutant";
+	string tempName = "Player";
 	mModelList.push_back(tempName);
 	mModels.push_back(new ToolModel(tempName));
 	mCurrentModelIndex = mModels.size() - 1;
 	mCurrentModel = mModels[mCurrentModelIndex];
 	mCurrentModel->SetName(tempName);
-	mCurrentModel->SetIsSkinnedMesh(true);*/
+	mCurrentModel->SetIsSkinnedMesh(true);
 
 	ModelData modelData;
 	mModelDatas.push_back(modelData);
@@ -446,7 +446,7 @@ void ColliderSettingScene::selectModel() // perFrame
 
 		if (mCurrentModel->GetHasMeshes())
 		{
-			for (auto it = mModelDatas[mCurrentModelIndex].preprocessedNodes.begin(); it != mModelDatas[mCurrentModelIndex].preprocessedNodes.end(); it++) // 전처리된 노드맵 초기화. 
+			for (auto it = mModelDatas[mCurrentModelIndex].preprocessedNodesMap.begin(); it != mModelDatas[mCurrentModelIndex].preprocessedNodesMap.end(); it++) // 전처리된 노드맵 초기화. 
 			{
 				it->second.clear();
 			}
@@ -460,7 +460,7 @@ void ColliderSettingScene::InitializeModelDatas()
 {
 	// 새 모델을 만들든 뭘 하든 '메시가 변경될 때' 무조건 초기화시켜줘야됨.
 
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++) // 노드콜라이더 생성여부체크맵 초기화.
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++) // 노드콜라이더 생성여부체크맵 초기화.
 	{
 		it->second = false;
 	}
@@ -496,7 +496,7 @@ void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자
 					continue;
 				}
 
-				mModelDatas[mCurrentModelIndex].preprocessedNodes[parent].push_back(mNodes[j]->index);
+				mModelDatas[mCurrentModelIndex].preprocessedNodesMap[parent].push_back(mNodes[j]->index);
 			}
 		}
 	}
@@ -582,7 +582,7 @@ void ColliderSettingScene::showModelHierarchyWindow()
 			treeNodeRecurs(0);
 		}
 
-		for (auto it = mModelDatas[mCurrentModelIndex].nodeCheck.begin(); it != mModelDatas[mCurrentModelIndex].nodeCheck.end(); ++it) // 노드방문흔적 초기화.
+		for (auto it = mModelDatas[mCurrentModelIndex].nodeCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCheckMap.end(); ++it) // 노드방문흔적 초기화.
 		{
 			it->second = false;
 		}
@@ -593,13 +593,13 @@ void ColliderSettingScene::showModelHierarchyWindow()
 
 void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 {
-	if (mModelDatas[mCurrentModelIndex].nodeCheck[mNodes[nodesIndex]->index])
+	if (mModelDatas[mCurrentModelIndex].nodeCheckMap[mNodes[nodesIndex]->index])
 	{
 		return;
 	}
 
 	ImGui::Indent();
-	mModelDatas[mCurrentModelIndex].nodeCheck[mNodes[nodesIndex]->index] = true;
+	mModelDatas[mCurrentModelIndex].nodeCheckMap[mNodes[nodesIndex]->index] = true; // 노드방문 체크.
 	mModelDatas[mCurrentModelIndex].nodeNameMap[mNodes[nodesIndex]->index] = mNodes[nodesIndex]->name;
 
 	if (ImGui::TreeNodeEx(mNodes[nodesIndex]->name.c_str(), ImGuiTreeNodeFlags_OpenOnArrow)) // 노드이름 출력.
@@ -614,11 +614,11 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 
 			if (ImGui::Button("Create Collider"))
 			{
-				if (mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index]) {} // 이미 만들어져있으면 넘기기
+				if (mModelDatas[mCurrentModelIndex].createdCollidersCheckMap[mNodes[nodesIndex]->index]) {} // 이미 만들어져있으면 넘기기
 
 				else // 안만들어져있으면 만들어주기.
 				{
-					mModelDatas[mCurrentModelIndex].createdCollidersCheck[mNodes[nodesIndex]->index] = true;
+					mModelDatas[mCurrentModelIndex].createdCollidersCheckMap[mNodes[nodesIndex]->index] = true;
 
 					switch (mCurrentColliderIndex)
 					{
@@ -652,11 +652,11 @@ void ColliderSettingScene::treeNodeRecurs(int nodesIndex)
 			ImGui::TreePop();
 		}
 
-		if (mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index].size() != 0) // 자식이 있다면.
+		if (mModelDatas[mCurrentModelIndex].preprocessedNodesMap[mNodes[nodesIndex]->index].size() != 0) // 자식이 있다면.
 		{
-			for (int i = 0; i < mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index].size(); i++)
+			for (int i = 0; i < mModelDatas[mCurrentModelIndex].preprocessedNodesMap[mNodes[nodesIndex]->index].size(); i++)
 			{
-				treeNodeRecurs(mModelDatas[mCurrentModelIndex].preprocessedNodes[mNodes[nodesIndex]->index][i]);
+				treeNodeRecurs(mModelDatas[mCurrentModelIndex].preprocessedNodesMap[mNodes[nodesIndex]->index][i]);
 			}
 		}
 
@@ -674,7 +674,7 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 	if (mCurrentModel->GetHasMeshes())
 	{
-		for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+		for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++)
 		{
 			if (it->second) // 생성 되어있으면
 			{
@@ -689,7 +689,6 @@ void ColliderSettingScene::showColliderEditorWindow()
 				string globalPositionLabel = labelName + " GlobalPosition";
 				string globalRotationLabel = labelName + " GlobalRotation";
 				string globalScaleLabel = labelName + " GlobalScale";
-
 
 				ImGui::Text(labelName.c_str());
 
@@ -738,6 +737,12 @@ void ColliderSettingScene::showColliderEditorWindow()
 		}
 
 		ImGui::SameLine();
+
+		if (ImGui::Button("Load"))
+		{
+			initializeCollidersInfo();
+			loadCollidersBinaryFile(ToWString(mCurrentModel->GetName()));
+		}
 	}
 
 	ImGui::End();
@@ -1291,7 +1296,7 @@ void ColliderSettingScene::saveAsBinary()
 
 	int createdColliderCount = 0;
 
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++)
 	{
 		if (it->second)
 		{
@@ -1301,7 +1306,7 @@ void ColliderSettingScene::saveAsBinary()
 
 	binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
 
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++)
 	{
 		if (it->second)
 		{
@@ -1351,7 +1356,7 @@ void ColliderSettingScene::saveAsCSV()
 		"\n"
 	);
 
-	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheck.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheck.end(); it++)
+	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++)
 	{
 		if (it->second)
 		{
@@ -1409,7 +1414,7 @@ void ColliderSettingScene::allSaveAsBinary() // 현재 생성된 모든 모델의 컬라이더
 
 		int createdColliderCount = 0;
 
-		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		for (auto it = mModelDatas[i].createdCollidersCheckMap.begin(); it != mModelDatas[i].createdCollidersCheckMap.end(); it++)
 		{
 			if (it->second)
 			{
@@ -1419,7 +1424,7 @@ void ColliderSettingScene::allSaveAsBinary() // 현재 생성된 모든 모델의 컬라이더
 
 		binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
 
-		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		for (auto it = mModelDatas[i].createdCollidersCheckMap.begin(); it != mModelDatas[i].createdCollidersCheckMap.end(); it++)
 		{
 			if (it->second)
 			{
@@ -1468,7 +1473,7 @@ void ColliderSettingScene::allSaveAsCSV()
 			"\n"
 		);
 
-		for (auto it = mModelDatas[i].createdCollidersCheck.begin(); it != mModelDatas[i].createdCollidersCheck.end(); it++)
+		for (auto it = mModelDatas[i].createdCollidersCheckMap.begin(); it != mModelDatas[i].createdCollidersCheckMap.end(); it++)
 		{
 			if (it->second)
 			{
@@ -1540,6 +1545,22 @@ void ColliderSettingScene::copyDraggedFile()
 	}
 }
 
+void ColliderSettingScene::initializeCollidersInfo()
+{
+	mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.clear();
+
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++)
+	{
+		if (it->second.collider != nullptr)
+		{
+			GM->SafeDelete(it->second.collider);
+		}
+	}
+
+	mModelDatas[mCurrentModelIndex].nodeCollidersMap.clear();
+	mModelDatas[mCurrentModelIndex].colliderNameMap.clear();
+}
+
 void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileList)
 {
 	string path = mProjectPath;
@@ -1569,6 +1590,88 @@ void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileL
 	} while (_findnext(handle, &fd) == 0);
 
 	_findclose(handle);
+}
+
+void ColliderSettingScene::loadCollidersBinaryFile(wstring fileName)
+{
+	wstring temp = L"TextData/" + fileName + L".map";
+	BinaryReader binaryReader(temp, mbIsSuccessedLoadFile);
+
+	if (mbIsSuccessedLoadFile)
+	{
+		//UINT colliderCount = binaryReader.ReadUInt();
+		//int colliderType;
+
+		//mTempColliderSRTdatas.resize(colliderCount);
+		//mTempColliderDatas.resize(colliderCount);
+
+		//void* ptr1 = (void*)mTempColliderSRTdatas.data();
+
+		//for (int i = 0; i < colliderCount; i++)
+		//{
+		//	mTempColliderDatas[i].colliderName = binaryReader.ReadString();
+		//	mTempColliderDatas[i].nodeName = binaryReader.ReadString();
+		//	mTempColliderDatas[i].colliderType = binaryReader.ReadUInt();
+		//}
+
+		//binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
+
+		//for (int i = 0; i < colliderCount; i++)
+		//{
+		//	mTempColliderDatas[i].position = mTempColliderSRTdatas[i].position;
+		//	mTempColliderDatas[i].rotation = mTempColliderSRTdatas[i].rotation;
+		//	mTempColliderDatas[i].scale = mTempColliderSRTdatas[i].scale;
+		//}
+
+		//// Create Colliders;
+		//for (int i = 0; i < mTempColliderDatas.size(); i++)
+		//{
+		//	SettedCollider settedCollider;
+		//	Collider* collider = nullptr;
+
+		//	switch (mTempColliderDatas[i].colliderType)
+		//	{
+		//	case 0: collider = new BoxCollider();
+		//		break;
+		//	case 1: collider = new SphereCollider();
+		//		break;
+		//	case 2: collider = new CapsuleCollider();
+		//		break;
+		//	default:
+		//		break;
+		//	}
+
+		//	if (collider != nullptr)
+		//	{
+		//		collider->SetTag(mTempColliderDatas[i].colliderName);
+		//		collider->mPosition = mTempColliderDatas[i].position;
+		//		collider->mRotation = mTempColliderDatas[i].rotation;
+		//		collider->mScale = mTempColliderDatas[i].scale;
+
+		//		settedCollider.colliderName = mTempColliderDatas[i].colliderName;
+		//		settedCollider.nodeName = mTempColliderDatas[i].nodeName;
+		//		settedCollider.collider = collider;
+
+		//		mColliders.push_back(settedCollider);
+		//		mCollidersMap[mTempColliderDatas[i].colliderName] = collider;
+		//	}
+		//}
+	}
+	else // Failed LoadFile
+	{
+		// 컬라이더에디터창에 텍스트로 실패메시지라도 띄우기??
+	}
+
+	binaryReader.CloseReader();
+}
+
+bool ColliderSettingScene::checkColidersBinaryFile(wstring fileName)
+{
+
+
+
+
+	return false;
 }
 
 void ColliderSettingScene::colorPicking()

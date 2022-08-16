@@ -85,7 +85,7 @@ private:
 	void setColliders();
 	void setAttackInformations();
 	void renderColliders();
-	void loadBinaryCollidersFile(wstring fileName);
+	void loadCollidersBinaryFile(wstring fileName);
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
 	void setNormalAttackEnd();

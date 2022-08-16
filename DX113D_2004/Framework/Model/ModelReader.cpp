@@ -148,17 +148,17 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 
 	BinaryReader* r = new BinaryReader(filePath);
 
-	UINT count = r->UInt();
+	UINT count = r->ReadUInt();
 
 	for (UINT i = 0; i < count; i++)
 	{
 		ModelMesh* mesh = new ModelMesh();
-		mesh->mName = r->String();
-		mesh->mMaterialName = r->String();
+		mesh->mName = r->ReadString();
+		mesh->mMaterialName = r->ReadString();
 		mesh->mMaterial = mDefaultMaterial; // 
 		
 		{//Vertices
-			UINT count = r->UInt();
+			UINT count = r->ReadUInt();
 
 			mesh->mVertexCount = count;
 			mesh->mVertices = new ModelVertex[count];
@@ -168,7 +168,7 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 		}
 
 		{//Indices
-			UINT count = r->UInt();
+			UINT count = r->ReadUInt();
 
 			mesh->mIndexCount = count;
 			mesh->mIndices = new UINT[count];
@@ -181,30 +181,30 @@ void ModelReader::ReadMesh(string folderName,string fileName)
 		mMeshes.emplace_back(mesh);
 	}
 
-	count = r->UInt();
+	count = r->ReadUInt();
 
 	// Nodes Update
 	for (UINT i = 0; i < count; i++)
 	{
 		NodeData* node = new NodeData();
-		node->index = r->Int();
-		node->name = r->String();
-		node->parent = r->Int();
-		node->transform = r->Float4x4();
+		node->index = r->ReadInt();
+		node->name = r->ReadString();
+		node->parent = r->ReadInt();
+		node->transform = r->ReadFloat4x4();
 
 		mNodes.emplace_back(node);
 		mNodeLookupTable[node->name] = node->index;
 	}
 
-	count = r->UInt();
+	count = r->ReadUInt();
 
 	// BoneMap Update
 	for (UINT i = 0; i < count; i++) 
 	{
 		BoneData* bone = new BoneData();
-		bone->name = r->String();
-		bone->index = r->Int();
-		bone->offset = r->Float4x4();
+		bone->name = r->ReadString();
+		bone->index = r->ReadInt();
+		bone->offset = r->ReadFloat4x4();
 
 		mBoneMap[bone->name] = bone->index;
 

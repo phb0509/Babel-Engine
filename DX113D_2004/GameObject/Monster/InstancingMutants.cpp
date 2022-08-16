@@ -16,7 +16,7 @@ InstancingMutants::InstancingMutants(int instanceCount, int nodeCount, int frame
 	mInstanceCount(instanceCount),
 	mTerrain(terrain)
 {
-	loadBinaryCollidersFile(L"Mutant.map"); // 툴에서 셋팅한 컬라이더 불러오기.
+	loadCollidersBinaryFile(L"Mutant.map"); // 툴에서 셋팅한 컬라이더 불러오기.
 
 	ModelAnimators::SetMesh("Mutant", "Mutant.mesh");
 	ModelAnimators::SetMaterial("Mutant", "Mutant.mat");
@@ -182,11 +182,12 @@ void InstancingMutants::setColliders()
 	}
 }
 
-void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
+void InstancingMutants::loadCollidersBinaryFile(wstring fileName)
 {
+	bool isSuccessedLoadFile = false;
 	wstring temp = L"TextData/" + fileName;
-	BinaryReader binaryReader(temp);
-	UINT colliderCount = binaryReader.UInt();
+	BinaryReader binaryReader(temp, isSuccessedLoadFile);
+	UINT colliderCount = binaryReader.ReadUInt();
 	int colliderType;
 
 	mTempColliderSRTdatas.resize(colliderCount);
@@ -196,9 +197,9 @@ void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mTempColliderDatas[i].colliderName = binaryReader.String();
-		mTempColliderDatas[i].nodeName = binaryReader.String();
-		mTempColliderDatas[i].colliderType = binaryReader.UInt();
+		mTempColliderDatas[i].colliderName = binaryReader.ReadString();
+		mTempColliderDatas[i].nodeName = binaryReader.ReadString();
+		mTempColliderDatas[i].colliderType = binaryReader.ReadUInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
@@ -215,9 +216,6 @@ void InstancingMutants::loadBinaryCollidersFile(wstring fileName)
 	// Create Colliders;
 	for (int i = 0; i < mInstanceCount; i++)
 	{
-		vector<SettedCollider> tempSettedCollider;
-		map<string, Collider*> tempCollidersMap;
-
 		for (int j = 0; j < mTempColliderDatas.size(); j++)
 		{
 			SettedCollider settedCollider;

@@ -143,7 +143,7 @@ void Transform::RotateToDestinationForModel(Transform* transform, Vector3 dest) 
 		check = true;
 	}
 
-	assert(!check && "mRotation.y is Nan!!!!");      
+	assert(!check && "mRotation is Nan!!!!");      
 }
 
 void Transform::RotateToDestinationForNotModel(Transform* transform, Vector3 dest)

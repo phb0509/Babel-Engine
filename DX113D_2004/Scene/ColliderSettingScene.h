@@ -19,9 +19,9 @@ public:
 
 	struct ModelData // 각 모델이 가지는 데이터..
 	{
-		map<int, vector<int>> preprocessedNodes; // 각 노드가 가지고 있는 자식노드들 인덱스
-		map<int, bool> nodeCheck; // TreeNodeRecurs 방문흔적
-		map<int, bool> createdCollidersCheck; // 해당인덱스노드가 컬라이더 가지고있는지 체크만.
+		map<int, vector<int>> preprocessedNodesMap; // 각 노드가 가지고 있는 자식노드들 인덱스
+		map<int, bool> nodeCheckMap; // TreeNodeRecurs 방문흔적
+		map<int, bool> createdCollidersCheckMap; // 해당인덱스노드가 컬라이더 가지고있는지 체크만.
 		map<int, TreeNodeData> nodeCollidersMap;
 		map<int, string> nodeNameMap;
 		map<int, char[100]> colliderNameMap;
@@ -30,7 +30,7 @@ public:
 		string materialTextOnInspector;
 	};
  
-	ColliderSettingScene();
+	ColliderSettingScene(); 
 	~ColliderSettingScene();
 
 	virtual void Update() override;
@@ -64,7 +64,10 @@ private:
 	void allSaveAsCSV();
 	//void loadBinaryFile();
 
+	void initializeCollidersInfo();
 	void loadFileList(string folderName, vector<string>& fileList);
+	void loadCollidersBinaryFile(wstring fileName);
+	bool checkColidersBinaryFile(wstring fileName);
 	void colorPicking();
 	void updatePickedColliderMatrix();
 	void initPickedColliderMatrix();
@@ -167,4 +170,6 @@ private:
 	
 	LightBuffer* mLightBuffer;
 	Light* mDirectionalLight;
+
+	bool mbIsSuccessedLoadFile;
 };

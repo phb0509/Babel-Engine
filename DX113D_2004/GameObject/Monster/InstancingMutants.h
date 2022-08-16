@@ -28,7 +28,7 @@ public:
 private:
 	void setColliders();
 	void renderColliders();
-	void loadBinaryCollidersFile(wstring fileName);
+	void loadCollidersBinaryFile(wstring fileName);
 	void showInstanceInformation();
 	void updateCompletedAnimIndices(bool value);
 	void updateStartedAnimIndices(bool value);

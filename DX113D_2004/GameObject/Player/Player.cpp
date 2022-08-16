@@ -50,7 +50,7 @@ Player::Player():
 
 	mRotation.y = XM_PI; // 포워드랑 반대로되어있어서 180도 돌려줘야됨.
 
-	loadBinaryCollidersFile(L"Player.map");
+	loadCollidersBinaryFile(L"Player.map");
 	setAttackInformations();
 	UpdateWorld();
 
@@ -130,10 +130,10 @@ void Player::attack()
 		normalAttack();
 	}
 
-	/*if (KEY_DOWN(VK_RBUTTON))
-	{
-		kickAttack();
-	}*/
+	//if (KEY_DOWN(VK_RBUTTON))
+	//{
+	//	kickAttack();
+	//}
 
 	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
 }
@@ -239,7 +239,7 @@ void Player::moveInWorldMode() // Player
 
 void Player::rotateInTargetMode()
 {
-	float rotationSpeed = 10.0f * DELTA;
+	float rotationSpeed = 20.0f * DELTA;
 
 	Vector3 temp = Vector3::Cross(mTargetCameraForward, -1 * GetForwardVector());
 
@@ -419,11 +419,15 @@ void Player::setAttackInformations()
 	mbIsCheckAttack["NormalAttack"] = false;
 }
 
-void Player::loadBinaryCollidersFile(wstring fileName)
+void Player::loadCollidersBinaryFile(wstring fileName)
 {
+	bool isSuccessedLoadFile = false;
 	wstring temp = L"TextData/" + fileName;
-	BinaryReader binaryReader(temp);
-	UINT colliderCount = binaryReader.UInt();
+	BinaryReader binaryReader(temp, isSuccessedLoadFile);
+
+	bool aasdfsda = binaryReader.CheckSameFile(temp);
+
+	UINT colliderCount = binaryReader.ReadUInt();
 	int colliderType;
 
 	mTempColliderSRTdatas.resize(colliderCount);
@@ -433,9 +437,9 @@ void Player::loadBinaryCollidersFile(wstring fileName)
 
 	for (int i = 0; i < colliderCount; i++)
 	{
-		mTempColliderDatas[i].colliderName = binaryReader.String();
-		mTempColliderDatas[i].nodeName = binaryReader.String();
-		mTempColliderDatas[i].colliderType = binaryReader.UInt();
+		mTempColliderDatas[i].colliderName = binaryReader.ReadString();
+		mTempColliderDatas[i].nodeName = binaryReader.ReadString();
+		mTempColliderDatas[i].colliderType = binaryReader.ReadUInt();
 	}
 
 	binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);

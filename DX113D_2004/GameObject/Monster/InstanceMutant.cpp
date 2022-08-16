@@ -10,7 +10,7 @@ InstanceMutant::InstanceMutant(): // 디폴트체력 100.
 	UpdateWorld();
 
 	mPlayerDetectRange = 15.0f;
-	mDistanceToPlayerForAttack = 7.0f;
+	mDistanceToPlayerForAttack = 9.0f;
 
 	mPatrolState = new MutantPatrolState();
 	mStalkingState = new MutantStalkingState();

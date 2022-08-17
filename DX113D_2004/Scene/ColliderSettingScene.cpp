@@ -86,7 +86,6 @@ ColliderSettingScene::~ColliderSettingScene()
 {
 	GM->SafeDelete(mWorldCamera);
 	GM->SafeDeleteVector(mModels);
-	GM->SafeDeleteVector(mNodes);
 	GM->SafeDelete(mRSState);
 	GM->SafeDelete(mRSStateForColorPicking);
 	GM->SafeDelete(mMonster);
@@ -1299,17 +1298,17 @@ void ColliderSettingScene::saveAsBinary()
 		}
 	}
 
-	binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
+	binaryWriter.WriteUInt(createdColliderCount); // 저장할 컬라이더개수.
 
 	for (auto it = mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.begin(); it != mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.end(); it++)
 	{
 		if (it->second)
 		{
-			binaryWriter.String(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
-			binaryWriter.String(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
+			binaryWriter.WriteString(mModelDatas[mCurrentModelIndex].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
+			binaryWriter.WriteString(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
 
 			UINT colliderType = static_cast<int>(mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->GetType());
-			binaryWriter.UInt(colliderType); // 컬라이더타입
+			binaryWriter.WriteUInt(colliderType); // 컬라이더타입
 
 			ColliderDataForSave data;
 			data.position = mModelDatas[mCurrentModelIndex].nodeCollidersMap[it->first].collider->mPosition;
@@ -1498,14 +1497,14 @@ void ColliderSettingScene::allSaveAsBinary() // 현재 생성된 모든 모델의 컬라이더
 			}
 		}
 
-		binaryWriter.UInt(createdColliderCount); // 저장할 컬라이더개수.
+		binaryWriter.WriteUInt(createdColliderCount); // 저장할 컬라이더개수.
 
 		for (auto it = mModelDatas[i].createdCollidersCheckMap.begin(); it != mModelDatas[i].createdCollidersCheckMap.end(); it++)
 		{
 			if (it->second)
 			{
-				binaryWriter.String(mModelDatas[i].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
-				binaryWriter.String(mModelDatas[i].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
+				binaryWriter.WriteString(mModelDatas[i].colliderNameMap[it->first]); // 컬라이더 이름(직접 작성한 이름)
+				binaryWriter.WriteString(mModelDatas[i].nodeCollidersMap[it->first].nodeName); // 해당 컬라이더 노드이름(ex LeftArm)
 
 				ColliderDataForSave data;
 				data.position = mModelDatas[i].nodeCollidersMap[it->first].collider->mPosition;

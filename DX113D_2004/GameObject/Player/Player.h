@@ -42,7 +42,6 @@ public:
 	void SetMonsters(string name, vector<Monster*> monsters);
 
 private:
-	void initialize();
 	void setIdle();
 	void setAnimation(eAnimationStates value, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false);
 	void move();
@@ -62,7 +61,9 @@ private:
 	void loadCollidersBinaryFile(wstring fileName);
 	void rotateInTargetMode();
 	void checkNormalAttackCollision();
+
 	void setNormalAttackEnd();
+	void setKickAttackEnd();
 
 	void normalAttack(); // 기본공격 
 	void kickAttack(); // 넉백
@@ -82,10 +83,6 @@ private:
 	//map<string, vector<Monster*>> mMonsters;
 	map<string, vector<MonsterForAttackCheck>> mMonsters;
 
-	bool mbIsInitialize;
-	bool mbIsNormalAttack;
-	bool mbIsNormalAttackCollide;
-	float mNormalAttackDamage;
 	bool mbIsTargetMode;
 
 	Vector3 mPreFrameMousePosition;
@@ -93,13 +90,6 @@ private:
 	float mTargetCameraRotationY;
 	float mTargetCameraRotationX;
 	bool mbIsLODTerrain;
-
-	map<string, AttackInformation> mAttackInformations;
-
-	bool mbIsCheckNormalAttackCollision;
-	map<string, bool> mbIsCheckAttack;
-
-	string mTestString = "";
 
 	float mMaxHP;
 	float mCurHP;
@@ -109,6 +99,19 @@ private:
 	float mCurMP;
 	float mMPRate;
 
+	// Attack
+	map<string, AttackInformation> mAttackInformations;
+	map<string, bool> mbIsCheckAttack;
+
+	// NormalAttack
+	bool mbIsNormalAttack;
+	float mNormalAttackDamage;
+	bool mbIsCheckNormalAttackCollision;
+
+	// KickAttack
+	bool mbIsKickAttack;
+	float mKickAttackDamage;
+	bool mbIsCheckKickAttackCollision;
 	// UI
 	PlayerStatusBar* mStatusBar;
 };

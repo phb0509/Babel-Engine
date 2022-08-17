@@ -2,10 +2,8 @@
 
 Player::Player(): 
 	PlayerModelAnimator(),
-	mbIsInitialize(false),
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
-	mbIsNormalAttackCollide(false),
 	mNormalAttackDamage(9.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
@@ -70,12 +68,6 @@ Player::~Player()
 
 void Player::Update()
 {
-	if (!mbIsInitialize)
-	{
-		initialize();
-		mbIsInitialize = true;
-	}
-
 	mStatusBar->Update();
 
 	setColliders();
@@ -373,6 +365,22 @@ void Player::setNormalAttackEnd()
 	}
 }
 
+void Player::setKickAttackEnd()
+{
+	setAnimation(Idle);
+	mbIsNormalAttack = false;
+
+	for (auto monster : mMonsters)
+	{
+		string monsterName = monster.first;
+
+		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
+		{
+			mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = false;
+		}
+	}
+}
+
 void Player::normalAttack()
 {
 	if (mbIsNormalAttack) return;
@@ -495,10 +503,6 @@ void Player::SetMonsters(string name, vector<Monster*> monsters)
 		temp.isCheckAttackMap = mbIsCheckAttack; // setAttackInformations()에서 미리 설정해놓은 값.
 		mMonsters[name].push_back(temp);
 	}
-}
-
-void Player::initialize()
-{
 }
 
 void Player::setIdle()

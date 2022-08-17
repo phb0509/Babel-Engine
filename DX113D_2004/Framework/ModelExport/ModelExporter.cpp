@@ -336,41 +336,41 @@ void ModelExporter::WriteMesh(string savePath)
 	BinaryWriter* w = new BinaryWriter(savePath);
 
 	savePath;
-	w->UInt(mMeshes.size());
+	w->WriteUInt(mMeshes.size());
 
 	for (MeshData* mesh : mMeshes)
 	{
-		w->String(mesh->name);
-		w->String(mesh->materialName);
+		w->WriteString(mesh->name);
+		w->WriteString(mesh->materialName);
 
-		w->UInt(mesh->vertices.size());
+		w->WriteUInt(mesh->vertices.size());
 		w->Byte(mesh->vertices.data(), sizeof(ModelVertex) * mesh->vertices.size());
 
-		w->UInt(mesh->indices.size());
+		w->WriteUInt(mesh->indices.size());
 		w->Byte(mesh->indices.data(), sizeof(UINT) * mesh->indices.size());
 
 		delete mesh;
 	}
 	mMeshes.clear();
 
-	w->UInt(mNodes.size());
+	w->WriteUInt(mNodes.size());
 	for (NodeData* node : mNodes)
 	{
-		w->Int(node->index);
-		w->String(node->name);
-		w->Int(node->parent);
-		w->Float4x4(node->transform);
+		w->WriteInt(node->index);
+		w->WriteString(node->name);
+		w->WriteInt(node->parent);
+		w->WriteFloat4x4(node->transform);
 
 		delete node;
 	}
 	mNodes.clear();
 
-	w->UInt(mBones.size());
+	w->WriteUInt(mBones.size());
 	for (BoneData* bone : mBones)
 	{
-		w->String(bone->name);
-		w->Int(bone->index);
-		w->Float4x4(bone->offset);
+		w->WriteString(bone->name);
+		w->WriteInt(bone->index);
+		w->WriteFloat4x4(bone->offset);
 
 		delete bone;
 	}
@@ -524,16 +524,16 @@ void ModelExporter::WriteClip(Clip* clip, string savePath)
 
 	BinaryWriter* w = new BinaryWriter(savePath);
 
-	w->String(clip->name);
-	w->Float(clip->duration);
-	w->Float(clip->tickPerSecond);
-	w->UInt(clip->frameCount);
-	w->UInt(clip->keyFrame.size());
+	w->WriteString(clip->name);
+	w->WriteFloat(clip->duration);
+	w->WriteFloat(clip->tickPerSecond);
+	w->WriteUInt(clip->frameCount);
+	w->WriteUInt(clip->keyFrame.size());
 
 	for (KeyFrame* keyFrame : clip->keyFrame)
 	{
-		w->String(keyFrame->boneName);
-		w->UInt(keyFrame->transforms.size());
+		w->WriteString(keyFrame->boneName);
+		w->WriteUInt(keyFrame->transforms.size());
 		w->Byte(keyFrame->transforms.data(), sizeof(KeyTransform) * keyFrame->transforms.size());
 
 		delete keyFrame;

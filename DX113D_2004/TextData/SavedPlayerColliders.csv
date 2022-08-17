@@ -1,3 +1,5 @@
 ColliderName,,NodeName,,ColliderType,,Position.x,Position.y,Position.z,,Rotation.x,Rotation.y,Rotation.z,,Scale.x,Scale.y,Scale.z
 
-tttste,,Spine,,Sphere Collider,,0.000,0.000,0.000,, 0.000,0.000,0.000,, 10.000,10.000,10.000
+BodyCollider,,Hips,,Capsule Collider,,0.000,5.000,0.000,, 0.000,0.000,0.000,, 20.000,20.000,20.000
+SwordCollider,,Sword_joint,,Box Collider,,-12.500,-3.000,-49.000,, -0.060,0.250,0.000,, 6.000,1.000,65.000
+KickAttackCollider,,RightToe_End,,Box Collider,,-1.700,-0.000,12.600,, 0.000,0.000,0.000,, 12.100,10.000,28.300

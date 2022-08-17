@@ -48,30 +48,30 @@ BinaryWriter::~BinaryWriter()
 	//CloseHandle(file);
 }
 
-void BinaryWriter::Int(int data)
+void BinaryWriter::WriteInt(int data)
 {
 	WriteFile(mFile, &data, sizeof(int), &mSize, nullptr);
 }
 
-void BinaryWriter::UInt(UINT data)
+void BinaryWriter::WriteUInt(UINT data)
 {
 	WriteFile(mFile, &data, sizeof(UINT), &mSize, nullptr);
 }
 
-void BinaryWriter::Float(float data)
+void BinaryWriter::WriteFloat(float data)
 {
 	WriteFile(mFile, &data, sizeof(float), &mSize, nullptr);
 }
 
-void BinaryWriter::String(string data)
+void BinaryWriter::WriteString(string data)
 {
-	UInt((UINT)data.size());
+	WriteUInt((UINT)data.size());
 
 	const char* str = data.c_str();
 	WriteFile(mFile, str, sizeof(char) * (UINT)data.size(), &mSize, nullptr);
 }
 
-void BinaryWriter::Float4x4(XMFLOAT4X4 data)
+void BinaryWriter::WriteFloat4x4(XMFLOAT4X4 data)
 {
 	WriteFile(mFile, &data, sizeof(XMFLOAT4X4), &mSize, nullptr);
 }

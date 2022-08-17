@@ -57,13 +57,13 @@ ColliderSettingScene::ColliderSettingScene() :
 
 	// 처음에 뮤턴트 치기귀찮아서 미리 넣어놓음.
 
-	string tempName = "Player";
+	/*string tempName = "Player";
 	mModelList.push_back(tempName);
 	mModels.push_back(new ToolModel(tempName));
 	mCurrentModelIndex = mModels.size() - 1;
 	mCurrentModel = mModels[mCurrentModelIndex];
 	mCurrentModel->SetName(tempName);
-	mCurrentModel->SetIsSkinnedMesh(true);
+	mCurrentModel->SetIsSkinnedMesh(true);*/
 
 	ModelData modelData;
 	mModelDatas.push_back(modelData);
@@ -85,7 +85,6 @@ ColliderSettingScene::ColliderSettingScene() :
 ColliderSettingScene::~ColliderSettingScene()
 {
 	GM->SafeDelete(mWorldCamera);
-	GM->SafeDelete(mCurrentModel);
 	GM->SafeDeleteVector(mModels);
 	GM->SafeDeleteVector(mNodes);
 	GM->SafeDelete(mRSState);
@@ -438,6 +437,7 @@ void ColliderSettingScene::selectModel() // perFrame
 	}
 
 	showCreateModelButton();
+
 	SpacingRepeatedly(3);
 
 	if (mModels.size() != 0) // ToolModel 할당 되어야 실행. 하이어라키 렌더해야해서
@@ -728,8 +728,6 @@ void ColliderSettingScene::showColliderEditorWindow()
 				SpacingRepeatedly(2);
 			}
 		}
-
-		ImGui::ShowDemoWindow();
 
 		if (ImGui::Button("Save"))
 		{
@@ -1278,9 +1276,6 @@ void ColliderSettingScene::showPreRenderTargetWindow()
 	ImGui::ImageButton(mPreRenderTargets[0]->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 
 	ImGui::End();
-
-
-	//renderGizmos();
 }
 
 void ColliderSettingScene::saveAsBinary()
@@ -1329,6 +1324,87 @@ void ColliderSettingScene::saveAsBinary()
 	binaryWriter.CloseWriter();
 
 	saveAsCSV();
+}
+
+void ColliderSettingScene::loadCollidersBinaryFile(wstring fileName)
+{
+	wstring temp = L"TextData/" + fileName + L".map";
+	BinaryReader binaryReader(temp, mbIsSuccessedLoadFile);
+
+	if (mbIsSuccessedLoadFile)
+	{
+		UINT colliderCount = binaryReader.ReadUInt();
+		int colliderType;
+
+		mTempColliderSRTdatas.resize(colliderCount);
+		mTempColliderDatas.resize(colliderCount);
+
+		void* ptr1 = (void*)mTempColliderSRTdatas.data();
+
+		for (int i = 0; i < colliderCount; i++)
+		{
+			mTempColliderDatas[i].colliderName = binaryReader.ReadString();
+			mTempColliderDatas[i].nodeName = binaryReader.ReadString();
+			mTempColliderDatas[i].colliderType = binaryReader.ReadUInt();
+		}
+
+		binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
+
+		for (int i = 0; i < colliderCount; i++)
+		{
+			mTempColliderDatas[i].position = mTempColliderSRTdatas[i].position;
+			mTempColliderDatas[i].rotation = mTempColliderSRTdatas[i].rotation;
+			mTempColliderDatas[i].scale = mTempColliderSRTdatas[i].scale;
+		}
+
+		// Create Colliders;
+		for (int i = 0; i < mTempColliderDatas.size(); i++)
+		{
+			SettedCollider settedCollider;
+			Collider* collider = nullptr;
+
+			switch (mTempColliderDatas[i].colliderType)
+			{
+			case 0: collider = new BoxCollider();
+				break;
+			case 1: collider = new SphereCollider();
+				break;
+			case 2: collider = new CapsuleCollider();
+				break;
+			default:
+				break;
+			}
+
+			if (collider != nullptr)
+			{
+				collider->SetTag(mTempColliderDatas[i].colliderName);
+				collider->mPosition = mTempColliderDatas[i].position;
+				collider->mRotation = mTempColliderDatas[i].rotation;
+				collider->mScale = mTempColliderDatas[i].scale;
+
+				settedCollider.colliderName = mTempColliderDatas[i].colliderName;
+				settedCollider.nodeName = mTempColliderDatas[i].nodeName;
+				settedCollider.collider = collider;
+
+				TreeNodeData treeNodeData;
+				treeNodeData.collider = settedCollider.collider;
+				treeNodeData.nodeName = settedCollider.nodeName;
+				int nodeIndex = mCurrentModel->GetNodeLookupTable()[settedCollider.nodeName];
+
+				mModelDatas[mCurrentModelIndex].nodeNameMap[nodeIndex] = settedCollider.nodeName;
+				mModelDatas[mCurrentModelIndex].nodeCollidersMap[nodeIndex] = treeNodeData;
+				mModelDatas[mCurrentModelIndex].createdCollidersCheckMap[nodeIndex] = true;
+				strcpy_s(mModelDatas[mCurrentModelIndex].colliderNameMap[nodeIndex], settedCollider.colliderName.c_str());
+			}
+		}
+	}
+
+	else // Failed LoadFile
+	{
+		// 컬라이더에디터창에 텍스트로 실패메시지라도 띄우기??
+	}
+
+	binaryReader.CloseReader();
 }
 
 void ColliderSettingScene::saveAsCSV()
@@ -1592,78 +1668,7 @@ void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileL
 	_findclose(handle);
 }
 
-void ColliderSettingScene::loadCollidersBinaryFile(wstring fileName)
-{
-	wstring temp = L"TextData/" + fileName + L".map";
-	BinaryReader binaryReader(temp, mbIsSuccessedLoadFile);
 
-	if (mbIsSuccessedLoadFile)
-	{
-		//UINT colliderCount = binaryReader.ReadUInt();
-		//int colliderType;
-
-		//mTempColliderSRTdatas.resize(colliderCount);
-		//mTempColliderDatas.resize(colliderCount);
-
-		//void* ptr1 = (void*)mTempColliderSRTdatas.data();
-
-		//for (int i = 0; i < colliderCount; i++)
-		//{
-		//	mTempColliderDatas[i].colliderName = binaryReader.ReadString();
-		//	mTempColliderDatas[i].nodeName = binaryReader.ReadString();
-		//	mTempColliderDatas[i].colliderType = binaryReader.ReadUInt();
-		//}
-
-		//binaryReader.Byte(&ptr1, sizeof(TempCollider) * colliderCount);
-
-		//for (int i = 0; i < colliderCount; i++)
-		//{
-		//	mTempColliderDatas[i].position = mTempColliderSRTdatas[i].position;
-		//	mTempColliderDatas[i].rotation = mTempColliderSRTdatas[i].rotation;
-		//	mTempColliderDatas[i].scale = mTempColliderSRTdatas[i].scale;
-		//}
-
-		//// Create Colliders;
-		//for (int i = 0; i < mTempColliderDatas.size(); i++)
-		//{
-		//	SettedCollider settedCollider;
-		//	Collider* collider = nullptr;
-
-		//	switch (mTempColliderDatas[i].colliderType)
-		//	{
-		//	case 0: collider = new BoxCollider();
-		//		break;
-		//	case 1: collider = new SphereCollider();
-		//		break;
-		//	case 2: collider = new CapsuleCollider();
-		//		break;
-		//	default:
-		//		break;
-		//	}
-
-		//	if (collider != nullptr)
-		//	{
-		//		collider->SetTag(mTempColliderDatas[i].colliderName);
-		//		collider->mPosition = mTempColliderDatas[i].position;
-		//		collider->mRotation = mTempColliderDatas[i].rotation;
-		//		collider->mScale = mTempColliderDatas[i].scale;
-
-		//		settedCollider.colliderName = mTempColliderDatas[i].colliderName;
-		//		settedCollider.nodeName = mTempColliderDatas[i].nodeName;
-		//		settedCollider.collider = collider;
-
-		//		mColliders.push_back(settedCollider);
-		//		mCollidersMap[mTempColliderDatas[i].colliderName] = collider;
-		//	}
-		//}
-	}
-	else // Failed LoadFile
-	{
-		// 컬라이더에디터창에 텍스트로 실패메시지라도 띄우기??
-	}
-
-	binaryReader.CloseReader();
-}
 
 bool ColliderSettingScene::checkColidersBinaryFile(wstring fileName)
 {

@@ -28,6 +28,7 @@ public:
 	void SetBox(Vector3* minBox, Vector3* maxBox);
 	vector<NodeData*> GetNodes() {return mNodes;}
 	vector<ModelMesh*> GetMeshes() { return mMeshes; }
+	map<string, int>& GetNodeLookupTable() { return mNodeLookupTable; }
 
 private:
 	void deleteDatas();

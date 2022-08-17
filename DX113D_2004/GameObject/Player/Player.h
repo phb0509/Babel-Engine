@@ -17,32 +17,6 @@ private:
 		Die
 	}mAnimationStates;
 
-	struct ColliderData
-	{
-		string colliderName;
-		string nodeName;
-		UINT colliderType;
-
-		Vector3 position;
-		Vector3 rotation;
-		Vector3 scale;
-	};
-
-	struct TempCollider
-	{
-		Vector3 position;
-		Vector3 rotation;
-		Vector3 scale;
-	};
-
-	struct SettedCollider
-	{
-		string colliderName;
-		string nodeName;
-		Matrix matrix;
-		Collider* collider;
-	};
-
 	struct MonsterForAttackCheck
 	{
 		Monster* monster;

@@ -3,15 +3,44 @@
 BinaryWriter::BinaryWriter(wstring filePath) : 
 	mSize(0)
 {
-	mFile = CreateFile(filePath.c_str(), GENERIC_WRITE,
-		0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	mFile = CreateFile(
+		filePath.c_str(), 
+		GENERIC_WRITE,
+		0,
+		0, 
+		CREATE_ALWAYS, 
+		FILE_ATTRIBUTE_NORMAL,
+		nullptr);
+
+	if (mFile == INVALID_HANDLE_VALUE)
+	{
+		char buff[100];
+		sprintf_s(buff, "File 1 Open Error (%d) : %s\n", GetLastError(), filePath.c_str());
+		OutputDebugStringA(buff);
+
+		CloseHandle(mFile);
+	}
+	else
+	{
+		char buff[100];
+		sprintf_s(buff, "File 1 Open Error (%d) : %s\n", GetLastError(), filePath.c_str());
+		OutputDebugStringA(buff);
+
+		int b = 0;
+	}
 }
 
 BinaryWriter::BinaryWriter(string filePath): 
 	mSize(0)
 {
-	mFile = CreateFileA(filePath.c_str(), GENERIC_WRITE,
-		0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	mFile = CreateFileA(
+		filePath.c_str(),
+		GENERIC_WRITE,
+		0,
+		0, 
+		CREATE_ALWAYS, 
+		FILE_ATTRIBUTE_NORMAL, 
+		nullptr);
 }
 
 BinaryWriter::~BinaryWriter()

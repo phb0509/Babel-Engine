@@ -425,8 +425,6 @@ void Player::loadCollidersBinaryFile(wstring fileName)
 	wstring temp = L"TextData/" + fileName;
 	BinaryReader binaryReader(temp, isSuccessedLoadFile);
 
-	bool aasdfsda = binaryReader.CheckSameFile(temp);
-
 	UINT colliderCount = binaryReader.ReadUInt();
 	int colliderType;
 

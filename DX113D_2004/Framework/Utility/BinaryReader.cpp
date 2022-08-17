@@ -1,6 +1,6 @@
 #include "Framework.h"
 
-BinaryReader::BinaryReader(wstring filePath, bool& isSuccessedLoadFile):
+BinaryReader::BinaryReader(wstring filePath, OUT bool& isSuccessedLoadFile):
     mSize(0)
 {
     mFile = CreateFile(
@@ -22,7 +22,7 @@ BinaryReader::BinaryReader(wstring filePath, bool& isSuccessedLoadFile):
     }
 }
 
-BinaryReader::BinaryReader(string filePath, bool& isSuccessedLoadFile) : 
+BinaryReader::BinaryReader(string filePath, OUT bool& isSuccessedLoadFile) : 
     mSize(0)
 {
     mFile = CreateFileA(

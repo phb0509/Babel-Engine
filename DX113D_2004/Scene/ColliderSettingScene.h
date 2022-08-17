@@ -172,4 +172,7 @@ private:
 	Light* mDirectionalLight;
 
 	bool mbIsSuccessedLoadFile;
+
+	vector<TempCollider> mTempColliderSRTdatas;
+	vector<ColliderData> mTempColliderDatas;
 };

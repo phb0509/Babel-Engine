@@ -42,7 +42,7 @@ Player::Player():
 	SetEndEvent(RightWalk, bind(&Player::setIdle, this));
 	SetEndEvent(BackWalk, bind(&Player::setIdle, this));
 	SetEndEvent(NormalAttack, bind(&Player::setNormalAttackEnd, this));
-	SetEndEvent(KickAttack, bind(&Player::setIdle, this));
+	SetEndEvent(KickAttack, bind(&Player::setKickAttackEnd, this));
 
 	PlayClip(1);
 
@@ -82,6 +82,7 @@ void Player::Update()
 	if (KEY_DOWN('U'))
 	{
 		mbIsNormalAttack = false;
+		mbIsKickAttack = false;
 	}
 }
 
@@ -91,7 +92,6 @@ void Player::Render()
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	PlayerModelAnimator::Render();
-	//ModelAnimator::Render();
 }
 
 void Player::DeferredRender()
@@ -100,7 +100,6 @@ void Player::DeferredRender()
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	PlayerModelAnimator::DeferredRender();
-	//ModelAnimator::DeferredRender();
 }
 
 void Player::move()
@@ -122,12 +121,13 @@ void Player::attack()
 		normalAttack();
 	}
 
-	//if (KEY_DOWN(VK_RBUTTON))
-	//{
-	//	kickAttack();
-	//}
+	if (KEY_DOWN(VK_RBUTTON))
+	{
+		kickAttack();
+	}
 
 	checkNormalAttackCollision(); // 기본공격 몬스터 충돌체크.
+	checkKickAttackCollision();
 }
 
 void Player::updateCamera()
@@ -147,6 +147,7 @@ void Player::updateCamera()
 void Player::moveInTargetMode() // Player
 {
 	if (mbIsNormalAttack) return;
+	if (mbIsKickAttack) return;
 
 	float terrainY = 0.0f;
 
@@ -197,6 +198,7 @@ void Player::moveInTargetMode() // Player
 void Player::moveInWorldMode() // Player
 {
 	if (mbIsNormalAttack) return;
+	if (mbIsKickAttack) return;
 
 	float terrainY = mTerrain->GetTargetPositionY(mPosition);
 
@@ -334,15 +336,41 @@ void Player::checkNormalAttackCollision()
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
 			Monster* monster = mMonsters[monsterName][i].monster;
-			bool bWasNormalAttackedBefore = mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"];
+			bool bWasNormalAttackedPrev = mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"];
 
-			if (!bWasNormalAttackedBefore && !(monster->GetIsDie())) // 아직 공격받지 않은 상태면,, // 여기까지는 문제 없는듯.
+			if (!bWasNormalAttackedPrev && !(monster->GetIsDie())) // 아직 공격받지 않은 상태면,, 
 			{
 				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0])) // 충돌됐다면
 				{
 					bool temp = monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]);
 					monster->OnDamage(mAttackInformations["NormalAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = true;
+				}
+			}
+		}
+	}
+}
+
+void Player::checkKickAttackCollision()
+{
+	if (!mbIsKickAttack) return;
+
+	for (auto monster : mMonsters)
+	{
+		string monsterName = monster.first;
+
+		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
+		{
+			Monster* monster = mMonsters[monsterName][i].monster;
+			bool bWasKickAttackedPrev = mMonsters[monsterName][i].isCheckAttackMap["KickAttack"];
+
+			if (!bWasKickAttackedPrev && !(monster->GetIsDie())) // 아직 공격받지 않은 상태면,, 
+			{
+				if (monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0])) // 충돌됐다면
+				{
+					bool temp = monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0]);
+					monster->OnDamage(mAttackInformations["KickAttack"]);
+					mMonsters[monsterName][i].isCheckAttackMap["KickAttack"] = true;
 				}
 			}
 		}
@@ -368,7 +396,7 @@ void Player::setNormalAttackEnd()
 void Player::setKickAttackEnd()
 {
 	setAnimation(Idle);
-	mbIsNormalAttack = false;
+	mbIsKickAttack = false;
 
 	for (auto monster : mMonsters)
 	{
@@ -376,7 +404,7 @@ void Player::setKickAttackEnd()
 
 		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
 		{
-			mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = false;
+			mMonsters[monsterName][i].isCheckAttackMap["KickAttack"] = false;
 		}
 	}
 }
@@ -384,13 +412,17 @@ void Player::setKickAttackEnd()
 void Player::normalAttack()
 {
 	if (mbIsNormalAttack) return;
+	if (mbIsKickAttack) return;
 	setAnimation(NormalAttack);
 	mbIsNormalAttack = true;
 }
 
 void Player::kickAttack()
 {
+	if (mbIsKickAttack) return;
+	if (mbIsNormalAttack) return;
 	setAnimation(KickAttack);
+	mbIsKickAttack = true;
 }
 
 void Player::renderColliders()
@@ -423,8 +455,14 @@ void Player::setAttackInformations()
 	AttackInformation normalAttackInformation("NormalAttack", temp, eAttackType::Normal, mNormalAttackDamage);
 	mAttackInformations[normalAttackInformation.attackName] = normalAttackInformation;
 	temp.clear();
-
 	mbIsCheckAttack["NormalAttack"] = false;
+
+	// KickAttack
+	temp.push_back(mCollidersMap["KickAttackCollider"]);
+	AttackInformation kickAttackInformation("KickAttack", temp, eAttackType::Normal, mNormalAttackDamage);
+	mAttackInformations[kickAttackInformation.attackName] = kickAttackInformation;
+	temp.clear();
+	mbIsCheckAttack["KickAttack"] = false;
 }
 
 void Player::loadCollidersBinaryFile(wstring fileName)
@@ -535,24 +573,25 @@ void Player::PostRender()
 	SpacingRepeatedly(3);
 
 	ImGui::Text("isNormalAttack : %d\n ", mbIsNormalAttack);
+	ImGui::Text("isKickAttack : %d\n ", mbIsKickAttack);
 
 	SpacingRepeatedly(2);
 
-	for (auto monster : mMonsters)
-	{
-		string monsterName = monster.first;
+	//for (auto monster : mMonsters)
+	//{
+	//	string monsterName = monster.first;
 
-		for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
-		{
-			Monster* monster = mMonsters[monsterName][i].monster;
+	//	for (int i = 0; i < mMonsters[monsterName].size(); i++) // 전부 검사.
+	//	{
+	//		Monster* monster = mMonsters[monsterName][i].monster;
 
-			string tag = monster->GetTag();
-			string temp = tag + " is NormalAttacked?  :  " + to_string((int)mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"]);
+	//		string tag = monster->GetTag();
+	//		string temp = tag + " is NormalAttacked?  :  " + to_string((int)mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"]);
 
-			ImGui::Text(temp.c_str());
-			SpacingRepeatedly(2);
-		}
-	}
+	//		ImGui::Text(temp.c_str());
+	//		SpacingRepeatedly(2);
+	//	}
+	//}
 
 	//mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"]
 

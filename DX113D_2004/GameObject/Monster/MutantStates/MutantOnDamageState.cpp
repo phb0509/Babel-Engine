@@ -24,4 +24,5 @@ void MutantOnDamageState::Execute(Monster* monster)
 
 void MutantOnDamageState::Exit(Monster* monster)
 {
+
 }

@@ -44,29 +44,34 @@ public:
 private:
 	void setIdle();
 	void setAnimation(eAnimationStates value, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false);
-	void move();
-	void attack();
 	void updateCamera();
 
+	// Move
+	void move();
 	void moveInTargetMode(); // Move player
 	void moveInWorldMode();
 
 	void moveTargetCamera(); // Move Camera
 	void moveTargetCameraInWorld(); // for Show FrustumCulling
 	void rotateTargetCamera();
-
-	void setColliders();
-	void setAttackInformations();
-	void renderColliders();
-	void loadCollidersBinaryFile(wstring fileName);
 	void rotateInTargetMode();
-	void checkNormalAttackCollision();
 
+	// Collider
+	void loadCollidersBinaryFile(wstring fileName);
+	void setColliders();
+	void renderColliders();
+
+	// Attack
+	void attack();
+	void setAttackInformations();
 	void setNormalAttackEnd();
 	void setKickAttackEnd();
 
 	void normalAttack(); // 기본공격 
 	void kickAttack(); // 넉백
+
+	void checkNormalAttackCollision();
+	void checkKickAttackCollision();
 
 private:
 	Terrain* mTerrain;
@@ -112,6 +117,7 @@ private:
 	bool mbIsKickAttack;
 	float mKickAttackDamage;
 	bool mbIsCheckKickAttackCollision;
+
 	// UI
 	PlayerStatusBar* mStatusBar;
 };

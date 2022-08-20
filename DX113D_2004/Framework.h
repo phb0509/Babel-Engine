@@ -80,6 +80,7 @@ const static int MAX_INSTANCE = 200;
 #include "resource.h"
 #include <thread>
 #include <algorithm>
+#include <queue>
 
 
 #include <windows.h>      // For common windows data types and function headers

@@ -147,7 +147,7 @@ void InstanceMutant::ReActivation()
 	mStatusBar->SetHPRate(mHPRate);
 }
 
-void InstanceMutant::OnDamage(AttackInformation attackInformation)
+void InstanceMutant::SetAttackInformation(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;
 	
@@ -157,6 +157,8 @@ void InstanceMutant::OnDamage(AttackInformation attackInformation)
 	mStatusBar->SetCurHP(mCurHP);
 	mStatusBar->SetHPRate(mHPRate);
 	
+	mOnDamageQueue.push(attackInformation);
+
 	if (mCurHP == 0.0f)
 	{
 		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));

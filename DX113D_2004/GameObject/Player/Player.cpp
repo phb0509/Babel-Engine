@@ -343,7 +343,7 @@ void Player::checkNormalAttackCollision()
 				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0])) // Ãæµ¹µÆ´Ù¸é
 				{
 					bool temp = monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]);
-					monster->OnDamage(mAttackInformations["NormalAttack"]);
+					monster->SetAttackInformation(mAttackInformations["NormalAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = true;
 				}
 			}
@@ -369,7 +369,7 @@ void Player::checkKickAttackCollision()
 				if (monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0])) // Ãæµ¹µÆ´Ù¸é
 				{
 					bool temp = monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0]);
-					monster->OnDamage(mAttackInformations["KickAttack"]);
+					monster->SetAttackInformation(mAttackInformations["KickAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["KickAttack"] = true;
 				}
 			}

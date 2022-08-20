@@ -16,7 +16,7 @@ public:
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
 	virtual bool CheckIsCollision(Collider* collider) = 0;
-	virtual void OnDamage(AttackInformation attackInformation) = 0;
+	virtual void SetAttackInformation(AttackInformation attackInformation) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
 	virtual MonsterState* GetFSMState(int num) = 0;
@@ -95,7 +95,6 @@ protected:
 	bool mbIsCompletedAnim;
 	bool mbIsStartedAnim;
 	bool mbIsDie;
-
 	queue<AttackInformation> mOnDamageQueue;
 
 	MonsterStatusBar* mStatusBar;

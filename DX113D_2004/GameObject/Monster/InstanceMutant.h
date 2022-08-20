@@ -19,7 +19,7 @@ public:
 	virtual void Render() override;
 
 	virtual Collider* GetHitCollider() override;
-	virtual void OnDamage(AttackInformation attackInformation) override;
+	virtual void SetAttackInformation(AttackInformation attackInformation) override;
 	virtual bool CheckIsCollision(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;

@@ -49,7 +49,7 @@ void Warrok::PostRender()
 	
 }
 
-void Warrok::OnDamage(AttackInformation attackInformation)
+void Warrok::SetAttackInformation(AttackInformation attackInformation)
 {
 	mFSM = eMutantFSMStates::OnDamage;
 	mbOnHit = true;

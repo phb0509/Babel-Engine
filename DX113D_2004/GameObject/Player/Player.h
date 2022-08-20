@@ -41,6 +41,10 @@ public:
 	void SetIsTargetMode(bool value) { mbIsTargetMode = value; }
 	void SetMonsters(string name, vector<Monster*> monsters);
 
+	void OnDamage(AttackInformation attackInformation);
+	bool CheckIsCollision(Collider* collider);	
+
+
 private:
 	void setIdle();
 	void setAnimation(eAnimationStates value, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false);
@@ -103,6 +107,8 @@ private:
 	float mMaxMP;
 	float mCurMP;
 	float mMPRate;
+
+	bool mbIsDie;
 
 	// Attack
 	map<string, AttackInformation> mAttackInformations;

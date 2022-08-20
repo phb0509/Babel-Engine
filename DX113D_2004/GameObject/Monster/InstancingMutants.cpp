@@ -37,6 +37,7 @@ InstancingMutants::InstancingMutants(int instanceCount, int nodeCount, int frame
 	{
 		Monster* monster = new InstanceMutant();
 		monster->SetInstanceCollider(mInstanceColliderDatas[i]);
+		monster->SetAttackInformations();
 		monster->SetUpperFrameBuffer(mFrameBuffer);
 		string tagName = to_string(i) + " Mutant";
 		monster->SetTag(tagName);

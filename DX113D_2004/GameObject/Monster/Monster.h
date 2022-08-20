@@ -4,7 +4,7 @@
 class Player;
 class MonsterState;
 
-class Monster : public Transform , public ModelAnimator
+class Monster : public Transform, public ModelAnimator
 {
 public:
 	Monster();
@@ -25,7 +25,8 @@ public:
 	virtual int GetAnimationState() = 0;
 	virtual void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) = 0;
 	virtual void ReActivation() = 0;
-	
+	virtual void SetAttackInformations() = 0;
+
 	virtual void UIUpdate();
 	virtual void UIRender();
 
@@ -48,7 +49,8 @@ public:
 	bool GetIsDie() { return mbIsDie; }
 	Texture* GetPortraitTexture() { return mPortraitTexture; }
 	const queue<AttackInformation>& GetOnDamageQueue() { return mOnDamageQueue; }
-	
+	const map<string, AttackInformation>& GetAttackInformations() { return mAttackInformations; }
+
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }
 	void SetDistanceToPlayerForAttack(float value) { mDistanceToPlayerForAttack = value; }
@@ -62,7 +64,7 @@ public:
 	void SetPortraitTexture(Texture* texture);
 	void SetCurMainCamera(Camera* mainCamera);
 	void SetUIOffset(Vector3& offset) { mUIOffset = offset; }
-	
+
 private:
 	void setObstaclesTerrain(Vector3 destPos);
 	void setNoneObstaclesTerrain(Vector3 destPos);
@@ -99,6 +101,7 @@ protected:
 	queue<AttackInformation> mOnDamageQueue;
 
 	MonsterStatusBar* mStatusBar;
+	map<string, AttackInformation> mAttackInformations;
 
 private:
 	function<void(Vector3)> mPathUpdatePeriodFuncPointer;

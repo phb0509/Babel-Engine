@@ -108,6 +108,29 @@ void Warrok::setAttackEnd()
 	RotateToDestinationForModel(this, mPlayer->mPosition);
 }
 
+MonsterState* Warrok::GetFSMState(int num)
+{
+	return nullptr;
+}
+
+int Warrok::GetEnumFSMState()
+{
+	return 0;
+}
+
+void Warrok::SetFSMState(int state)
+{
+}
+
+int Warrok::GetAnimationState()
+{
+	return 0;
+}
+
+void Warrok::SetAttackInformations()
+{
+}
+
 Collider* Warrok::GetHitCollider()
 {
 	return mBodyCollider;

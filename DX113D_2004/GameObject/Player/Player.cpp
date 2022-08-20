@@ -16,7 +16,8 @@ Player::Player():
 	mHPRate(1.0f),
 	mMaxMP(100.0f),
 	mCurMP(100.0f),
-	mMPRate(1.0f)
+	mMPRate(1.0f),
+	mbIsDie(false)
 {
 	SetTag("Player");
 	mScale = { 0.05f, 0.05f, 0.05f };
@@ -55,6 +56,8 @@ Player::Player():
 
 	mStatusBar = new PlayerStatusBar();
 	mStatusBar->SetTag("PlayerStatusBar");
+	mStatusBar->SetMaxHP(mMaxHP);
+	mStatusBar->SetCurHP(mCurHP);
 }
 
 Player::~Player()
@@ -343,7 +346,6 @@ void Player::checkNormalAttackCollision()
 			{
 				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0])) // 충돌됐다면
 				{
-					bool temp = monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]);
 					monster->OnDamage(mAttackInformations["NormalAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = true;
 				}
@@ -369,7 +371,6 @@ void Player::checkKickAttackCollision()
 			{
 				if (monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0])) // 충돌됐다면
 				{
-					bool temp = monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0]);
 					monster->OnDamage(mAttackInformations["KickAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["KickAttack"] = true;
 				}
@@ -542,6 +543,47 @@ void Player::SetMonsters(string name, vector<Monster*> monsters)
 		temp.isCheckAttackMap = mbIsCheckAttack; // setAttackInformations()에서 미리 설정해놓은 값.
 		mMonsters[name].push_back(temp);
 	}
+}
+
+void Player::OnDamage(AttackInformation attackInformation)
+{
+	mCurHP -= attackInformation.damage;
+
+	if (mCurHP <= 0.0f) mCurHP = 0.0f;
+
+	mHPRate = mCurHP / mMaxHP;
+	mStatusBar->SetCurHP(mCurHP);
+	mStatusBar->SetHPRate(mHPRate);
+
+	if (mCurHP == 0.0f)
+	{
+		mbIsDie = true;
+	}
+
+	if (attackInformation.attackType == eAttackType::Normal)
+	{
+		/*GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal))->SetIsDie(mbIsDie);
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal))->SetAttackInformation(attackInformation);
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal)));*/
+	}
+	else if (attackInformation.attackType == eAttackType::KnockBack)
+	{
+	/*	GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack))->SetIsDie(mbIsDie);
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack))->SetAttackInformation(attackInformation);
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack)));*/
+	}
+}
+
+bool Player::CheckIsCollision(Collider* collider)
+{
+	Collider* bodyCollider = mCollidersMap["BodyCollider"];
+
+	if (bodyCollider->Collision(collider))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void Player::setIdle()

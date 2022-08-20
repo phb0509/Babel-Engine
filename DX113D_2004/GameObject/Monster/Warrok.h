@@ -34,6 +34,11 @@ public:
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
 	virtual void ReActivation() override;
+	virtual MonsterState* GetFSMState(int num) override;
+	virtual int GetEnumFSMState() override;
+	virtual void SetFSMState(int state) override;
+	virtual int GetAnimationState() override;
+	virtual void SetAttackInformations() override;
 
 	void PostRender();
 	void SetIdle();
@@ -64,4 +69,6 @@ private:
 
 	eMutantAnimationStates mAnimation;
 	eMutantFSMStates mFSM;
+
+
 };

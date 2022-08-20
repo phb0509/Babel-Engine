@@ -7,12 +7,12 @@
 
 const static int MAIN_WIN_WIDTH = 1280;
 const static int MAIN_WIN_HEIGHT = 720;
+//
+//const static int WIN_WIDTH = 1280;
+//const static int WIN_HEIGHT = 720;
 
-const static int WIN_WIDTH = 1280;
-const static int WIN_HEIGHT = 720;
-
-//const static int WIN_WIDTH = 1600;
-//const static int WIN_HEIGHT = 900;
+const static int WIN_WIDTH = 1600;
+const static int WIN_HEIGHT = 900;
 
 const static int CENTER_X = WIN_WIDTH * 0.5f;
 const static int CENTER_Y = WIN_HEIGHT * 0.5f;

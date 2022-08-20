@@ -85,9 +85,6 @@ void UIImage::RenderTargetUI()
 	mMainViewBuffer->SetVSBuffer(1);
 	mMainProjectionBuffer->SetVSBuffer(2);
 
-	/*mCurMainCamera->SetViewBufferToVS(1);
-	mCurMainCamera->SetProjectionBufferToVS(2);*/
-
 	if (mbIsUsedUI)
 	{
 		mBlendStates[0]->SetState();

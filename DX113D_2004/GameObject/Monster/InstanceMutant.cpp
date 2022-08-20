@@ -2,7 +2,8 @@
 
 
 InstanceMutant::InstanceMutant(): // 디폴트체력 100.
-	mbOnHit(false)
+	mbOnHit(false),
+	mSmashAttackDamage(30.0f)
 {
 	this->mScale = { 0.05f, 0.05f, 0.05f };
 
@@ -152,6 +153,18 @@ void InstanceMutant::ReActivation()
 	mStatusBar->SetHPRate(mHPRate);
 }
 
+void InstanceMutant::SetAttackInformations()
+{
+	AttackInformation attackInformation;
+	attackInformation.attackColliders.push_back(mInstanceColliderData.collidersMap["smashAttackCollider"]);
+	attackInformation.attackName = "SmashAttack";
+	attackInformation.attackType = eAttackType::Normal;
+	attackInformation.damage = mSmashAttackDamage;
+
+	mAttackInformations["SmashAttack"] = attackInformation;
+	
+}
+
 void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;
@@ -164,23 +177,8 @@ void InstanceMutant::OnDamage(AttackInformation attackInformation)
 	
 	if (mCurHP == 0.0f)
 	{
-		//ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));
 		mbIsDie = true;
 	}
-
-	//else // Attacked
-	//{
-	//	if (attackInformation.attackType == eAttackType::Normal)
-	//	{
-	//		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal)));
-	//	}
-	//	else if (attackInformation.attackType == eAttackType::KnockBack)
-	//	{
-	//		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack)));
-	//	}
-	//}
-	//mOnDamageQueue.push(attackInformation);
-
 
 	if (attackInformation.attackType == eAttackType::Normal)
 	{
@@ -194,8 +192,6 @@ void InstanceMutant::OnDamage(AttackInformation attackInformation)
 		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack))->SetAttackInformation(attackInformation);
 		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack)));
 	}
-	
-
 }
 
 bool InstanceMutant::CheckIsCollision(Collider* collider)

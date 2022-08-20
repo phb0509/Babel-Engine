@@ -73,14 +73,13 @@ void PlayerStatusBar::Update()
 	mPortraitUI->mPosition = { standPosition.x + mPortraitUIPositionOffset.first *standScale.x, standPosition.y, 0.0f };
 	mPortraitBackGroundUI->mPosition = mPortraitUI->mPosition;
 
-	
 	mBackGroundUI->mScale = { mBackGroundTextureSize.first * standScale.x, mBackGroundTextureSize.second * standScale.y, 0.0f };
 	mHPBarUI->mScale = { mHPBarTextureSize.first * standScale.x, mHPBarTextureSize.second * standScale.y, 0.0f };
 	mMPBarUI->mScale = { mMPBarTextureSize.first * standScale.x, mMPBarTextureSize.second * standScale.y, 0.0f };
 	mPortraitUI->mScale = { mPortraitTextureSize.first * standScale.x, mPortraitTextureSize.second * standScale.y, 0.0f };
 	mPortraitBackGroundUI->mScale = { mPortraitBackGroundTextureSize.first * standScale.x, mPortraitBackGroundTextureSize.second * standScale.y, 0.0f };
 
-	mHPRate = mCurHP / mMaxHP;
+	//mHPRate = mCurHP / mMaxHP;
 	mHPBarUI->SetWidthRatio(mHPRate);
 	mMPBarUI->SetWidthRatio(mMPRate);
 

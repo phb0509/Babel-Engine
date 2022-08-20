@@ -91,7 +91,6 @@ void MonsterStatusBar::Update()
 	mMPBarUI->Update();
 	mPortraitBackGroundUI->Update();
 	mPortraitUI->Update();
-
 }
 
 void MonsterStatusBar::Render()

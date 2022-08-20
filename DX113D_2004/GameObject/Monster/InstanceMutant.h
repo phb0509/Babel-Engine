@@ -31,8 +31,8 @@ public:
 	virtual int GetAnimationState() override;
 	virtual void SetAnimation(int animationState, float speed = 1.0f, float takeTime = 0.2f, bool isForcingPlay = false) override;
 	virtual void ReActivation() override;
+	virtual void SetAttackInformations() override;
 
-	
 private:
 	void setStalkingState();
 
@@ -47,4 +47,5 @@ private:
 	MutantAttackedKnockBackState* mAttackedKnockBackState;
 
 	bool mbOnHit;
+	float mSmashAttackDamage;
 };

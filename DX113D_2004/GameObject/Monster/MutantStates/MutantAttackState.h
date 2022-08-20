@@ -13,5 +13,6 @@ public:
 	virtual void Exit(Monster* monster) override;
 
 private:
-
+	bool mbWasAttackedTarget;
+	AttackInformation mAttackInformation;
 };

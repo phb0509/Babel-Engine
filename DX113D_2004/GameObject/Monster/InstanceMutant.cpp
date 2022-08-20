@@ -15,15 +15,16 @@ InstanceMutant::InstanceMutant(): // 디폴트체력 100.
 	mPatrolState = new MutantPatrolState();
 	mStalkingState = new MutantStalkingState();
 	mAttackState = new MutantAttackState();
-	mOnDamageState = new MutantOnDamageState();
 	mDieState = new MutantDieState();
+	mAttackedNormalState = new MutantAttackedNormalState();
+	mAttackedKnockBackState = new MutantAttackedKnockBackState();
 
 	mCurrentFSMState = mPatrolState;
 
 	mStatusBar->SetMaxHP(mMaxHP);
 	mStatusBar->SetCurHP(mCurHP);
 	
-	//SetEndEvent(static_cast<int>(eMutantFSMStates::OnDamage), bind(&InstanceMutant::setStalkingState, this));
+	//SetEndEvent(static_cast<int>(eMutantFSMStates::AttackedNormal), bind(&InstanceMutant::setStalkingState, this));
 }
 
 InstanceMutant::~InstanceMutant()
@@ -31,8 +32,9 @@ InstanceMutant::~InstanceMutant()
 	GM->SafeDelete(mPatrolState);
 	GM->SafeDelete(mStalkingState);
 	GM->SafeDelete(mAttackState);
-	GM->SafeDelete(mOnDamageState);
 	GM->SafeDelete(mDieState);
+	GM->SafeDelete(mAttackedNormalState);
+	GM->SafeDelete(mAttackedKnockBackState);
 }
 
 void InstanceMutant::Update()
@@ -83,8 +85,9 @@ MonsterState* InstanceMutant::GetFSMState(int num)
 	//Patrol,
 	//Stalk,
 	//Attack, 
-	//OnDamage,
+	//AttackedNormal,
 	//Die,
+	//AttackedKnockBack
 
 	switch (num)
 	{
@@ -95,9 +98,11 @@ MonsterState* InstanceMutant::GetFSMState(int num)
 	case 2:
 		return mAttackState;
 	case 3:
-		return mOnDamageState;
+		return mAttackedNormalState;
 	case 4:
 		return mDieState;
+	case 5:
+		return mAttackedKnockBackState;
 	default:
 		break;
 	}
@@ -147,27 +152,50 @@ void InstanceMutant::ReActivation()
 	mStatusBar->SetHPRate(mHPRate);
 }
 
-void InstanceMutant::SetAttackInformation(AttackInformation attackInformation)
+void InstanceMutant::OnDamage(AttackInformation attackInformation)
 {
 	mCurHP -= attackInformation.damage;
 	
-	if (mCurHP <= 0) mCurHP = 0.0f;
+	if (mCurHP <= 0.0f) mCurHP = 0.0f;
 	
 	mHPRate = mCurHP / mMaxHP;
 	mStatusBar->SetCurHP(mCurHP);
 	mStatusBar->SetHPRate(mHPRate);
 	
-	mOnDamageQueue.push(attackInformation);
-
 	if (mCurHP == 0.0f)
 	{
-		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));
+		//ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::Die)));
 		mbIsDie = true;
 	}
-	else
+
+	//else // Attacked
+	//{
+	//	if (attackInformation.attackType == eAttackType::Normal)
+	//	{
+	//		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal)));
+	//	}
+	//	else if (attackInformation.attackType == eAttackType::KnockBack)
+	//	{
+	//		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack)));
+	//	}
+	//}
+	//mOnDamageQueue.push(attackInformation);
+
+
+	if (attackInformation.attackType == eAttackType::Normal)
 	{
-		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::OnDamage)));
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal))->SetIsDie(mbIsDie);
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal))->SetAttackInformation(attackInformation);
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal)));
 	}
+	else if (attackInformation.attackType == eAttackType::KnockBack)
+	{
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack))->SetIsDie(mbIsDie);
+		GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack))->SetAttackInformation(attackInformation);
+		ChangeState(GetFSMState(static_cast<int>(eMutantFSMStates::AttackedKnockBack)));
+	}
+	
+
 }
 
 bool InstanceMutant::CheckIsCollision(Collider* collider)

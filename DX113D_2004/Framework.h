@@ -330,6 +330,8 @@ using namespace states;
 #include "GameObject/Monster/InstancingMutants.h"
 #include "GameObject/Utility/State.h"
 
+#include "GameObject\/Monster\/MutantStates\MutantAttackedNormalState.h"
+#include "GameObject\/Monster\/MutantStates\MutantAttackedKnockBackState.h"
 #include "GameObject\/Monster\/MutantStates\MutantPatrolState.h"
 #include "GameObject\/Monster\/MutantStates\MutantStalkingState.h"
 #include "GameObject\/Monster\/MutantStates\MutantAttackState.h"

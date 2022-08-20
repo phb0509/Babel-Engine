@@ -16,7 +16,7 @@ public:
 	virtual void Render() = 0;
 	virtual Collider* GetHitCollider() = 0;
 	virtual bool CheckIsCollision(Collider* collider) = 0;
-	virtual void SetAttackInformation(AttackInformation attackInformation) = 0;
+	virtual void OnDamage(AttackInformation attackInformation) = 0;
 	virtual void CheckOnHit() = 0;
 	virtual Collider* GetColliderForAStar() = 0;
 	virtual MonsterState* GetFSMState(int num) = 0;
@@ -47,6 +47,7 @@ public:
 	float GetCurHP() { return mCurHP; }
 	bool GetIsDie() { return mbIsDie; }
 	Texture* GetPortraitTexture() { return mPortraitTexture; }
+	const queue<AttackInformation>& GetOnDamageQueue() { return mOnDamageQueue; }
 	
 	void SetTerrain(Terrain* value, bool hasTerrainObstacles);
 	void SetAStar(AStar* value) { mAStar = value; }

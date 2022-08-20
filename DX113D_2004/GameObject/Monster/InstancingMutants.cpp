@@ -23,11 +23,12 @@ InstancingMutants::InstancingMutants(int instanceCount, int nodeCount, int frame
 
 	ModelAnimators::SetShader(L"InstancingMutants"); // SetShader하기전에 Mesh랑 Material 먼저 Set해줘야됨.
 
-	ModelAnimators::ReadClip("Mutant", "Idle.clip");
+	ModelAnimators::ReadClip("Mutant", "Idle.clip"); //Mutant와 순서 동일하게.
 	ModelAnimators::ReadClip("Mutant", "Run.clip");
 	ModelAnimators::ReadClip("Mutant", "SmashAttack.clip");
 	ModelAnimators::ReadClip("Mutant", "OnDamage.clip");
-	ModelAnimators::ReadClip("Mutant", "Die.clip"); // Mutant와 순서 동일하게.
+	ModelAnimators::ReadClip("Mutant", "Die.clip"); // 
+	ModelAnimators::ReadClip("Mutant", "AttackedKnockBack.clip"); // 
 	ModelAnimators::SetBoxForFrustumCulling();
 
 	mUIOffset = { -170.0f, 0.0f, 0.0f };
@@ -107,23 +108,23 @@ void InstancingMutants::UIRender()
 
 void InstancingMutants::RenderDebugMode()
 {
-	if (DM->GetIsDebugMode())
-	{
-		/*for (Monster* monster : mInstanceObjects)
-		{
-			Vector3 screenPos = WorldToScreen(monster->GetGlobalPosition(),mCurMainCamera);
+	//if (DM->GetIsDebugMode())
+	//{
+	//	/*for (Monster* monster : mInstanceObjects)
+	//	{
+	//		Vector3 screenPos = WorldToScreen(monster->GetGlobalPosition(),mCurMainCamera);
 
-			POINT size = { 200, 100 };
-			RECT rect;
-			rect.left = screenPos.x;
-			rect.top = screenPos.y;
-			rect.right = rect.left + size.x;
-			rect.bottom = rect.top + size.y;
+	//		POINT size = { 200, 100 };
+	//		RECT rect;
+	//		rect.left = screenPos.x;
+	//		rect.top = screenPos.y;
+	//		rect.right = rect.left + size.x;
+	//		rect.bottom = rect.top + size.y;
 
-			DirectWrite::Get()->RenderText(ToWString(monster->GetTag()), rect);
-			int a = 0;
-		}*/
-	}
+	//		DirectWrite::Get()->RenderText(ToWString(monster->GetTag()), rect);
+	//		int a = 0;
+	//	}*/
+	//}
 }
 
 void InstancingMutants::SetIdle(int instanceIndex)
@@ -279,10 +280,16 @@ void InstancingMutants::showInstanceInformation()
 			currentFSMStateName = "Attack";
 			break;
 		case 3:
-			currentFSMStateName = "OnDamage";
+			currentFSMStateName = "AttackedNormal";
 			break;
 		case 4:
 			currentFSMStateName = "Die";
+			break;
+		case 5:
+			currentFSMStateName = "AttackedKnockBack";
+			break;
+		default:
+			currentFSMStateName = "Unknown FSMState";
 			break;
 		}
 
@@ -298,10 +305,16 @@ void InstancingMutants::showInstanceInformation()
 			currentAnimationStateName = "SmashAttack";
 			break;
 		case 3:
-			currentAnimationStateName = "OnDamage";
+			currentAnimationStateName = "AttackedNormal";
 			break;
 		case 4:
 			currentAnimationStateName = "Die";
+			break;
+		case 5:
+			currentAnimationStateName = "AttackedKnockBack";
+			break;
+		default:
+			currentAnimationStateName = "Unknown AnimationState";
 			break;
 		}
 

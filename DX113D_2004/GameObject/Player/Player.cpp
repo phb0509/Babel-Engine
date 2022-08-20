@@ -4,7 +4,8 @@ Player::Player():
 	PlayerModelAnimator(),
 	mAnimationStates(Idle),
 	mbIsNormalAttack(false),
-	mNormalAttackDamage(9.0f),
+	mNormalAttackDamage(34.0f),
+	mKickAttackDamage(20.0f),
 	mbIsTargetMode(false),
 	mTargetCameraRotationX(0.0f),
 	mTargetCameraRotationY(0.0f),
@@ -343,7 +344,7 @@ void Player::checkNormalAttackCollision()
 				if (monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0])) // Ãæµ¹µÆ´Ù¸é
 				{
 					bool temp = monster->CheckIsCollision(mAttackInformations["NormalAttack"].attackColliders[0]);
-					monster->SetAttackInformation(mAttackInformations["NormalAttack"]);
+					monster->OnDamage(mAttackInformations["NormalAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["NormalAttack"] = true;
 				}
 			}
@@ -369,7 +370,7 @@ void Player::checkKickAttackCollision()
 				if (monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0])) // Ãæµ¹µÆ´Ù¸é
 				{
 					bool temp = monster->CheckIsCollision(mAttackInformations["KickAttack"].attackColliders[0]);
-					monster->SetAttackInformation(mAttackInformations["KickAttack"]);
+					monster->OnDamage(mAttackInformations["KickAttack"]);
 					mMonsters[monsterName][i].isCheckAttackMap["KickAttack"] = true;
 				}
 			}
@@ -459,7 +460,7 @@ void Player::setAttackInformations()
 
 	// KickAttack
 	temp.push_back(mCollidersMap["KickAttackCollider"]);
-	AttackInformation kickAttackInformation("KickAttack", temp, eAttackType::Normal, mNormalAttackDamage);
+	AttackInformation kickAttackInformation("KickAttack", temp, eAttackType::KnockBack, mKickAttackDamage);
 	mAttackInformations[kickAttackInformation.attackName] = kickAttackInformation;
 	temp.clear();
 	mbIsCheckAttack["KickAttack"] = false;

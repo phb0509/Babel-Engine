@@ -3,24 +3,7 @@
 
 namespace states
 {
-	enum class eMutantAnimationStates
-	{
-		Idle,
-		Run,
-		SmashAttack,
-		OnDamage,
-		Die,
-	};
-
-	enum class eMutantFSMStates
-	{
-		Patrol,
-		Stalk,
-		Attack, 
-		OnDamage,
-		Die,
-	};
-
+	// All
 	enum class eColliderType
 	{
 		BOX,
@@ -33,5 +16,26 @@ namespace states
 	{
 		Normal,
 		KnockBack
+	};
+
+	// Mutant
+	enum class eMutantAnimationStates
+	{
+		Idle,
+		Run,
+		SmashAttack,
+		AttackedNormal,
+		Die,
+		AttackedKnockBack
+	};
+
+	enum class eMutantFSMStates
+	{
+		Patrol,
+		Stalk,
+		Attack,
+		AttackedNormal,
+		Die,
+		AttackedKnockBack
 	};
 }

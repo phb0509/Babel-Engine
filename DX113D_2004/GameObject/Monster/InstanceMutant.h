@@ -6,6 +6,8 @@ class MutantStalkingState;
 class MutantAttackState;
 class MutantOnDamageState;
 class MutantDieState;
+class MutantAttackedNormalState;
+class MutantAttackedKnockBackState;
 
 class InstanceMutant : public Monster
 {
@@ -19,7 +21,7 @@ public:
 	virtual void Render() override;
 
 	virtual Collider* GetHitCollider() override;
-	virtual void SetAttackInformation(AttackInformation attackInformation) override;
+	virtual void OnDamage(AttackInformation attackInformation) override;
 	virtual bool CheckIsCollision(Collider* collider) override;
 	virtual void CheckOnHit() override;
 	virtual Collider* GetColliderForAStar() override;
@@ -40,8 +42,9 @@ private:
 	MutantPatrolState* mPatrolState;
 	MutantStalkingState* mStalkingState;
 	MutantAttackState* mAttackState;
-	MutantOnDamageState* mOnDamageState;
 	MutantDieState* mDieState;
+	MutantAttackedNormalState* mAttackedNormalState;
+	MutantAttackedKnockBackState* mAttackedKnockBackState;
 
 	bool mbOnHit;
 };

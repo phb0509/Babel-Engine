@@ -49,9 +49,9 @@ void Warrok::PostRender()
 	
 }
 
-void Warrok::SetAttackInformation(AttackInformation attackInformation)
+void Warrok::OnDamage(AttackInformation attackInformation)
 {
-	mFSM = eMutantFSMStates::OnDamage;
+	mFSM = eMutantFSMStates::AttackedNormal;
 	mbOnHit = true;
 	//GM->SetHitCheckMap(this, true);
 	mCurHP -= 10.0f;
@@ -66,7 +66,7 @@ void Warrok::CheckOnHit()
 {
 	if (!mbOnHit) return;
 
-	SetAnimation(static_cast<int>(eMutantAnimationStates::OnDamage));
+	SetAnimation(static_cast<int>(eMutantAnimationStates::AttackedNormal));
 }
 
 Collider* Warrok::GetColliderForAStar()

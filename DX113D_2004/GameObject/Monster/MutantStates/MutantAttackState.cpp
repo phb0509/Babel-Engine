@@ -15,6 +15,11 @@ void MutantAttackState::Enter(Monster* monster)
 
 void MutantAttackState::Execute(Monster* monster)
 {
+	if (monster->GetOnDamageQueue().size() != 0)
+	{
+		monster->ChangeState(monster->GetFSMState(static_cast<int>(eMutantFSMStates::AttackedNormal)));
+	}
+
 	if (monster->GetIsStartedAnim())
 	{
 		monster->RotateToDestinationForModel(monster, GM->GetPlayer()->mPosition);

@@ -197,6 +197,8 @@
     <ClInclude Include="GameObject\Monster\InstanceMutant.h" />
     <ClInclude Include="GameObject\Monster\InstancingMutants.h" />
     <ClInclude Include="GameObject\Monster\Monster.h" />
+    <ClInclude Include="GameObject\Monster\MutantStates\MutantAttackedKnockBackState.h" />
+    <ClInclude Include="GameObject\Monster\MutantStates\MutantAttackedNormalState.h" />
     <ClInclude Include="GameObject\Monster\MutantStates\MutantAttackState.h" />
     <ClInclude Include="GameObject\Monster\MutantStates\MutantDieState.h" />
     <ClInclude Include="GameObject\Monster\MutantStates\MutantOnDamageState.h" />
@@ -365,6 +367,8 @@
     <ClCompile Include="GameObject\Monster\InstanceMutant.cpp" />
     <ClCompile Include="GameObject\Monster\InstancingMutants.cpp" />
     <ClCompile Include="GameObject\Monster\Monster.cpp" />
+    <ClCompile Include="GameObject\Monster\MutantStates\MutantAttackedKnockBackState.cpp" />
+    <ClCompile Include="GameObject\Monster\MutantStates\MutantAttackedNormalState.cpp" />
     <ClCompile Include="GameObject\Monster\MutantStates\MutantAttackState.cpp" />
     <ClCompile Include="GameObject\Monster\MutantStates\MutantDieState.cpp" />
     <ClCompile Include="GameObject\Monster\MutantStates\MutantOnDamageState.cpp" />

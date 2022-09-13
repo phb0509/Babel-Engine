@@ -56,8 +56,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 1;
-	int column = 1;
+	int row = 6;
+	int column = 6;
 
 	mMutantInstanceCount = row * column;
 
@@ -207,11 +207,12 @@ void MainScene::PostRender()
 	mPlayer->UIRender();
 	mLightBuffer->PostRender();
 	mDirectionalLight->PostRender();
-	mGBuffer->PostRender();
 
 	mInstancingMutants->PostRender();
 	mInstancingMutants->UIRender();
 	
+	mGBuffer->PostRender();
+
 	ImGui::Begin("Camera Info");
 	ImGui::Text("SelectCamera");
 

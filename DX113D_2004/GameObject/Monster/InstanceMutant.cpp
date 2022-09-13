@@ -3,7 +3,7 @@
 
 InstanceMutant::InstanceMutant(): // 디폴트체력 100.
 	mbOnHit(false),
-	mSmashAttackDamage(30.0f)
+	mSmashAttackDamage(3.0f)
 {
 	this->mScale = { 0.05f, 0.05f, 0.05f };
 
@@ -11,7 +11,7 @@ InstanceMutant::InstanceMutant(): // 디폴트체력 100.
 	UpdateWorld();
 
 	mPlayerDetectRange = 15.0f;
-	mDistanceToPlayerForAttack = 8.0f;
+	mDistanceToPlayerForAttack = 9.0f;
 
 	mPatrolState = new MutantPatrolState();
 	mStalkingState = new MutantStalkingState();

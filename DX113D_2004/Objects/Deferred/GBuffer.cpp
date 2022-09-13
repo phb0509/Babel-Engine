@@ -25,23 +25,6 @@ GBuffer::GBuffer()
 	mShowSRVs[1] = mDiffuseRenderTarget->GetSRV();
 	mShowSRVs[2] = mSpecularRenderTargetForShow->GetSRV();
 	mShowSRVs[3] = mNormalRenderTarget->GetSRV();
-
-	for (UINT i = 0; i < 4; i++)
-	{
-		mTargetTextures[i] = new UIImage(L"Texture"); //UIImage 배열.
-		mTargetTextures[i]->SetSRV(mShowSRVs[i]); // 띄울 srv(이미지)
-		mTargetTextures[i]->mScale = { 200.0f, 200.0f, 0.0f };
-		mTargetTextures[i]->SetIsUsedUI(false);
-	}
-
-	float textureSize = 200.0f; // 
-	float offsetY = 100.0f;
-	float offsetX = 0.0f;
-
-	mTargetTextures[0]->mPosition = { 100.0f, WIN_HEIGHT / 2 + textureSize / 2 + offsetY, 0 }; // depth
-	mTargetTextures[1]->mPosition = { 300.0f, WIN_HEIGHT / 2 + textureSize / 2 + offsetY, 0 }; // diffuse
-	mTargetTextures[2]->mPosition = { 100.0f, WIN_HEIGHT / 2 - textureSize / 2 + offsetY, 0 }; // specular
-	mTargetTextures[3]->mPosition = { 300.0f, WIN_HEIGHT / 2 - textureSize / 2 + offsetY, 0 }; // normal
 }
 
 GBuffer::~GBuffer()
@@ -50,7 +33,6 @@ GBuffer::~GBuffer()
 	GM->SafeDelete(mSpecularRenderTarget);
 	GM->SafeDelete(mNormalRenderTarget);
 	GM->SafeDelete(mDepthStencil);
-	GM->SafeDeleteArray(mTargetTextures);
 }
 
 void GBuffer::PreRender()
@@ -68,10 +50,24 @@ void GBuffer::SetRenderTargetsToPS()
 
 void GBuffer::PostRender()
 {
-	for (UIImage* texture : mTargetTextures)
-	{
-		texture->Render();
-	}
+	ImGui::Begin("DeferredTextures");
+
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(200.0f, 200.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	ImGui::ImageButton(mShowSRVs[0], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	ImGui::SameLine();
+	ImGui::ImageButton(mShowSRVs[1], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+	ImGui::ImageButton(mShowSRVs[2], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	ImGui::SameLine();
+	ImGui::ImageButton(mShowSRVs[3], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+	ImGui::End();
 }
 
 void GBuffer::ClearSRVs()

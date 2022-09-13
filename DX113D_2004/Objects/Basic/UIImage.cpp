@@ -34,23 +34,27 @@ UIImage::~UIImage()
 
 void UIImage::Update()
 {
-	mTextureBuffer->data.widthRatio = mWidthRatio;
-	mTextureBuffer->data.heightRatio = mHeightRatio;
+	if (mbIsUsedUI)
+	{
+		mTextureBuffer->data.widthRatio = mWidthRatio;
+		mTextureBuffer->data.heightRatio = mHeightRatio;
 
-	UpdateWorld();
+		UpdateWorld();
+	}
 }
 
 void UIImage::Render()
 {
 	mMesh->SetIA();
+
 	SetWorldBuffer(); // 0¹ø¿¡
+	mMainViewBuffer->SetVSBuffer(1);
+	mMainProjectionBuffer->SetVSBuffer(2);
+
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
 	mTextureBuffer->SetPSBuffer(6);
 
 	mMaterial->Set();
-
-	mMainViewBuffer->SetVSBuffer(1);
-	mMainProjectionBuffer->SetVSBuffer(2);
 
 	if (mbIsUsedUI)
 	{
@@ -85,22 +89,21 @@ void UIImage::RenderTargetUI()
 	mMainViewBuffer->SetVSBuffer(1);
 	mMainProjectionBuffer->SetVSBuffer(2);
 
-	if (mbIsUsedUI)
-	{
-		mBlendStates[0]->SetState();
-		mDepthModes[1]->SetState();
-		DEVICECONTEXT->DrawIndexed(6, 0, 0);
-		mBlendStates[1]->SetState();
-		mDepthModes[0]->SetState();
-	}
-	else
-	{
-		mBlendStates[1]->SetState();
-		mDepthModes[1]->SetState();
-		DEVICECONTEXT->DrawIndexed(6, 0, 0);
-		mBlendStates[1]->SetState();
-		mDepthModes[0]->SetState();
-	}
+
+	mBlendStates[0]->SetState();
+	mDepthModes[1]->SetState();
+	DEVICECONTEXT->DrawIndexed(6, 0, 0);
+	mBlendStates[1]->SetState();
+	mDepthModes[0]->SetState();
+
+	//else
+	//{
+	//	mBlendStates[1]->SetState();
+	//	mDepthModes[1]->SetState();
+	//	DEVICECONTEXT->DrawIndexed(6, 0, 0);
+	//	mBlendStates[1]->SetState();
+	//	mDepthModes[0]->SetState();
+	//}
 
 	ID3D11ShaderResourceView* nullSRV = NULL;
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &nullSRV);
@@ -136,13 +139,13 @@ void UIImage::createMesh()
 void UIImage::createMainUIBuffer()
 {
 	Matrix mainViewMatrix = XMMatrixIdentity();
-	Matrix mainProjectionMatrix = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);
+	Matrix mainOrthographicProjectionMatrix = XMMatrixOrthographicOffCenterLH(0, WIN_WIDTH, 0, WIN_HEIGHT, -1, 1);
 
 	mMainViewBuffer = new ViewBuffer();
 	mMainViewBuffer->SetMatrix(mainViewMatrix);
 
 	mMainProjectionBuffer = new ProjectionBuffer();
-	mMainProjectionBuffer->SetMatrix(mainProjectionMatrix);
+	mMainProjectionBuffer->SetMatrix(mainOrthographicProjectionMatrix);
 }
 
 void UIImage::createTargetUIBuffer()

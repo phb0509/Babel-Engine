@@ -2,7 +2,6 @@
 
 class GBuffer
 {
-
 public:
 	GBuffer();
 	~GBuffer();
@@ -23,8 +22,6 @@ private:
 
 	DepthStencil* mDepthStencil;
 	vector<RenderTarget*> mRenderTargets;
-	UIImage* mTargetTextures[4];
 	ID3D11ShaderResourceView* mSRVs[4];
 	ID3D11ShaderResourceView* mShowSRVs[4];
-
 };

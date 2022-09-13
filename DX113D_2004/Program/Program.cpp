@@ -14,7 +14,6 @@ Program::Program()
 	SceneManager::Get()->Add("start", new MainScene());
 	//SceneManager::Get()->Add("start", new MapToolScene());
 
-
 	SceneManager::Get()->AddScene("start");
 }
 

@@ -1266,7 +1266,7 @@ void ColliderSettingScene::showPreRenderTargetWindow()
 	}*/
 
 	int frame_padding = 0;
-	ImVec2 imageButtonSize = ImVec2(200.0f, 200.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonSize = ImVec2(300.0f, 300.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
 	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
 	ImVec4 imageButtonBackGroundColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); // ImGuiWindowBackGroundColor.

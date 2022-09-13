@@ -52,7 +52,7 @@ Vector3 GameMath::ClosestPointOnLineSegment(const Vector3& v1, const Vector3& v2
 
 Vector3 GameMath::WorldToScreen(const Vector3& worldPos, Camera* camera)
 {
-    Vector3 screenPos;
+    Vector3 screenPos; 
 
  /* Matrix cameraViewMatrix = XMMatrixInverse(nullptr, camera->GetWorldMatrixValue());
     Matrix cameraProjctionMatirx = camera->GetProjectionMatrixInUse();*/

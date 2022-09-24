@@ -56,4 +56,7 @@ private:
 	GBuffer* mGBuffer;
 	Material* mDeferredMaterial;
 	VertexBuffer* mVertexBuffer;
+
+	RenderTarget* mDirectionalLightDepthMapForShow;
+	DepthStencil* mDirectionalLightDSV;
 };

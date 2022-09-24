@@ -57,7 +57,6 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     float depthValue = input.pos.z / input.pos.w;
     depthValue *= 13.0f;
     
-    //float specPowNorm = (mSpecular.a - specPowerRange.x) / specPowerRange.y; // 스페큘라값 정규화.
     float specPowNorm = (shininess - specPowerRange.x) / (specPowerRange.y); // 스페큘라값 정규화.
     
     output.diffuse = float4(sampledDiffuseMap, sampledSpecularMap); // specIntensity = 텍스쳐에서 샘플링한값.

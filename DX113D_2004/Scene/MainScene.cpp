@@ -56,8 +56,8 @@ MainScene::MainScene() :
 	float gapWidth = 10.0f;
 	float gapHeight = 10.0f;
 
-	int row = 6;
-	int column = 6;
+	int row = 3;
+	int column = 3;
 
 	mMutantInstanceCount = row * column;
 
@@ -81,6 +81,9 @@ MainScene::MainScene() :
 	}
 
 	mPlayer->SetMonsters("Mutant", mInstanceMutants);
+
+	mDirectionalLightDepthMapForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM); // 보여주기용.
+	mDirectionalLightDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
 }
 
 MainScene::~MainScene()
@@ -127,7 +130,31 @@ void MainScene::Update()
 void MainScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
-	mGBuffer->PreRender();
+
+	// 그림자매핑용 깊이맵 얻기위한 DSV셋팅.
+	/*vector<RenderTarget*> renderTargets;
+	renderTargets.push_back(mDirectionalLightDepthMapForShow);
+	RenderTarget::ClearAndSetWithDSV(renderTargets.data(), 1, mDirectionalLightDSV);*/
+
+	ID3D11RenderTargetView* renderTargets[1] = { 0 };
+	DEVICECONTEXT->OMSetRenderTargets(1, renderTargets, mDirectionalLightDSV->GetDSV());
+	mDirectionalLightDSV->Clear();
+
+	// 광원기준 뷰행렬이랑 직교투영행렬 생성 후 셰이더에 Set하고 모든 버텍스들 Draw.
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
+
+	mTerrain->GetMaterial()->SetShader(L"Lighting");
+	mPlayer->SetShader(L"ModelAnimation");
+	mInstancingMutants->SetShader(L"InstancingMutants");
+
+	mTerrain->Render();
+	mPlayer->Render();
+	mInstancingMutants->Render();
+
+
+
+	mGBuffer->PreRender(); // 여기서 알아서 다시 렌더타겟셋팅함.
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
 	{
@@ -153,12 +180,11 @@ void MainScene::PreRender()
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
 	mInstancingMutants->SetShader(L"InstancingMutantsGBuffer");
-	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
+	//mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 
 	mTerrain->Render();
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
-	//mDirectionalLight->Render();
 }
 
 void MainScene::Render()
@@ -246,6 +272,20 @@ void MainScene::PostRender()
 	mPlayer->PostTransformRender();
 	SpacingRepeatedly(2);
 
+	ImGui::End();
+
+
+	ImGui::Begin("ShadowDepthMap");
+
+	int frame_padding = 0;
+	ImVec2 imageButtonSize = ImVec2(200.0f, 200.0f); // 이미지버튼 크기설정.                     
+	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	ImGui::ImageButton(mDirectionalLightDSV->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	
 	ImGui::End();
 }
 

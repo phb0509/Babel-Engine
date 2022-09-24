@@ -6,35 +6,42 @@ DepthStencil::DepthStencil(UINT width, UINT height, bool isStencil):
 	mDSVTexture(nullptr)
 {
 	{//DSV Texture
-		D3D11_TEXTURE2D_DESC desc = {};
-		desc.Width = width;
-		desc.Height = height;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = isStencil ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32_TYPELESS;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+		D3D11_TEXTURE2D_DESC texDesc = {};
+		texDesc.Width = width;
+		texDesc.Height = height;
+		texDesc.MipLevels = 1;
+		texDesc.ArraySize = 1;
+		texDesc.Format = isStencil ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32_TYPELESS;
+		texDesc.SampleDesc.Count = 1;
+		texDesc.SampleDesc.Quality = 0;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;
+		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+		texDesc.CPUAccessFlags = 0;
+		texDesc.MiscFlags = 0;
 		
-		V(DEVICE->CreateTexture2D(&desc, nullptr, &mDSVTexture));
+		V(DEVICE->CreateTexture2D(&texDesc, nullptr, &mDSVTexture));
 	}
 
 	{//DSV
-		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
-		desc.Format = isStencil ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
-		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = isStencil ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		//추가한것.
+		dsvDesc.Texture2D.MipSlice = 0;
+		dsvDesc.Flags = 0;
 
-		V(DEVICE->CreateDepthStencilView(mDSVTexture, &desc, &mDSV));
+		V(DEVICE->CreateDepthStencilView(mDSVTexture, &dsvDesc, &mDSV));
 	}
 
 	{//SRV
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-		desc.Format = isStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		desc.Texture2D.MipLevels = 1;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = isStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		//추가한것
+		srvDesc.Texture2D.MostDetailedMip = 0;
 
-		V(DEVICE->CreateShaderResourceView(mDSVTexture, &desc, &mSRV));
+		V(DEVICE->CreateShaderResourceView(mDSVTexture, &srvDesc, &mSRV));
 	}
 }
 

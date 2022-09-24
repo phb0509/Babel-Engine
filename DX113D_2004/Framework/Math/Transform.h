@@ -18,7 +18,7 @@ class Transform
 public:
 	Transform(string mTag = "Untagged");
 	virtual ~Transform();
-
+	
 	void UpdateWorld();
 	void SetWorldBuffer(UINT slot = 0);
 	void PostTransformRender();

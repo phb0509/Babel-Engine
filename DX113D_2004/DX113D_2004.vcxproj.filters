@@ -740,7 +740,6 @@
     <FxCompile Include="Shaders\Collider.hlsl" />
     <FxCompile Include="Shaders\Outline.hlsl" />
     <FxCompile Include="Shaders\Lighting.hlsl" />
-    <FxCompile Include="Shaders\Gizmos.hlsl" />
     <FxCompile Include="Shaders\Models.hlsl" />
     <FxCompile Include="Shaders\ModelsMultiTexture.hlsl" />
     <FxCompile Include="Shaders\TSTriangle.hlsl" />
@@ -767,7 +766,6 @@
     <FxCompile Include="Shaders\TestCS.hlsl" />
     <FxCompile Include="Shaders\ColorPicking.hlsl" />
     <FxCompile Include="Shaders\ComputeColorPicking.hlsl" />
-    <FxCompile Include="Shaders\GizmosColorPicking.hlsl" />
     <FxCompile Include="Shaders\InstancingMutantsGBuffer.hlsl" />
     <FxCompile Include="Shaders\VariableTexture.hlsl" />
     <FxCompile Include="Shaders\PlayerModelAnimation.hlsl" />

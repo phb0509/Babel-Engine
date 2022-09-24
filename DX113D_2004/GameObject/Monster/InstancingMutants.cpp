@@ -80,13 +80,12 @@ void InstancingMutants::Render()
 {
 	ModelAnimators::Render();
 	renderColliders();
-	RenderDebugMode();
+	//RenderDebugMode();
 }
 
 void InstancingMutants::PostRender()
 {
 	showInstanceInformation();
-	//ImGui::InputFloat3("Global Translation", (float*)&mUIOffset);
 }
 
 void InstancingMutants::UIRender()

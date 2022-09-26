@@ -19,6 +19,7 @@ public:
 
 	void SetIndex(int index) { mIndex = index; }
 	void SetLightBuffer(LightBuffer* lightBuffer) { mLightBuffer = lightBuffer; }
+	Vector3 GetDirection() { return mDirection; }
 
 private:
 	void updateLightInfo();

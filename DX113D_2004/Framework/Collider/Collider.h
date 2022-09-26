@@ -55,4 +55,5 @@ protected:
 	vector<UINT> mIndicesForColorPicking;
 
 	bool mbIsRender;
+	TypeBuffer* mTypeBuffer;
 };

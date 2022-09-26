@@ -25,8 +25,6 @@ struct PixelOutput
 PixelOutput PS(PixelInput input) : SV_Target0
 {
     PixelOutput output;
-    //output.color = float4(200, 200, 0, 1);
     output.color = mDiffuse;    
-    
     return output;
 }

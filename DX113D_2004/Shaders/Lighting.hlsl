@@ -48,8 +48,6 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     return output;
 }
 
-
-
 float4 PS(PixelInput input) : SV_Target
 {
     float4 sampledDiffuseMap = float4(1, 1, 1, 1);

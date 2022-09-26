@@ -117,6 +117,35 @@ struct LightInfo
 	}
 };
 
+class DirectionalLightBuffer : public ConstBuffer
+{
+private:
+	struct Data
+	{
+		Matrix viewMatrix;
+		Matrix projectionMatrix;
+		Float3 position;
+		float padding;
+		
+	}data;
+
+public:
+	DirectionalLightBuffer() : ConstBuffer(&data, sizeof(Data))
+	{
+		data.viewMatrix = XMMatrixIdentity();
+		data.projectionMatrix = XMMatrixIdentity();
+		data.position = { 0.0f,0.0f,0.0f };
+		data.padding = 0.0f;
+	}
+
+	void SetData(Matrix viewMatrix, Matrix projectionMatrix, Vector3 position)
+	{
+		data.viewMatrix = XMMatrixTranspose(viewMatrix); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
+		data.projectionMatrix = XMMatrixTranspose(projectionMatrix); // 전치행렬로 변환. HLSL에서는 열우선이라서 전치행렬로 바꿔줘야함.
+		data.position = position;
+	}
+};
+
 class RayBuffer : public ConstBuffer
 {
 public:

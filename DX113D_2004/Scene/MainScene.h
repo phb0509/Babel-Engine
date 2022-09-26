@@ -17,7 +17,6 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 	
-
 private:
 	void printToCSV();
 	void moveWorldCamera();
@@ -59,4 +58,5 @@ private:
 
 	RenderTarget* mDirectionalLightDepthMapForShow;
 	DepthStencil* mDirectionalLightDSV;
+	DirectionalLightBuffer* mDirectionalLightBuffer;
 };

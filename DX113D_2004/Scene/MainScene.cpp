@@ -84,6 +84,7 @@ MainScene::MainScene() :
 
 	mDirectionalLightDepthMapForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM); // 보여주기용.
 	mDirectionalLightDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
+	mDirectionalLightBuffer = new DirectionalLightBuffer();
 }
 
 MainScene::~MainScene()
@@ -131,28 +132,30 @@ void MainScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
 
-	// 그림자매핑용 깊이맵 얻기위한 DSV셋팅.
-	/*vector<RenderTarget*> renderTargets;
+	 //그림자매핑용 깊이맵 얻기위한 DSV셋팅.
+	vector<RenderTarget*> renderTargets;
 	renderTargets.push_back(mDirectionalLightDepthMapForShow);
-	RenderTarget::ClearAndSetWithDSV(renderTargets.data(), 1, mDirectionalLightDSV);*/
+	RenderTarget::ClearAndSetWithDSV(renderTargets.data(), 1, mDirectionalLightDSV);
 
-	ID3D11RenderTargetView* renderTargets[1] = { 0 };
-	DEVICECONTEXT->OMSetRenderTargets(1, renderTargets, mDirectionalLightDSV->GetDSV());
-	mDirectionalLightDSV->Clear();
+	//ID3D11RenderTargetView* renderTargets[1] = { 0 };
+	//DEVICECONTEXT->OMSetRenderTargets(1, renderTargets, mDirectionalLightDSV->GetDSV());
+	//mDirectionalLightDSV->Clear();
 
 	// 광원기준 뷰행렬이랑 직교투영행렬 생성 후 셰이더에 Set하고 모든 버텍스들 Draw.
+	mDirectionalLight->mPosition = mDirectionalLight->GetDirection() * -100.0f;
+	Matrix tempViewMatrix = XMMatrixInverse(nullptr, mDirectionalLight->GetWorldMatrixValue());
+	Matrix tempProjMatrix = mWorldCamera->GetProjectionMatrixInUse(); // 임시로 갖다 쓰기.
+
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 
-	mTerrain->GetMaterial()->SetShader(L"Lighting");
-	mPlayer->SetShader(L"ModelAnimation");
-	mInstancingMutants->SetShader(L"InstancingMutants");
+	mTerrain->GetMaterial()->SetShader(L"TestLighting");
+	mPlayer->SetShader(L"TestModelAnimation");
+	mInstancingMutants->SetShader(L"TestInstancingMutants");
 
 	mTerrain->Render();
 	mPlayer->Render();
 	mInstancingMutants->Render();
-
-
 
 	mGBuffer->PreRender(); // 여기서 알아서 다시 렌더타겟셋팅함.
 
@@ -180,11 +183,12 @@ void MainScene::PreRender()
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
 	mInstancingMutants->SetShader(L"InstancingMutantsGBuffer");
-	//mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
+	mDirectionalLight->GetSphere()->GetMaterial()->SetShader(L"GBuffer");
 
 	mTerrain->Render();
 	mPlayer->DeferredRender();
 	mInstancingMutants->Render();
+	mDirectionalLight->GetSphere()->Render();
 }
 
 void MainScene::Render()
@@ -223,6 +227,7 @@ void MainScene::Render()
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 이거 Set하고 Draw했으니 딱 맞다.
 	DEVICECONTEXT->Draw(4, 0);
+	mPlayer->renderColliders();
 
 	mGBuffer->ClearSRVs();
 }
@@ -274,7 +279,6 @@ void MainScene::PostRender()
 
 	ImGui::End();
 
-
 	ImGui::Begin("ShadowDepthMap");
 
 	int frame_padding = 0;
@@ -284,7 +288,7 @@ void MainScene::PostRender()
 	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	ImGui::ImageButton(mDirectionalLightDSV->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	ImGui::ImageButton(mDirectionalLightDepthMapForShow->GetSRV() , imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 	
 	ImGui::End();
 }

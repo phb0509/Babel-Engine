@@ -4,7 +4,8 @@ Collider::Collider() : mbIsRender(true)
 {
     mMaterial = new Material(L"Collider");
     mMaterial->GetBuffer()->data.diffuse = Float4(0.0f, 1.0f, 0.0f, 1.0f);
-
+    mTypeBuffer = new TypeBuffer();
+    mTypeBuffer->data.values[0] = 4;
 }
 
 Collider::~Collider()

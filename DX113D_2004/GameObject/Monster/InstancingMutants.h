@@ -13,6 +13,7 @@ public:
 	void Update();
 	void PreRender();
 	void Render();
+	void DeferredRender();
 	void PostRender();
 	void UIRender();
 	void RenderDebugMode();

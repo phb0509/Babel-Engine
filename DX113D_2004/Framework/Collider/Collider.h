@@ -35,6 +35,7 @@ public:
 
 	void Update();
 	void Render();
+	void DeferredRender();
 
 	void SetColor(Float4 color) { mMaterial->GetBuffer()->data.diffuse = color; }
 	eColliderType GetType() { return mType; }

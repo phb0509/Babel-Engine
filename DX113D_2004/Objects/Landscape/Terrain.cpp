@@ -91,6 +91,18 @@ void Terrain::Render()
 	//fillMode[0]->SetState();
 }
 
+void Terrain::DeferredRender()
+{
+	mMesh->SetIA();
+
+	mWorldBuffer->SetVSBuffer(0);
+	mTypeBuffer->SetVSBuffer(5);
+
+	mMaterial->Set();
+	mFillMode[0]->SetState();
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+}
+
 bool Terrain::Picking(OUT Vector3* position)
 {
 	Ray ray = mCamera->ScreenPointToRay(MOUSEPOS);

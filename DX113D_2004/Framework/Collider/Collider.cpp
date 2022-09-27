@@ -68,7 +68,22 @@ void Collider::Render()
 {
     if (!DM->GetIsDebugMode())
     {
-        mMaterial->SetShader(L"Collider");
+        mMaterial->SetShader(L"DeferredCollider");
+        mMaterial->Set();
+
+        //Transform::UpdateWorld();
+        Transform::SetWorldBuffer(); // Set WorldMatrix to VertexShader.
+        mMesh->SetIA(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+        DEVICECONTEXT->DrawIndexed(mIndices.size(), 0, 0);
+    }
+}
+
+void Collider::DeferredRender()
+{
+    if (!DM->GetIsDebugMode())
+    {
+        mMaterial->SetShader(L"GBuffer");
         mMaterial->Set();
 
         //Transform::UpdateWorld();

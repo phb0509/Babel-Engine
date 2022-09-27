@@ -25,6 +25,7 @@ public:
 
 	void Update();	
 	void Render();
+	void DeferredRender();
 	
 	bool Picking(OUT Vector3* position);
 	bool ComputePicking(OUT Vector3* position);

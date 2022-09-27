@@ -100,7 +100,7 @@ void Player::Render()
 
 void Player::DeferredRender()
 {
-	//renderColliders();
+	renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	PlayerModelAnimator::DeferredRender();

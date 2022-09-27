@@ -52,7 +52,25 @@ struct SurfaceData
     float3 normal;
     float specInt;
     float specPow;
+    float isCollider;
 };
+
+float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구하기.(라이팅연산해야하니까)
+{
+    float4 position;
+    
+    // UnProjection 과정.
+    float2 temp;
+    temp.x = 1 / pProjection._11; // x값 정규화용.
+    temp.y = 1 / pProjection._22; // y값 정규화용.
+    position.xy = csPos.xy * temp * linearDepth; // 스크린창uv좌표 * UnProjection x,y컴포넌트 * linearDepth
+    position.z = linearDepth; // 카메라와 픽셀사이의 거리.(월드상의 거리)
+    position.w = 1.0f;
+    
+    // 뷰공간 좌표로 변환완료.
+    
+    return mul(position, pInvView).xyz; // 뷰행렬 역행렬 곱해줘서 월드값 도출.
+}
 
 SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
 {
@@ -73,36 +91,18 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
     
     float specular = specularTexture.Load(location3).x;
     output.specPow = specPowerRange.x + specular * specPowerRange.y;
-    
+    output.isCollider = specularTexture.Load(location3).y;
     return output;
-}
-
-float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구하기.(라이팅연산해야하니까)
-{
-    float4 position;
-    
-    // UnProjection 과정.
-    float2 temp;
-    temp.x = 1 / pProjection._11; // x값 정규화용.
-    temp.y = 1 / pProjection._22; // y값 정규화용.
-    position.xy = csPos.xy * temp * linearDepth; // 스크린창uv좌표 * UnProjection x,y컴포넌트 * linearDepth
-    position.z = linearDepth; // 카메라와 픽셀사이의 거리.(월드상의 거리)
-    position.w = 1.0f;
-    
-    // 뷰공간 좌표로 변환완료.
-    
-    return mul(position, pInvView).xyz; // 뷰행렬 역행렬 곱해줘서 월드값 도출.
 }
 
 float4 PS(PixelInput input) : SV_Target
 {
     SurfaceData data = UnpackGBuffer(input.pos.xy);
-       
-    if (data.color.g >= 0.9f) // 임시 컬라이더 렌더용 코드
+    if (data.isCollider > 0.0f)
     {
-          return float4(data.color, data.specInt);
+        return float4(data.color, 1.0f);
     }
-    
+        
     Material material;
     material.normal = data.normal;
     material.diffuseColor = float4(data.color, 1.0f);

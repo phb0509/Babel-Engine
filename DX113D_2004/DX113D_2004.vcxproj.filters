@@ -773,6 +773,7 @@
     <FxCompile Include="Shaders\TestLighting.hlsl" />
     <FxCompile Include="Shaders\TestModelAnimation.hlsl" />
     <FxCompile Include="Shaders\TestInstancingMutants.hlsl" />
+    <FxCompile Include="Shaders\DeferredCollider.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Header.hlsli" />

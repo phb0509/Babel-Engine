@@ -83,6 +83,13 @@ void InstancingMutants::Render()
 	//RenderDebugMode();
 }
 
+void InstancingMutants::DeferredRender()
+{
+	ModelAnimators::Render();
+	renderColliders();
+	//RenderDebugMode();
+}
+
 void InstancingMutants::PostRender()
 {
 	showInstanceInformation();

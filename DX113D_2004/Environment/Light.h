@@ -26,12 +26,10 @@ private:
 
 private:
 	Float4 mColor;
-
-	Float3 mDirection;
 	LightType mType;
 
+	Float3 mDirection;
 	float mRange;
-
 	float mInner;
 	float mOuter;
 	float mLength;

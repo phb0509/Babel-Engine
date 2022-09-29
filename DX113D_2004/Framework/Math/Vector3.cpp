@@ -155,6 +155,7 @@ void Vector3::operator/=(const float& value)
 
 bool Vector3::operator==(const Vector3& value) const
 {
+    int a = 0;
     return XMVector3Equal(data, value.data);
 }
 

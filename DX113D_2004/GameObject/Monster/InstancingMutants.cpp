@@ -79,14 +79,14 @@ void InstancingMutants::PreRender()
 void InstancingMutants::Render()
 {
 	ModelAnimators::Render();
-	renderColliders();
+	//renderColliders();
 	//RenderDebugMode();
 }
 
 void InstancingMutants::DeferredRender()
 {
 	ModelAnimators::Render();
-	renderColliders();
+	//renderDeferredColliders();
 	//RenderDebugMode();
 }
 
@@ -169,6 +169,19 @@ void InstancingMutants::renderColliders()
 		for (int j = 0; j < mInstanceColliderDatas[renderedInstanceIndex].colliders.size(); j++)
 		{
 			mInstanceColliderDatas[renderedInstanceIndex].colliders[j].collider->Render();
+		}
+	}
+}
+
+void InstancingMutants::renderDeferredColliders()
+{
+	for (int i = 0; i < mRenderedInstanceIndices.size(); i++) // 실제 렌더되는 인스턴스들 인덱스
+	{
+		int renderedInstanceIndex = mRenderedInstanceIndices[i];
+
+		for (int j = 0; j < mInstanceColliderDatas[renderedInstanceIndex].colliders.size(); j++)
+		{
+			mInstanceColliderDatas[renderedInstanceIndex].colliders[j].collider->DeferredRender();
 		}
 	}
 }

@@ -92,7 +92,7 @@ void Player::Update()
 
 void Player::Render()
 {
-	renderColliders();
+	//renderColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	PlayerModelAnimator::Render();
@@ -100,7 +100,7 @@ void Player::Render()
 
 void Player::DeferredRender()
 {
-	renderColliders();
+	//renderDeferredColliders();
 	Transform::UpdateWorld();
 	Transform::SetWorldBuffer();
 	PlayerModelAnimator::DeferredRender();
@@ -432,6 +432,14 @@ void Player::renderColliders()
 	for (int i = 0; i < mColliders.size(); i++)
 	{
 		mColliders[i].collider->Render();
+	}
+}
+
+void Player::renderDeferredColliders()
+{
+	for (int i = 0; i < mColliders.size(); i++)
+	{
+		mColliders[i].collider->DeferredRender();
 	}
 }
 

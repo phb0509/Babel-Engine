@@ -12,6 +12,7 @@ public:
 
 	void Update();
 	void RenderCollider();
+	void RenderDeferredCollider();
 	void PostRender();
 
 	bool ContainPoint(Vector3 position);

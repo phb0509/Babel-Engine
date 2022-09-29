@@ -59,4 +59,6 @@ private:
 	RenderTarget* mDirectionalLightDepthMapForShow;
 	DepthStencil* mDirectionalLightDSV;
 	DirectionalLightBuffer* mDirectionalLightBuffer;
+
+	Sphere* mLightSphere;
 };

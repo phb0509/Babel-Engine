@@ -43,7 +43,9 @@ public:
 
 	void OnDamage(AttackInformation attackInformation);
 	bool CheckIsCollision(Collider* collider);	
+	
 	void renderColliders();
+	void renderDeferredColliders();
 
 private:
 	void setIdle();
@@ -63,6 +65,8 @@ private:
 	// Collider
 	void loadCollidersBinaryFile(wstring fileName);
 	void setColliders();
+
+	
 	
 
 	// Attack

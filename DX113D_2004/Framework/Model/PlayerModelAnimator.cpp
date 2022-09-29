@@ -13,6 +13,7 @@ PlayerModelAnimator::PlayerModelAnimator() :
 {
 	mFrameBuffer = new PlayerFrameBuffer();
 	mTypeBuffer->data.values[0] = 2;
+	SetShader(L"PlayerModelAnimation");
 }
 
 PlayerModelAnimator::~PlayerModelAnimator()
@@ -172,10 +173,32 @@ void PlayerModelAnimator::Update()
 
 void PlayerModelAnimator::Render()
 {
+	//if (mClips.size() != 0) // ModelAnimation
+	//{
+	//	SetShader(L"PlayerModelAnimation");
+
+	//	if (mTexture == nullptr)
+	//	{
+	//		CreateTexture(); // TransformMapTexture.
+	//	}
+
+	//	mFrameBuffer->SetVSBuffer(4);
+	//	DEVICECONTEXT->VSSetShaderResources(0, 1, &mSRV); // TransformMapSRV
+	//}
+
+	//else // Model
+	//{
+	//	SetShader(L"Lighting");
+	//	//SetBoneTransforms();
+	//	if (mBoneBuffer == nullptr)
+	//	{
+	//		ExecuteSetMeshEvent(); // create BoneBuffer
+	//	}
+	//	mBoneBuffer->SetVSBuffer(3);
+	//}
+
 	if (mClips.size() != 0) // ModelAnimation
 	{
-		SetShader(L"PlayerModelAnimation");
-
 		if (mTexture == nullptr)
 		{
 			CreateTexture(); // TransformMapTexture.
@@ -187,14 +210,13 @@ void PlayerModelAnimator::Render()
 
 	else // Model
 	{
-		SetShader(L"Lighting");
-		//SetBoneTransforms();
 		if (mBoneBuffer == nullptr)
 		{
 			ExecuteSetMeshEvent(); // create BoneBuffer
 		}
 		mBoneBuffer->SetVSBuffer(3);
 	}
+
 
 	ModelReader::MeshRender(); 
 }

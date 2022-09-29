@@ -40,7 +40,7 @@ void GBuffer::PreRender()
 	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 5, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget	   
 }
 
-void GBuffer::SetRenderTargetsToPS()
+void GBuffer::SetTexturesToPS()
 {
 	DEVICECONTEXT->PSSetShaderResources(10, 1, &mSRVs[0]); // 깊이
 	DEVICECONTEXT->PSSetShaderResources(11, 1, &mSRVs[1]); // 디퓨즈

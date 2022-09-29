@@ -729,13 +729,11 @@
     <FxCompile Include="Shaders\Grid.hlsl" />
     <FxCompile Include="Shaders\Diffuse.hlsl" />
     <FxCompile Include="Shaders\Specular.hlsl" />
-    <FxCompile Include="Shaders\NormalMapping.hlsl" />
     <FxCompile Include="Shaders\ComputePicking.hlsl" />
     <FxCompile Include="Shaders\TerrainBrush.hlsl" />
     <FxCompile Include="Shaders\TerrainSplatting.hlsl" />
     <FxCompile Include="Shaders\SkyBox.hlsl" />
     <FxCompile Include="Shaders\Sky.hlsl" />
-    <FxCompile Include="Shaders\Model.hlsl" />
     <FxCompile Include="Shaders\ModelAnimation.hlsl" />
     <FxCompile Include="Shaders\Collider.hlsl" />
     <FxCompile Include="Shaders\Outline.hlsl" />

@@ -61,7 +61,7 @@ MainScene::MainScene() :
 
 	mMutantInstanceCount = row * column;
 
-	mInstancingMutants = new InstancingMutants(mMutantInstanceCount,200,200, mTerrain); // ModelAnimators
+	mInstancingMutants = new InstancingMutants(mMutantInstanceCount, 200, 200, mTerrain); // ModelAnimators
 	mInstancingMutants->SetCameraForCulling(mTargetCameraForShow); // Default는 일단 WorldMode.
 	mInstancingMutants->SetCurMainCamera(mWorldCamera);
 	mInstancingMutants->SetIsFrustumCullingMode(true);
@@ -84,7 +84,9 @@ MainScene::MainScene() :
 
 	mDirectionalLightDepthMapForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM); // 보여주기용.
 	mDirectionalLightDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
-	mDirectionalLightBuffer = new DirectionalLightBuffer();
+	mLightSphere = new Sphere(L"Lighting");
+	mDirectionalLight->mPosition = { 128.0f, 100.0f, 300.0f };
+	mDirectionalLight->mRotation = { 0.725f, 3.142f, 0.0f };
 }
 
 MainScene::~MainScene()
@@ -100,6 +102,7 @@ void MainScene::Update()
 {
 	mLightBuffer->Update();
 	mDirectionalLight->Update();
+	//mLightSphere->Update();
 
 	switch (static_cast<int>(mMainCamera))
 	{
@@ -132,33 +135,37 @@ void MainScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
 
-	 //그림자매핑용 깊이맵 얻기위한 DSV셋팅.
-	vector<RenderTarget*> renderTargets;
-	renderTargets.push_back(mDirectionalLightDepthMapForShow);
-	RenderTarget::ClearAndSetWithDSV(renderTargets.data(), 1, mDirectionalLightDSV);
-
 	//ID3D11RenderTargetView* renderTargets[1] = { 0 };
 	//DEVICECONTEXT->OMSetRenderTargets(1, renderTargets, mDirectionalLightDSV->GetDSV());
 	//mDirectionalLightDSV->Clear();
 
-
+	//그림자매핑용 깊이맵 얻기위한 DSV셋팅. 
+	vector<RenderTarget*> renderTargets;
+	renderTargets.push_back(mDirectionalLightDepthMapForShow);
+	RenderTarget::ClearAndSetWithDSV(renderTargets.data(), 1, mDirectionalLightDSV);
 
 	// 광원기준 뷰행렬이랑 직교투영행렬 생성 후 셰이더에 Set하고 모든 버텍스들 Draw.
-	//mDirectionalLight->mPosition = mDirectionalLight->GetDirection() * -100.0f;
-	//Matrix tempViewMatrix = XMMatrixInverse(nullptr, mDirectionalLight->GetWorldMatrixValue());
-	//Matrix tempProjMatrix = mWorldCamera->GetProjectionMatrixInUse(); // 임시로 갖다 쓰기.
+	Vector3 lookat = mDirectionalLight->mPosition + mDirectionalLight->GetForwardVector();
+	Vector3 upVec = mDirectionalLight->GetUpVector();
+	Matrix tempViewMatrix = XMMatrixLookAtLH(mDirectionalLight->mPosition.data, lookat.data, upVec.data);
+	//Matrix tempProjMatrix = XMMatrixOrthographicLH(3000.0f, 3000.0f, 0.0f, 5000.0f);
+	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 10000.0f);
 
-	//mWorldCamera->SetViewBufferToVS();
-	//mWorldCamera->SetProjectionBufferToVS();
+	ViewBuffer tempViewBuffer;
+	ProjectionBuffer tempProjectionBuffer;
+	tempViewBuffer.SetMatrix(tempViewMatrix);
+	tempProjectionBuffer.SetMatrix(tempProjMatrix);
 
-	//mTerrain->GetMaterial()->SetShader(L"TestLighting");
-	//mPlayer->SetShader(L"TestModelAnimation");
-	//mInstancingMutants->SetShader(L"TestInstancingMutants");
+	tempViewBuffer.SetVSBuffer(1);
+	tempProjectionBuffer.SetVSBuffer(2);
 
-	//mTerrain->Render();
-	//mPlayer->Render();
-	//mInstancingMutants->Render();
+	mTerrain->GetMaterial()->SetShader(L"TestLighting");
+	mPlayer->SetShader(L"TestModelAnimation");
+	mInstancingMutants->SetShader(L"TestInstancingMutants");
 
+	mTerrain->Render();
+	mPlayer->Render();
+	mInstancingMutants->Render();
 
 
 	mGBuffer->PreRender(); // 여기서 알아서 다시 렌더타겟셋팅함.
@@ -193,6 +200,10 @@ void MainScene::PreRender()
 	mPlayer->DeferredRender();
 	mInstancingMutants->DeferredRender();
 	mDirectionalLight->GetSphere()->Render();
+
+	mPlayer->renderDeferredColliders();
+	mInstancingMutants->renderDeferredColliders();
+	mLightSphere->Render();
 }
 
 void MainScene::Render()
@@ -200,7 +211,7 @@ void MainScene::Render()
 	// 백버퍼와 연결된 렌더타겟
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
-	Device::Get()->SetRenderTarget();
+	Device::Get()->SetRenderTarget(); // Set BackBuffer
 	Environment::Get()->Set(); // SetViewPort
 	mLightBuffer->SetPSBuffer(0);
 
@@ -225,14 +236,16 @@ void MainScene::Render()
 		break;
 	}
 
-	mGBuffer->SetRenderTargetsToPS();
-
-	mVertexBuffer->SetIA(); // 디폴트 0번.
+	mGBuffer->SetTexturesToPS(); // Set Textures (Depth, Diffuse, Normal, Specular)
+	mVertexBuffer->SetIA(); // Default 0
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	mDeferredMaterial->Set(); // 디퍼드라이팅셰이더파일 Set. 
+	mDeferredMaterial->Set(); // Set DeferredShader
 	DEVICECONTEXT->Draw(4, 0);
 
-	mGBuffer->ClearSRVs();
+	/*mPlayer->renderColliders();
+	mInstancingMutants->renderColliders();*/
+
+	mGBuffer->ClearSRVs(); // Clear Textures
 }
 
 void MainScene::PostRender()
@@ -244,7 +257,7 @@ void MainScene::PostRender()
 
 	mInstancingMutants->PostRender();
 	mInstancingMutants->UIRender();
-	
+
 	mGBuffer->PostRender();
 
 	ImGui::Begin("Camera Info");
@@ -291,9 +304,22 @@ void MainScene::PostRender()
 	ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
 	ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	ImGui::ImageButton(mDirectionalLightDepthMapForShow->GetSRV() , imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-	
+	ImGui::ImageButton(mDirectionalLightDepthMapForShow->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	//ImGui::ImageButton(mDirectionalLightDSV->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 	ImGui::End();
+
+	//ImGui::Begin("BackBufferTexture");
+
+	//int frame_padding = 0;
+	//ImVec2 imageButtonSize = ImVec2(400.0f, 400.0f); // 이미지버튼 크기설정.                     
+	//ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
+	//ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
+	//ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
+	//ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	//ImGui::ImageButton(Device::Get()->GetBackBufferSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+
+	//ImGui::End();
 }
 
 void MainScene::printToCSV() // 트랜스폼값같은거 csv로 편하게 볼려고 저장하는 함수.

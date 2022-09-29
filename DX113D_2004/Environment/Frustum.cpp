@@ -27,12 +27,6 @@ Frustum::~Frustum()
 
 void Frustum::Update()
 {
-	// Vector3 pos = CAMERA->position - CAMERA->Forward() * 1.0f;
-	// Vector3 focus = pos + CAMERA->Forward();
-	// view = XMMatrixLookAtLH(pos.data, focus.data, CAMERA->Up().data);
-	// 위 주석처리는 프러스텀범위를 좀 더 뒤로빼서 스피어가 사라지는걸 좀 더 자연스럽게
-	// 구현하기위한 위치값조정인데, 어지간하면 그냥 있는거 쓰는게 나음.
-
 	if (!mbHasInitialized)
 	{
 		initialize(); // 특정 씬에 종속적인 컬라이더렌더용.
@@ -87,7 +81,6 @@ void Frustum::Update()
 	d = VP._44 - VP._43;
 	mPlanes[5] = XMVectorSet(a, b, c, d);
 
-
 	for (UINT i = 0; i < 6; i++)
 	{
 		mPlanes[i] = XMPlaneNormalize(mPlanes[i]);
@@ -100,7 +93,7 @@ void Frustum::Update()
 void Frustum::RenderCollider()
 {
 	mEmptyObject->Render();
-	mCollider->Render();
+	mCollider->DeferredRender();
 }
 
 void Frustum::PostRender()
@@ -149,7 +142,9 @@ bool Frustum::ContainPoint(Vector3 position)
 		Vector3 dot = XMPlaneDotCoord(mPlanes[i], position.data);
 
 		if (dot.x < 0.0f)
+		{
 			return false;
+		}
 	}
 
 	return true;

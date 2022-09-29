@@ -59,6 +59,16 @@ void Device::CreateBackBuffer()
 
 	V(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)); // 스왑체인에서 백버퍼를 얻어낸다.
 	V(mDevice->CreateRenderTargetView(backBuffer, nullptr, &mRenderTargetView)); // 백버퍼랑 렌더타겟뷰 연결.
+
+	//{// ShaderResourceView
+	//	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+	//	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//	desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//	desc.Texture2D.MipLevels = 1;
+
+	//	V(mDevice->CreateShaderResourceView(backBuffer, &desc, &mRTVsrv));
+	//}
+	
 	backBuffer->Release();	// 필요없으니 해제.
 
 	mRenderTargets.emplace_back(mRenderTargetView);

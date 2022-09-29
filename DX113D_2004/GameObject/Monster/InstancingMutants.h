@@ -26,9 +26,12 @@ public:
 	void SetAnimation(int instanceIndex, eMutantAnimationStates value);
 	void SetCurMainCamera(Camera* mainCamera);
 
+	void renderColliders();
+	void renderDeferredColliders();
 private:
 	void setColliders();
-	void renderColliders();
+	
+	
 	void loadCollidersBinaryFile(wstring fileName);
 	void showInstanceInformation();
 	void updateCompletedAnimIndices(bool value);

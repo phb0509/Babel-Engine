@@ -7,7 +7,7 @@ public:
 	~GBuffer();
 
 	void PreRender();
-	void SetRenderTargetsToPS();
+	void SetTexturesToPS();
 	void PostRender();
 	vector<RenderTarget*> GetRenderTargets() { return mRenderTargets; }
 	DepthStencil* GetDepthStencil() { return mDepthStencil; }

@@ -28,7 +28,6 @@ Light::Light(LightType lightType):
 	mIndex(0)
 {
 	mSphere = new Sphere(L"Lighting");
-	//mSphere->mScale = { 10.0f,10.0f,10.0f };
 }
 
 Light::~Light()
@@ -41,6 +40,7 @@ void Light::Update()
 	UpdateWorld();
 	updateLightInfo();
 
+	mDirection = this->GetForwardVector();
 	mSphere->mPosition = this->mPosition;
 	mSphere->Update();
 }
@@ -58,15 +58,17 @@ void Light::PostRender()
 	if (ImGui::BeginMenu(name.c_str()))
 	{
 		ImGui::Checkbox("Active", (bool*)&mActive);
-		ImGui::SliderInt("Type", (int*)&mType, 0, 3); // 라이트 타입
-		ImGui::SliderFloat3("Direction", (float*)&mDirection, -1, 1); // 라이트 방향
-		//ImGui::SliderFloat3("LightPosition", (float*)&this->mPosition, -100, 100); // 라이트 위치
-		ImGui::InputFloat3("LightPosition", (float*)&this->mPosition); // 라이트 위치
-		ImGui::SliderFloat("LightRange", (float*)&mRange, 0, 100); // 라이트 크기?
-		ImGui::ColorEdit4("LightColor", (float*)&mColor);	// 라이트색깔
-		ImGui::SliderFloat("LightInner", (float*)&mInner, 0, 90);
-		ImGui::SliderFloat("LightOuter", (float*)&mOuter, 0, 180);
-		ImGui::SliderFloat("LightLength", (float*)&mLength, 0, 180);
+		ImGui::SliderInt("Type", (int*)&mType, 0, 3); 
+		ImGui::SliderFloat3("Rotation", (float*)&this->mRotation, -XM_PI, XM_PI);
+		//ImGui::SliderFloat3("Position", (float*)&this->mPosition, -100, 100);
+		//ImGui::InputFloat3("Rotation", (float*)&this->mRotation);
+		ImGui::InputFloat3("Position", (float*)&this->mPosition);
+		ImGui::SliderFloat3("Direction", (float*)&this->mDirection, -1, 1);
+		ImGui::SliderFloat("Range", (float*)&mRange, 0, 100); // 라이트 크기?
+		ImGui::ColorEdit4("Color", (float*)&mColor);	
+		ImGui::SliderFloat("Inner", (float*)&mInner, 0, 90);
+		ImGui::SliderFloat("Outer", (float*)&mOuter, 0, 180);
+		ImGui::SliderFloat("Length", (float*)&mLength, 0, 180);
 
 		ImGui::EndMenu();
 	}
@@ -84,7 +86,7 @@ void Light::updateLightInfo()
 {
 	mLightInfo.position = this->mPosition;
 	mLightInfo.color = this->mColor;
-	mLightInfo.direction = this->mDirection;
+	mLightInfo.direction = this->GetForwardVector();
 	mLightInfo.type = this->mType;
 	mLightInfo.range = this->mRange;
 	mLightInfo.inner = this->mInner;

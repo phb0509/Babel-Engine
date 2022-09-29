@@ -84,20 +84,21 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
     float4 diffuse = diffuseTexture.Load(location3);
     
     output.color = diffuse.rgb;
-    output.specInt = diffuse.w;
+    output.specInt = diffuse.a;
     
-    output.normal = normalTexture.Load(location3).xyz;
+    output.normal = normalTexture.Load(location3).rgb;
     output.normal = normalize(output.normal * 2.0f - 1.0f); // -1~1 정규화.
     
-    float specular = specularTexture.Load(location3).x;
-    output.specPow = specPowerRange.x + specular * specPowerRange.y;
-    output.isCollider = specularTexture.Load(location3).y;
+    float specular = specularTexture.Load(location3).r;
+    output.specPow = specPowerRange.r + specular * specPowerRange.g;
+    output.isCollider = specularTexture.Load(location3).g;
     return output;
 }
 
 float4 PS(PixelInput input) : SV_Target
 {
     SurfaceData data = UnpackGBuffer(input.pos.xy);
+    
     if (data.isCollider > 0.0f)
     {
         return float4(data.color, 1.0f);

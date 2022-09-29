@@ -68,7 +68,7 @@ void Collider::Render()
 {
     if (!DM->GetIsDebugMode())
     {
-        mMaterial->SetShader(L"DeferredCollider");
+        mMaterial->SetShader(L"Collider");
         mMaterial->Set();
 
         //Transform::UpdateWorld();
@@ -83,7 +83,7 @@ void Collider::DeferredRender()
 {
     if (!DM->GetIsDebugMode())
     {
-        mMaterial->SetShader(L"GBuffer");
+        mMaterial->SetShader(L"DeferredCollider");
         mMaterial->Set();
 
         //Transform::UpdateWorld();

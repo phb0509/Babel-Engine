@@ -50,16 +50,15 @@ void UIImage::Render()
 	SetWorldBuffer(); // 0번에
 	mMainViewBuffer->SetVSBuffer(1);
 	mMainProjectionBuffer->SetVSBuffer(2);
-
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
 	mTextureBuffer->SetPSBuffer(6);
 
 	mMaterial->Set();
 
-	if (mbIsUsedUI)
+	if (mbIsUsedUI) // 실제 인게임UI.
 	{
-		mBlendStates[0]->SetState();
-		mDepthModes[1]->SetState();
+		mBlendStates[0]->SetState(); // true Alpha
+		mDepthModes[1]->SetState(); // false Depth
 		DEVICECONTEXT->DrawIndexed(6, 0, 0);
 		mBlendStates[1]->SetState();
 		mDepthModes[0]->SetState();
@@ -81,14 +80,12 @@ void UIImage::RenderTargetUI()
 {
 	mMesh->SetIA();
 	SetWorldBuffer(); // 0번에
+	mMainViewBuffer->SetVSBuffer(1);
+	mMainProjectionBuffer->SetVSBuffer(2);
 	DEVICECONTEXT->PSSetShaderResources(0, 1, &mSRV);
 	mTextureBuffer->SetPSBuffer(6);
 
 	mMaterial->Set();
-
-	mMainViewBuffer->SetVSBuffer(1);
-	mMainProjectionBuffer->SetVSBuffer(2);
-
 
 	mBlendStates[0]->SetState();
 	mDepthModes[1]->SetState();

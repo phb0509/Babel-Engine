@@ -8,8 +8,17 @@ struct PixelInput
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
     float3 viewPos : POSITION1;
-    float3 worldPos : POSITION2;
+    float4 worldPos : POSITION2;
+    float4 lightViewPosition : LIGHTVIEWPOSITION;
 };
+
+cbuffer ShadowMappingLightBuffer : register(b9)
+{
+    Matrix lightViewMatrix;
+    Matrix lightProjectionMatrix;
+    float3 lightPosition;
+    float padding1;
+}
 
 PixelInput VS(VertexUVNormalTangentBlend input)
 {
@@ -26,9 +35,15 @@ PixelInput VS(VertexUVNormalTangentBlend input)
         transform = world;
     
     output.pos = mul(input.pos, transform);
-    
     output.viewPos = invView._41_42_43;
-    output.worldPos = output.pos;
+    
+    // 광원위치기준 클립스페이스 좌표구하기 (wvp곱)
+    output.worldPos = float4(output.pos.xyz, 1.0f);
+    output.lightViewPosition = mul(output.worldPos, lightViewMatrix);
+    output.lightViewPosition = mul(output.lightViewPosition, lightProjectionMatrix);
+    
+    
+    
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
@@ -74,6 +89,40 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     return output;
 }
 
+
+Texture2D depthMapTexture : register(t8);
+
+
+
+float3 shadowMapping(PixelInput input, float3 diffuseMap)
+{
+    float bias = 0.001f;
+    float2 projectTexCoord;
+    float depthValue;
+    float lightDepthValue;
+    
+    
+    projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+    
+    // 투영된 좌표가 0부터 1사이의 값인지 확인. 범위안에 있다면 해당 픽셀은 조명의 시야안에 있는것임
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+        depthValue = depthMapTexture.Sample(samp, projectTexCoord).r;
+        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+
+        // lightDepthValue에서 bias를 뺍니다.
+        lightDepthValue = lightDepthValue - bias;
+        
+        if (lightDepthValue < depthValue)
+        {
+            diffuseMap *= 0.3f;
+        }
+
+    }
+    return diffuseMap;
+}
+
 PixelOutput PS(PixelInput input) : SV_Target
 {
     float3 sampledDiffuseMap = float3(1.0f, 1.0f, 1.0f);
@@ -84,6 +133,8 @@ PixelOutput PS(PixelInput input) : SV_Target
         sampledDiffuseMap = diffuseMap.Sample(samp, input.uv).rgb;
     }
       
+    sampledDiffuseMap = shadowMapping(input, sampledDiffuseMap);
+    
     float sampledSpecularMap = 1.0f;
     
     [flatten]
@@ -96,3 +147,21 @@ PixelOutput PS(PixelInput input) : SV_Target
     
     return PackGBuffer(input, sampledDiffuseMap, mappingedNormal, sampledSpecularMap); // 
 }
+
+
+
+
+//float4 lightClipPosition = mul(float4(material.worldPos, 1.0f), lightViewMatrix);
+//    lightClipPosition = mul(lightClipPosition, lightProjectionMatrix);
+
+//float cameraLightDepth = lightClipPosition.z / lightClipPosition.w;
+//float2 uv = lightClipPosition.xy / lightClipPosition.w;
+//    uv.y = -uv.
+//y;
+//    uv = uv * 0.5f + 0.5f;
+//float shadowMapDepth = asfloat(shadowMapTexture.SampleLevel(LinearSampler, uv, 0.0f));
+    
+//    if (cameraLightDepth > shadowMapDepth + 0.0000125f)
+//    {
+//        result.xyz *= 100.0f;
+//    }

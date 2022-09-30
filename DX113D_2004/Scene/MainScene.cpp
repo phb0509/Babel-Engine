@@ -84,9 +84,21 @@ MainScene::MainScene() :
 
 	mDirectionalLightDepthMapForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM); // 보여주기용.
 	mDirectionalLightDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
-	mLightSphere = new Sphere(L"Lighting");
 	mDirectionalLight->mPosition = { 128.0f, 100.0f, 300.0f };
 	mDirectionalLight->mRotation = { 0.725f, 3.142f, 0.0f };
+
+	mDepthStencilStates[0] = new DepthStencilState();
+	mDepthStencilStates[1] = new DepthStencilState();
+	mDepthStencilStates[0]->DepthEnable(true);
+	mDepthStencilStates[1]->DepthEnable(false);
+
+	mBlendStates[0] = new BlendState();
+	mBlendStates[1] = new BlendState();
+	mBlendStates[0]->SetAlpha(true);
+	mBlendStates[1]->SetAlpha(false);
+
+	mShadowMappingLightBuffer = new ShadowMappingLightBuffer();
+	//mDeferredRenderTarget.push_back(new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM));
 }
 
 MainScene::~MainScene()
@@ -135,10 +147,6 @@ void MainScene::PreRender()
 {
 	Environment::Get()->Set(); // SetViewPort
 
-	//ID3D11RenderTargetView* renderTargets[1] = { 0 };
-	//DEVICECONTEXT->OMSetRenderTargets(1, renderTargets, mDirectionalLightDSV->GetDSV());
-	//mDirectionalLightDSV->Clear();
-
 	//그림자매핑용 깊이맵 얻기위한 DSV셋팅. 
 	vector<RenderTarget*> renderTargets;
 	renderTargets.push_back(mDirectionalLightDepthMapForShow);
@@ -149,12 +157,13 @@ void MainScene::PreRender()
 	Vector3 upVec = mDirectionalLight->GetUpVector();
 	Matrix tempViewMatrix = XMMatrixLookAtLH(mDirectionalLight->mPosition.data, lookat.data, upVec.data);
 	//Matrix tempProjMatrix = XMMatrixOrthographicLH(3000.0f, 3000.0f, 0.0f, 5000.0f);
-	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 10000.0f);
+	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 1000.0f);
 
 	ViewBuffer tempViewBuffer;
 	ProjectionBuffer tempProjectionBuffer;
 	tempViewBuffer.SetMatrix(tempViewMatrix);
 	tempProjectionBuffer.SetMatrix(tempProjMatrix);
+	mShadowMappingLightBuffer->SetData(tempViewMatrix, tempProjMatrix, mDirectionalLight->mPosition);
 
 	tempViewBuffer.SetVSBuffer(1);
 	tempProjectionBuffer.SetVSBuffer(2);
@@ -168,7 +177,8 @@ void MainScene::PreRender()
 	mInstancingMutants->Render();
 
 
-	mGBuffer->PreRender(); // 여기서 알아서 다시 렌더타겟셋팅함.
+
+	mGBuffer->ClearAndSetRenderTargets(); // 렌더타겟이랑 DSV 클리어 후, 셋팅. 여기 DSV에 디퍼드깊이값 들어있음.
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
 	{
@@ -190,6 +200,9 @@ void MainScene::PreRender()
 	default:
 		break;
 	}
+	
+	mShadowMappingLightBuffer->SetVSBuffer(9);
+	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
@@ -203,21 +216,24 @@ void MainScene::PreRender()
 
 	mPlayer->renderDeferredColliders();
 	mInstancingMutants->renderDeferredColliders();
-	mLightSphere->Render();
 }
 
 void MainScene::Render()
 {
 	// 백버퍼와 연결된 렌더타겟
-	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
-	Device::Get()->ClearDepthStencilView();
-	Device::Get()->SetRenderTarget(); // Set BackBuffer
+	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f)); // 백버퍼와 연결된 렌더타겟을 클리어.
+	Device::Get()->ClearDepthStencilView(); // 백버퍼와 연결된 DSV를 Clear.
+	Device::Get()->SetRenderTarget(); // 백버퍼와 연결된 렌더타겟과 DSV를 Set.
+	
+	//Device::Get()->ClearDepthStencilView(mGBuffer->GetDepthStencil()->GetDSV()); // GBuffer DSV 클리어 (백버퍼랑 연결된거랑 별개임)
+	//Device::Get()->SetRenderTarget(mGBuffer->GetDepthStencil()->GetDSV()); // 
+
 	Environment::Get()->Set(); // SetViewPort
 	mLightBuffer->SetPSBuffer(0);
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
 	{
-	case 0:    // World
+	case 0:  // World
 	{
 		mWorldCamera->SetViewBufferToVS(10);
 		mWorldCamera->SetProjectionBufferToVS(11);
@@ -241,10 +257,6 @@ void MainScene::Render()
 	DEVICECONTEXT->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	mDeferredMaterial->Set(); // Set DeferredShader
 	DEVICECONTEXT->Draw(4, 0);
-
-	/*mPlayer->renderColliders();
-	mInstancingMutants->renderColliders();*/
-
 	mGBuffer->ClearSRVs(); // Clear Textures
 }
 
@@ -308,17 +320,8 @@ void MainScene::PostRender()
 	//ImGui::ImageButton(mDirectionalLightDSV->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 	ImGui::End();
 
-	//ImGui::Begin("BackBufferTexture");
-
-	//int frame_padding = 0;
-	//ImVec2 imageButtonSize = ImVec2(400.0f, 400.0f); // 이미지버튼 크기설정.                     
-	//ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
-	//ImVec2 imageButtonUV1 = ImVec2(1.0f, 1.0f); // 전체다 출력할거니까 1.
-	//ImVec4 imageButtonBackGroundColor = ImVec4(0.06f, 0.06f, 0.06f, 0.94f); // ImGuiWindowBackGroundColor.
-	//ImVec4 imageButtonTintColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//ImGui::ImageButton(Device::Get()->GetBackBufferSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-
+	//ImGui::Begin("GBuffer DSV DepthTexture");
+	//ImGui::ImageButton(mGBuffer->GetDepthStencil()->GetSRV(), imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 	//ImGui::End();
 }
 

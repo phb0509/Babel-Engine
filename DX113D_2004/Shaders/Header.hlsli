@@ -122,7 +122,7 @@ Texture2D diffuseMap : register(t0);
 Texture2D specularMap : register(t1);
 Texture2D normalMap : register(t2);
 Texture2D brushMap : register(t7);
-Texture2D shadowMap : register(t8);
+
 
 //VertexLayouts
 struct Vertex

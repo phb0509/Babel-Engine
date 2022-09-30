@@ -1,6 +1,4 @@
 #include "Framework.h"
-
-
 #include "Scene/MainScene.h"
 #include "Scene/ColliderSettingScene.h"
 #include "Scene/MapToolScene.h"
@@ -53,8 +51,6 @@ void Program::PostRender()
 		RECT rect = { 0, 0, 100, 100 };
 		DirectWrite::Get()->RenderText(fps, rect);
 	}
-
-	Environment::Get()->PostRender();
 
 	SceneManager::Get()->PostRender();
 

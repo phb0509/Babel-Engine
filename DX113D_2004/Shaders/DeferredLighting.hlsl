@@ -14,7 +14,7 @@ static const float2 arrBasePos[4] = // 2차원 NDC공간 꼭지점좌표.
     float2(+1.0f, -1.0f)
 };
 
-PixelInput VS(uint vertexID : SV_VertexID) // 주의. 값 그대로 PS에 넘기는 것 아님.
+PixelInput VS(uint vertexID : SV_VertexID) 
 {
     PixelInput output;
     output.pos = float4(arrBasePos[vertexID].xy, 0.0f, 1.0f); // z값 0, w값 1
@@ -22,6 +22,15 @@ PixelInput VS(uint vertexID : SV_VertexID) // 주의. 값 그대로 PS에 넘기는 것 아�
     
     return output;
 }
+
+
+SamplerState LinearSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
 
 cbuffer ViewBuffer : register(b10)
 {
@@ -34,10 +43,19 @@ cbuffer ProjectionBuffer : register(b11)
     matrix pProjection;
 }
 
+cbuffer ShadowMappingLightBuffer : register(b9)
+{
+    Matrix lightViewMatrix;
+    Matrix lightProjectionMatrix;
+    float3 lightPosition;
+    float padding1;
+}
+
 Texture2D depthTexture : register(t10);
 Texture2D diffuseTexture : register(t11);
 Texture2D specularTexture : register(t12);
 Texture2D normalTexture : register(t13);
+//Texture2D<float> shadowMapTexture : register(t8);
 
 float ConvertDepthToLinear(float depth)  
 {
@@ -110,9 +128,23 @@ float4 PS(PixelInput input) : SV_Target
     material.camPos = pInvView._41_42_43;
     material.specularIntensity = float4(data.specInt.xxx, 1.0f);
     material.worldPos = CalcWorldPos(input.uv, data.linearDepth);
-    
+        
     float4 result = CalcLights(material);
     float4 ambient = CalcAmbient(material);
    
+    //float4 lightClipPosition = mul(float4(material.worldPos, 1.0f), lightViewMatrix);
+    //lightClipPosition = mul(lightClipPosition, lightProjectionMatrix);
+
+    //float cameraLightDepth = lightClipPosition.z / lightClipPosition.w;
+    //float2 uv = lightClipPosition.xy / lightClipPosition.w;
+    //uv.y = -uv.y;
+    //uv = uv * 0.5f + 0.5f;
+    //float shadowMapDepth = asfloat(shadowMapTexture.SampleLevel(LinearSampler, uv, 0.0f));
+    
+    //if (cameraLightDepth > shadowMapDepth + 0.0000125f)
+    //{
+    //    result.xyz *= 100.0f;
+    //}
+    
     return result + ambient;
 }

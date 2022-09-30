@@ -117,7 +117,7 @@ struct LightInfo
 	}
 };
 
-class DirectionalLightBuffer : public ConstBuffer
+class ShadowMappingLightBuffer : public ConstBuffer
 {
 private:
 	struct Data
@@ -130,7 +130,7 @@ private:
 	}data;
 
 public:
-	DirectionalLightBuffer() : ConstBuffer(&data, sizeof(Data))
+	ShadowMappingLightBuffer() : ConstBuffer(&data, sizeof(Data))
 	{
 		data.viewMatrix = XMMatrixIdentity();
 		data.projectionMatrix = XMMatrixIdentity();

@@ -21,7 +21,8 @@ GBuffer::GBuffer()
 	mSRVs[2] = mSpecularRenderTarget->GetSRV();
 	mSRVs[3] = mNormalRenderTarget->GetSRV();
 
-	mShowSRVs[0] = mDepthRenderTarget->GetSRV(); // ·»´õÅ¸°ÙÀÇ SRV.
+	mShowSRVs[0] = mDepthRenderTarget->GetSRV(); // ·»´õÅ¸°ÙÀÇ SRV.cv
+	//mShowSRVs[0] = mDepthStencil->GetSRV(); // ·»´õÅ¸°ÙÀÇ SRV.cv
 	mShowSRVs[1] = mDiffuseRenderTarget->GetSRV();
 	mShowSRVs[2] = mSpecularRenderTargetForShow->GetSRV();
 	mShowSRVs[3] = mNormalRenderTarget->GetSRV();
@@ -35,7 +36,7 @@ GBuffer::~GBuffer()
 	GM->SafeDelete(mDepthStencil);
 }
 
-void GBuffer::PreRender()
+void GBuffer::ClearAndSetRenderTargets()
 {
 	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 5, mDepthStencil); // RTV¹è¿­,RTV¹è¿­ »çÀÌÁî(°³¼ö), depthStencil // OM¿¡ SetRenderTarget	   
 }

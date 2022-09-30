@@ -6,7 +6,7 @@ public:
 	GBuffer();
 	~GBuffer();
 
-	void PreRender();
+	void ClearAndSetRenderTargets();
 	void SetTexturesToPS();
 	void PostRender();
 	vector<RenderTarget*> GetRenderTargets() { return mRenderTargets; }

@@ -66,9 +66,6 @@ private:
 	void loadCollidersBinaryFile(wstring fileName);
 	void setColliders();
 
-	
-	
-
 	// Attack
 	void attack();
 	void setAttackInformations();

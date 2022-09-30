@@ -5,12 +5,10 @@ cbuffer MouseUV : register(b1)
     int2 mouseScreenPosition;
 }
 
-
 struct OutputDesc
 {
     float4 color;
 };
-
 
 RWStructuredBuffer<OutputDesc> output; // CPU로 보낼거.
 Texture2D<float4> Texture : register(t0);

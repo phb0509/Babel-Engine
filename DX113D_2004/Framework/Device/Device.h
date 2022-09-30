@@ -11,6 +11,7 @@ public:
 	void CreateBackBuffer();
 
 	void SetRenderTarget();
+	void SetRenderTarget(ID3D11DepthStencilView* dsv);
 	void SetRenderTargetNullDSV();
 
 	void InitRenderTargets(RenderTarget** renderTargets, int count);
@@ -18,6 +19,7 @@ public:
 
 	void ClearRenderTargetView(Float4 color = Float4(0.0f, 0.125f, 0.3f, 1.0f));
 	void ClearDepthStencilView();
+	void ClearDepthStencilView(ID3D11DepthStencilView* dsv);
 
 	void Present();
 

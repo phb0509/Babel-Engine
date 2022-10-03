@@ -113,8 +113,12 @@ MainScene::~MainScene()
 void MainScene::Update()
 {
 	mLightBuffer->Update();
+	//mDirectionalLight->mPosition = mWorldCamera->mPosition;
+	//mDirectionalLight->mRotation = mWorldCamera->mRotation;
 	mDirectionalLight->Update();
 	//mLightSphere->Update();
+
+	
 
 	switch (static_cast<int>(mMainCamera))
 	{
@@ -142,6 +146,15 @@ void MainScene::Update()
 
 	DM->Update();
 
+
+	if (KEY_PRESS('T'))
+		mDirectionalLight->mPosition += mDirectionalLight->GetForwardVector() * mWorldCamera->mMoveSpeed * DELTA;
+	if (KEY_PRESS('G'))
+		mDirectionalLight->mPosition -= mDirectionalLight->GetForwardVector() * mWorldCamera->mMoveSpeed * DELTA;
+	if (KEY_PRESS('F'))
+		mDirectionalLight->mPosition -= mDirectionalLight->GetRightVector() * mWorldCamera->mMoveSpeed * DELTA;
+	if (KEY_PRESS('H'))
+		mDirectionalLight->mPosition += mDirectionalLight->GetRightVector() * mWorldCamera->mMoveSpeed * DELTA;
 }
 
 void MainScene::PreRender()
@@ -157,8 +170,8 @@ void MainScene::PreRender()
 	Vector3 lookat = mDirectionalLight->mPosition + mDirectionalLight->GetForwardVector();
 	Vector3 upVec = mDirectionalLight->GetUpVector();
 	Matrix tempViewMatrix = XMMatrixLookAtLH(mDirectionalLight->mPosition.data, lookat.data, upVec.data);
-	//Matrix tempProjMatrix = XMMatrixOrthographicLH(3000.0f, 3000.0f, 0.0f, 5000.0f);
-	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 3000.0f);
+	//Matrix tempProjMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 1.0f, 3000.0f);
+	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 4000.0f);
 
 	ViewBuffer tempViewBuffer;
 	ProjectionBuffer tempProjectionBuffer;
@@ -170,6 +183,7 @@ void MainScene::PreRender()
 	tempViewBuffer.SetVSBuffer(1);
 	tempProjectionBuffer.SetVSBuffer(2);
 
+	mShadowMappingLightBuffer->SetVSBuffer(9);
 	mTerrain->GetMaterial()->SetShader(L"TestLighting");
 	mPlayer->SetShader(L"TestModelAnimation");
 	mInstancingMutants->SetShader(L"TestInstancingMutants");
@@ -203,8 +217,8 @@ void MainScene::PreRender()
 		break;
 	}
 
-	/*mShadowMappingLightBuffer->SetVSBuffer(9);
-	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());*/
+	mShadowMappingLightBuffer->SetVSBuffer(9);
+	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
@@ -255,8 +269,8 @@ void MainScene::Render()
 	}
 
 	// Set ShadowMapping Resource
-	mShadowMappingLightBuffer->SetVSBuffer(9);
-	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
+	//mShadowMappingLightBuffer->SetVSBuffer(9);
+	//DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
 
 	mGBuffer->SetTexturesToPS(); // Set Textures (Depth, Diffuse, Normal, Specular)
 	mVertexBuffer->SetIA(); // Default 0

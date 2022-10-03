@@ -10,6 +10,13 @@ struct PixelInput
     float3 viewDir : ViewDir;
 };
 
+
+cbuffer ShadowMappingLightBuffer : register(b9)
+{
+    Matrix lightViewMatrix;
+    Matrix lightProjectionMatrix;
+}
+
 PixelInput VS(VertexUVNormalTangentBlend input)
 {
     PixelInput output;

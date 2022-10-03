@@ -9,7 +9,15 @@ struct PixelInput
     float3 binormal : Binormal;
     float3 worldPos : Position;
     float3 camPos : CamPos;
+    //float4 clipPosition
 };
+
+
+cbuffer ShadowMappingLightBuffer : register(b9)
+{
+    Matrix lightViewMatrix;
+    Matrix lightProjectionMatrix;
+}
 
 PixelInput VS(VertexUVNormalTangentBlend input)
 {

@@ -20,6 +20,9 @@ const static int CENTER_Y = WIN_HEIGHT * 0.5f;
 const static int WIN_START_X = 20;
 const static int WIN_START_Y = 20;
 
+//const static int RT_WIDTH = 3200;
+//const static int RT_HEIGHT = 1800;
+
 
 // Player
 const static int PLAYER_MAX_BONE = 100;

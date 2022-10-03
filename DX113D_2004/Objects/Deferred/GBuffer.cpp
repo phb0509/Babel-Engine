@@ -14,7 +14,7 @@ GBuffer::GBuffer()
 	mRenderTargets.push_back(mNormalRenderTarget);
 	mRenderTargets.push_back(mDepthRenderTarget);
 	mRenderTargets.push_back(mSpecularRenderTargetForShow);
-	mRenderTargets.push_back(mWorldPositionRenderTarget);
+	//mRenderTargets.push_back(mWorldPositionRenderTarget);
 
 	mDepthStencil = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
 
@@ -29,7 +29,7 @@ GBuffer::GBuffer()
 	mShowSRVs[1] = mDiffuseRenderTarget->GetSRV();
 	mShowSRVs[2] = mSpecularRenderTargetForShow->GetSRV();
 	mShowSRVs[3] = mNormalRenderTarget->GetSRV();
-	mShowSRVs[4] = mWorldPositionRenderTarget->GetSRV();
+	//mShowSRVs[4] = mWorldPositionRenderTarget->GetSRV();
 }
 
 GBuffer::~GBuffer()
@@ -42,7 +42,7 @@ GBuffer::~GBuffer()
 
 void GBuffer::ClearAndSetRenderTargets()
 {
-	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 6, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget	   
+	RenderTarget::ClearAndSetWithDSV(mRenderTargets.data(), 5, mDepthStencil); // RTV배열,RTV배열 사이즈(개수), depthStencil // OM에 SetRenderTarget	   
 }
 
 void GBuffer::SetTexturesToPS()
@@ -51,7 +51,7 @@ void GBuffer::SetTexturesToPS()
 	DEVICECONTEXT->PSSetShaderResources(11, 1, &mSRVs[1]); // 디퓨즈
 	DEVICECONTEXT->PSSetShaderResources(12, 1, &mSRVs[2]); // 스페큘라
 	DEVICECONTEXT->PSSetShaderResources(13, 1, &mSRVs[3]); // 노말
-	DEVICECONTEXT->PSSetShaderResources(14, 1, &mSRVs[4]); // 버텍스 월드포지션
+	//DEVICECONTEXT->PSSetShaderResources(14, 1, &mSRVs[4]); // 버텍스 월드포지션
 }
 
 void GBuffer::PostRender()
@@ -72,8 +72,8 @@ void GBuffer::PostRender()
 	ImGui::ImageButton(mShowSRVs[2], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
 	ImGui::SameLine();
 	ImGui::ImageButton(mShowSRVs[3], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
-	ImGui::SameLine();
-	ImGui::ImageButton(mShowSRVs[4], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);
+	/*ImGui::SameLine();
+	ImGui::ImageButton(mShowSRVs[4], imageButtonSize, imageButtonUV0, imageButtonUV1, frame_padding, imageButtonBackGroundColor, imageButtonTintColor);*/
 
 	ImGui::End();
 }
@@ -86,7 +86,7 @@ void GBuffer::ClearSRVs()
 	DEVICECONTEXT->PSSetShaderResources(11, 1, &pSRV);
 	DEVICECONTEXT->PSSetShaderResources(12, 1, &pSRV);
 	DEVICECONTEXT->PSSetShaderResources(13, 1, &pSRV);
-	DEVICECONTEXT->PSSetShaderResources(14, 1, &pSRV);
+	//DEVICECONTEXT->PSSetShaderResources(14, 1, &pSRV);
 }
 
 

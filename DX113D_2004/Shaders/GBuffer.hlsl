@@ -69,7 +69,7 @@ struct PixelOutput
     float4 normal : SV_Target2;
     float4 depth : SV_Target3; // UITexture용
     float4 specaulrForShow : SV_Target4;
-    float4 worldPosition : SV_Target5;
+    //float4 worldPosition : SV_Target5;
 };
 
 PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappingedNormal, float sampledSpecularMap) // 디퓨즈값, 스페큘라값,노말값 등 다 계산해놓기.
@@ -85,7 +85,7 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     output.normal = float4(mappingedNormal * 0.5f + 0.5f, 1.0f); // 0~1 정규화.
     output.depth = float4(depthValue, depthValue, depthValue, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
     output.specaulrForShow = float4(0.0f, 0.0f, 0.0f, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
-    output.worldPosition = input.worldPos;
+    //output.worldPosition = input.worldPos;
     
     [flatten]
     if (hasSpecularMap)
@@ -100,7 +100,8 @@ Texture2D depthMapTexture : register(t8);
 
 float3 shadowMapping(PixelInput input, float3 diffuseMap)
 {
-    float bias = 0.0000125f;
+    //float bias = 0.0000125f;
+    float bias = 0.000005f;
     float2 projectTexCoord;
     
     projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
@@ -113,6 +114,8 @@ float3 shadowMapping(PixelInput input, float3 diffuseMap)
     {
         diffuseMap *= 0.3f;
     }
+    
+    
     
     return diffuseMap;
 }
@@ -127,7 +130,7 @@ PixelOutput PS(PixelInput input) : SV_Target
         sampledDiffuseMap = diffuseMap.Sample(samp, input.uv).rgb;
     }
       
-    //sampledDiffuseMap = shadowMapping(input, sampledDiffuseMap);
+    sampledDiffuseMap = shadowMapping(input, sampledDiffuseMap);
     
     float sampledSpecularMap = 1.0f;
     

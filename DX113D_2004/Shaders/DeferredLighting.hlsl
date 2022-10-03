@@ -23,13 +23,13 @@ PixelInput VS(uint vertexID : SV_VertexID)
     return output;
 }
 
-
 SamplerState LinearSampler
 {
     Filter = MIN_MAG_MIP_LINEAR;
 
     AddressU = Clamp;
     AddressV = Clamp;
+    AddressW = Clamp;
 };
 
 cbuffer ViewBuffer : register(b10)
@@ -41,21 +41,21 @@ cbuffer ViewBuffer : register(b10)
 cbuffer ProjectionBuffer : register(b11)
 {
     matrix pProjection;
+    matrix pInvProjection;
 }
 
 cbuffer ShadowMappingLightBuffer : register(b9)
 {
     Matrix lightViewMatrix;
     Matrix lightProjectionMatrix;
-    float3 lightPosition;
-    float padding1;
 }
 
+Texture2D shadowMapTexture : register(t8);
 Texture2D depthTexture : register(t10);
 Texture2D diffuseTexture : register(t11);
 Texture2D specularTexture : register(t12);
 Texture2D normalTexture : register(t13);
-//Texture2D<float> shadowMapTexture : register(t8);
+Texture2D worldTexture : register(t14);
 
 float ConvertDepthToLinear(float depth)  
 {
@@ -73,31 +73,42 @@ struct SurfaceData
     float isCollider;
 };
 
-float3 CalcWorldPos(float2 csPos, float linearDepth) // 2d상의 픽셀의 월드위치구하기.(라이팅연산해야하니까)
+float3 CalcWorldPos(float2 csPos, float linearDepth) // csPos == input.uv
 {
-    float4 position;
+    //float4 position;
     
-    // UnProjection 과정.
-    float2 temp;
-    temp.x = 1 / pProjection._11; // x값 정규화용.
-    temp.y = 1 / pProjection._22; // y값 정규화용.
-    position.xy = csPos.xy * temp * linearDepth; // 스크린창uv좌표 * UnProjection x,y컴포넌트 * linearDepth
-    position.z = linearDepth; // 카메라와 픽셀사이의 거리.(월드상의 거리)
-    position.w = 1.0f;
+    //// UnProjection 과정.
+    //float2 temp;
+    //temp.x = 1 / pProjection._11; // x값 정규화용.
+    //temp.y = 1 / pProjection._22; // y값 정규화용.
+    //position.xy = csPos.xy * temp * linearDepth; // 스크린창uv좌표 * UnProjection x,y컴포넌트 * linearDepth
+    //position.z = linearDepth; // 카메라와 픽셀사이의 거리.(월드상의 거리)
+    //position.w = 1.0f;
     
-    // 뷰공간 좌표로 변환완료.
+    //// 뷰공간 좌표로 변환완료.
     
-    return mul(position, pInvView).xyz; // 뷰행렬 역행렬 곱해줘서 월드값 도출.
+    //return mul(position, pInvView).xyz; // 뷰행렬 역행렬 곱해줘서 월드값 도출.
+    
+    float4 clipSpacePosition = float4(csPos.x, csPos.y, linearDepth, 1.0f);
+    float4 viewSpacePosition = mul(clipSpacePosition, pInvProjection);
+    viewSpacePosition /= viewSpacePosition.w;
+    
+    float4 worldSpacePosition = mul(viewSpacePosition, pInvView);
+    
+    return worldSpacePosition.xyz;
 }
 
 SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
 {
     SurfaceData output;
     
-    int3 location3 = int3(location, 0);
+    int3 location3 = int3(location, 0.0f);
     
-    float depth = depthTexture.Load(location3).x; // 깊이버퍼값 빼오기.
-    output.linearDepth = ConvertDepthToLinear(depth); 
+    //float depth = depthTexture.Load(location3).r; // 깊이버퍼값 빼오기.
+    //output.linearDepth = ConvertDepthToLinear(depth); 
+    
+    float depth = asfloat(depthTexture.SampleLevel(LinearSampler, location, 0.0f));
+    output.linearDepth = depth; 
     
     float4 diffuse = diffuseTexture.Load(location3);
     
@@ -111,6 +122,34 @@ SurfaceData UnpackGBuffer(int2 location) // 픽셀위친데, 사실상 버텍스uv좌표인듯
     output.specPow = specPowerRange.r + specular * specPowerRange.g;
     output.isCollider = specularTexture.Load(location3).g;
     return output;
+}
+
+float3 shadowMapping(float3 worldPos, float3 diffuseMap)
+{
+    float bias = 0.0000125f;
+    float2 projectTexCoord;
+    float4 lightViewPosition = float4(worldPos, 1.0f);
+    
+    lightViewPosition = mul(lightViewPosition, lightViewMatrix);
+    lightViewPosition = mul(lightViewPosition, lightProjectionMatrix);
+    
+    projectTexCoord.x = lightViewPosition.x / lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w / 2.0f + 0.5f;
+    
+    float currentDepth = lightViewPosition.z / lightViewPosition.w;
+    float shadowDepth = shadowMapTexture.Sample(LinearSampler, projectTexCoord).r;
+    
+    if (currentDepth > shadowDepth + bias)
+    {
+        diffuseMap *= 0.1f;
+    }
+    
+    //if (worldPos.x >= 10.0f && worldPos.z >= 10.0f)
+    //{
+    //    diffuseMap = float3(1.0f, 0.0f, 0.0f);
+    //}
+    
+    return diffuseMap;
 }
 
 float4 PS(PixelInput input) : SV_Target
@@ -127,24 +166,13 @@ float4 PS(PixelInput input) : SV_Target
     material.diffuseColor = float4(data.color, 1.0f);
     material.camPos = pInvView._41_42_43;
     material.specularIntensity = float4(data.specInt.xxx, 1.0f);
-    material.worldPos = CalcWorldPos(input.uv, data.linearDepth);
+    //material.worldPos = CalcWorldPos(input.uv, data.linearDepth);
+    material.worldPos = worldTexture.Load(int3(input.pos.xy, 0)).xyz;
         
     float4 result = CalcLights(material);
-    float4 ambient = CalcAmbient(material);
-   
-    //float4 lightClipPosition = mul(float4(material.worldPos, 1.0f), lightViewMatrix);
-    //lightClipPosition = mul(lightClipPosition, lightProjectionMatrix);
-
-    //float cameraLightDepth = lightClipPosition.z / lightClipPosition.w;
-    //float2 uv = lightClipPosition.xy / lightClipPosition.w;
-    //uv.y = -uv.y;
-    //uv = uv * 0.5f + 0.5f;
-    //float shadowMapDepth = asfloat(shadowMapTexture.SampleLevel(LinearSampler, uv, 0.0f));
+    result.xyz = shadowMapping(material.worldPos,result.xyz);
     
-    //if (cameraLightDepth > shadowMapDepth + 0.0000125f)
-    //{
-    //    result.xyz *= 100.0f;
-    //}
+    float4 ambient = CalcAmbient(material);
     
     return result + ambient;
 }

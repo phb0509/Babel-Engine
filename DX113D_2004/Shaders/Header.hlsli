@@ -2,6 +2,8 @@
 #define MAX_LIGHT 10
 #define MAX_INSTANCE 200
 
+const float depthOffset = 100.0f;
+
 //VertexShaderBuffer
 cbuffer World : register(b0)
 {

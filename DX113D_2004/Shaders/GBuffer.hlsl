@@ -16,9 +16,16 @@ cbuffer ShadowMappingLightBuffer : register(b9)
 {
     Matrix lightViewMatrix;
     Matrix lightProjectionMatrix;
-    float3 lightPosition;
-    float padding1;
 }
+
+SamplerState LinearSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+
+    AddressU = Clamp;
+    AddressV = Clamp;
+    AddressW = Clamp;
+};
 
 PixelInput VS(VertexUVNormalTangentBlend input)
 {
@@ -47,11 +54,9 @@ PixelInput VS(VertexUVNormalTangentBlend input)
     
     output.pos = mul(output.pos, view);
     output.pos = mul(output.pos, projection);
-    
     output.normal = normalize(mul(input.normal, (float3x3) transform));
     output.tangent = normalize(mul(input.tangent, (float3x3) transform));
     output.binormal = cross(output.normal, output.tangent);
-    
     output.uv = input.uv;
     
     return output;
@@ -64,6 +69,7 @@ struct PixelOutput
     float4 normal : SV_Target2;
     float4 depth : SV_Target3; // UITexture용
     float4 specaulrForShow : SV_Target4;
+    float4 worldPosition : SV_Target5;
 };
 
 PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappingedNormal, float sampledSpecularMap) // 디퓨즈값, 스페큘라값,노말값 등 다 계산해놓기.
@@ -79,6 +85,7 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     output.normal = float4(mappingedNormal * 0.5f + 0.5f, 1.0f); // 0~1 정규화.
     output.depth = float4(depthValue, depthValue, depthValue, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
     output.specaulrForShow = float4(0.0f, 0.0f, 0.0f, 1.0f); // UITexture에 렌더할 시연용렌더타겟.
+    output.worldPosition = input.worldPos;
     
     [flatten]
     if (hasSpecularMap)
@@ -89,37 +96,24 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
     return output;
 }
 
-
 Texture2D depthMapTexture : register(t8);
-
-
 
 float3 shadowMapping(PixelInput input, float3 diffuseMap)
 {
-    float bias = 0.001f;
+    float bias = 0.0000125f;
     float2 projectTexCoord;
-    float depthValue;
-    float lightDepthValue;
-    
     
     projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
     projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
     
-    // 투영된 좌표가 0부터 1사이의 값인지 확인. 범위안에 있다면 해당 픽셀은 조명의 시야안에 있는것임
-    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    float currentDepth = input.lightViewPosition.z / input.lightViewPosition.w;
+    float shadowDepth = depthMapTexture.Sample(LinearSampler, projectTexCoord).r;
+    
+    if (currentDepth > shadowDepth + bias)
     {
-        depthValue = depthMapTexture.Sample(samp, projectTexCoord).r;
-        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
-
-        // lightDepthValue에서 bias를 뺍니다.
-        lightDepthValue = lightDepthValue - bias;
-        
-        if (lightDepthValue < depthValue)
-        {
-            diffuseMap *= 0.3f;
-        }
-
+        diffuseMap *= 0.3f;
     }
+    
     return diffuseMap;
 }
 
@@ -133,7 +127,7 @@ PixelOutput PS(PixelInput input) : SV_Target
         sampledDiffuseMap = diffuseMap.Sample(samp, input.uv).rgb;
     }
       
-    sampledDiffuseMap = shadowMapping(input, sampledDiffuseMap);
+    //sampledDiffuseMap = shadowMapping(input, sampledDiffuseMap);
     
     float sampledSpecularMap = 1.0f;
     
@@ -147,21 +141,3 @@ PixelOutput PS(PixelInput input) : SV_Target
     
     return PackGBuffer(input, sampledDiffuseMap, mappingedNormal, sampledSpecularMap); // 
 }
-
-
-
-
-//float4 lightClipPosition = mul(float4(material.worldPos, 1.0f), lightViewMatrix);
-//    lightClipPosition = mul(lightClipPosition, lightProjectionMatrix);
-
-//float cameraLightDepth = lightClipPosition.z / lightClipPosition.w;
-//float2 uv = lightClipPosition.xy / lightClipPosition.w;
-//    uv.y = -uv.
-//y;
-//    uv = uv * 0.5f + 0.5f;
-//float shadowMapDepth = asfloat(shadowMapTexture.SampleLevel(LinearSampler, uv, 0.0f));
-    
-//    if (cameraLightDepth > shadowMapDepth + 0.0000125f)
-//    {
-//        result.xyz *= 100.0f;
-//    }

@@ -84,8 +84,8 @@ MainScene::MainScene() :
 
 	mDirectionalLightDepthMapForShow = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R8G8B8A8_UNORM); // 보여주기용.
 	mDirectionalLightDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true);
-	mDirectionalLight->mPosition = { 128.0f, 100.0f, 300.0f };
-	mDirectionalLight->mRotation = { 0.725f, 3.142f, 0.0f };
+	mDirectionalLight->mPosition = { -30.0f, 100.0f, 350.0f };
+	mDirectionalLight->mRotation = { 0.483f, 2.537f, 0.0f };
 
 	mDepthStencilStates[0] = new DepthStencilState();
 	mDepthStencilStates[1] = new DepthStencilState();
@@ -141,6 +141,7 @@ void MainScene::Update()
 	executeEvent();
 
 	DM->Update();
+
 }
 
 void MainScene::PreRender()
@@ -157,13 +158,14 @@ void MainScene::PreRender()
 	Vector3 upVec = mDirectionalLight->GetUpVector();
 	Matrix tempViewMatrix = XMMatrixLookAtLH(mDirectionalLight->mPosition.data, lookat.data, upVec.data);
 	//Matrix tempProjMatrix = XMMatrixOrthographicLH(3000.0f, 3000.0f, 0.0f, 5000.0f);
-	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 1000.0f);
+	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 1.0f, 3000.0f);
 
 	ViewBuffer tempViewBuffer;
 	ProjectionBuffer tempProjectionBuffer;
+
 	tempViewBuffer.SetMatrix(tempViewMatrix);
 	tempProjectionBuffer.SetMatrix(tempProjMatrix);
-	mShadowMappingLightBuffer->SetData(tempViewMatrix, tempProjMatrix, mDirectionalLight->mPosition);
+	mShadowMappingLightBuffer->SetData(tempViewMatrix, tempProjMatrix);
 
 	tempViewBuffer.SetVSBuffer(1);
 	tempProjectionBuffer.SetVSBuffer(2);
@@ -200,9 +202,9 @@ void MainScene::PreRender()
 	default:
 		break;
 	}
-	
-	mShadowMappingLightBuffer->SetVSBuffer(9);
-	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
+
+	/*mShadowMappingLightBuffer->SetVSBuffer(9);
+	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());*/
 
 	mTerrain->GetMaterial()->SetShader(L"GBuffer");
 	mPlayer->SetShader(L"GBuffer");
@@ -224,7 +226,7 @@ void MainScene::Render()
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f)); // 백버퍼와 연결된 렌더타겟을 클리어.
 	Device::Get()->ClearDepthStencilView(); // 백버퍼와 연결된 DSV를 Clear.
 	Device::Get()->SetRenderTarget(); // 백버퍼와 연결된 렌더타겟과 DSV를 Set.
-	
+
 	//Device::Get()->ClearDepthStencilView(mGBuffer->GetDepthStencil()->GetDSV()); // GBuffer DSV 클리어 (백버퍼랑 연결된거랑 별개임)
 	//Device::Get()->SetRenderTarget(mGBuffer->GetDepthStencil()->GetDSV()); // 
 
@@ -251,6 +253,10 @@ void MainScene::Render()
 	default:
 		break;
 	}
+
+	// Set ShadowMapping Resource
+	mShadowMappingLightBuffer->SetVSBuffer(9);
+	DEVICECONTEXT->PSSetShaderResources(8, 1, &mDirectionalLightDSV->GetSRV());
 
 	mGBuffer->SetTexturesToPS(); // Set Textures (Depth, Diffuse, Normal, Specular)
 	mVertexBuffer->SetIA(); // Default 0

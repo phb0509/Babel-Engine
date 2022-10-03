@@ -28,6 +28,6 @@ PixelInput VS(VertexUVNormalTangentBlend input)
 float4 PS(PixelInput input) : SV_Target
 {
     float depthValue = input.pos.z / input.pos.w;
-    depthValue *= 100.0f;
+    depthValue *= depthOffset;
     return depthValue;
 }

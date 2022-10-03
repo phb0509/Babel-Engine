@@ -19,9 +19,10 @@ private:
 	RenderTarget* mNormalRenderTarget;
 	RenderTarget* mDepthRenderTarget;
 	RenderTarget* mSpecularRenderTargetForShow;
+	RenderTarget* mWorldPositionRenderTarget;
 
 	DepthStencil* mDepthStencil;
 	vector<RenderTarget*> mRenderTargets;
-	ID3D11ShaderResourceView* mSRVs[4];
-	ID3D11ShaderResourceView* mShowSRVs[4];
+	ID3D11ShaderResourceView* mSRVs[5];
+	ID3D11ShaderResourceView* mShowSRVs[5];
 };

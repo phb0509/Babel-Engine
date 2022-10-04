@@ -115,8 +115,6 @@ float3 shadowMapping(PixelInput input, float3 diffuseMap)
         diffuseMap *= 0.3f;
     }
     
-    
-    
     return diffuseMap;
 }
 

@@ -133,9 +133,9 @@ void TerrainEditor::PreRender()
 	mPlayer->SetWorldBuffer(0);
 	mPlayer->Render();
 
-	//mMesh->IASet(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
-	//mWorldBuffer->SetVSBuffer(0);
-	//DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
+	mMesh->SetIA(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
+	mWorldBuffer->SetVSBuffer(0);
+	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
 }
 
 void TerrainEditor::Render()

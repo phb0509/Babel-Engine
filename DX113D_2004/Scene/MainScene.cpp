@@ -108,6 +108,7 @@ MainScene::~MainScene()
 	GM->SafeDelete(mWorldCamera);
 	GM->SafeDelete(mTargetCamera);
 	GM->SafeDelete(mTargetCameraForShow);
+	GM->SafeDelete(mShadowMappingLightBuffer);
 }
 
 void MainScene::Update()
@@ -117,8 +118,6 @@ void MainScene::Update()
 	//mDirectionalLight->mRotation = mWorldCamera->mRotation;
 	mDirectionalLight->Update();
 	//mLightSphere->Update();
-
-	
 
 	switch (static_cast<int>(mMainCamera))
 	{
@@ -159,7 +158,7 @@ void MainScene::Update()
 
 void MainScene::PreRender()
 {
-	Environment::Get()->Set(); // SetViewPort
+	Environment::Get()->SetViewport(); // SetViewPort
 
 	//그림자매핑용 깊이맵 얻기위한 DSV셋팅. 
 	vector<RenderTarget*> renderTargets;
@@ -171,7 +170,7 @@ void MainScene::PreRender()
 	Vector3 upVec = mDirectionalLight->GetUpVector();
 	Matrix tempViewMatrix = XMMatrixLookAtLH(mDirectionalLight->mPosition.data, lookat.data, upVec.data);
 	//Matrix tempProjMatrix = XMMatrixOrthographicLH(WIN_WIDTH, WIN_HEIGHT, 1.0f, 3000.0f);
-	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 4000.0f);
+	Matrix tempProjMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, WIN_WIDTH / (float)WIN_HEIGHT, 0.1, 1000.0f);
 
 	ViewBuffer tempViewBuffer;
 	ProjectionBuffer tempProjectionBuffer;
@@ -183,7 +182,6 @@ void MainScene::PreRender()
 	tempViewBuffer.SetVSBuffer(1);
 	tempProjectionBuffer.SetVSBuffer(2);
 
-	mShadowMappingLightBuffer->SetVSBuffer(9);
 	mTerrain->GetMaterial()->SetShader(L"TestLighting");
 	mPlayer->SetShader(L"TestModelAnimation");
 	mInstancingMutants->SetShader(L"TestInstancingMutants");
@@ -244,7 +242,7 @@ void MainScene::Render()
 	//Device::Get()->ClearDepthStencilView(mGBuffer->GetDepthStencil()->GetDSV()); // GBuffer DSV 클리어 (백버퍼랑 연결된거랑 별개임)
 	//Device::Get()->SetRenderTarget(mGBuffer->GetDepthStencil()->GetDSV()); // 
 
-	Environment::Get()->Set(); // SetViewPort
+	Environment::Get()->SetViewport(); // SetViewPort
 	mLightBuffer->SetPSBuffer(0);
 
 	switch (static_cast<int>(mMainCamera)) // 메인백버퍼에 렌더할 카메라.
@@ -282,6 +280,8 @@ void MainScene::Render()
 
 void MainScene::PostRender()
 {
+	Environment::Get()->SetViewport();
+
 	mPlayer->PostRender();
 	mPlayer->UIRender();
 	mLightBuffer->PostRender();

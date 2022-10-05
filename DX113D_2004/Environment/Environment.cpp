@@ -22,8 +22,8 @@ void Environment::SetViewport(UINT width, UINT height)
 	mViewport.Height = (float)height;
 	mViewport.MinDepth = 0.0f;
 	mViewport.MaxDepth = 1.0f;
-	mViewport.TopLeftX = 0;
-	mViewport.TopLeftY = 0;
+	//mViewport.TopLeftX = 0;
+	//mViewport.TopLeftY = 0;
 
 	DEVICECONTEXT->RSSetViewports(1, &mViewport);
 }

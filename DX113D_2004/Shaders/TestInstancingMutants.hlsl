@@ -12,6 +12,12 @@ struct PixelInput
     float3 worldPos : Position;
 };
 
+cbuffer ShadowMappingLightBuffer : register(b9)
+{
+    Matrix lightViewMatrix;
+    Matrix lightProjectionMatrix;
+}
+
 PixelInput VS(VertexInstancing input)
 {
     PixelInput output;

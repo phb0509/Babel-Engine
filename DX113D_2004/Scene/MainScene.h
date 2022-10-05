@@ -63,4 +63,7 @@ private:
 	DepthStencilState* mDepthStencilStates[2];
 	BlendState* mBlendStates[2];
 	vector<RenderTarget*> mDeferredRenderTarget;
+
+	UINT mDepthWidth;
+	UINT mDepthHeight;
 };

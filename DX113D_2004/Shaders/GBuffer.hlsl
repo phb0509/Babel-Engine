@@ -98,17 +98,18 @@ PixelOutput PackGBuffer(PixelInput input, float3 sampledDiffuseMap, float3 mappi
 
 Texture2D depthMapTexture : register(t8);
 
+
 float3 shadowMapping(PixelInput input, float3 diffuseMap)
 {
-    //float bias = 0.0000125f;
-    float bias = 0.000005f;
+    float bias = 0.0000005f;
     float2 projectTexCoord;
     
     projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
     projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
     
     float currentDepth = input.lightViewPosition.z / input.lightViewPosition.w;
-    float shadowDepth = depthMapTexture.Sample(LinearSampler, projectTexCoord).r;
+    float shadowDepth = depthMapTexture.Sample(LinearSampler, projectTexCoord).r; // DSV에 바인딩되어있는 깊이맵SRV
+
     
     if (currentDepth > shadowDepth + bias)
     {

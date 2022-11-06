@@ -142,7 +142,7 @@ void MainScene::Update()
 	}
 
 	mTerrain->Update();
-	mPlayer->Update(); // Update TargetCameraInWorld
+	mPlayer->Update(); // Update TargetCameraInWorld 
 	mInstancingMutants->Update();
 	executeEvent();
 

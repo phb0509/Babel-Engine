@@ -19,23 +19,33 @@ public:
 	
 
 private:
-	void printToCSV();
+	void updateLight();
+	void moveLight();
+	void updateCamera();
 	void moveWorldCamera();
 	void executeEvent();
 	void respawnMonster();
+	void deferredRender();
+
+	//void sha
+
+	void initDeferred();
+	void initLight();
+	void initCamera();
+	void initTerrain();
+	void initPlayer();
+	void initInstances();
+	void initShadowMapping();
+
+	void showCameraInfo();
+	void showShadowDepthMap();
+
+	void renderShadowDepth();
+	void renderGBuffer();
 
 private:
 	Player* mPlayer;
-	PlayerStatusBar* mPlayerStatusBar;
-	Monster* mMonster;
 	Terrain* mTerrain;
-	vector<Monster*> mMutants;
-
-	ModelObject* mObstacle1;
-	ModelObject* mObstacle2;
-
-	Frustum* mTargetCameraFrustum;
-	vector<Matrix> boneMatrix;
 
 	InstancingMutants* mInstancingMutants;
 	vector<Monster*> mInstanceMutants;
@@ -55,14 +65,11 @@ private:
 
 	GBuffer* mGBuffer;
 	Material* mDeferredMaterial;
-	VertexBuffer* mVertexBuffer;
+	VertexBuffer* mDeferredVertexBuffer;
 
 	RenderTarget* mDirectionalLightDepthMapForShow;
 	DepthStencil* mDirectionalLightDSV;
 	ShadowMappingLightBuffer* mShadowMappingLightBuffer;
-	DepthStencilState* mDepthStencilStates[2];
-	BlendState* mBlendStates[2];
-	vector<RenderTarget*> mDeferredRenderTarget;
 
 	UINT mDepthWidth;
 	UINT mDepthHeight;

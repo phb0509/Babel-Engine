@@ -3,18 +3,13 @@
 class GameManager : public Singleton<GameManager>
 {
 private:
+
 	friend class Singleton;
 
 	GameManager();
 	~GameManager();
 
 public:
-
-	Player* GetPlayer() { return mPlayer; }
-	void SetDraggedFileList(vector<wstring>& draggedFileList) { mDraggedFileList = draggedFileList; }
-	vector<wstring>& GetDraggedFileList() { return mDraggedFileList; }
-	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
-	void ExecuteDropEvents();
 
 	template<class T>
 	inline void SafeDelete(T* t)
@@ -39,6 +34,12 @@ public:
 			t[i] = nullptr;
 		}
 	}
+
+	Player* GetPlayer() { return mPlayer; }
+	void SetDraggedFileList(vector<wstring>& draggedFileList) { mDraggedFileList = draggedFileList; }
+	vector<wstring>& GetDraggedFileList() { return mDraggedFileList; }
+	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
+	void ExecuteDropEvents();
 
 private:
 	Player* mPlayer;

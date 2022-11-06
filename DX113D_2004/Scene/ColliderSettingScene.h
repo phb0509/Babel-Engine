@@ -17,7 +17,7 @@ public:
 		Collider* collider;
 	};
 
-	struct ModelData // 각 모델이 가지는 데이터..
+	struct ModelData // 각 모델이 가지는 데이터
 	{
 		map<int, vector<int>> preprocessedNodesMap; // 각 노드가 가지고 있는 자식노드들 인덱스
 		map<int, bool> nodeCheckMap; // TreeNodeRecurs 방문흔적
@@ -42,14 +42,18 @@ public:
 private:
 	void selectModel();
 	void showCreateModelButton();
-	void InitializeModelDatas();
-
-	void showModelHierarchyWindow();
-	void showModelSelectWindow();
-	void showColliderEditorWindow();
-	void showAssetsWindow();
-	void showModelInspector();
-	void showPreRenderTargetWindow();
+	void InitModelDatas();
+	void initLight();
+	void initCamera();
+	void initExtensionPreviewImage();
+	void initRSState();
+	void initColorPicking();
+	
+	void updateLight();
+	void updateCamera();
+	void input();
+	void renderColorPicking();
+	void renderColliders();
 
 	void treeNodePreProcessing();
 	void treeNodeRecurs(int nodesIndex);
@@ -62,17 +66,22 @@ private:
 	void saveAsCSV();
 	void allSaveAsBinary();
 	void allSaveAsCSV();
-	//void loadBinaryFile();
 
-	void initializeCollidersInfo();
+	void initCollidersInfo();
 	void loadFileList(string folderName, vector<string>& fileList);
 	void loadCollidersBinaryFile(wstring fileName);
-	bool checkColidersBinaryFile(wstring fileName);
 	void colorPicking();
 	void updatePickedColliderMatrix();
 	void initPickedColliderMatrix();
 	void renderGizmos();
 	void moveWorldCamera();
+
+	void showModelHierarchyWindow();
+	void showModelSelectWindow();
+	void showColliderEditorWindow();
+	void showAssetsWindow();
+	void showModelInspector();
+	void showPreRenderTargetWindow();
 
 private:
 	Camera* mWorldCamera;
@@ -129,10 +138,6 @@ private:
 	vector<string> mModelAssetsFileList;
 
 	string mDroppedFileName;
-	
-	Monster* mMonster;
-	Terrain* mTerrain;
-	
 	bool mbIsDropped;
 	int mSelectedIndexFromAssets = -1;
 

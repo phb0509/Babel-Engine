@@ -31,7 +31,8 @@ ComputeStructuredBuffer::ComputeStructuredBuffer(UINT outputStride, UINT outputC
 
 ComputeStructuredBuffer::~ComputeStructuredBuffer()
 {
-	mSRV->Release();
+	if(mSRV != nullptr)
+		mSRV->Release();
 	
 	mUAVbuffer->Release();
 	mUAV->Release();
@@ -73,6 +74,7 @@ void ComputeStructuredBuffer::CreateSRV() // 읽기전용자원.'gpu에서' 읽기전용자원
 	srvDesc.BufferEx.NumElements = mInputCount;
 
 	V(DEVICE->CreateShaderResourceView(buffer, &srvDesc, &mSRV));
+
 }
 
 void ComputeStructuredBuffer::CreateOutput() // 계산셰이더에서 계산된 값을 CPU에서 넘겨받을 UAV버퍼설정.

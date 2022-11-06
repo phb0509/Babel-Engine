@@ -15,184 +15,67 @@ ColliderSettingScene::ColliderSettingScene() :
 	mCurrentClipTakeTime(0.2f),
 	mPreFrameMousePosition(MOUSEPOS)
 {
-	srand(time(NULL));
 	// 파일드랍 콜백함수 설정.
 	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
-
-	mLightBuffer = new LightBuffer();
-	mDirectionalLight = new Light(LightType::DIRECTIONAL);
-	mLightBuffer->Add(mDirectionalLight);
-
-	// 카메라 설정.
-	mWorldCamera = new Camera();
-	mWorldCamera->mPosition = { -7.3f, 13.96f, -14.15f };
-	mWorldCamera->mRotation = { 0.64f, 0.58f, 0.0f, };
-	mWorldCamera->mMoveSpeed = 50.0f;
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
 	igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
 
-	mExtensionPreviewImages["mesh"] = Texture::Add(L"ModelData/Mesh_PreviewImage.png");
-	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
-	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
-	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
-	mExtensionPreviewImages["FBX"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
-	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
-	mExtensionPreviewImages["default"] = Texture::Add(L"ModelData/DefaultImage.png");
-
-	mRSState = new RasterizerState();
-	mRSState->FillMode(D3D11_FILL_WIREFRAME);
-	//mRSState->FillMode(D3D11_FILL_SOLID);
-
-	mRSStateForColorPicking = new RasterizerState();
-	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
-
-	mTerrain = new Terrain();
-
-	/*mMonster = new Warrok();
-	mMonster->SetTerrain(terrain,false);
-	mMonster->mPosition = { 600,0,600 };*/
-
-
-	// 처음에 뮤턴트 치기귀찮아서 미리 넣어놓음.
-
-	/*string tempName = "Player";
-	mModelList.push_back(tempName);
-	mModels.push_back(new ToolModel(tempName));
-	mCurrentModelIndex = mModels.size() - 1;
-	mCurrentModel = mModels[mCurrentModelIndex];
-	mCurrentModel->SetName(tempName);
-	mCurrentModel->SetIsSkinnedMesh(true);*/
-
 	ModelData modelData;
 	mModelDatas.push_back(modelData);
 
-	mPreRenderTargets[0] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); // 컬러피킹용.
-	mPreRenderTargetDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); // 
-
-	// Create ComputeShader
-	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
-	mComputeStructuredBuffer = new ComputeStructuredBuffer(sizeof(ColorPickingOutputBuffer), 1);
-
-	if (mInputBuffer == nullptr)
-		mInputBuffer = new ColorPickingInputBuffer();
-
-	mOutputBuffer = new ColorPickingOutputBuffer[1];
-
+	initLight();
+	initCamera();
+	initExtensionPreviewImage();
+	initRSState();
+	initColorPicking();
 }
 
 ColliderSettingScene::~ColliderSettingScene()
 {
-	GM->SafeDelete(mWorldCamera);
-	GM->SafeDeleteVector(mModels);
-	GM->SafeDelete(mRSState);
-	GM->SafeDelete(mRSStateForColorPicking);
-	GM->SafeDelete(mMonster);
-	GM->SafeDelete(mTerrain);
-	GM->SafeDelete(mPreRenderTargets[0]);
-	GM->SafeDelete(mPreRenderTargetDSV);
-	//GM->SafeDelete(mColorPickingComputeShader);
-	//GM->SafeDelete(mComputeStructuredBuffer);
-	GM->SafeDelete(mInputBuffer);
-	GM->SafeDelete(mOutputBuffer);
 	GM->SafeDelete(mLightBuffer);
 	GM->SafeDelete(mDirectionalLight);
+	GM->SafeDelete(mWorldCamera);
+	GM->SafeDelete(mRSState);
+	GM->SafeDelete(mRSStateForColorPicking);
+	GM->SafeDelete(mPreRenderTargets[0]);
+	GM->SafeDelete(mPreRenderTargetDSV);
+	GM->SafeDelete(mInputBuffer);
+	GM->SafeDelete(mOutputBuffer);
+	GM->SafeDelete(mComputeStructuredBuffer);
+
+	for (int i = 0; i < mModels.size(); i++)
+	{
+		for (auto it = mModelDatas[i].nodeCollidersMap.begin(); it != mModelDatas[i].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+		{
+			GM->SafeDelete(it->second.collider);
+		}
+	}
+	
+	GM->SafeDeleteVector(mModels);
+
 }
 
 void ColliderSettingScene::Update()
 {
-	mLightBuffer->Update();
-	mDirectionalLight->Update();
-
-	mWorldCamera->Update();
-	moveWorldCamera();
-
+	updateLight();
+	updateCamera();
 	colorPicking();
-
-	mTerrain->Update();
-
-	if (KEY_DOWN(VK_LBUTTON))
-	{
-		bool hasPickedCollider = false;
-
-		for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
-		{
-			Vector3 colliderHashColor = it->second.collider->GetHashColor();
-			Collider* collider = it->second.collider;
-
-			if (mMousePositionColor.IsEqual(colliderHashColor)) // 컬라이더를 피킹했다면
-			{
-				mCurrentPickedCollider = collider;
-				updatePickedColliderMatrix();
-				mCurrentPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f)); // 피킹된 컬라이더는 노랗게
-				hasPickedCollider = true;
-			}
-			else
-			{
-				collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
-				//initPickedColliderMatrix();
-			}
-		}
-
-		if (!hasPickedCollider)
-		{
-			mCurrentPickedCollider = nullptr;
-		}
-	}
-
-	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
-	{
-		if (mCurrentModel->GetHasMeshes())
-		{
-			mCurrentModel = mModels[mCurrentModelIndex];
-			mCurrentModel->Update();
-
-			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++)
-			{
-				Matrix matrix;
-
-				matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorldMatrix())); // ex) 왼팔노드의 월드행렬
-
-				if (mCurrentPickedCollider != nullptr)
-				{
-					if (it->second.collider == mCurrentPickedCollider)
-					{
-						mPickedColliderParentMatrix = matrix;
-					}
-				}
-
-				it->second.collider->SetParent(&matrix);
-				it->second.collider->Update();
-			}
-		}
-	}
+	input();
 }
 
 void ColliderSettingScene::PreRender()
 {
-	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
-	Environment::Get()->Set(); // SetViewport
-	mWorldCamera->SetViewBufferToVS();
-	mWorldCamera->SetProjectionBufferToVS();
-
-	mRSStateForColorPicking->SetState();
-
-	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
-
-	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
-	{
-		it->second.collider->PreRenderForColorPicking();
-	}
+	renderColorPicking();
 }
 
 void ColliderSettingScene::Render()
 {
-	// 백버퍼와 연결된 렌더타겟
 	Device::Get()->ClearRenderTargetView(Float4(0.18f, 0.18f, 0.25f, 1.0f));
 	Device::Get()->ClearDepthStencilView();
 	Device::Get()->SetRenderTarget();
-	Environment::Get()->Set(); // SetViewPort
+	Environment::Get()->Set(); 
 
 	mLightBuffer->SetPSBuffer(0);
 	mWorldCamera->SetViewBufferToVS();
@@ -200,23 +83,12 @@ void ColliderSettingScene::Render()
 	
 	mRSState->SetState();
 
-	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
-	{
-		if (mCurrentModel->GetHasMeshes())
-		{
-			mCurrentModel->Render();
-
-			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
-			{
-				it->second.collider->Render();
-			}
-		}
-	}
+	renderColliders();
 }
 
 void ColliderSettingScene::PostRender()
 {
-	Environment::Get()->Set(); // SetViewPort
+	Environment::Get()->Set(); 
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 
@@ -262,10 +134,12 @@ void ColliderSettingScene::renderGizmos()
 	XMStoreFloat4x4(&cameraProjection, projectionMatrix);
 
 	float identityMatrix[16] =
-	{ 1.f, 0.f, 0.f, 0.f,
+	{ 
+		1.f, 0.f, 0.f, 0.f,
 		0.f, 1.f, 0.f, 0.f,
 		0.f, 0.f, 1.f, 0.f,
-		0.f, 0.f, 0.f, 1.f };
+		0.f, 0.f, 0.f, 1.f 
+	};
 
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 
@@ -455,7 +329,7 @@ void ColliderSettingScene::selectModel() // perFrame
 	}
 }
 
-void ColliderSettingScene::InitializeModelDatas()
+void ColliderSettingScene::InitModelDatas()
 {
 	// 새 모델을 만들든 뭘 하든 '메시가 변경될 때' 무조건 초기화시켜줘야됨.
 
@@ -476,6 +350,160 @@ void ColliderSettingScene::InitializeModelDatas()
 	}
 
 	mModelDatas[mCurrentModelIndex].nodeCollidersMap.clear();
+}
+
+void ColliderSettingScene::initLight()
+{
+	mLightBuffer = new LightBuffer();
+	mDirectionalLight = new Light(LightType::DIRECTIONAL);
+	mLightBuffer->Add(mDirectionalLight);
+}
+
+void ColliderSettingScene::initCamera()
+{
+	mWorldCamera = new Camera();
+	mWorldCamera->mPosition = { -7.3f, 13.96f, -14.15f };
+	mWorldCamera->mRotation = { 0.64f, 0.58f, 0.0f, };
+	mWorldCamera->mMoveSpeed = 50.0f;
+}
+
+void ColliderSettingScene::initExtensionPreviewImage()
+{
+	mExtensionPreviewImages["mesh"] = Texture::Add(L"ModelData/Mesh_PreviewImage.png");
+	mExtensionPreviewImages["clip"] = Texture::Add(L"ModelData/Clip_PreviewImage.png");
+	mExtensionPreviewImages["mat"] = Texture::Add(L"ModelData/Material_PreviewImage.png");
+	mExtensionPreviewImages["fbx"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
+	mExtensionPreviewImages["FBX"] = Texture::Add(L"ModelData/FBX_PreviewImage.png");
+	mExtensionPreviewImages["txt"] = Texture::Add(L"ModelData/Text_PreviewImage.png");
+	mExtensionPreviewImages["default"] = Texture::Add(L"ModelData/DefaultImage.png");
+}
+
+void ColliderSettingScene::initRSState()
+{
+	mRSState = new RasterizerState();
+	mRSState->FillMode(D3D11_FILL_WIREFRAME);
+
+	mRSStateForColorPicking = new RasterizerState();
+	mRSStateForColorPicking->FillMode(D3D11_FILL_SOLID);
+}
+
+void ColliderSettingScene::initColorPicking()
+{
+	mPreRenderTargets[0] = new RenderTarget(WIN_WIDTH, WIN_HEIGHT, DXGI_FORMAT_R32G32B32A32_FLOAT); 
+	mPreRenderTargetDSV = new DepthStencil(WIN_WIDTH, WIN_HEIGHT, true); 
+
+	// Create ComputeShader
+	mColorPickingComputeShader = Shader::AddCS(L"ComputeColorPicking");
+	mComputeStructuredBuffer = new ComputeStructuredBuffer(sizeof(ColorPickingOutputBuffer), 1);
+
+	if (mInputBuffer == nullptr)
+		mInputBuffer = new ColorPickingInputBuffer();
+
+	mOutputBuffer = new ColorPickingOutputBuffer[1];
+}
+
+void ColliderSettingScene::updateLight()
+{
+	mLightBuffer->Update();
+	mDirectionalLight->Update();
+}
+
+void ColliderSettingScene::updateCamera()
+{
+	mWorldCamera->Update();
+	moveWorldCamera();
+}
+
+void ColliderSettingScene::input()
+{
+	if (KEY_DOWN(VK_LBUTTON))
+	{
+		bool hasPickedCollider = false;
+
+		for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+		{
+			Vector3 colliderHashColor = it->second.collider->GetHashColor();
+			Collider* collider = it->second.collider;
+
+			if (mMousePositionColor.IsEqual(colliderHashColor)) // 컬라이더를 피킹했다면
+			{
+				mCurrentPickedCollider = collider;
+				updatePickedColliderMatrix();
+				mCurrentPickedCollider->SetColor(Float4(1.0f, 1.0f, 0.0f, 1.0f)); // 피킹된 컬라이더는 노랗게
+				hasPickedCollider = true;
+			}
+			else
+			{
+				collider->SetColor(Float4(0.0f, 1.0f, 0.0f, 1.0f));
+				//initPickedColliderMatrix();
+			}
+		}
+
+		if (!hasPickedCollider)
+		{
+			mCurrentPickedCollider = nullptr;
+		}
+	}
+
+	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 업데이트X.
+	{
+		if (mCurrentModel->GetHasMeshes())
+		{
+			mCurrentModel = mModels[mCurrentModelIndex];
+			mCurrentModel->Update();
+
+			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++)
+			{
+				Matrix matrix;
+
+				matrix = mCurrentModel->GetTransformByNode(it->first) * (*(mCurrentModel->GetWorldMatrix())); // ex) 왼팔노드의 월드행렬
+
+				if (mCurrentPickedCollider != nullptr)
+				{
+					if (it->second.collider == mCurrentPickedCollider)
+					{
+						mPickedColliderParentMatrix = matrix;
+					}
+				}
+
+				it->second.collider->SetParent(&matrix);
+				it->second.collider->Update();
+			}
+		}
+	}
+}
+
+void ColliderSettingScene::renderColorPicking()
+{
+	RenderTarget::ClearAndSetWithDSV(mPreRenderTargets, 1, mPreRenderTargetDSV);
+	Environment::Get()->Set(); // SetViewport
+	mWorldCamera->SetViewBufferToVS();
+	mWorldCamera->SetProjectionBufferToVS();
+
+	mRSStateForColorPicking->SetState();
+
+	// 컬러피킹용 렌더타겟텍스쳐에 렌더.
+
+	for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+	{
+		it->second.collider->PreRenderForColorPicking();
+	}
+}
+
+void ColliderSettingScene::renderColliders()
+{
+	if (mModels.size() != 0) // 메쉬드래그드랍으로 ToolModel할당전까진 렌더X.
+	{
+		if (mCurrentModel->GetHasMeshes())
+		{
+			mCurrentModel->Render();
+
+			for (auto it = mModelDatas[mCurrentModelIndex].nodeCollidersMap.begin(); it != mModelDatas[mCurrentModelIndex].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+			{
+				it->second.collider->Render();
+			}
+		}
+	}
 }
 
 void ColliderSettingScene::treeNodePreProcessing() // 부모에 어떤 노드index가 자식으로있는지 세팅.
@@ -737,7 +765,7 @@ void ColliderSettingScene::showColliderEditorWindow()
 
 		if (ImGui::Button("Load"))
 		{
-			initializeCollidersInfo();
+			initCollidersInfo();
 			loadCollidersBinaryFile(ToWString(mCurrentModel->GetName()));
 		}
 	}
@@ -1620,7 +1648,7 @@ void ColliderSettingScene::copyDraggedFile()
 	}
 }
 
-void ColliderSettingScene::initializeCollidersInfo()
+void ColliderSettingScene::initCollidersInfo()
 {
 	mModelDatas[mCurrentModelIndex].createdCollidersCheckMap.clear();
 
@@ -1665,17 +1693,6 @@ void ColliderSettingScene::loadFileList(string folderName, vector<string>& fileL
 	} while (_findnext(handle, &fd) == 0);
 
 	_findclose(handle);
-}
-
-
-
-bool ColliderSettingScene::checkColidersBinaryFile(wstring fileName)
-{
-
-
-
-
-	return false;
 }
 
 void ColliderSettingScene::colorPicking()

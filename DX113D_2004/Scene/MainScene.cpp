@@ -49,13 +49,12 @@ void MainScene::Update()
 void MainScene::PreRender()
 {
 	renderShadowDepth();
-	renderGBuffer(); // ±×¸²ÀÚ±íÀÌ¸Ê diffuse¿¡ ±×·ÁÁÜ.
+	renderGBuffer(); 
 }
 
 void MainScene::Render()
 {
 	deferredRender();
-	
 }
 
 void MainScene::PostRender()

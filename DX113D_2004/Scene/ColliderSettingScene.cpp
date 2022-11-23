@@ -16,7 +16,7 @@ ColliderSettingScene::ColliderSettingScene() :
 	mPreFrameMousePosition(MOUSEPOS)
 {
 	// 파일드랍 콜백함수 설정.
-	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetsWindowDropEvent, this));
+	GM->Get()->SetWindowDropEvent(bind(&ColliderSettingScene::playAssetWindowDropEvent, this));
 
 	igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
 	mProjectPath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath(); // 프로젝트폴더까지의 전체경로. ex) DX113D_2004까지.
@@ -47,14 +47,13 @@ ColliderSettingScene::~ColliderSettingScene()
 
 	for (int i = 0; i < mModels.size(); i++)
 	{
-		for (auto it = mModelDatas[i].nodeCollidersMap.begin(); it != mModelDatas[i].nodeCollidersMap.end(); it++) // 현재모델 셋팅한 컬라이더 렌더.
+		for (auto it = mModelDatas[i].nodeCollidersMap.begin(); it != mModelDatas[i].nodeCollidersMap.end(); it++)
 		{
 			GM->SafeDelete(it->second.collider);
 		}
 	}
 	
 	GM->SafeDeleteVector(mModels);
-
 }
 
 void ColliderSettingScene::Update()
@@ -103,7 +102,7 @@ void ColliderSettingScene::PostRender()
 
 	if (mModelList.size() != 0)
 	{
-		showAssetsWindow();
+		showAssetWindow();
 	}
 
 	showPreRenderTargetWindow();
@@ -116,109 +115,6 @@ void ColliderSettingScene::PostRender()
 	if (mCurrentPickedCollider != nullptr)
 	{
 		renderGizmos();
-	}
-}
-
-void ColliderSettingScene::renderGizmos()
-{
-	Matrix viewMatrix;
-	Matrix projectionMatrix;
-
-	viewMatrix = mWorldCamera->GetViewMatrix();
-	projectionMatrix = mWorldCamera->GetProjectionMatrixInUse();
-
-	Float4x4 cameraView;
-	Float4x4 cameraProjection;
-
-	XMStoreFloat4x4(&cameraView, viewMatrix);
-	XMStoreFloat4x4(&cameraProjection, projectionMatrix);
-
-	float identityMatrix[16] =
-	{ 
-		1.f, 0.f, 0.f, 0.f,
-		0.f, 1.f, 0.f, 0.f,
-		0.f, 0.f, 1.f, 0.f,
-		0.f, 0.f, 0.f, 1.f 
-	};
-
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-
-	ImGuiIO& io = ImGui::GetIO(); // 특정 imgui 윈도우가 아니라, 메인백버퍼렌더되는 윈도우에 대한 핸들러?같은거같다.
-
-	ImGuizmo::SetOrthographic(true);
-	ImGuizmo::BeginFrame();
-
-	if (ImGui::IsKeyPressed(90)) // z 키
-		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (ImGui::IsKeyPressed(69)) // e 키
-		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (ImGui::IsKeyPressed(82)) // r 키
-		mCurrentGizmoOperation = ImGuizmo::SCALE;
-
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
-	ImGuizmo::Manipulate( // 실제 기즈모 렌더코드.
-		*cameraView.m, // 뷰행렬 (float*)
-		*cameraProjection.m, // 투영행렬 (float*)
-		mCurrentGizmoOperation, // ImGuizmo::OPERATION::TRANSLATE
-		ImGuizmo::LOCAL,
-		objectTransformMatrix, // 노드와 같은 위치에 기즈모를 렌더시키기위해서 부모행렬까지 곱한 월드매트릭스를 넣긴해야함.
-		NULL
-	);
-
-	if (ImGuizmo::IsUsing())
-	{
-		float worldTranslation[3];
-		float worldRotation[3];
-		float worldScale[3];
-
-		ImGui::Begin("Gizmo Transform");
-
-		ImGuizmo::DecomposeMatrixToComponents(objectTransformMatrix, worldTranslation, worldRotation, worldScale);
-
-		ImGui::InputFloat3("Global Translation", worldTranslation);
-		ImGui::InputFloat3("Glpbal Rptation", worldRotation);
-		ImGui::InputFloat3("Global Scale", worldScale);
-
-		SpacingRepeatedly(2);
-
-		XMVECTOR determinant = XMMatrixDeterminant(mPickedColliderParentMatrix);
-		Matrix inverseParnetMatrix = XMMatrixInverse(&determinant, mPickedColliderParentMatrix); 
-		Matrix worldMatrix;
-		FloatArrayToMatrix(objectTransformMatrix, worldMatrix); // 컬라이더의 월드매트릭스.
-
-		Matrix localMatrix;
-		localMatrix = worldMatrix * inverseParnetMatrix; // 컬라이더의 로컬좌표구해보기..
-		float localFloatArray[16];
-
-		MatrixToFloatArray(localMatrix, localFloatArray);
-
-		float localTranslation[3];
-		float localRotation[3];
-		float deltaRotation[3];
-		float localScale[3];
-
-		ImGuizmo::DecomposeMatrixToComponents(localFloatArray, localTranslation, localRotation, localScale);
-
-		mCurrentPickedCollider->mPosition.x = localTranslation[0];
-		mCurrentPickedCollider->mPosition.y = localTranslation[1];
-		mCurrentPickedCollider->mPosition.z = localTranslation[2];
-							
-		Vector3 radianRotation = Vector3(XMConvertToRadians(localRotation[0]), XMConvertToRadians(localRotation[1]), XMConvertToRadians(localRotation[2]));
-		ImGui::InputFloat3("Local Translation", localTranslation);
-		ImGui::InputFloat3("Local Rotation", (float*)&radianRotation);
-		ImGui::InputFloat3("Local Scale", localScale);
-
-		mCurrentPickedCollider->mRotation = radianRotation;
-
-		mCurrentPickedCollider->mScale.x = localScale[0];
-		mCurrentPickedCollider->mScale.y = localScale[1];
-		mCurrentPickedCollider->mScale.z = localScale[2];
-		
-		mCurrentPickedCollider->SetParent(&mPickedColliderParentMatrix);
-		mCurrentPickedCollider->Update();
-
-		ImGui::End();
 	}
 }
 
@@ -286,7 +182,7 @@ void ColliderSettingScene::selectModel() // perFrame
 			const bool is_selected = (mCurrentModelIndex == i); // 선택한게 현재 index의 텍스트라면
 
 			if (ImGui::Selectable(mModelTypes[i], is_selected)) // itmes[i]가 선택된 상태라면, 즉 여기서 먼저 갱신된다음 mCurrentIndex 갱신.
-																 // 갱신은 무조건해줘야함.
+																// 갱신은 무조건해줘야함.
 			{
 				if (i != mCurrentModelIndex) // 다른 모델인덱스를 눌렀다면!
 				{
@@ -786,7 +682,7 @@ void ColliderSettingScene::initPickedColliderMatrix()
 	MatrixToFloatArray(tempMatrix, objectTransformMatrix);
 }
 
-void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 assets들.
+void ColliderSettingScene::showAssetWindow() // ex)ModelData/Mutant내의 모든 assets들.
 {
 	// 이미 mModelsList.size() 1이상체크하고 들어왔다.
 
@@ -794,13 +690,19 @@ void ColliderSettingScene::showAssetsWindow() // ex)ModelData/Mutant내의 모든 as
 
 	ImGui::Begin(mAssetsWindowName.c_str());
 
+
+	if (ImGui::IsWindowHovered())
+	{
+		GM->Get()->SetIsHoveredAssetBrowserWindow(true);
+	}
+	else
+	{
+		GM->Get()->SetIsHoveredAssetBrowserWindow(false);
+	}
+
 	if (mbIsDropEvent)
 	{
-		if (ImGui::IsWindowHovered())
-		{
-			copyDraggedFile();
-		}
-
+		copyDraggedFile();
 		mbIsDropEvent = false;
 	}
 
@@ -1629,7 +1531,7 @@ void ColliderSettingScene::exportFBX(string SelectedFilePath, string fileNameToC
 	GM->SafeDelete(exporter);
 }
 
-void ColliderSettingScene::playAssetsWindowDropEvent()
+void ColliderSettingScene::playAssetWindowDropEvent()
 {
 	mbIsDropEvent = true;
 }
@@ -1720,4 +1622,106 @@ void ColliderSettingScene::colorPicking()
 	mMousePositionColor = mOutputBuffer->color;
 }
 
+void ColliderSettingScene::renderGizmos()
+{
+	Matrix viewMatrix;
+	Matrix projectionMatrix;
+
+	viewMatrix = mWorldCamera->GetViewMatrix();
+	projectionMatrix = mWorldCamera->GetProjectionMatrixInUse();
+
+	Float4x4 cameraView;
+	Float4x4 cameraProjection;
+
+	XMStoreFloat4x4(&cameraView, viewMatrix);
+	XMStoreFloat4x4(&cameraProjection, projectionMatrix);
+
+	float identityMatrix[16] =
+	{
+		1.f, 0.f, 0.f, 0.f,
+		0.f, 1.f, 0.f, 0.f,
+		0.f, 0.f, 1.f, 0.f,
+		0.f, 0.f, 0.f, 1.f
+	};
+
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+
+	ImGuiIO& io = ImGui::GetIO(); // 특정 imgui 윈도우가 아니라, 메인백버퍼렌더되는 윈도우에 대한 핸들러?같은거같다.
+
+	ImGuizmo::SetOrthographic(true);
+	ImGuizmo::BeginFrame();
+
+	if (ImGui::IsKeyPressed(90)) // z 키
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (ImGui::IsKeyPressed(69)) // e 키
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (ImGui::IsKeyPressed(82)) // r 키
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	ImGuizmo::Manipulate( // 실제 기즈모 렌더코드.
+		*cameraView.m, // 뷰행렬 (float*)
+		*cameraProjection.m, // 투영행렬 (float*)
+		mCurrentGizmoOperation, // ImGuizmo::OPERATION::TRANSLATE
+		ImGuizmo::LOCAL,
+		objectTransformMatrix, // 노드와 같은 위치에 기즈모를 렌더시키기위해서 부모행렬까지 곱한 월드매트릭스를 넣긴해야함.
+		NULL
+	);
+
+	if (ImGuizmo::IsUsing())
+	{
+		float worldTranslation[3];
+		float worldRotation[3];
+		float worldScale[3];
+
+		ImGui::Begin("Gizmo Transform");
+
+		ImGuizmo::DecomposeMatrixToComponents(objectTransformMatrix, worldTranslation, worldRotation, worldScale);
+
+		ImGui::InputFloat3("Global Translation", worldTranslation);
+		ImGui::InputFloat3("Glpbal Rptation", worldRotation);
+		ImGui::InputFloat3("Global Scale", worldScale);
+
+		SpacingRepeatedly(2);
+
+		XMVECTOR determinant = XMMatrixDeterminant(mPickedColliderParentMatrix);
+		Matrix inverseParnetMatrix = XMMatrixInverse(&determinant, mPickedColliderParentMatrix);
+		Matrix worldMatrix;
+		FloatArrayToMatrix(objectTransformMatrix, worldMatrix); // 컬라이더의 월드매트릭스.
+
+		Matrix localMatrix;
+		localMatrix = worldMatrix * inverseParnetMatrix; // 컬라이더의 로컬좌표구해보기..
+		float localFloatArray[16];
+
+		MatrixToFloatArray(localMatrix, localFloatArray);
+
+		float localTranslation[3];
+		float localRotation[3];
+		float deltaRotation[3];
+		float localScale[3];
+
+		ImGuizmo::DecomposeMatrixToComponents(localFloatArray, localTranslation, localRotation, localScale);
+
+		mCurrentPickedCollider->mPosition.x = localTranslation[0];
+		mCurrentPickedCollider->mPosition.y = localTranslation[1];
+		mCurrentPickedCollider->mPosition.z = localTranslation[2];
+
+		Vector3 radianRotation = Vector3(XMConvertToRadians(localRotation[0]), XMConvertToRadians(localRotation[1]), XMConvertToRadians(localRotation[2]));
+		ImGui::InputFloat3("Local Translation", localTranslation);
+		ImGui::InputFloat3("Local Rotation", (float*)&radianRotation);
+		ImGui::InputFloat3("Local Scale", localScale);
+
+		mCurrentPickedCollider->mRotation = radianRotation;
+
+		mCurrentPickedCollider->mScale.x = localScale[0];
+		mCurrentPickedCollider->mScale.y = localScale[1];
+		mCurrentPickedCollider->mScale.z = localScale[2];
+
+		mCurrentPickedCollider->SetParent(&mPickedColliderParentMatrix);
+		mCurrentPickedCollider->Update();
+
+		ImGui::End();
+	}
+}
 

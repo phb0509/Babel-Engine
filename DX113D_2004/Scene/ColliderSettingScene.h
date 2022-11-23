@@ -59,7 +59,7 @@ private:
 	void treeNodeRecurs(int nodesIndex);
 
 	void exportFBX(string selectedFilePath, string fileNameToCreate, string parentFolderName);
-	void playAssetsWindowDropEvent();
+	void playAssetWindowDropEvent();
 		
 	void copyDraggedFile();
 	void saveAsBinary();
@@ -79,7 +79,7 @@ private:
 	void showModelHierarchyWindow();
 	void showModelSelectWindow();
 	void showColliderEditorWindow();
-	void showAssetsWindow();
+	void showAssetWindow();
 	void showModelInspector();
 	void showPreRenderTargetWindow();
 

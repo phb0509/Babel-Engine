@@ -184,7 +184,7 @@ void TerrainEditor::PostRender()
 
 	SpacingRepeatedly(3);
 
-	showAssetsWindow(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
+	showAssetWindow(); // ImGuiFileDialog 이용해서 텍스쳐들 추가.
 	showTerrainEditor(); // 추가한 텍스쳐들 렌더.
 
 	SpacingRepeatedly(3);
@@ -723,7 +723,7 @@ void TerrainEditor::createMesh()
 		mIndices.data(), (UINT)mIndices.size(), false);
 }
 
-void TerrainEditor::showAssetsWindow() 
+void TerrainEditor::showAssetWindow() 
 {
 	ImGui::Begin("TextureAssets");
 

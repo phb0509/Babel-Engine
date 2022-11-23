@@ -181,35 +181,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_DROPFILES: // 드랍 시 이벤트.
 	{
-		HDROP hDrop = (HDROP)wParam;
-
-		vector<wstring> draggedFiles;
-		TCHAR* refFiles = nullptr;
-		UINT refFilesLen = 0;
-		POINT refPoint;
-
-		UINT fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, refFiles, refFilesLen);
-
-		if (fileCount > 0)
-		{
-			for (int i = 0; i < fileCount; i++) 
-			{
-				int fileLength = DragQueryFile(hDrop, i, NULL, 0) + 1; 
-				TCHAR* fileName = new TCHAR[fileLength]; 
-				memset(fileName, 0, sizeof(TCHAR) * fileLength); 
-
-				DragQueryFile(hDrop, i, fileName, fileLength); 
-			
-				wstring newFile = fileName;
-				draggedFiles.push_back(newFile);
-
-				delete[] fileName;
-			}
-		}
-
 		SetForegroundWindow(hWnd);
-		GM->Get()->SetDraggedFileList(draggedFiles);
-		GM->Get()->ExecuteDropEvents();
+		GM->Get()->ExecuteFileDropEvents(0);
+
+		if (GM->Get()->GetIsHoveredAssetBrowserWindow()) // 윈도우메시지드랍 + ImGUI호버 체크까지 .
+		{
+			HDROP hDrop = (HDROP)wParam;
+
+			vector<wstring> draggedFiles;
+			TCHAR* refFiles = nullptr;
+			UINT refFilesLen = 0;
+			POINT refPoint;
+
+			UINT fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, refFiles, refFilesLen);
+
+			if (fileCount > 0)
+			{
+				for (int i = 0; i < fileCount; i++)
+				{
+					int filePathLength = DragQueryFile(hDrop, i, NULL, 0) + 1;
+					TCHAR* fileName = new TCHAR[filePathLength];
+					memset(fileName, 0, sizeof(TCHAR) * filePathLength);
+
+					DragQueryFile(hDrop, i, fileName, filePathLength);
+
+					wstring newFile = fileName;
+					draggedFiles.push_back(newFile);
+
+					delete[] fileName;
+				}
+			}
+
+			//SetForegroundWindow(hWnd);
+			GM->Get()->SetDraggedFileList(draggedFiles); // 실제로 파일경로들 리스트 넘겨주는것 (한개만 넘기지만..)
+			GM->Get()->ExecuteFileDropEvents(1);
+		}
 	}
 	break;
 

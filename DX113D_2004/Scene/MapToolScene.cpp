@@ -28,7 +28,6 @@ void MapToolScene::Update()
 {
 	mWorldCamera->Update();
 	moveWorldCamera();
-
 	mTerrainEditor->Update();
 }
 

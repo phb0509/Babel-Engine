@@ -39,12 +39,18 @@ public:
 	void SetDraggedFileList(vector<wstring>& draggedFileList) { mDraggedFileList = draggedFileList; }
 	vector<wstring>& GetDraggedFileList() { return mDraggedFileList; }
 	void SetWindowDropEvent(CallBack dropEvent) { mWindowDropEvents.emplace_back(dropEvent); }
-	void ExecuteDropEvents();
+	void ExecuteFileDropEvents(int eventIndex);
+
+	void SetIsHoveredAssetBrowserWindow(bool isHovered) { mbIsHoveredAssetBrowserWindow = isHovered; }
+	bool GetIsHoveredAssetBrowserWindow() { return mbIsHoveredAssetBrowserWindow; }
 
 private:
 	Player* mPlayer;
 	vector<wstring> mDraggedFileList;
 	vector<CallBack> mWindowDropEvents; 
+	bool mbIsHoveredAssetBrowserWindow;
+
+
 };
 
 

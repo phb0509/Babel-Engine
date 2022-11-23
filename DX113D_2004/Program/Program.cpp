@@ -6,6 +6,8 @@
 
 Program::Program()
 {
+	GM->Get()->SetWindowDropEvent(bind(&Program::PostRender, this));
+
 	Create();
 
 	SceneManager::Get()->Add("start", new ColliderSettingScene());

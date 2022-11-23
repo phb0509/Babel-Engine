@@ -85,7 +85,7 @@ private:
 	void changeHeightMap(wstring heightFileName);
 	void changeTextureMap(wstring textureFileName);
 
-	void showAssetsWindow();
+	void showAssetWindow();
 	void showTerrainEditor();
 	void getFileNames(string path);
 	void showTextureAsset();

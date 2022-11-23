@@ -30,7 +30,6 @@ ModelExporter::~ModelExporter()
 void ModelExporter::ExportMaterial(string fileNameToCreate, string parentFolderName) // "Mutant/Mutant"  mCurrentModelName 넘겨받을듯.
 {
 	ReadMaterial();
-
 	string savePath = "ModelData/" + parentFolderName + "/" + fileNameToCreate + ".mat";
 	WriteMaterial(savePath);
 }

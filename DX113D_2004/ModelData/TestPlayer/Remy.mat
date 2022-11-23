@@ -1,0 +1,62 @@
+<Materials>
+    <Material>
+        <Name>Shoesmat</Name>
+        <DiffuseMap>Remy_Shoes_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Shoes_Specular.png</SpecularMap>
+        <NormalMap>Remy_Shoes_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Topmat</Name>
+        <DiffuseMap>Remy_Top_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Top_Specular.png</SpecularMap>
+        <NormalMap>Remy_Top_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Bottommat</Name>
+        <DiffuseMap>Remy_Bottom_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Bottom_Specular.png</SpecularMap>
+        <NormalMap>Remy_Bottom_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Hairmat</Name>
+        <DiffuseMap>Remy_Hair_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Hair_Specular.png</SpecularMap>
+        <NormalMap>Remy_Hair_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Bodymat</Name>
+        <DiffuseMap>Remy_Body_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Body_Specular.png</SpecularMap>
+        <NormalMap>Remy_Body_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Eyelashmat</Name>
+        <DiffuseMap>Remy_Body_Diffuse.png</DiffuseMap>
+        <SpecularMap>Remy_Body_Specular.png</SpecularMap>
+        <NormalMap>Remy_Body_Normal.png</NormalMap>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="0.5" G="0.5" B="0.5" A="20"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

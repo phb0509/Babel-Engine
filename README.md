@@ -1,5 +1,5 @@
 # Babel-Engine
 
-https://maxlevel-trace.tistory.com/
+개인티스토리 : https://maxlevel-trace.tistory.com/
 
-https://www.youtube.com/watch?v=ki15JbFCnEk
+포트폴리오 영상 : https://www.youtube.com/watch?v=ki15JbFCnEk

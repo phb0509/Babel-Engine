@@ -174,9 +174,4 @@ private:
 	map<string, Texture*> mExtensionPreviewImages;
 	bool mbIsDropped = false;
 	string mDraggedFileName;
-
-	int boxLeft;
-	int boxRight;
-
-	ModelAnimObject* mPlayer;
 };

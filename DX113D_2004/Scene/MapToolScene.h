@@ -11,12 +11,24 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-private:
-	void moveWorldCamera();
-private:
-	TerrainEditor* mTerrainEditor = nullptr;
 
-	RasterizerState* mRasterizerState = nullptr;
+private:
+	void initLight();
+	void initCamera();
+
+	void updateLight();
+	void updateCamera();
+	void moveWorldCamera();
+
+	
+
+private:
+	TerrainEditor* mTerrainEditor;
+
+	RasterizerState* mRasterizerState;
 	Camera* mWorldCamera;
 	Vector3 mPreFrameMousePosition;
+
+	LightBuffer* mLightBuffer;
+	Light* mDirectionalLight;
 };

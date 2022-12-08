@@ -3,15 +3,11 @@
 
 MapToolScene::MapToolScene()
 {
-	mWorldCamera = new Camera();
-	mWorldCamera->mPosition = { -35.2f,113.6f, -105.7f };
-	mWorldCamera->mRotation = { 0.5f,0.4f, 0.0f };
-	mWorldCamera->mMoveSpeed = 200.0f;
-	mWorldCamera->mWheelSpeed = 30.0f;
+	initLight();
+	initCamera();
 
 	mTerrainEditor = new TerrainEditor();
 	mTerrainEditor->SetCamera(mWorldCamera);
-	//skyBox = new SkyBox();
 
 	mRasterizerState = new RasterizerState();
 	mRasterizerState->FillMode(D3D11_FILL_WIREFRAME);
@@ -22,12 +18,14 @@ MapToolScene::~MapToolScene()
 	GM->SafeDelete(mTerrainEditor);
 	GM->SafeDelete(mRasterizerState);
 	GM->SafeDelete(mWorldCamera);
+	GM->SafeDelete(mLightBuffer);
+	GM->SafeDelete(mDirectionalLight);
 }
 
 void MapToolScene::Update()
 {
-	mWorldCamera->Update();
-	moveWorldCamera();
+	updateLight();
+	updateCamera();
 	mTerrainEditor->Update();
 }
 
@@ -51,14 +49,40 @@ void MapToolScene::Render()
 	mWorldCamera->SetViewBufferToVS();
 	mWorldCamera->SetProjectionBufferToVS();
 
-	//skyBox->Render();
-	//mRasterizerState->SetState();
 	mTerrainEditor->Render();
 }
 
 void MapToolScene::PostRender()
 {
 	mTerrainEditor->PostRender();
+}
+
+void MapToolScene::initLight()
+{
+	mLightBuffer = new LightBuffer();
+	mDirectionalLight = new Light(LightType::DIRECTIONAL);
+	mLightBuffer->Add(mDirectionalLight);
+}
+
+void MapToolScene::initCamera()
+{
+	mWorldCamera = new Camera();
+	mWorldCamera->mPosition = { -35.2f,113.6f, -105.7f };
+	mWorldCamera->mRotation = { 0.5f,0.4f, 0.0f };
+	mWorldCamera->mMoveSpeed = 200.0f;
+	mWorldCamera->mWheelSpeed = 30.0f;
+}
+
+void MapToolScene::updateLight()
+{
+	mLightBuffer->Update();
+	mDirectionalLight->Update();
+}
+
+void MapToolScene::updateCamera()
+{
+	mWorldCamera->Update();
+	moveWorldCamera();
 }
 
 void MapToolScene::moveWorldCamera()

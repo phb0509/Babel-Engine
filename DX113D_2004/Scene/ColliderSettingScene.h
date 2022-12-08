@@ -83,6 +83,8 @@ private:
 	void showModelInspector();
 	void showPreRenderTargetWindow();
 
+	void deleteColliders();
+
 private:
 	Camera* mWorldCamera;
 	ToolModel* mCurrentModel;

@@ -44,16 +44,9 @@ ColliderSettingScene::~ColliderSettingScene()
 	GM->SafeDelete(mInputBuffer);
 	GM->SafeDelete(mOutputBuffer);
 	GM->SafeDelete(mComputeStructuredBuffer);
-
-	for (int i = 0; i < mModels.size(); i++)
-	{
-		for (auto it = mModelDatas[i].nodeCollidersMap.begin(); it != mModelDatas[i].nodeCollidersMap.end(); it++)
-		{
-			GM->SafeDelete(it->second.collider);
-		}
-	}
-	
 	GM->SafeDeleteVector(mModels);
+
+	deleteColliders();
 }
 
 void ColliderSettingScene::Update()
@@ -1142,59 +1135,6 @@ void ColliderSettingScene::showPreRenderTargetWindow()
 {
 	ImGui::Begin("PreRenderTarget");
 
-	/*if (mCurrentModel != nullptr)
-	{
-		string t = "CurrentModel : " + mCurrentModel->GetName();
-		ImGui::Text(t.c_str());
-
-		{
-			string t = "CurrentModelIndex : ";
-			t += to_string(mCurrentModelIndex);
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "ClipCount : " + to_string(mCurrentModel->GetClips().size());
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "IsGetHasMeshes : " + to_string(mCurrentModel->GetHasMeshes());
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "DraggedFileName : " + mDraggedFileName;
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "DroppedFileName : " + mDroppedFileName;
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "IsDropped : " + to_string(mbIsDropped);
-			ImGui::Text(t.c_str());
-		}
-
-		{
-			string t = "SelectedIndex  : " + to_string(mSelectedIndexFromAssets);
-			ImGui::Text(t.c_str());
-		}
-
-
-	}
-
-	if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-	{
-		ImGui::Text("Mouse Dragging");
-	}
-	else
-	{
-		ImGui::Text("No Mouse Dragging");
-	}*/
-
 	int frame_padding = 0;
 	ImVec2 imageButtonSize = ImVec2(300.0f, 300.0f); // 이미지버튼 크기설정.                     
 	ImVec2 imageButtonUV0 = ImVec2(0.0f, 0.0f); // 출력할이미지 uv좌표설정.
@@ -1725,3 +1665,13 @@ void ColliderSettingScene::renderGizmos()
 	}
 }
 
+void ColliderSettingScene::deleteColliders()
+{
+	for (int i = 0; i < mModels.size(); i++)
+	{
+		for (auto it = mModelDatas[i].nodeCollidersMap.begin(); it != mModelDatas[i].nodeCollidersMap.end(); it++)
+		{
+			GM->SafeDelete(it->second.collider);
+		}
+	}
+}

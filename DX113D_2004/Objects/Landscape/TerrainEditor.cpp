@@ -50,19 +50,6 @@ TerrainEditor::TerrainEditor(UINT width, UINT height) :
 	mExtensionPreviewImages["dds"] = Texture::Add(L"Textures/DDS_PreviewImage.png");
 	mExtensionPreviewImages["tga"] = Texture::Add(L"Textures/TGA_PreviewImage.png");
 	mExtensionPreviewImages["default"] = Texture::Add(L"Textures/DefaultImage.png");
-
-	boxLeft = 0;
-	boxRight = 249999;
-
-	mPlayer = new ModelAnimObject();
-	mPlayer->mScale = { 0.05f, 0.05f, 0.05f };
-	mPlayer->mPosition.x = -3.0f;
-	mPlayer->SetShader(L"ModelAnimation");
-
-	mPlayer->SetMesh("Player", "Player.mesh");
-	mPlayer->SetMaterial("Player", "Player.mat");
-	mPlayer->ReadClip("Player", "Idle.clip");
-	mPlayer->UpdateWorld();
 }
 
 TerrainEditor::~TerrainEditor()
@@ -86,7 +73,6 @@ void TerrainEditor::Update()
 	computePixelPicking(&mPickedPosition);
 	mBrushBuffer->data.location = mPickedPosition;
 
-	mPlayer->Update();
 	//computePicking(&mPickedPosition);
 
 	if (KEY_PRESS(VK_LBUTTON) && !ImGui::GetIO().WantCaptureMouse)
@@ -127,11 +113,7 @@ void TerrainEditor::PreRender()
 {
 	// 여기다 DepthShader 관련.
 	RenderTarget::ClearAndSetWithDSV(mRenderTargets, 1, mDepthStencil); // 깊이값이 mDepthStencil에 저장..
-	//mDepthMaterial->Set(); 
-
-	mPlayer->IASet();
-	mPlayer->SetWorldBuffer(0);
-	mPlayer->Render();
+	mDepthMaterial->Set(); 
 
 	mMesh->SetIA(); // 버텍스,인덱스버퍼,프리미티브토폴로지 Set.
 	mWorldBuffer->SetVSBuffer(0);
@@ -146,16 +128,10 @@ void TerrainEditor::Render()
 	mBrushBuffer->SetPSBuffer(10);
 
 	DEVICECONTEXT->PSSetShaderResources(11, 4, mLayerArray);
-	//mLayers[0]->PSSet(11); // 텍스쳐 SRV로 PS에 바인딩.
-	//mLayers[1]->PSSet(12);
-	//mLayers[2]->PSSet(13);
-	//mLayers[3]->PSSet(14);
 
 	mMaterial->Set(); // 버퍼,srv,TerrainEditor 셰이더 Set.
 
 	DEVICECONTEXT->DrawIndexed((UINT)mIndices.size(), 0, 0);
-
-	mPlayer->Render();
 }
 
 void TerrainEditor::PostRender()
@@ -207,10 +183,6 @@ void TerrainEditor::PostRender()
 
 	SpacingRepeatedly(2);
 	ImGui::InputFloat3("PickedPosition", (float*)&mPickedPosition);
-	SpacingRepeatedly(2);
-
-	ImGui::InputInt("Box.Left", &boxLeft);
-	ImGui::InputInt("Box.Right", &boxRight);
 	SpacingRepeatedly(2);
 
 	ImGui::End();
@@ -448,8 +420,8 @@ void TerrainEditor::adjustY(Vector3 position) // 피킹포지션..
 		break;
 	}
 
-	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
-	//mMesh->UpdateVertex(mVertices.data(), mVertices.size()); // // 벡터주소,원소개수
+	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType)); // 버텍스 전체를 업데이트. 부분업데이트하게 바꿔야됨.
+	mMesh->UpdateVertex(mVertices.data(), mVertices.size()); // // 벡터주소,원소개수
 	//mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight); // // 벡터주소,원소개수
 }
 
@@ -506,8 +478,8 @@ void TerrainEditor::paintBrush(Vector3 position)
 		break;
 	}
 
-	mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
-	//mMesh->UpdateVertex(mVertices.data(), mVertices.size());
+	//mMesh->UpdateVertexUsingMap(mVertices.data(), mVertices.size() * sizeof(VertexType));
+	mMesh->UpdateVertex(mVertices.data(), mVertices.size());
 	//mMesh->UpdateVertexUsingBox(mVertices.data(), mVertices.size(), mPickedPosition, range, (UINT)boxLeft, (UINT)boxRight);
 }
 

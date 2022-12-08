@@ -17,7 +17,6 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 	
-
 private:
 	void updateLight();
 	void moveLight();
